@@ -1,43 +1,30 @@
 #!/bin/bash
 
-# 1. Asegurar archivo .env
+# 1. Crear .env si no existe
 if [ ! -f ".env" ]; then
     cp .env.example .env
 fi
 
-# 2. Instalar dependencias de PHP solo si falta la carpeta vendor
+# 2. Instalar dependencias PHP si no existen
 if [ ! -d "vendor" ]; then
-    echo "Instalando dependencias de PHP (composer)..."
+    echo "Instalando dependencias de PHP..."
     composer install --no-interaction --optimize-autoloader
 fi
 
-# 3. Generar clave si no existe
+# 3. Generar APP_KEY si no existe
 if ! grep -q "APP_KEY=base64" .env; then
     php artisan key:generate --force
 fi
 
-# 4. Instalar API solo si no existe el archivo de rutas
-if [ ! -f "routes/api.php" ]; then
-    echo "Configurando API de Laravel..."
-    php artisan install:api --no-interaction
-fi
+# 4. Ejecutar migraciones
+php artisan migrate --force
 
-# 5. Instalar dependencias de Node solo si falta node_modules
-if [ ! -d "node_modules" ]; then
-    echo "Instalando dependencias de Node..."
-    npm install
-fi
-
-# 6. Construir assets solo si no existe la carpeta build
-if [ ! -d "public/build" ]; then
-    echo "Compilando assets por primera vez..."
-    npm run build
-fi
-
-# 7. Limpiar caches para desarrollo (rápido y evita errores)
+# 5. Limpiar caché
 php artisan config:clear
 php artisan route:clear
+php artisan view:clear
 
-# Iniciar PHP-FPM
 echo "Backend listo para recibir conexiones."
+
+# 6. Arrancar PHP-FPM
 php-fpm
