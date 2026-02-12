@@ -13,16 +13,10 @@
     "restartPolicyMaxRetries": 10
   },
   "nixpacks": {
-    "phases": {
-      "setup": {
-        "commands": [
-          "nix-env -iA nixpkgs.php nixpkgs.composer"
-        ]
-      }
-    },
     "environmentVariables": {
       "NIXPACKS_NODE_VERSION": "18",
-      "NIXPACKS_PHP_VERSION": "8.2"
+      "NIXPACKS_PHP_VERSION": "8.2",
+      "NIXPACKS_PKGS": "nodejs-18_x npm-9_x php composer"
     }
   }
 }
