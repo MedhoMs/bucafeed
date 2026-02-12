@@ -10,7 +10,8 @@ RUN npm install
 COPY . .
 
 # Compilar la aplicación para producción
-RUN npm run build
+# Forzamos outDir a 'dist' porque el vite.config.js original apunta a una carpeta de backend que aquí no existe o está ignorada
+RUN npx vite build --outDir dist
 
 # ETAPA 2: Servidor de Producción (Nginx)
 FROM nginx:stable-alpine
