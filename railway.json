@@ -13,10 +13,18 @@
     "restartPolicyMaxRetries": 10
   },
   "nixpacks": {
+    "phases": {
+      "setup": {
+        "commands": [
+          "apt-get update -y",
+          "apt-get install -y php-cli php-mysql php-mbstring php-xml php-zip php-gd unzip",
+          "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"
+        ]
+      }
+    },
     "environmentVariables": {
       "NIXPACKS_NODE_VERSION": "18",
-      "NIXPACKS_PHP_VERSION": "8.2",
-      "NIXPACKS_PKGS": "nodejs-18_x npm-9_x php composer"
+      "NIXPACKS_PHP_VERSION": "8.2"
     }
   }
 }
