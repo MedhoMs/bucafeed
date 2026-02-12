@@ -31,22 +31,27 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copiar dependencias de PHP primero para caché
-COPY backend/composer.json backend/composer.lock ./
+# Copiar dependencias de PHP (Flexible: intenta backend/ o raíz)
+COPY backend/composer.json* backend/composer.lock* ./
+RUN if [ ! -f "composer.json" ]; then COPY composer.json* composer.lock* ./ ; fi 2>/dev/null || true
+
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Copiar el código del backend
-COPY backend/ .
+# Copiar el código del backend (intentar ambas rutas para compatibilidad de contexto)
+COPY . .
+RUN if [ -d "backend" ]; then mv backend/* . && mv backend/.* . 2>/dev/null || true; fi
 
 # TRAER LOS ASSETS COMPILADOS DESDE LA ETAPA 1
-COPY --from=build-stage /app/backend/public/frontend ./public/frontend
+COPY --from=build-stage /app/backend/public/frontend ./public/frontend 2>/dev/null || \
+    COPY --from=build-stage /app/public/frontend ./public/frontend
 
 # Permisos
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# EntryPoint
-COPY backend/entrypoint.sh /usr/local/bin/entrypoint.sh
+# EntryPoint (Flexible)
+RUN if [ -f "entrypoint.sh" ]; then cp entrypoint.sh /usr/local/bin/entrypoint.sh; \
+    else cp backend/entrypoint.sh /usr/local/bin/entrypoint.sh; fi
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8080
