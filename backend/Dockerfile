@@ -48,9 +48,9 @@ COPY --from=build-stage /app/backend/public/frontend ./public/frontend
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# EntryPoint
-COPY backend/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+# EntryPoint (Usamos el que ya se copió en el paso anterior)
+RUN cp entrypoint.sh /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8080
 
