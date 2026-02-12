@@ -23,11 +23,16 @@ ensure_env_var() {
     local value=$2
     
     if [ -n "$value" ]; then
+        # 1. Si la clave ya existe, la eliminamos primero (grep -v es más seguro que sed para esto)
         if grep -q "^$key=" .env; then
-            sed -i "s|^$key=.*|$key=$value|g" .env
-        else
-            echo "$key=$value" >> .env
+            grep -v "^$key=" .env > .env.tmp && mv .env.tmp .env
         fi
+        
+        # 2. Agregamos la clave con el valor nuevo al final
+        # Usamos comillas para manejar espacios, pero cuidado con comillas internas si las hay.
+        # Generalmente railway pasa valores limpios.
+        echo "$key=\"$value\"" >> .env
+        
         echo "🔧 Configurado $key en .env"
     fi
 }
@@ -36,6 +41,14 @@ echo "⚙️  Sincronizando configuración..."
 
 # Asegurar APP_KEY
 ensure_env_var "APP_KEY" "$APP_KEY"
+
+# Auto-mapeo de variables de Railway (MYSQL*) a Laravel (DB_*)
+# Si Railway inyecta MYSQLHOST pero no DB_HOST, usamos MYSQLHOST.
+if [ -z "$DB_HOST" ] && [ -n "$MYSQLHOST" ]; then export DB_HOST="$MYSQLHOST"; fi
+if [ -z "$DB_PORT" ] && [ -n "$MYSQLPORT" ]; then export DB_PORT="$MYSQLPORT"; fi
+if [ -z "$DB_DATABASE" ] && [ -n "$MYSQLDATABASE" ]; then export DB_DATABASE="$MYSQLDATABASE"; fi
+if [ -z "$DB_USERNAME" ] && [ -n "$MYSQLUSER" ]; then export DB_USERNAME="$MYSQLUSER"; fi
+if [ -z "$DB_PASSWORD" ] && [ -n "$MYSQLPASSWORD" ]; then export DB_PASSWORD="$MYSQLPASSWORD"; fi
 
 # Asegurar DB_CONNECTION (Vital para evitar SQLite por defecto del .env.example)
 ensure_env_var "DB_CONNECTION" "mysql"
