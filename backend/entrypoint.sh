@@ -16,20 +16,27 @@ if [ ! -d "vendor" ]; then
 fi
 
 # 3. Verificar y Generar APP_KEY
-# IMPORTANTE: Si copiamos .env.example, tiene "APP_KEY=". Esto puede sobrescribir la variable de entorno con un valor vacío.
-# Solución: Si detectamos APP_KEY en el entorno, eliminamos la línea del archivo .env para asegurar que "gana" la variable de entorno.
+# ESTRATEGIA DEFINITIVA: Escribir explícitamente la APP_KEY en el archivo .env
+# Esto elimina cualquier ambigüedad sobre qué variable tiene precedencia.
 
 if [ -n "$APP_KEY" ]; then
     echo "✅ APP_KEY detectada en variables de entorno."
-    # Eliminamos cualquier línea APP_KEY=... del archivo .env para evitar conflictos (prioridad variable de entorno)
+    
+    # Si el archivo .env existe, nos aseguramos que tenga la APP_KEY correcta
     if [ -f ".env" ]; then
-        sed -i '/^APP_KEY=/d' .env
-        echo "🔧 Eliminada entrada APP_KEY de .env para usar la del sistema."
+        if grep -q "^APP_KEY=" .env; then
+            # Si existe la línea, la reemplazamos (usando | como delimitador por si la key tiene /)
+            sed -i "s|^APP_KEY=.*|APP_KEY=$APP_KEY|g" .env
+            echo "🔧 Actualizada APP_KEY en .env con el valor del sistema."
+        else
+            # Si no existe la línea, la agregamos
+            echo "APP_KEY=$APP_KEY" >> .env
+            echo "➕ Agregada APP_KEY a .env desde el sistema."
+        fi
     fi
 else
     echo "⚠️ APP_KEY no detectada en variables de entorno."
     
-    # Si no está en envs, buscamos si ya se generó en el archivo .env
     if grep -q "APP_KEY=base64" .env; then
          echo "✅ APP_KEY encontrada en .env"
     else
