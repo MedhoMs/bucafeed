@@ -39,24 +39,30 @@ ensure_env_var() {
 
 echo "⚙️  Sincronizando configuración..."
 
-# Asegurar APP_KEY
-ensure_env_var "APP_KEY" "$APP_KEY"
+# 4. Auto-mapeo de variables de Railway
+# Si Railway inyecta RAILWAY_PUBLIC_DOMAIN, lo usamos para APP_URL si no está definida
+if [ -z "$APP_URL" ] && [ -n "$RAILWAY_PUBLIC_DOMAIN" ]; then
+    export APP_URL="https://$RAILWAY_PUBLIC_DOMAIN"
+    echo "🌐 APP_URL configurada automáticamente: $APP_URL"
+fi
 
-# Auto-mapeo de variables de Railway (MYSQL*) a Laravel (DB_*)
-# Si Railway inyecta MYSQLHOST pero no DB_HOST, usamos MYSQLHOST.
+# Auto-mapeo de base de datos
 if [ -z "$DB_HOST" ] && [ -n "$MYSQLHOST" ]; then export DB_HOST="$MYSQLHOST"; fi
 if [ -z "$DB_PORT" ] && [ -n "$MYSQLPORT" ]; then export DB_PORT="$MYSQLPORT"; fi
 if [ -z "$DB_DATABASE" ] && [ -n "$MYSQLDATABASE" ]; then export DB_DATABASE="$MYSQLDATABASE"; fi
 if [ -z "$DB_USERNAME" ] && [ -n "$MYSQLUSER" ]; then export DB_USERNAME="$MYSQLUSER"; fi
 if [ -z "$DB_PASSWORD" ] && [ -n "$MYSQLPASSWORD" ]; then export DB_PASSWORD="$MYSQLPASSWORD"; fi
 
-# Asegurar DB_CONNECTION (Vital para evitar SQLite por defecto del .env.example)
+# Asegurar variables críticas en .env
+ensure_env_var "APP_URL" "$APP_URL"
 ensure_env_var "DB_CONNECTION" "mysql"
 ensure_env_var "DB_HOST" "$DB_HOST"
 ensure_env_var "DB_PORT" "$DB_PORT"
 ensure_env_var "DB_DATABASE" "$DB_DATABASE"
 ensure_env_var "DB_USERNAME" "$DB_USERNAME"
 ensure_env_var "DB_PASSWORD" "$DB_PASSWORD"
+ensure_env_var "FRONTEND_URL" "$FRONTEND_URL"
+
 
 # Generar APP_KEY si aún falta
 if ! grep -q "^APP_KEY=base64" .env; then
