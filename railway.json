@@ -1,30 +1,13 @@
 {
   "$schema": "https://docs.railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "npm install && npm run build && cd backend && composer install --no-dev --prefer-dist && php artisan optimize",
-    "rootDirectory": "."
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
   },
   "deploy": {
-    "startCommand": "php backend/artisan serve --host 0.0.0.0 --port ${PORT}",
     "healthcheckPath": "/",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
-  },
-  "nixpacks": {
-    "phases": {
-      "setup": {
-        "commands": [
-          "apt-get update -y",
-          "apt-get install -y php-cli php-mysql php-mbstring php-xml php-zip php-gd unzip",
-          "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"
-        ]
-      }
-    },
-    "environmentVariables": {
-      "NIXPACKS_NODE_VERSION": "18",
-      "NIXPACKS_PHP_VERSION": "8.2"
-    }
   }
 }
