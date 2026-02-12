@@ -2,9 +2,20 @@
 # Usa una imagen de Node.js para compilar los assets de Vue
 FROM node:18-alpine AS frontend
 WORKDIR /app
+
+# Copia solo los archivos necesarios para npm install
 COPY package.json package-lock.json ./
 RUN npm install
-COPY . .
+
+# Copia solo los archivos y directorios relacionados con el frontend
+COPY public/ ./public/
+COPY src/ ./src/
+COPY index.html ./
+COPY vite.config.js ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
+# Agrega cualquier otro archivo de configuración de frontend de nivel raíz si existen, por ejemplo, babel.config.js, .env
+
 RUN npm run build
 
 
