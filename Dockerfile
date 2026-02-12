@@ -12,11 +12,13 @@ COPY . .
 # Compilar la aplicación para producción
 # Creamos la carpeta que el plugin de Laravel espera para evitar errores de configuración
 RUN mkdir -p backend/public
-# Forzamos la inclusión de index.html para que Vite lo procese como una SPA independiente
-RUN npx vite build --outDir dist index.html
+# Ejecutamos el build apuntando a la raíz. Vite usará index.html por defecto si existe.
+# Forzamos outDir a 'dist' para que Nginx sepa dónde buscar.
+RUN npx vite build --outDir dist
 
-# Verificar que el build generó archivos (fallar aquí es mejor que desplegar algo roto)
-RUN if [ ! -f dist/index.html ]; then echo "❌ Error: index.html no encontrado en dist/"; exit 1; fi
+# Verificar que el build generó el punto de entrada index.html
+RUN ls -la dist/
+RUN if [ ! -f dist/index.html ]; then echo "❌ Error: index.html no generado. Revisando archivos..."; ls -R dist/; exit 1; fi
 
 # ETAPA 2: Servidor de Producción (Nginx)
 FROM nginx:stable-alpine
