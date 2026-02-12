@@ -1,5 +1,5 @@
-# Base ligera
-FROM php:8.2-cli
+# Base ligera con PHP 8.4 para compatibilidad con dependencias (symfony/clock v8)
+FROM php:8.4-cli
 
 # Dependencias y extensiones
 RUN apt-get update && apt-get install -y \
