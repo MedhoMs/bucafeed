@@ -20,33 +20,24 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Usa una imagen de PHP para ejecutar la aplicación
 FROM php:8.2-fpm-alpine
 
-# Instala las extensiones de PHP requeridas por Laravel
-RUN apk add --no-cache oniguruma-dev libxml2-dev libzip-dev 
-    && docker-php-ext-install 
-    bcmath 
-    ctype 
-    fileinfo 
-    mbstring 
-    pdo 
-    pdo_mysql 
-    tokenizer 
-    xml 
-    zip
+# Install PHP extensions required by Laravel
+RUN apk add --no-cache oniguruma-dev libxml2-dev libzip-dev \
+    && docker-php-ext-install bcmath ctype fileinfo mbstring pdo pdo_mysql tokenizer xml zip
 
-# Copia el código de la aplicación
+# Copy the application code
 COPY backend /var/www
 
-# Copia el directorio 'vendor' de Composer
+# Copy the Composer vendor directory
 COPY --from=vendor /app/vendor /var/www/vendor
 
-# Copia los assets del frontend compilados
+# Copy the built frontend assets
 COPY --from=frontend /app/backend/public/frontend /var/www/public/frontend
 
-# Establece el directorio de trabajo
+# Set the working directory
 WORKDIR /var/www
 
-# Establece los permisos adecuados para storage y bootstrap/cache
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 
+# Set proper permissions for storage and bootstrap/cache
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Expone el puerto que Railway proporciona
