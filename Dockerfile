@@ -10,23 +10,28 @@ RUN npm install
 COPY . .
 
 # Compilar la aplicación para producción
-# Creamos una configuración temporal que NO use el plugin de Laravel
-# El plugin de Laravel está diseñado para Blade y no genera el index.html autónomo que necesitamos para Nginx.
+# Creamos una configuración temporal que fuerce a Vite a tratar index.html como entrada
 RUN echo "import { defineConfig } from 'vite'; \
 import vue from '@vitejs/plugin-vue'; \
 import { fileURLToPath, URL } from 'node:url'; \
 export default defineConfig({ \
   plugins: [vue()], \
-  build: { outDir: 'dist' }, \
+  base: '/', \
+  build: { \
+    outDir: 'dist', \
+    rollupOptions: { \
+        input: './index.html' \
+    } \
+  }, \
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } } \
 });" > vite.config.standalone.js
 
 # Ejecutamos el build usando esta configuración limpia
 RUN npx vite build --config vite.config.standalone.js
 
-# Verificar que el build generó el punto de entrada index.html
+# Verificar que el build generó archivos (fallar aquí es mejor que desplegar algo roto)
 RUN ls -la dist/
-RUN if [ ! -f dist/index.html ]; then echo "❌ Error: index.html no generado. Revisando archivos..."; ls -R dist/; exit 1; fi
+RUN if [ ! -f dist/index.html ]; then echo "❌ Error: index.html no generado. Revisa los archivos arriba."; exit 1; fi
 
 # ETAPA 2: Servidor de Producción (Nginx)
 FROM nginx:stable-alpine
