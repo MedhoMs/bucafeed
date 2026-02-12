@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # 1. Crear .env si no existe
 if [ ! -f ".env" ]; then
@@ -16,15 +17,12 @@ if ! grep -q "APP_KEY=base64" .env; then
     php artisan key:generate --force
 fi
 
-# 4. Ejecutar migraciones
-php artisan migrate --force
-
-# 5. Limpiar caché
+# 4. Limpiar caché
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 
 echo "Backend listo para recibir conexiones."
 
-# 6. Arrancar PHP-FPM
-php-fpm
+# 5. Arrancar servidor Laravel (PHP integrado)
+php artisan serve --host=0.0.0.0 --port=8080
