@@ -10,7 +10,7 @@
     @php
         $jsFile = collect(glob(public_path('frontend/assets/*.js')))->map(fn($path) => basename($path))->first();
         $cssFile = collect(glob(public_path('frontend/assets/*.css')))->map(fn($path) => basename($path))->first();
-    @php
+    @endphp
 
     @if($cssFile)
         <link rel="stylesheet" href="{{ asset('frontend/assets/' . $cssFile) }}">
