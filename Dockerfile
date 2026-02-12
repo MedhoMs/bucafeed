@@ -25,6 +25,6 @@ COPY --from=build-stage /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Exponer el puerto que Railway usa por defecto (80) o el configurado (8080)
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
