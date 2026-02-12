@@ -15,3 +15,21 @@ yarn-error.log
 /.vscode
 *.iml
 **/*.swp
+
+# Explicit frontend exclusions (just in case)
+/frontend
+/src
+*.js
+*.ts
+*.vue
+!webpack.mix.js
+!vite.config.js
+!tailwind.config.js
+!postcss.config.js
+# Note: config files *might* be needed if there's a hybrid build, but we want STRICT backend.
+# If backend uses vite/tailwind for some reason (rare for API only), keep them. 
+# But user said "ignore Vue completely".
+# We will keep js config files if they are in root of backend, but ignore src/ from root if context confused.
+# Since context is /backend, these patterns apply relative to /backend.
+# So if /backend/node_modules exists, it's ignored.
+
