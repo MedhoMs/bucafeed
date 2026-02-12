@@ -21,10 +21,12 @@ WORKDIR /usr/share/nginx/html
 # Vite por defecto compila en la carpeta 'dist'
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# Copiar configuración personalizada de Nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copiar configuración compartida como plantilla para soportar el puerto dinámico de Railway ($PORT)
+# Nginx estable-alpine procesa archivos en /etc/nginx/templates/*.template y los mueve a /etc/nginx/conf.d/
+RUN mkdir -p /etc/nginx/templates
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-# Exponer el puerto que Railway usa por defecto (80) o el configurado (8080)
+# En Railway no es estrictamente necesario EXPOSE si usamos $PORT, pero ayuda a la documentación interna
 EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
