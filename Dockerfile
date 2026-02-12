@@ -20,28 +20,28 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Usa una imagen de PHP para ejecutar la aplicación
 FROM php:8.2-fpm-alpine
 
-# Install PHP extensions required by Laravel
+# Instala las extensiones de PHP requeridas por Laravel
 RUN apk add --no-cache oniguruma-dev libxml2-dev libzip-dev \
     && docker-php-ext-install bcmath ctype fileinfo mbstring pdo pdo_mysql tokenizer xml zip
 
-# Copy the application code
+# Copia el código de la aplicación
 COPY backend /var/www
 
-# Copy the Composer vendor directory
+# Copia el directorio 'vendor' de Composer
 COPY --from=vendor /app/vendor /var/www/vendor
 
-# Copy the built frontend assets
+# Copia los assets del frontend compilados
 COPY --from=frontend /app/backend/public/frontend /var/www/public/frontend
 
-# Set the working directory
+# Establece el directorio de trabajo
 WORKDIR /var/www
 
-# Set proper permissions for storage and bootstrap/cache
+# Establece los permisos adecuados para storage y bootstrap/cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
 # Expone el puerto que Railway proporciona
-EXPOSE ${PORT}
+EXPOSE 8080
 
 # El comando para iniciar el servidor de Laravel
-CMD php artisan serve --host=0.0.0.0 --port=${PORT}
+CMD php artisan serve --host=0.0.0.0 --port=8080
