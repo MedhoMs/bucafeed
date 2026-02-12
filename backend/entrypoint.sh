@@ -70,7 +70,9 @@ php artisan config:clear
 php artisan route:clear
 php artisan view:clear
 
-echo "✅ Backend listo. Arrancando servidor..."
+# Escribir el puerto en los logs para depuración
+echo "🌐 Railway PORT detectado: ${PORT:-8080}"
+echo "✅ Backend listo. Arrancando servidor en el puerto ${PORT:-8080}..."
 
-# 5. Arrancar servidor Laravel
-php artisan serve --host=0.0.0.0 --port=8080
+# 5. Arrancar servidor Laravel (Usamos el puerto de Railway si existe)
+php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"
