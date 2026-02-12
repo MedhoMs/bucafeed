@@ -29,7 +29,8 @@ ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run build
 
 # Verificar que dist existe
-RUN ls -la dist/
+# Verificar que dist existe
+RUN echo "=== Contenido después del build ===" && ls -la && echo "=== Buscando archivos compilados ===" && find . -name "*.html" -o -name "*.js" | head -20
 
 # ==========================================
 # Etapa 2: Servidor Nginx

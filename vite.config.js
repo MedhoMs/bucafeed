@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig({
   plugins: [vue()],
   build: {
-    outDir: './backend/public/frontend',
+    outDir: 'dist',  // ← CAMBIADO
     emptyOutDir: true,
   },
   server: {
@@ -28,8 +28,3 @@ export default defineConfig({
     }
   }
 })
-
-
-
-
-
