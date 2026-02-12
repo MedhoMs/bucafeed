@@ -13,7 +13,7 @@
         <div class="flex justify-center items-center mb-[150px]" id="form-container">
             <div class="flex flex-col justify-center items-center h-[400px] w-[400px] p-[10px] text-white rounded-bl-xl rounded-tl-xl" id="side-panel">
                 <p class="text-center text-[29px] font-bold mb-[30px] [text-shadow:-2px_2px_1px_black]" id="welcome">{{ t.register.welcome }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span></p>
-                <img class="w-[90px] h-[100px]" src="@/assets/logo/logoTelamon.png" alt="Logo">
+                <img class="w-[90px] h-[100px]" src="/src/assets/logo/logoTelamon.png" alt="">
                 <p class="text-center text-[20px] font-bold mt-[30px] [text-shadow:-2px_2px_1px_black]" id="eslogan">{{ t.register.eslogan }}{{ t.nav.website }}</p>
             </div>
             <form class="flex flex-col justify-center h-[400px] w-[400px] p-[10px] pl-[20px] pr-[20px] bg-white rounded-br-xl rounded-tr-xl" method="post">

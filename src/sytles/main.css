@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Tus estilos personalizados aquí */
 * {
@@ -9,9 +11,13 @@
 #app {
   font-family: "Montserrat", sans-serif;
   min-height: 100vh;
-  background: -webkit-linear-gradient(180deg, #367fdd,#255683,#000000);/* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(180deg, #367fdd,#255683,#000000);/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: -webkit-linear-gradient(180deg, #367fdd, #255683, #000000);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(180deg, #367fdd, #255683, #000000);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
-  background: -webkit-linear-gradient(180deg, #326465,#1d2e3e);/* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(180deg, #326465,#1d2e3e);/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: -webkit-linear-gradient(180deg, #326465, #1d2e3e);
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(180deg, #326465, #1d2e3e);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
