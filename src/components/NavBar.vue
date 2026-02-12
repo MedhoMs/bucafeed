@@ -11,7 +11,8 @@
 
     const checkDbConnection = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/test-connection')
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+            const response = await fetch(`${apiBase}/test-connection`)
             const data = await response.json()
             if (data.status === 'success' && data.database.includes('correctamente')) {
                 dbStatus.value = 'connected'
@@ -24,7 +25,8 @@
     }
 
     const returnToView = () => {
-        window.location.href = 'http://localhost:8000/prueba'
+        const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
+        window.location.href = `${backendBase}/prueba`
     }
 
     const showPostModal = ref(false)

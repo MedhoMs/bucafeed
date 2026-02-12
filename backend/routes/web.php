@@ -14,6 +14,10 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/prueba', function () {
+    return view('prueba');
+});
+
 Route::get('/{any}', function () {
     return response()->json(['message' => 'API Endpoint Not Found'], 404);
 })->where('any', '.*');
