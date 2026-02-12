@@ -15,34 +15,40 @@ if [ ! -d "vendor" ]; then
     composer install --no-interaction --optimize-autoloader
 fi
 
-# 3. Verificar y Generar APP_KEY
-# ESTRATEGIA DEFINITIVA: Escribir explícitamente la APP_KEY en el archivo .env
-# Esto elimina cualquier ambigüedad sobre qué variable tiene precedencia.
+# 3. Verificar y Configurar Variables Críticas (.env)
 
-if [ -n "$APP_KEY" ]; then
-    echo "✅ APP_KEY detectada en variables de entorno."
+# Función para asegurar variable en .env
+ensure_env_var() {
+    local key=$1
+    local value=$2
     
-    # Si el archivo .env existe, nos aseguramos que tenga la APP_KEY correcta
-    if [ -f ".env" ]; then
-        if grep -q "^APP_KEY=" .env; then
-            # Si existe la línea, la reemplazamos (usando | como delimitador por si la key tiene /)
-            sed -i "s|^APP_KEY=.*|APP_KEY=$APP_KEY|g" .env
-            echo "🔧 Actualizada APP_KEY en .env con el valor del sistema."
+    if [ -n "$value" ]; then
+        if grep -q "^$key=" .env; then
+            sed -i "s|^$key=.*|$key=$value|g" .env
         else
-            # Si no existe la línea, la agregamos
-            echo "APP_KEY=$APP_KEY" >> .env
-            echo "➕ Agregada APP_KEY a .env desde el sistema."
+            echo "$key=$value" >> .env
         fi
+        echo "🔧 Configurado $key en .env"
     fi
-else
-    echo "⚠️ APP_KEY no detectada en variables de entorno."
-    
-    if grep -q "APP_KEY=base64" .env; then
-         echo "✅ APP_KEY encontrada en .env"
-    else
-         echo "🔑 Generando nueva APP_KEY..."
-         php artisan key:generate --force
-    fi
+}
+
+echo "⚙️  Sincronizando configuración..."
+
+# Asegurar APP_KEY
+ensure_env_var "APP_KEY" "$APP_KEY"
+
+# Asegurar DB_CONNECTION (Vital para evitar SQLite por defecto del .env.example)
+ensure_env_var "DB_CONNECTION" "mysql"
+ensure_env_var "DB_HOST" "$DB_HOST"
+ensure_env_var "DB_PORT" "$DB_PORT"
+ensure_env_var "DB_DATABASE" "$DB_DATABASE"
+ensure_env_var "DB_USERNAME" "$DB_USERNAME"
+ensure_env_var "DB_PASSWORD" "$DB_PASSWORD"
+
+# Generar APP_KEY si aún falta
+if ! grep -q "^APP_KEY=base64" .env; then
+    echo "🔑 Generando nueva APP_KEY (no encontrada en sistema)..."
+    php artisan key:generate --force
 fi
 
 # 4. Limpiar cachés para evitar conflictos
