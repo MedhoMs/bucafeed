@@ -14,7 +14,7 @@ const usuario = {
    seguidores: '1M',
    siguiendo: '3',
    bannerUrl: 'https://estaticos-cdn.prensaiberica.es/clip/3bffd319-f839-4e57-9ccb-b95ec474f104_source-aspect-ratio_default_0.jpg',
-   iconoUrl: '../assets/logo/logoTelamon.png'
+   iconoUrl: '@/assets/logo/logoTelamon.png'
 }
 </script>
 
@@ -38,7 +38,7 @@ const usuario = {
                 </div>
                 
 
-                <img src="../assets/logo/logoTelamon.png" alt="icono" class="icono absolute w-[100px] h-[100px] rounded-full border-4 border-[#15202b] bg-[#15202b] object-cover bottom-[-50px] left-5 shadow-lg"/>
+                <img src="@/assets/logo/logoTelamon.png" alt="icono" class="icono absolute w-[100px] h-[100px] rounded-full border-4 border-[#15202b] bg-[#15202b] object-cover bottom-[-50px] left-5 shadow-lg"/>
             </div>
 
             <!-- Botón de editar perfil -->

@@ -25,7 +25,7 @@
             </form>
             <div class="flex flex-col justify-center items-center h-[400px] w-[400px] p-[10px] text-white rounded-br-xl rounded-tr-xl" id="side-panel">
                 <p class="text-center text-[29px] font-bold mb-[30px] [text-shadow:-2px_2px_1px_black]" id="welcome">{{ t.login.welcome }}</p>
-                <img class="w-[90px] h-[100px]" src="/src/assets/logo/logoTelamon.png" alt="">
+                <img class="w-[90px] h-[100px]" src="@/assets/logo/logoTelamon.png" alt="Logo">
                 <p class="text-center text-[20px] font-bold mt-[30px] ml-[10px] mr-[10px] [text-shadow:-2px_2px_1px_black]" id="eslogan">{{ t.login.eslogan }}</p>
             </div>
         </div>
