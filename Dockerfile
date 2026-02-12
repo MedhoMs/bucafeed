@@ -10,21 +10,21 @@ RUN npm install
 COPY . .
 
 # Compilar la aplicación para producción
-# Forzamos outDir a 'dist' porque el vite.config.js original apunta a una carpeta de backend que aquí no existe o está ignorada
+# Creamos la carpeta que el plugin de Laravel espera para evitar errores de build
+RUN mkdir -p backend/public
 RUN npx vite build --outDir dist
 
 # ETAPA 2: Servidor de Producción (Nginx)
 FROM nginx:stable-alpine
 WORKDIR /usr/share/nginx/html
 
-# Copiar los archivos compilados desde la etapa anterior
-# Vite por defecto compila en la carpeta 'dist'
+# Copiar los archivos compilados
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# Copiar configuración personalizada de Nginx
+# Copiar configuración personalizada
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Exponer el puerto que Railway usa (8080)
-EXPOSE 8080
+# Usamos el puerto 80 (estándar de Nginx)
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]

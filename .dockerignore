@@ -1,4 +1,4 @@
-backend/
+# backend/ (removed to allow Vite to find publicDirectory)
 node_modules/
 .git/
 .env
