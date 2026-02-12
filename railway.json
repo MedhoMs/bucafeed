@@ -16,9 +16,13 @@
     "phases": {
       "setup": {
         "commands": [
-          "nix-env -iA nixpkgs.nodejs-18_x nixpkgs.npm-9_x nixpkgs.php nixpkgs.composer"
+          "nix-env -iA nixpkgs.php nixpkgs.composer"
         ]
       }
+    },
+    "environmentVariables": {
+      "NIXPACKS_NODE_VERSION": "18",
+      "NIXPACKS_PHP_VERSION": "8.2"
     }
   }
 }
