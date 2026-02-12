@@ -10,9 +10,13 @@ RUN npm install
 # Copiar todo el código (incluyendo src/, vite.config.js y tailwind.config.js)
 COPY . .
 
-# Compilar usando la configuración de Laravel-Vite existente en el root
-# Esto generará los assets en backend/public/frontend según vite.config.js
-RUN npm run build
+# Instalar dependencias necesarias para el plugin de Laravel si faltan
+RUN if [ ! -f "node_modules/laravel-vite-plugin/package.json" ]; then npm install laravel-vite-plugin --save-dev; fi
+
+# Compilar usando la configuración de Laravel-Vite local o del root
+# Usamos npx vite build directamente para no depender del script "build" en package.json
+RUN npx vite build
+
 
 # ETAPA 2: Servidor Backend (PHP/Laravel)
 FROM php:8.4-cli
