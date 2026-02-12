@@ -10,11 +10,19 @@ RUN npm install
 COPY . .
 
 # Compilar la aplicación para producción
-# Creamos la carpeta que el plugin de Laravel espera para evitar errores de configuración
-RUN mkdir -p backend/public
-# Ejecutamos el build apuntando a la raíz. Vite usará index.html por defecto si existe.
-# Forzamos outDir a 'dist' para que Nginx sepa dónde buscar.
-RUN npx vite build --outDir dist
+# Creamos una configuración temporal que NO use el plugin de Laravel
+# El plugin de Laravel está diseñado para Blade y no genera el index.html autónomo que necesitamos para Nginx.
+RUN echo "import { defineConfig } from 'vite'; \
+import vue from '@vitejs/plugin-vue'; \
+import { fileURLToPath, URL } from 'node:url'; \
+export default defineConfig({ \
+  plugins: [vue()], \
+  build: { outDir: 'dist' }, \
+  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } } \
+});" > vite.config.standalone.js
+
+# Ejecutamos el build usando esta configuración limpia
+RUN npx vite build --config vite.config.standalone.js
 
 # Verificar que el build generó el punto de entrada index.html
 RUN ls -la dist/
