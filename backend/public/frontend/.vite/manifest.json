@@ -1,0 +1,33 @@
+{
+  "src/assets/flags-icons/spain.png": {
+    "file": "assets/spain-D-F8Aglp.png",
+    "src": "src/assets/flags-icons/spain.png"
+  },
+  "src/assets/flags-icons/united-kingdom.png": {
+    "file": "assets/united-kingdom-CSFt8fjA.png",
+    "src": "src/assets/flags-icons/united-kingdom.png"
+  },
+  "src/assets/logo/logoTelamon.png": {
+    "file": "assets/logoTelamon-CYThBpWy.png",
+    "src": "src/assets/logo/logoTelamon.png"
+  },
+  "src/assets/question-icon.svg": {
+    "file": "assets/question-icon-DC94Jq8M.svg",
+    "src": "src/assets/question-icon.svg"
+  },
+  "src/main.js": {
+    "file": "assets/main-BgMZ1Tlg.js",
+    "name": "main",
+    "src": "src/main.js",
+    "isEntry": true,
+    "css": [
+      "assets/main-Q1qMTU7F.css"
+    ],
+    "assets": [
+      "assets/logoTelamon-CYThBpWy.png",
+      "assets/question-icon-DC94Jq8M.svg",
+      "assets/spain-D-F8Aglp.png",
+      "assets/united-kingdom-CSFt8fjA.png"
+    ]
+  }
+}
