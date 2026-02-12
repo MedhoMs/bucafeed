@@ -1,18 +1,18 @@
 # ETAPA 1: Compilación del Frontend (Vue.js) para el Backend
-FROM node:20 AS build-stage
+# Usamos Node 22 para cumplir con los requisitos de Vite 7+
+FROM node:22-alpine AS build-stage
 WORKDIR /app
 
-# Copiar archivos de configuración y dependencias desde el root
-COPY package.json package-lock.json* ./
-# Forzamos la instalación de TODO (incluyendo devDependencies) de forma limpia
-RUN npm install --include=dev
+# Copiar archivos de dependencias desde el root
+COPY package*.json ./
+RUN npm install
 
-# Copiar código fuente y archivos de configuración
+# Copiar todo el código (incluyendo src/, vite.config.js y tailwind.config.js)
 COPY . .
 
-# Compilar usando el vite local para evitar discrepancias de versión con npx
-# Usamos el outDir directo en el comando para mayor robustez
-RUN ./node_modules/.bin/vite build --outDir backend/public/frontend --base /frontend/ --emptyOutDir
+# Compilar usando la configuración de Laravel-Vite existente en el root
+# Esto generará los assets en backend/public/frontend según vite.config.js
+RUN npm run build
 
 # ETAPA 2: Servidor Backend (PHP/Laravel)
 FROM php:8.4-cli
@@ -28,8 +28,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copiar dependencias de PHP primero para aprovechar la caché de Docker
-# Intentamos copiar desde backend/ (contexto root) o desde (.) (contexto subdirectorio)
+# Copiar dependencias de PHP (Flexible: intenta backend/ o raíz)
 COPY backend/composer.json* backend/composer.lock* ./
 RUN if [ ! -f "composer.json" ]; then COPY composer.json* composer.lock* ./ ; fi 2>/dev/null || true
 RUN composer install --no-dev --optimize-autoloader --no-scripts
@@ -41,8 +40,8 @@ RUN if [ -d "backend" ]; then \
     fi
 
 # TRAER LOS ASSETS COMPILADOS DESDE LA ETAPA 1
-# Si el contexto era root, estarán en /app/backend/public/frontend
-# Si el contexto era backend, estarán en /app/public/frontend
+# Según vite.config.js, están en backend/public/frontend (si contexto es root)
+# O simplemente en public/frontend si el contexto fuera distinto.
 COPY --from=build-stage /app/backend/public/frontend ./public/frontend 2>/dev/null || \
     COPY --from=build-stage /app/public/frontend ./public/frontend
 
