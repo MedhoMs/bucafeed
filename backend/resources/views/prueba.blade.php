@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba Laravel | TelamoNet</title>
     
-    <!-- CARGA DE ASSETS (LIGERA PARA EL BACKEND) -->
-    @vite(['src/test-backend.js', 'backend/resources/css/app.css'], 'frontend')
+    <!-- CARGA DE ASSETS (COMPILADOS POR VITE) -->
+    @vite(['src/main.js', 'backend/resources/css/app.css'], 'frontend')
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-slate-900 text-white font-sans">
     <div class="bg-slate-800 p-10 rounded-2xl shadow-2xl border border-slate-700 text-center max-w-md w-full mx-4">

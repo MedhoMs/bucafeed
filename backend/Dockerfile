@@ -13,7 +13,7 @@ COPY . .
 RUN npm run build
 
 # ETAPA 2: Servidor Backend (PHP/Laravel)
-FROM php:8.4-cli
+FROM php:8.4-fpm
 
 # Dependencias y extensiones
 RUN apt-get update && apt-get install -y \
