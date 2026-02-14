@@ -128,9 +128,6 @@ php artisan cache:clear
 php artisan optimize
 chmod -R 777 storage bootstrap/cache public/frontend
 
-# Escribir el puerto en los logs para depuración
-echo "🌐 Railway PORT detectado: ${PORT:-8080}"
-echo "✅ Backend listo. Arrancando servidor..."
-
-# 8. Arrancar servidor Laravel
-php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"
+# 8. Arrancar servidor Laravel (Usamos PHP-FPM para que Nginx pueda hablar con él)
+echo "✅ Backend listo. Arrancando PHP-FPM..."
+php-fpm

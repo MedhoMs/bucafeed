@@ -11,7 +11,7 @@
 
     const checkDbConnection = async () => {
         try {
-            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8087/api'
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8001/api'
             const response = await fetch(`${apiBase}/test-connection`)
             const data = await response.json()
             if (data.status === 'success' && data.database.includes('correctamente')) {
@@ -25,8 +25,11 @@
     }
 
     const returnToView = () => {
-        const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8087'
-        window.location.href = `${backendBase}/prueba`
+        // Redirección directa al backend en puerto 8001
+        const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8001'
+        const cleanBase = backendBase.replace(/\/$/, '').replace(/\/frontend$/, '')
+        
+        window.location.href = `${cleanBase}/prueba`
     }
 
     const showPopup = ref(false)
