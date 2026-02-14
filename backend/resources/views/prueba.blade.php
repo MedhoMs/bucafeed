@@ -17,11 +17,8 @@
                  alt="Logo TelamoNet" class="h-20 w-auto">
         </div>
         
-        <h1 class="text-4xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-            Backend con Vue Local
-        </h1>
         <p class="text-slate-400 mb-8 font-medium">
-            Laravel está sirviendo sus propios assets compilados de Vue.
+            hola mundo
         </p>
 
         <a href="{{ config('app.frontend_url') }}/home" 
