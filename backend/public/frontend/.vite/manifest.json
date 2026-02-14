@@ -1,4 +1,9 @@
 {
+  "backend/resources/css/app.css": {
+    "file": "assets/app-DQt3CsLu.css",
+    "src": "backend/resources/css/app.css",
+    "isEntry": true
+  },
   "src/assets/flags-icons/spain.png": {
     "file": "assets/spain-D-F8Aglp.png",
     "src": "src/assets/flags-icons/spain.png"
@@ -12,20 +17,20 @@
     "src": "src/assets/logo/logoTelamon.png"
   },
   "src/assets/question-icon.svg": {
-    "file": "assets/question-icon-DC94Jq8M.svg",
+    "file": "assets/question-icon-P32SjWiU.svg",
     "src": "src/assets/question-icon.svg"
   },
   "src/main.js": {
-    "file": "assets/main-BgMZ1Tlg.js",
+    "file": "assets/main-cV2t3XpG.js",
     "name": "main",
     "src": "src/main.js",
     "isEntry": true,
     "css": [
-      "assets/main-Q1qMTU7F.css"
+      "assets/main-BnkSl6Hi.css"
     ],
     "assets": [
       "assets/logoTelamon-CYThBpWy.png",
-      "assets/question-icon-DC94Jq8M.svg",
+      "assets/question-icon-P32SjWiU.svg",
       "assets/spain-D-F8Aglp.png",
       "assets/united-kingdom-CSFt8fjA.png"
     ]

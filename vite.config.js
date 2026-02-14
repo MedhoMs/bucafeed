@@ -7,7 +7,7 @@ export default defineConfig({
     plugins: [
         vue(),
         laravel({
-            input: 'src/main.js',
+            input: ['src/main.js', 'backend/resources/css/app.css'],
             publicDirectory: 'backend/public',
             buildDirectory: 'frontend',
             refresh: true,
@@ -17,9 +17,6 @@ export default defineConfig({
         outDir: './backend/public/frontend',
         emptyOutDir: true,
         manifest: true,
-        rollupOptions: {
-            input: 'src/main.js',
-        },
     },
     server: {
         host: '0.0.0.0',

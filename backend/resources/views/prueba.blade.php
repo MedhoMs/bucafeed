@@ -5,18 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba Laravel | TelamoNet</title>
     
-    <!-- CARGA DE ASSETS LOCALES (COMPILADOS POR VITE) -->
-    <!-- Buscamos el archivo JS y CSS generado en public/frontend/assets -->
-    @php
-        $jsFile = collect(glob(public_path('frontend/assets/*.js')))->map(fn($path) => basename($path))->first();
-        $cssFile = collect(glob(public_path('frontend/assets/*.css')))->map(fn($path) => basename($path))->first();
-    @endphp
-
-    @if($cssFile)
-        <link rel="stylesheet" href="{{ asset('frontend/assets/' . $cssFile) }}">
-    @else
-        <script src="https://cdn.tailwindcss.com"></script>
-    @endif
+    <!-- CARGA DE ASSETS (COMPILADOS POR VITE) -->
+    @vite(['src/main.js', 'backend/resources/css/app.css'], 'frontend')
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-slate-900 text-white font-sans">
     <div class="bg-slate-800 p-10 rounded-2xl shadow-2xl border border-slate-700 text-center max-w-md w-full mx-4">
@@ -43,10 +33,6 @@
         </a>
     </div>
 
-    <!-- Carga del JS de Vue local -->
-    @if($jsFile)
-        <script type="module" src="{{ asset('frontend/assets/' . $jsFile) }}"></script>
-    @endif
 
     <footer class="mt-8 text-slate-500 text-sm">
         Laravel {{ app()->version() }} • DB: {{ DB::connection()->getDatabaseName() }}
