@@ -26,8 +26,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copiar SOLO el contenido de la carpeta backend para evitar contaminación
+# Copiar SOLO el contenido de la carpeta backend
 COPY backend/ .
+
+# Crear directorios necesarios que pueden estar en .dockerignore
+RUN mkdir -p storage/framework/cache/data \
+             storage/framework/sessions \
+             storage/framework/views \
+             storage/logs \
+             bootstrap/cache
 
 # Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-scripts
