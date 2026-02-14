@@ -34,8 +34,11 @@
     </div>
 
 
-    <footer class="mt-8 text-slate-500 text-sm">
-        Laravel {{ app()->version() }} • DB: {{ DB::connection()->getDatabaseName() }}
+    <footer class="mt-8 text-slate-500 text-sm text-center">
+        <div>Laravel {{ app()->version() }} • DB: {{ DB::connection()->getDatabaseName() }}</div>
+        <div class="mt-2 opacity-50">
+            DEBUG: APP_URL={{ config('app.url') }} | FRONTEND_URL={{ config('app.frontend_url') }}
+        </div>
     </footer>
 </body>
 </html>

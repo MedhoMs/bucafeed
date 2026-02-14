@@ -3,6 +3,9 @@
 **/.env
 .env.backup
 .env.production
+Dockerfile
+entrypoint.sh
+zz-docker.conf
 .phpactor.json
 .phpunit.result.cache
 /.fleet
@@ -16,6 +19,7 @@
 /public/build
 /public/hot
 /public/storage
+/public/frontend
 /storage/*.key
 /storage/pail
 /vendor

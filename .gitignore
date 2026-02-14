@@ -23,6 +23,22 @@ dist-ssr
 *.sln
 *.sw?
 
+# Docker & Config
+.env
+docker-compose.yml
+docker-compose.override.yml
+docker-compose.local.yml
+vite.config.js
+Dockerfile
+Dockerfile.prod
+nginx.conf
+nginx.prod.conf
+
+# Databases
+mysql_data/
+*.sql
+
+
 # Explicitly include built frontend assets
 !backend/public/frontend
 

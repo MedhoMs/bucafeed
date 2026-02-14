@@ -7,8 +7,9 @@ export const register = {
     email: "Correo electrónico",
     password: "Contraseña",
     confirmPassword: "Confirmar contraseña",
-    placeholderUsername: "Tu usuario / Tu correo electrónico",
+    placeholderEmail: "Tu correo electrónico",
     placeholderPassword: "Tu contraseña",
+    placeholderUser: "Tu correo electrónico",
     submit: "Registrarse",
     haveAccount: "¿Ya tienes cuenta? Inicia sesión",
     loginLink: "Inicia sesión"

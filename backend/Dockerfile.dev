@@ -1,14 +1,14 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 RUN apt-get update && apt-get install -y \
     git curl libpng-dev libonig-dev libxml2-dev zip unzip nodejs npm \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd opcache
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www
+WORKDIR /var/www/html
 
 # Ahora ya estamos dentro de backend
 COPY . .
@@ -16,7 +16,14 @@ COPY . .
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-COPY zz-docker.conf /etc/php/8.2/fpm/pool.d/zz-docker.conf
+COPY zz-docker.conf /etc/php/8.4/fpm/pool.d/zz-docker.conf
+COPY php-optimize.ini /usr/local/etc/php/conf.d/php-optimize.ini
+
+# DEPUREACIÓN Y ARREGLO DE MANIFEST (Vite 5):
+RUN if [ -f ./public/frontend/.vite/manifest.json ]; then \
+        mkdir -p ./public/frontend && \
+        mv ./public/frontend/.vite/manifest.json ./public/frontend/manifest.json; \
+    fi
 
 EXPOSE 9000
 ENTRYPOINT ["entrypoint.sh"]

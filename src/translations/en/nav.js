@@ -6,6 +6,7 @@ export const nav = {
     question: "Questions",
     explore: "Explore",
     notification: "Notifications",
+    meeting: "Meeting",
     event: "Events",
     post: "Post",
     profile: "Profile",

@@ -33,12 +33,19 @@ COPY backend/ .
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # TRAER LOS ASSETS COMPILADOS DESDE LA ETAPA 1
-# La ubicación depende de si el contexto de compilación fue raíz
 COPY --from=build-stage /app/backend/public/frontend ./public/frontend
 
+# DEPUREACIÓN Y ARREGLO DE MANIFEST:
+# 1. Buscamos dónde quedó el manifest (Vite 5 suele meterlo en .vite/)
+# 2. Si está en .vite/, lo movemos a la raíz de frontend para Laravel
+RUN find ./public/frontend -name "manifest.json"
+RUN if [ -f ./public/frontend/.vite/manifest.json ]; then \
+        mv ./public/frontend/.vite/manifest.json ./public/frontend/manifest.json; \
+    fi
+
 # Permisos
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache public \
+    && chmod -R 775 storage bootstrap/cache public
 
 # EntryPoint
 COPY backend/entrypoint.sh /usr/local/bin/entrypoint.sh

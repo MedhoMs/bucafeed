@@ -1,7 +1,6 @@
 <script setup>
     import NavBar from '../components/NavBar.vue';
     import SearchBar from '../components/SearchBar.vue';
-    import SideBar from '../components/SideBar.vue';
     import { onMounted } from 'vue';
 
     import { useTranslations } from '../composables/useTranslations'
@@ -43,27 +42,134 @@
 </script>
 
 <template>
-    <main>
+    <main class="flex min-h-screen justify-between">
         <NavBar></NavBar>
-        <section class="text-white">
+        <section class="text-white w-[1580px] mr-4">
             <SearchBar></SearchBar>
-            <div id="mainBody" class="flex justify-center items-center min-h-[92.9vh] bg-[#15202b80]">
-                <h1 class="text-4xl font-bold">No hay publicaciones</h1>
-            </div>
+            <div id="mainBody" class="flex flex-col gap-4 justify-center items-center min-h-[92.9vh]">
+                <!-- Post 1 -->
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-question">Pregunta 1</div>
+                    </div>
+                    <h2 class="post-title">TITULO DEL POST</h2>
+                    <div class="post-footer">
+                        <div class="responses-badge">
+                            <span class="response-emoji">💬</span>
+                            <span class="response-count">24</span>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Post 2 -->
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-question">Pregunta 2</div>
+                    </div>
+                    <h2 class="post-title">TITULO DEL POST</h2>
+                    <div class="post-footer">
+                        <div class="responses-badge">
+                            <span class="response-emoji">💬</span>
+                            <span class="response-count">15</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Post 3 -->
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-question">Pregunta 3</div>
+                    </div>
+                    <h2 class="post-title">TITULO DEL POST</h2>
+                    <div class="post-footer">
+                        <div class="responses-badge">
+                            <span class="response-emoji">💬</span>
+                            <span class="response-count">8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Post 4 -->
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-question">Pregunta 4</div>
+                    </div>
+                    <h2 class="post-title">TITULO DEL POST</h2>
+                    <div class="post-footer">
+                        <div class="responses-badge">
+                            <span class="response-emoji">💬</span>
+                            <span class="response-count">42</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-question">Pregunta 4</div>
+                    </div>
+                    <h2 class="post-title">TITULO DEL POST</h2>
+                    <div class="post-footer">
+                        <div class="responses-badge">
+                            <span class="response-emoji">💬</span>
+                            <span class="response-count">42</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-question">Pregunta 4</div>
+                    </div>
+                    <h2 class="post-title">TITULO DEL POST</h2>
+                    <div class="post-footer">
+                        <div class="responses-badge">
+                            <span class="response-emoji">💬</span>
+                            <span class="response-count">42</span>
+                        </div>
+                    </div>
+                </div>
+
+                                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-question">Pregunta 4</div>
+                    </div>
+                    <h2 class="post-title">TITULO DEL POST</h2>
+                    <div class="post-footer">
+                        <div class="responses-badge">
+                            <span class="response-emoji">💬</span>
+                            <span class="response-count">42</span>
+                        </div>
+                    </div>
+                </div>
+
+                                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-question">Pregunta 4</div>
+                    </div>
+                    <h2 class="post-title">TITULO DEL POST</h2>
+                    <div class="post-footer">
+                        <div class="responses-badge">
+                            <span class="response-emoji">💬</span>
+                            <span class="response-count">42</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 </template>
 
 <style scoped>
-    main {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        min-height: 100vh;
+    .post-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        width: 1580px;
+        border-radius: 16px;
+        padding: 1.75rem;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
     }
 
-    section {
-        width: 1200px;
-    }
 </style>

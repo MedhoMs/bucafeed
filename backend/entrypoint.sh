@@ -9,9 +9,21 @@ if [ ! -f ".env" ]; then
     cp .env.example .env
 fi
 
-# 2. Instalar dependencias PHP si falta vendor (redundante si se hizo en build, pero útil en volúmenes)
-if [ ! -d "vendor" ]; then
-    echo "📦 Instalando dependencias de PHP..."
+# 1.5. Asegurar directorios de storage y cache con permisos correctos
+echo "Preparando directorios de storage y cache..."
+mkdir -p storage/framework/cache/data
+mkdir -p storage/framework/sessions
+mkdir -p storage/framework/views
+mkdir -p storage/logs
+mkdir -p bootstrap/cache
+
+# Ajustar permisos si es necesario
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+
+# 2. Instalar dependencias de PHP solo si falta el autoload
+if [ ! -f "vendor/autoload.php" ]; then
+    echo "Instalando dependencias de PHP (composer)..."
     composer install --no-interaction --optimize-autoloader
 fi
 
@@ -22,17 +34,20 @@ ensure_env_var() {
     local key=$1
     local value=$2
     
+    # En local, si la variable ya existe en el .env con ALGÚN valor, no la tocamos
+    # para permitir que el usuario la cambie manualmente.
+    if [ "$APP_ENV" = "local" ] && grep -q "^$key=" .env; then
+        return
+    fi
+
     if [ -n "$value" ]; then
-        # 1. Si la clave ya existe, la eliminamos primero (grep -v es más seguro que sed para esto)
+        # 1. Si la clave ya existe, la eliminamos primero
         if grep -q "^$key=" .env; then
             grep -v "^$key=" .env > .env.tmp && mv .env.tmp .env
         fi
         
         # 2. Agregamos la clave con el valor nuevo al final
-        # Usamos comillas para manejar espacios, pero cuidado con comillas internas si las hay.
-        # Generalmente railway pasa valores limpios.
         echo "$key=\"$value\"" >> .env
-        
         echo "🔧 Configurado $key en .env"
     fi
 }
@@ -70,15 +85,52 @@ if ! grep -q "^APP_KEY=base64" .env; then
     php artisan key:generate --force
 fi
 
-# 4. Limpiar cachés para evitar conflictos
-echo "🧹 Limpiando configuraciones..."
-php artisan config:clear
-php artisan route:clear
+# 4. Instalar API solo si no existe el archivo de rutas
+if [ ! -f "routes/api.php" ]; then
+    echo "Configurando API de Laravel..."
+    php artisan install:api --no-interaction
+fi
+
+# 5. Arreglar/Generar Manifest de Vite
+echo "🔍 Diagnóstico de Manifest (Vite 5)..."
+echo "📍 Directorio actual (pwd): $(pwd)"
+
+# Eliminar archivo 'hot' si existe (confunde a Laravel en local)
+[ -f public/hot ] && rm public/hot
+[ -f public/frontend/hot ] && rm public/frontend/hot
+
+# Asegurar que el manifest está en su sitio
+if [ -f "public/frontend/.vite/manifest.json" ]; then
+    echo "📦 Moviendo manifest de .vite/ a frontend/"
+    cp public/frontend/.vite/manifest.json public/frontend/manifest.json
+fi
+
+if [ -f "public/frontend/manifest.json" ]; then
+    echo "✅ manifest.json ENCONTRADO."
+    echo "📄 Contenido del manifest (primeros 100 caracteres):"
+    head -c 100 public/frontend/manifest.json
+    echo ""
+    echo "� Permisos del archivo:"
+    ls -la public/frontend/manifest.json
+else
+    echo "❌ manifest.json SIGUE SIN APARECER en public/frontend/"
+fi
+
+# 6. Comprobar qué cree Laravel que es su Public Path (Debug Crucial)
+echo "🧪 Comprobando public_path() interno de Laravel:"
+php artisan tinker --execute="echo 'Laravel Public Path: ' . public_path();"
+
+# 7. Optimizar Laravel
+echo "🚀 Refrescando cache..."
 php artisan view:clear
+php artisan config:clear
+php artisan cache:clear
+php artisan optimize
+chmod -R 777 storage bootstrap/cache public/frontend
 
 # Escribir el puerto en los logs para depuración
 echo "🌐 Railway PORT detectado: ${PORT:-8080}"
-echo "✅ Backend listo. Arrancando servidor en el puerto ${PORT:-8080}..."
+echo "✅ Backend listo. Arrancando servidor..."
 
-# 5. Arrancar servidor Laravel (Usamos el puerto de Railway si existe)
+# 8. Arrancar servidor Laravel
 php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"

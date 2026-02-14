@@ -11,3 +11,9 @@ import NavBar from './components/NavBar.vue'
         </main>
     </div>
 </template>
+
+<style>
+    ::-webkit-scrollbar { 
+        display: none; 
+    }
+</style>

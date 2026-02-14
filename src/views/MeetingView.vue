@@ -8,13 +8,14 @@
 </script>
 
 <template>
-    <main class="flex justify-between min-h-screen">
+    <main class="flex justify-between min-h-[100vh]">
         <NavBar></NavBar>
         <section class="text-white w-[1580px] mr-4">
             <SearchBar></SearchBar>
-            <div id="mainTrending" class="flex justify-center items-center min-h-[92.9vh]">
-                <h1 class="text-4xl font-bold">No hay ninguna pregunta</h1>
+            <div id="mainNotification" class="flex justify-center items-center min-h-[92.9vh]">
+                <h1 class="text-4xl font-bold">No hay ningu meeting</h1>
             </div>
+
         </section>
     </main>
 </template>

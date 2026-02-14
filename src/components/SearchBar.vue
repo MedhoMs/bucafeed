@@ -20,10 +20,8 @@
         background-color: #2a4a5a;
         border-radius: 8px; 
         padding: 10px 14px;
-        width: 100%;
-        max-width: 1200px;
+        min-width: 1580px;
         align-items: center;
-
     }
 
     #bar:hover {
