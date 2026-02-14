@@ -18,9 +18,9 @@
         display: flex;
         flex-direction: row;
         background-color: #2a4a5a;
-        border-radius: 8px; 
-        padding: 10px 14px;
-        min-width: 1580px;
+        border-radius: 20px; 
+        padding: 15px 15px;
+        min-width: 1500px;
         align-items: center;
     }
 

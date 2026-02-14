@@ -25,10 +25,6 @@ const usuario = {
         <!-- Sección central: Perfil -->
         <div class="w-[1580px] flex flex-col mr-4">
 
-            <div class="sticky top-0 z-10">
-                <SearchBar />
-            </div>
-
             <section class="bg-[#15202b80] text-white flex-1">
 
                 <div class="relative">
