@@ -13,6 +13,7 @@ RUN npm install
 
 # Copiar archivos de configuración
 COPY vite.config.js ./
+COPY vite.config.frontend.js ./
 COPY tailwind.config.js ./
 COPY postcss.config.js ./
 COPY index.html ./
