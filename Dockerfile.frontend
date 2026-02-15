@@ -8,8 +8,8 @@ WORKDIR /app
 # Copiar archivos de dependencias
 COPY package.json package-lock.json ./
 
-# Instalar dependencias
-RUN npm ci --production=false
+# Instalar dependencias (Usamos install en lugar de ci para evitar errores de lockfile desincronizado)
+RUN npm install
 
 # Copiar archivos de configuración
 COPY vite.config.js ./

@@ -53,11 +53,11 @@ let localStream = null;
 // Configuración de URLs
 const hostname = window.location.hostname;
 const isRailway = hostname.includes('railway.app');
+
 // En producción, forzamos HTTPS/WSS. En local, usamos HTTP/WS.
-const SIGNALING_URL = import.meta.env.VITE_SIGNALING_URL || 
-  (isRailway 
-    ? `https://${hostname.split('.')[0]}-signaling.up.railway.app` 
-    : `http://${hostname}:3001`);
+// IMPORTANTE: En Railway, la variable VITE_SIGNALING_URL debe estar definida.
+// Si no está, fallará visiblemente en lugar de inventar una URL incorrecta.
+const SIGNALING_URL = import.meta.env.VITE_SIGNALING_URL || 'UNDEFINED_SIGNALING_URL';
 
 onMounted(async () => {
   // 1. Obtener media local
