@@ -3,11 +3,12 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server, {
     cors: {
-        origin: "*", // Permitir cualquier origen (necesario para Railway/Local)
+        origin: "*",
         methods: ["GET", "POST"],
-        allowedHeaders: ["my-custom-header"],
+        allowedHeaders: ["*"],
         credentials: true
-    }
+    },
+    transports: ['websocket', 'polling'] // Asegurar soporte para ambos
 });
 
 io.on('connection', socket => {
