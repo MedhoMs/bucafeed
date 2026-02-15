@@ -17,17 +17,24 @@
     </div>
 
     <div v-if="cameraError" class="mt-4 p-3 bg-red-500/20 border border-red-500 text-red-200 rounded-lg text-sm text-center">
-      ⚠️ {{ cameraError }}
+      <p>⚠️ {{ cameraError }}</p>
+      <button 
+        @click="retryCamera" 
+        class="mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded text-xs transition"
+      >
+        Reintentar Permisos
+      </button>
     </div>
     
     <div class="mt-4 text-white text-center">
       <p class="bg-[#1d2b38] inline-block px-4 py-2 rounded-full font-mono text-sm">
         Sala: <span class="text-blue-400 font-bold">{{ roomId }}</span> | Peer ID: <span class="text-emerald-400">{{ myPeerId }}</span>
       </p>
-      <!-- DEBUG: Mostrar URL de Signaling -->
-      <p class="mt-2 text-xs text-gray-500 font-mono">
-        Signaling: {{ signalingUrl }} | Status: {{ connectionStatus }}
-      </p>
+    </div>
+
+    <!-- LOGS DE DEBUG -->
+    <div class="mt-6 p-4 bg-black/80 rounded h-40 overflow-y-auto text-xs font-mono text-green-400 border border-green-900">
+      <div v-for="(log, i) in logs" :key="i">{{ log }}</div>
     </div>
   </div>
 </template>
@@ -59,70 +66,112 @@ const isRailway = hostname.includes('railway.app');
 // Si no está, fallará visiblemente en lugar de inventar una URL incorrecta.
 const SIGNALING_URL = import.meta.env.VITE_SIGNALING_URL || 'UNDEFINED_SIGNALING_URL';
 
-onMounted(async () => {
-  // 1. Obtener media local
+async function retryCamera() {
+  cameraError.value = '';
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    remoteStreams.value.push({ id: 'me', stream: localStream });
+    // Si ya existía, no lo duplicamos, pero aquí reiniciamos streams
+    const existingMe = remoteStreams.value.find(s => s.id === 'me');
+    if (!existingMe) {
+      remoteStreams.value.push({ id: 'me', stream: localStream });
+    } else {
+        existingMe.stream = localStream;
+    }
   } catch (err) {
-    console.warn('Error de cámara:', err);
-    // DEBUG: Mostrar error específico en la pantalla
-    cameraError.value = `Error: ${err.name} - ${err.message}. Asegúrate de dar permisos y usar HTTPS.`;
+    console.warn('Reintento fallido:', err);
+    cameraError.value = `Error: ${err.name}. Revisa la configuración del navegador.`;
   }
+}
+
+const logs = ref([]);
+
+function addLog(msg) {
+  const time = new Date().toLocaleTimeString();
+  logs.value.push(`[${time}] ${msg}`);
+  console.log(`[VideoCall] ${msg}`);
+}
+
+onMounted(async () => {
+  addLog(`Iniciando... Sala: ${roomId.value}`);
+
+  // 1. Obtener media local
+  await retryCamera();
 
   // 2. Conectar a Socket.io
+  addLog(`Conectando a Signaling: ${SIGNALING_URL}`);
   socket = io(SIGNALING_URL);
   
   socket.on('connect', () => {
     connectionStatus.value = 'Conectado a Socket.io';
+    addLog('Socket conectado. ID: ' + socket.id);
   });
 
   socket.on('connect_error', (err) => {
     connectionStatus.value = `Error: ${err.message}`;
-    console.error('Socket Error:', err);
+    addLog('Error Socket: ' + err.message);
   });
 
   // 3. Configurar PeerJS
-  // Usamos el servidor público de PeerJS para evitar problemas de NAT/Puertos
+  addLog('Iniciando PeerJS...');
   myPeer = new Peer(undefined, {
     host: '/',
     secure: true,
-    port: 443
+    port: 443,
+    debug: 2
   });
 
   myPeer.on('open', id => {
     myPeerId.value = id;
+    addLog(`PeerJS Abierto. ID: ${id}`);
     socket.emit('join-room', roomId.value, id);
+    addLog(`Unido a sala: ${roomId.value}`);
+  });
+
+  myPeer.on('error', err => {
+    addLog(`Error PeerJS: ${err.type} - ${err.message}`);
   });
 
   // Recibir llamadas
   myPeer.on('call', call => {
+    addLog(`Recibiendo llamada de: ${call.peer}`);
     call.answer(localStream);
     call.on('stream', userVideoStream => {
+      addLog(`Stream recibido de: ${call.peer}`);
       addVideoStream(call.peer, userVideoStream);
     });
+    call.on('error', err => addLog(`Error en llamada entrante: ${err}`));
   });
 
   // Usuario conectado
   socket.on('user-connected', userId => {
-    connectToNewUser(userId, localStream);
+    addLog(`Usuario conectado: ${userId}`);
+    // Esperar un poco para que el otro peer esté listo
+    setTimeout(() => connectToNewUser(userId, localStream), 1000);
   });
 
   // Usuario desconectado
   socket.on('user-disconnected', userId => {
+    addLog(`Usuario desconectado: ${userId}`);
     if (peers[userId]) peers[userId].close();
     remoteStreams.value = remoteStreams.value.filter(s => s.id !== userId);
   });
 });
 
 function connectToNewUser(userId, stream) {
+  addLog(`Llamando a: ${userId}`);
   const call = myPeer.call(userId, stream);
+  
   call.on('stream', userVideoStream => {
+    addLog(`Stream recibido (saliente) de: ${userId}`);
     addVideoStream(userId, userVideoStream);
   });
+  
   call.on('close', () => {
+    addLog(`Llamada cerrada con: ${userId}`);
     remoteStreams.value = remoteStreams.value.filter(s => s.id !== userId);
   });
+  
+  call.on('error', err => addLog(`Error en llamada saliente: ${err}`));
   peers[userId] = call;
 }
 
