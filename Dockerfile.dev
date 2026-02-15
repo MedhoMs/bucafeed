@@ -1,0 +1,21 @@
+# Dockerfile para DESARROLLO LOCAL
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Instalar dependencias
+COPY package*.json ./
+RUN npm install
+
+# Copiar la configuración de Vite para desarrollo
+COPY vite.config.dev.js ./
+
+# El resto del código se monta como volumen
+# COPY . .
+
+# Exponer puerto de Vite dev server
+EXPOSE 5173
+
+# Comando para desarrollo con hot reload
+# Ejecutamos vite directamente con la config de desarrollo (sin Laravel plugin)
+CMD ["npx", "vite", "--config", "vite.config.dev.js", "--host", "0.0.0.0"]

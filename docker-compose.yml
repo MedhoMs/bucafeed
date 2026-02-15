@@ -1,12 +1,15 @@
 services:
-  # Frontend - Vue 3
+  # Frontend - Vue 3 (Development Mode)
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: railway_telamonet_frontend
     ports:
-      - "5174:8080"
+      - "5174:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCH_INTERVAL=500

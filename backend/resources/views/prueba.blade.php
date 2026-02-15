@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba Laravel | TelamoNet</title>
     
-    <!-- CARGA DE ASSETS (COMPILADOS POR VITE) -->
-    @vite(['src/main.js', 'backend/resources/css/app.css'], 'frontend')
+    @if(app()->environment('local'))
+        <!-- Modo Desarrollo: Carga desde el servidor de Vite en el puerto 5174 -->
+        <script type="module" src="http://localhost:5174/@@vite/client"></script>
+        <link rel="stylesheet" href="http://localhost:5174/backend/resources/css/app.css">
+    @else
+        <!-- Modo Producción: Carga los assets compilados para Railway -->
+        @vite(['backend/resources/css/app.css'], 'frontend')
+    @endif
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-slate-900 text-white font-sans">
     <div class="bg-slate-800 p-10 rounded-2xl shadow-2xl border border-slate-700 text-center max-w-md w-full mx-4">
