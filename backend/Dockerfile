@@ -22,7 +22,23 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo_mysql mbstring bcmath zip pcntl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ... (Composer y archivos copiados igual)
+# Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Copiar SOLO el contenido de la carpeta backend
+COPY backend/ .
+
+# Crear directorios necesarios que pueden estar en .dockerignore
+RUN mkdir -p storage/framework/cache/data \
+             storage/framework/sessions \
+             storage/framework/views \
+             storage/logs \
+             bootstrap/cache
+
+# Instalar dependencias de PHP
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # TRAER LOS ASSETS COMPILADOS DESDE LA ETAPA 1
 COPY --from=build-stage /app/backend/public/frontend ./public/frontend
