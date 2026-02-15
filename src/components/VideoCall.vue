@@ -46,7 +46,12 @@ let myPeer = null;
 let localStream = null;
 
 // Configuración de URLs
-const SIGNALING_URL = import.meta.env.VITE_SIGNALING_URL || `http://${window.location.hostname}:3001`;
+const hostname = window.location.hostname;
+const isRailway = hostname.includes('railway.app');
+const SIGNALING_URL = import.meta.env.VITE_SIGNALING_URL || 
+  (isRailway 
+    ? `https://${hostname.split('.')[0]}-signaling.up.railway.app` 
+    : `http://${hostname}:3001`);
 
 onMounted(async () => {
   // 1. Obtener media local

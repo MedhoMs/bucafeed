@@ -21,24 +21,39 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ADMINISTRADORES
+        $admins = [
+            [
+                'email' => 'inge_tony@telamonet.com',
+                'nombre' => 'inge tony',
+                'password' => 'mikaela123',
+            ],
+            [
+                'email' => 'inge_json@telamonet.com',
+                'nombre' => 'inge json',
+                'password' => 'luigi2005',
+            ],
+            [
+                'email' => 'lidel_bucat@telamonet.com',
+                'nombre' => 'lidel buca',
+                'password' => '0000',
+            ],
+        ];
 
-        Usuario::create([
-            'nombre' => 'inge tony',
-            'email' => 'inge_tony@telamonet.com',
-            'password' => Hash::make('mikaela123'),
-        ]);
-
-        Usuario::create([
-            'nombre' => 'inge json',
-            'email' => 'inge_json@telamonet.com',
-            'password' => Hash::make('luigi2005'),
-        ]);
-
-        Usuario::create([
-            'nombre' => 'lidel buca',
-            'email' => 'lidel_bucat@telamonet.com',
-            'password' => Hash::make('0000'),
-        ]);
+        foreach ($admins as $adminData) {
+            $existing = Usuario::where('email', $adminData['email'])->first();
+            if ($existing) {
+                $existing->update([
+                    'nombre' => $adminData['nombre'],
+                    'password' => Hash::make($adminData['password']),
+                ]);
+            } else {
+                Usuario::create([
+                    'email' => $adminData['email'],
+                    'nombre' => $adminData['nombre'],
+                    'password' => Hash::make($adminData['password']),
+                ]);
+            }
+        }
 
 
         // Roles de usuarios
