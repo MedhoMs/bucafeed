@@ -13,8 +13,22 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCH_INTERVAL=500
+      - VITE_SIGNALING_URL=http://localhost:3001
     depends_on:
       - backend
+      - signaling
+    networks:
+      - app-network
+
+  # Signaling Server for Video Chat
+  signaling:
+    build:
+      context: ./signaling
+    container_name: railway_telamonet_signaling
+    ports:
+      - "3001:3000"
+    networks:
+      - app-network
 
   # Backend - Laravel
   backend:
@@ -22,9 +36,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile.dev
     container_name: railway_telamonet_backend
-    # Eliminamos el mapeo directo para usar siempre el Nginx (puerto 8001)
-    # ports:
-    #   - "8087:8080"
     volumes:
       - ./backend:/var/www/html
       - backend_vendor:/var/www/html/vendor
