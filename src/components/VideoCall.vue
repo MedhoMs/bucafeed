@@ -48,6 +48,7 @@ let localStream = null;
 // Configuración de URLs
 const hostname = window.location.hostname;
 const isRailway = hostname.includes('railway.app');
+// En producción, forzamos HTTPS/WSS. En local, usamos HTTP/WS.
 const SIGNALING_URL = import.meta.env.VITE_SIGNALING_URL || 
   (isRailway 
     ? `https://${hostname.split('.')[0]}-signaling.up.railway.app` 
