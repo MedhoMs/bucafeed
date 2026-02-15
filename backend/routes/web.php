@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 
 Route::get('/', function () {
@@ -15,6 +16,8 @@ Route::get('/', function () {
 Route::get('/prueba', function () {
     return view('prueba');
 });
+
+Route::get('/usuarios', [UserController::class, 'index'])->name('users.index');
 
 Route::get('/{any}', function () {
     return response()->json(['message' => 'API Endpoint Not Found'], 404);
