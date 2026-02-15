@@ -35,6 +35,5 @@ php artisan db:seed --force || echo "⚠️ Error en seeders, continuando..."
 php artisan config:clear
 php artisan cache:clear
 
-echo "✅ Backend listo. Arrancando PHP-FPM..."
-# Usamos -R para permitir que corra como root si es necesario en Docker
-exec php-fpm -R
+echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
