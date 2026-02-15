@@ -21,7 +21,7 @@ COPY index.html ./
 COPY src ./src
 COPY public ./public
 
-# Variables de entorno para el build (CRÍTICO PARA VITE)
+# Copiar variables de entorno (ARG)
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
 
@@ -34,8 +34,9 @@ ENV VITE_SIGNALING_URL=${VITE_SIGNALING_URL}
 ARG VITE_APP_NAME
 ENV VITE_APP_NAME=${VITE_APP_NAME}
 
-# Build de producción
-RUN npm run build
+# Build de producción usando la config específica de frontend
+# (Evita que intente buscar archivos del backend que no existen aquí)
+RUN npm run build -- --config vite.config.frontend.js
 
 # ==========================================
 # Etapa 2: Servidor Nginx
