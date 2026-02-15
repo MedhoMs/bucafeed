@@ -66,7 +66,8 @@ onMounted(async () => {
     remoteStreams.value.push({ id: 'me', stream: localStream });
   } catch (err) {
     console.warn('Error de cámara:', err);
-    cameraError.value = "No se pudo acceder a la cámara/micro. Asegúrate de dar permisos.";
+    // DEBUG: Mostrar error específico en la pantalla
+    cameraError.value = `Error: ${err.name} - ${err.message}. Asegúrate de dar permisos y usar HTTPS.`;
   }
 
   // 2. Conectar a Socket.io
