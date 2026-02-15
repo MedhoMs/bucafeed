@@ -24,6 +24,10 @@
       <p class="bg-[#1d2b38] inline-block px-4 py-2 rounded-full font-mono text-sm">
         Sala: <span class="text-blue-400 font-bold">{{ roomId }}</span> | Peer ID: <span class="text-emerald-400">{{ myPeerId }}</span>
       </p>
+      <!-- DEBUG: Mostrar URL de Signaling -->
+      <p class="mt-2 text-xs text-gray-500 font-mono">
+        Signaling: {{ signalingUrl }} | Status: {{ connectionStatus }}
+      </p>
     </div>
   </div>
 </template>
@@ -39,6 +43,7 @@ const roomId = ref(route.params.id || 'sala-general');
 const myPeerId = ref('Cargando...');
 const cameraError = ref('');
 const remoteStreams = ref([]); // Lista de {id, stream}
+const connectionStatus = ref('Desconectado');
 const peers = {};
 
 let socket = null;
@@ -66,6 +71,15 @@ onMounted(async () => {
 
   // 2. Conectar a Socket.io
   socket = io(SIGNALING_URL);
+  
+  socket.on('connect', () => {
+    connectionStatus.value = 'Conectado a Socket.io';
+  });
+
+  socket.on('connect_error', (err) => {
+    connectionStatus.value = `Error: ${err.message}`;
+    console.error('Socket Error:', err);
+  });
 
   // 3. Configurar PeerJS
   // Usamos el servidor público de PeerJS para evitar problemas de NAT/Puertos
@@ -116,6 +130,9 @@ function addVideoStream(userId, stream) {
     remoteStreams.value.push({ id: userId, stream });
   }
 }
+
+// Hacemos disponible la URL para el template
+const signalingUrl = SIGNALING_URL;
 
 onUnmounted(() => {
   if (socket) socket.disconnect();
