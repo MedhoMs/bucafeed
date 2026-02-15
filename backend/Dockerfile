@@ -60,4 +60,4 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8080
 
-CMD ["entrypoint.sh"]
+CMD ["/usr/local/bin/entrypoint.sh"]
