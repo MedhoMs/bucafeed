@@ -11,7 +11,7 @@
 
     const checkDbConnection = async () => {
         try {
-            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8001/api'
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8001'
             const response = await fetch(`${apiBase}/test-connection`)
             const data = await response.json()
             if (data.status === 'success' && data.database.includes('correctamente')) {
