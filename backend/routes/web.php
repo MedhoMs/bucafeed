@@ -17,7 +17,7 @@ Route::get('/prueba', function () {
     return view('prueba');
 });
 
-Route::get('/usuarios', [UserController::class, 'index'])->name('users.index');
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
 
 Route::get('/{any}', function () {
     return response()->json(['message' => 'API Endpoint Not Found'], 404);
