@@ -47,7 +47,7 @@
         <section class="text-white w-[1500px] mr-14 mb-4">
             <SearchBar></SearchBar>
             <div id="mainBody" class="flex flex-col gap-4 justify-center items-center min-h-[92.9vh]">
-                <!-- Post 1 -->
+            <!-- Post 1 -->
                 <div class="post-card">
                     <h2 class="post-title">TITULO DEL POST 1</h2>
                     <div class="post-footer">
