@@ -1,39 +1,3 @@
-<template>
-  <div class="p-6">
-    <div id="video-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <!-- Los videos se renderizan aquí dinámicamente -->
-      <div v-for="stream in remoteStreams" :key="stream.id" class="relative">
-        <video 
-          :srcObject.prop="stream.stream" 
-          autoplay 
-          playsinline 
-          class="w-full h-64 bg-black rounded-lg object-cover border-2 border-[#2a4a5a]"
-          :class="{ 'mirror': stream.id === 'me' }"
-        ></video>
-        <div class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-          {{ stream.id === 'me' ? 'Tú' : 'Usuario' }}
-        </div>
-      </div>
-    </div>
-
-    <div v-if="cameraError" class="mt-4 p-3 bg-red-500/20 border border-red-500 text-red-200 rounded-lg text-sm text-center">
-      <p>⚠️ {{ cameraError }}</p>
-      <button 
-        @click="retryCamera" 
-        class="mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded text-xs transition"
-      >
-        Reintentar Permisos
-      </button>
-    </div>
-    
-    <div class="mt-4 text-white text-center">
-      <p class="bg-[#1d2b38] inline-block px-4 py-2 rounded-full font-mono text-sm">
-        Sala: <span class="text-blue-400 font-bold">{{ roomId }}</span> | Peer ID: <span class="text-emerald-400">{{ myPeerId }}</span>
-      </p>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
@@ -160,6 +124,42 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<template>
+    <div class="p-6">
+        <div id="video-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Los videos se renderizan aquí dinámicamente -->
+        <div v-for="stream in remoteStreams" :key="stream.id" class="relative">
+            <video 
+            :srcObject.prop="stream.stream" 
+            autoplay 
+            playsinline 
+            class="w-full h-64 bg-black rounded-lg object-cover border-2 border-[#2a4a5a]"
+            :class="{ 'mirror': stream.id === 'me' }"
+            ></video>
+            <div class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+            {{ stream.id === 'me' ? 'Tú' : 'Usuario' }}
+            </div>
+        </div>
+        </div>
+
+        <div v-if="cameraError" class="mt-4 p-3 bg-red-500/20 border border-red-500 text-red-200 rounded-lg text-sm text-center">
+        <p>⚠️ {{ cameraError }}</p>
+        <button 
+            @click="retryCamera" 
+            class="mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded text-xs transition"
+        >
+            Reintentar Permisos
+        </button>
+        </div>
+        
+        <div class="mt-4 text-white text-center">
+        <p class="bg-[#1d2b38] inline-block px-4 py-2 rounded-full font-mono text-sm">
+            Sala: <span class="text-blue-400 font-bold">{{ roomId }}</span> | Peer ID: <span class="text-emerald-400">{{ myPeerId }}</span>
+        </p>
+        </div>
+    </div>
+</template>
 
 <style scoped>
 .mirror {
