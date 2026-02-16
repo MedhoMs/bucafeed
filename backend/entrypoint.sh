@@ -42,3 +42,10 @@ else
     echo "✅ Backend listo. Arrancando PHP-FPM..."
     exec php-fpm
 fi
+
+
+
+
+
+
+
