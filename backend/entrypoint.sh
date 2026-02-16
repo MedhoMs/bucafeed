@@ -26,8 +26,11 @@ fi
 [ -z "$DB_PASSWORD" ] && [ -n "$MYSQLPASSWORD" ] && export DB_PASSWORD="$MYSQLPASSWORD"
 
 # 5. Migraciones y Limpieza
-echo "🐘 Ejecutando migraciones (FRESH) y Seeders..."
-php artisan migrate:fresh --seed --force || echo "⚠️ Error en migrate:fresh --seed, continuando..."
+echo "🐘 Ejecutando migraciones..."
+php artisan migrate --force || echo "⚠️ Error en migraciones, continuando..."
+
+echo "🌱 Ejecutando seeders..."
+php artisan db:seed --force || echo "⚠️ Error en seeders, continuando..."
 
 php artisan config:clear
 php artisan cache:clear
