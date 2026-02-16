@@ -15,7 +15,7 @@ chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
 # 3. Dependencias
 if [ ! -f "vendor/autoload.php" ]; then
-    composer install --no-interaction --optimize-autoloader
+    composer install --no-interaction --optimize-autoloader --no-scripts
 fi
 
 # 4. Sincronizar DB
