@@ -16,40 +16,53 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // ADMINISTRADORES
-        User::firstOrCreate(
-            ['email' => 'inge_tony@telamonet.com'],
-            [
-                'name' => 'inge tony',
-                'last_name' => 'Admin',
-                'password' => Hash::make('mikaela123'),
-                'role' => 'admin',
-                'national_id' => 'ADM-001',
-            ]
-        );
+        try {
+            echo "🌱 Iniciando seeding de usuarios administradores...\n";
 
-        User::firstOrCreate(
-            ['email' => 'inge_json@telamonet.com'],
-            [
-                'name' => 'inge json',
-                'last_name' => 'Admin',
-                'password' => Hash::make('luigi2005'),
-                'role' => 'admin',
-                'national_id' => 'ADM-002',
-            ]
-        );
+            // ADMINISTRADORES
+            $u1 = User::firstOrCreate(
+                ['email' => 'inge_tony@telamonet.com'],
+                [
+                    'name' => 'inge tony',
+                    'last_name' => 'Admin',
+                    'password' => Hash::make('mikaela123'),
+                    'role' => 'admin',
+                    'national_id' => 'ADM-001',
+                ]
+            );
+            echo "✅ Usuario 1 procesado: " . $u1->email . "\n";
 
-        User::firstOrCreate(
-            ['email' => 'lidel_bucat@telamonet.com'],
-            [
-                'name' => 'lidel buca',
-                'last_name' => 'Admin',
-                'password' => Hash::make('0000'),
-                'role' => 'admin',
-                'national_id' => 'ADM-003',
-            ]
-        );
+            $u2 = User::firstOrCreate(
+                ['email' => 'inge_json@telamonet.com'],
+                [
+                    'name' => 'inge json',
+                    'last_name' => 'Admin',
+                    'password' => Hash::make('luigi2005'),
+                    'role' => 'admin',
+                    'national_id' => 'ADM-002',
+                ]
+            );
+            echo "✅ Usuario 2 procesado: " . $u2->email . "\n";
 
+            $u3 = User::firstOrCreate(
+                ['email' => 'lidel_bucat@telamonet.com'],
+                [
+                    'name' => 'lidel buca',
+                    'last_name' => 'Admin',
+                    'password' => Hash::make('0000'),
+                    'role' => 'admin',
+                    'national_id' => 'ADM-003',
+                ]
+            );
+            echo "✅ Usuario 3 procesado: " . $u3->email . "\n";
+
+            echo "🏁 Seeding de usuarios completado correctamente.\n";
+
+        } catch (\Exception $e) {
+            echo "❌ Error fatal en DatabaseSeeder: " . $e->getMessage() . "\n";
+            echo "Trace: " . $e->getTraceAsString() . "\n";
+        }
+        
         // Roles de usuarios
         // $admin        = Role::create(['name' => 'admin']);
         // $teacher      = Role::create(['name' => 'teacher']);
