@@ -50,6 +50,6 @@ fi
 php artisan config:clear
 php artisan route:clear
 
-# Iniciar PHP-FPM
-echo "Backend listo para recibir conexiones."
-php-fpm
+# Iniciar Supervisor (que gestiona PHP y Nginx)
+echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."
+exec "$@"

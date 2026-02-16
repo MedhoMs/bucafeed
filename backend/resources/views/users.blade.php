@@ -6,8 +6,8 @@
     <title>Usuarios Registrados | TelamoNet</title>
     <!-- CARGA DE TAILWIND (BACKEND) -->
     @if(app()->environment('local'))
-        <script type="module" src="http://localhost:5174/@@vite/client"></script>
-        <link rel="stylesheet" href="http://localhost:5174/backend/resources/css/app.css">
+        <script type="module" src="http://localhost:5173/@@vite/client"></script>
+        <link rel="stylesheet" href="http://localhost:5173/backend/resources/css/app.css">
     @else
         @vite(['backend/resources/css/app.css'], 'frontend')
     @endif
