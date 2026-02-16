@@ -21,8 +21,8 @@
                 </h1>
                 <p class="text-slate-400 mt-2">Gestión y visualización de usuarios registrados.</p>
             </div>
-            
-            <a href="{{ config('app.frontend_url') }}/home" 
+
+            <a href="{{ config('app.frontend_url') }}/home"
                class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-bold rounded-xl text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/20 group">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -47,7 +47,7 @@
                         <h3 class="text-lg font-bold mb-1 truncate text-slate-100" title="{{ $user->name }} {{ $user->last_name }}">{{ $user->name }} {{ $user->last_name }}</h3>
                         <p class="text-sm text-slate-500 truncate mb-2" title="{{ $user->email }}">{{ $user->email }}</p>
                     </div>
-                    
+
                     <div class="mt-4 pt-4 border-t border-slate-700/50 space-y-2">
                         @if($user->role === 'student' && $user->student)
                             <div class="flex justify-between text-sm">
@@ -75,7 +75,7 @@
                                 Sin datos adicionales
                             </div>
                         @endif
-                        
+
                          <div class="flex justify-between text-xs pt-2 mt-2 border-t border-slate-700/30 text-slate-500">
                             <span>ID: #{{ $user->id }}</span>
                             <span>{{ $user->created_at->format('d/m/Y') }}</span>
