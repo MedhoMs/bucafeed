@@ -35,5 +35,10 @@ php artisan db:seed --force || echo "⚠️ Error en seeders, continuando..."
 php artisan config:clear
 php artisan cache:clear
 
-echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."
-exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+if [ -x "/usr/bin/supervisord" ]; then
+    echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+else
+    echo "✅ Backend listo. Arrancando PHP-FPM..."
+    exec php-fpm
+fi

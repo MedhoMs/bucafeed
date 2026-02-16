@@ -3,8 +3,7 @@
 **/.env
 .env.backup
 .env.production
-Dockerfile
-entrypoint.sh
+
 zz-docker.conf
 .phpactor.json
 .phpunit.result.cache
