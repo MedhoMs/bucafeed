@@ -25,3 +25,7 @@ class Student extends Model
         return $this->belongsTo(EducationalCenter::class);
     }
 }
+
+
+
+

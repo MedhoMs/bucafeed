@@ -47,3 +47,4 @@ class EducationalCenterController extends Controller
         return response()->noContent();
     }
 }
+

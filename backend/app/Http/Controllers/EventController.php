@@ -53,3 +53,4 @@ class EventController extends Controller
         return response()->noContent();
     }
 }
+

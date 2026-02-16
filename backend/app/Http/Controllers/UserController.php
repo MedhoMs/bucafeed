@@ -11,7 +11,8 @@ class UserController extends Controller
 {
     public function index()
     {
-        return User::with(['educationalCenter', 'teacher', 'student'])->get();
+        $users = User::with(['educationalCenter', 'teacher', 'student'])->get();
+        return view('users', compact('users'));
     }
 
     public function store(Request $request)
@@ -67,3 +68,4 @@ class UserController extends Controller
         return response()->noContent();
     }
 }
+

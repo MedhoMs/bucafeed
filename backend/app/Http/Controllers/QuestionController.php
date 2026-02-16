@@ -60,3 +60,4 @@ class QuestionController extends Controller
         return response()->noContent();
     }
 }
+

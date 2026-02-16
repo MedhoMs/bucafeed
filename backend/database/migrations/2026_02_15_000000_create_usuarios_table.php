@@ -34,6 +34,9 @@ return new class extends Migration
         });
     }
 
+
+
+    
     /**
      * Reverse the migrations.
      */
@@ -42,3 +45,4 @@ return new class extends Migration
         Schema::dropIfExists('users');
     }
 };
+

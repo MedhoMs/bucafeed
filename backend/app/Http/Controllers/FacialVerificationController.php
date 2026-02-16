@@ -47,3 +47,4 @@ class FacialVerificationController extends Controller
         return response()->noContent();
     }
 }
+

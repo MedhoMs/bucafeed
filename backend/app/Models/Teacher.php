@@ -25,3 +25,4 @@ class Teacher extends Model
         return $this->belongsTo(EducationalCenter::class);
     }
 }
+

@@ -27,3 +27,4 @@ class BannedWordController extends Controller
         return response()->noContent();
     }
 }
+
