@@ -80,7 +80,7 @@
                 allRolesForm.classList.add('hidden');
                 studentTeacheEuForm.classList.remove('hidden');
                 studentTeacheEuForm.classList.add('flex');
-                nextButton.id = "button1";
+                nextButton.id = "button1"; 
             }
         });
     });
