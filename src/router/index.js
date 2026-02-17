@@ -8,6 +8,7 @@ import ExploreView from "../views/ExploreView.vue";
 import NotificationView from "../views/NotificationView.vue";
 import EventView from "../views/EventView.vue";
 import MeetingView from "../views/MeetingView.vue";
+import MeetingChatView from "../views/MeetingChatView.vue";
 import LaravelTestView from "../views/LaravelTestView.vue";
 import VideoCallView from "../views/VideoCallView.vue";
 
@@ -63,6 +64,11 @@ const router = createRouter({
         path: '/meeting',
         name: 'meeting',
         component: MeetingView
+        },
+        {
+        path: '/meetingchat',
+        name: 'meetingchat',
+        component: MeetingChatView
         },
         {
         path: '/laravel',

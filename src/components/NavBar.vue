@@ -36,7 +36,7 @@
 </script>
 
 <template>
-    <nav class="sticky top-0 w-[300px] flex flex-col pl-5 h-[100vh] z-[1]" id="principalNav">
+    <nav class="sticky top-0 w-[300px] flex flex-col pl-5 pr-5 h-[100vh] z-[1]" id="principalNav">
         <div class="flex flex-row items-center gap-3 mb-4">
             <img class="w-[65px] h-[70px]" src="../assets/logo/logoTelamon.png" alt="Logo">
             <h1 class="font-bold text-[20px] text-white">{{ t.nav.title }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span></h1>
