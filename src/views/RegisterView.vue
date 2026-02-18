@@ -23,6 +23,10 @@
             e.preventDefault();
         });
 
+        registerButton.addEventListener('click', function() {
+            validateForm(formPath);
+        });
+
         nextButton.addEventListener('click', function() {
             if (selectRole.value === "EI") {
                 formPath = "EI";
@@ -80,9 +84,17 @@
                 allRolesForm.classList.add('hidden');
                 studentTeacheEuForm.classList.remove('hidden');
                 studentTeacheEuForm.classList.add('flex');
-                nextButton.id = "button1"; 
+                registerButton.classList.remove('hidden');
+                registerButton.classList.add('flex');
+                nextButton.classList.add('hidden');
             }
         });
+
+        function validateForm(formPath) {
+            if (formPath === "IE") {
+                
+            }
+        }
     });
 </script>
 
@@ -99,12 +111,12 @@
             <form id="registerForm" class="relative flex flex-col justify-center h-[400px] w-[400px] p-[10px] pl-[20px] pr-[20px] bg-white rounded-br-xl rounded-tr-xl" method="post">
                 
                 <section id="allRolesForm" class="forms flex flex-col mb-32">
-                    <label class="mt-[30px] mb" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
+                    <label class="font-bold mt-[30px]" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
                     <span class=" text-xs">{{ t.register.emailSpan }}</span>
-                    <input type="text" class="input-form" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required>
-                    <label for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
-                    <input type="password" class="input-form" maxlength="20" autocomplete id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
-                    <label for="who-register-form" id="who-register-label">¿Quién eres?</label>
+                    <input type="text" class="outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required>
+                    <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
+                    <input type="password" class="outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="20" autocomplete id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
+                    <label class="font-bold" for="who-register-form" id="who-register-label">¿Quién eres?</label>
                     <select name="selectRole" id="selectRole" class="border-b border-black pb-1" required>
                         <option value="EI">Institución Educativa</option>
                         <option value="Student">Estudiante</option>
@@ -114,31 +126,32 @@
                 </section>
 
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
-                    <label for="student-name" id="studentName">Nombre</label>
-                    <input type="text" class="input-form" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <label for="student-name" id="studentName">Apellidos</label>
-                    <input type="text" class="input-form" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <label for="student-name" id="studentName">DNI/NIE</label>
-                    <input type="text" class="input-form" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>                    
+                    <label class="font-bold" for="student-name" id="studentName">Nombre</label>
+                    <input type="text" class="outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <label class="font-bold" for="student-name" id="studentName">Apellidos</label>
+                    <input type="text" class="outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <label class="font-bold" for="student-name" id="studentName">DNI/NIE</label>
+                    <input type="text" class="outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>                    
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
-                    <label for="choose-center" id="chooseCenter">Nivel de Enseñanza</label>
-                    <select name="" id="" class="">
+                    <label class="font-bold" for="choose-center" id="chooseCenter">Nivel de Enseñanza</label>
+                    <select name="" id="" class="border-b border-black pb-1">
                         <option value="PE">Educación Primaria</option>
                         <option value="SE">Educación Secundaria</option>
                         <option value="College">Universidad</option>
                         <option value="FP">Formación Profesional</option>
                     </select>
-                    <label class="my-8" for="choose-location" id="chooseLocation">¿Cual es su Institucion Educativa?</label>
-                    <select name="" id="" class="">
+                    <label class="mt-8 font-bold" for="choose-location" id="chooseLocation">¿Cual es su Institucion Educativa?</label>
+                    <select name="" id="" class="border-b border-black pb-1">
                         <option value="">Saldran todo de la base de datos</option>
                     </select>
 
-                    <RouterLink to="/home" id="registerButton" class="absolute bottom-[80px] right-12 text-center hidden">
-                        <ButtonForm :value="t.register.submit"></ButtonForm>
-                    </RouterLink>
                 </section>
+
+                <RouterLink to="/home" id="registerButton" class="absolute bottom-[80px] right-12 text-center hidden">
+                    <ButtonForm :value="t.register.submit"></ButtonForm>
+                </RouterLink>
 
                 <ButtonForm id="nextButton" value="Siguiente" class="absolute bottom-[60px] right-[50px] border rounded-lg"></ButtonForm>
 
@@ -154,17 +167,4 @@
     #side-panel {
         background: linear-gradient(140deg, #326465,#1d2e3e);/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     }
-
-    label {
-        font-weight: bold;
-    }
-
-    .input-form {
-        outline: none;
-        border: none;
-        border-bottom: 1px solid black;
-        margin-bottom: 30px;
-        padding: 2px;
-        font-size: 20px;
-    }
-</style>
+</style> 
