@@ -28,7 +28,7 @@ WORKDIR /var/www
 COPY . /var/www
 
 # Copy Nginx configuration
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.railway.conf /etc/nginx/conf.d/default.conf
 
 # Remove default Nginx site
 RUN rm -f /etc/nginx/sites-enabled/default
