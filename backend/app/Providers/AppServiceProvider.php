@@ -19,16 +19,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if($this->app->environment('production')) {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
-            
-            // Fix for Railway Load Balancer
-            $this->app['request']->server->set('HTTPS', 'on');
-        }
         // Forzar HTTPS en producción (Railway)
         if (config('app.env') === 'production' || env('APP_ENV') === 'production') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
-            request()->server->set('HTTPS', 'on');
+            
+            // Fix for Railway Load Balancer
+            if (isset($this->app['request']->server)) {
+                $this->app['request']->server->set('HTTPS', 'on');
+            }
         }
     }
 }
