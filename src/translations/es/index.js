@@ -13,3 +13,5 @@ export const es = {
     profile,
     post
 };
+
+

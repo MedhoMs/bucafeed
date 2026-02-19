@@ -17,3 +17,8 @@ export const nav = {
     logout: "Cerrar Sesión",
     selectLanguage: "Selecciona tu idioma"
 };
+
+
+
+
+

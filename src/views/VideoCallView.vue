@@ -15,3 +15,4 @@
 import NavBar from '@/components/NavBar.vue';
 import VideoCall from '@/components/VideoCall.vue';
 </script>
+

@@ -12,3 +12,4 @@ export const login = {
     noAccount: "¿Es tu primera vez aquí? Crea tu cuenta",
     registerLink: "Regístrate"
 };
+
