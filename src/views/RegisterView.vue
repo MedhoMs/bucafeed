@@ -19,15 +19,7 @@
 
         const allRolesInput = document.querySelectorAll('.allRolesInput');
         const studentTeacheEuInput = document.querySelectorAll('.studentTeacheEuInput');
-
-
-
-        const email = document.getElementById('email-register-form')
-        const password = document.getElementById('password-register-form')
-        const role = document.getElementById('selectRole')
-        const name = document.getElementById('name-register-form')
-        const surname = document.getElementById('surname-register-form')
-        const dni = document.getElementById('dni-register-form')
+        const EIInput = document.querySelectorAll('.EIInput');
 
         let formPath = '';
 
@@ -102,14 +94,49 @@
             }
         });
 
-        function validateForm(formPath) {
-            if (formPath === "EU") {
-                const emailValue = email.value;
-                const passwordValue = password.value
-                const roleValue = role.value
-                const nameValue = name.value
-                const surnameValue = surname.value
-                const dniValue = dni.value
+        async function validateForm() {
+            const allRolesValueList = { 
+                email: allRolesInput[0].value, 
+                password: allRolesInput[1].value, 
+                role: allRolesInput[2].value,
+            };
+
+            const studentTeacheEuValueList = {
+                name: studentTeacheEuInput[0].value,
+                last_name: studentTeacheEuInput[1].value,
+                dni: studentTeacheEuInput[2].value,
+            };
+
+            const EIValueList = {
+                education_level: EIInput[0].value,
+                educational_center_id: EIInput[1].value,
+            };
+
+            //Creo un payload base con lo que tienen que tener todos los usuarios
+            let payload = { ...allRolesValueList }; //... Copia todo el contenido de un array y lo introduce en una variable
+
+            if (formPath === 'EU') {
+                payload = { ...payload, ...studentTeacheEuValueList }; //payload = lo que habia en el payload base + el array correspondiente
+            } else if (formPath === 'Student' || formPath === 'Teacher') {
+                payload = { ...payload, ...studentTeacheEuValueList, ...EIValueList };
+            } else if (formPath === 'EI') {
+                payload = { ...payload, ...EIValueList };
+            }
+
+            try {
+                const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${apiBase}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                console.log(data);
+            } catch (error) {
+                console.error(error);
             }
         }
     });
