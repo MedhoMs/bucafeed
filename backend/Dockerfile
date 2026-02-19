@@ -29,7 +29,7 @@ COPY . /var/www
 
 # Copy Nginx and Supervisor configurations
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY docker/supervisord_railway.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Remove default Nginx site
 RUN rm -f /etc/nginx/sites-enabled/default
