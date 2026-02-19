@@ -13,9 +13,10 @@ mkdir -p storage/framework/views
 mkdir -p storage/logs
 mkdir -p bootstrap/cache
 
-# Ajustar permisos si es necesario
+# Ajustar permisos SIEMPRE al inicio (vital para volúmenes de Railway)
+echo "Corrigiendo permisos de storage y bootstrap/cache..."
+chown -R www-data:www-data storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
 # 2. Instalar dependencias de PHP solo si falta el autoload
 if [ ! -f "vendor/autoload.php" ]; then
