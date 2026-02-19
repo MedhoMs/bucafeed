@@ -11,7 +11,8 @@
 
     const checkDbConnection = async () => {
         try {
-            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+            // En producción (Railway) usar ruta relativa '/api', en local usar la variable de entorno o fallback
+            const apiBase = import.meta.env.VITE_API_URL || '/api'
             const response = await fetch(`${apiBase}/test-connection`)
             const data = await response.json()
             if (data.status === 'success' && data.database.includes('correctamente')) {
