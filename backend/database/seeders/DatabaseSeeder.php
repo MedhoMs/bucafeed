@@ -54,3 +54,5 @@ class DatabaseSeeder extends Seeder
         echo "🏁 Seeding completado exitosamente.\n";
     }
 }
+
+
