@@ -27,8 +27,8 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
-# Copy Nginx configuration
-COPY nginx.railway.conf /etc/nginx/conf.d/default.conf
+# Copy Nginx configuration (using find to locate file regardless of context structure)
+RUN cp $(find /var/www -name nginx.railway.conf | head -n 1) /etc/nginx/conf.d/default.conf
 
 # Remove default Nginx site
 RUN rm -f /etc/nginx/sites-enabled/default
