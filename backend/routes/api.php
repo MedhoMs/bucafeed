@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\AuthController;
 
 // Importante: No hace falta el prefijo /api aquí, Laravel lo añade automáticamente
 Route::get('/test-connection', function () {
@@ -19,3 +20,5 @@ Route::get('/test-connection', function () {
         'status' => 'success'
     ]);
 });
+
+Route::post('/register', [AuthController::class, 'register']);
