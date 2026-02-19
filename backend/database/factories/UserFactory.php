@@ -24,13 +24,13 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
+            'email' => $this->faker->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
             'role' => 'user', // Default role
-            'dni' => fake()->unique()->numerify('########') . fake()->randomLetter(),
-            'education_level' => fake()->randomElement(array_keys(\App\Models\EducationalCenter::getEducationLevels())),
+            'dni' => $this->faker->unique()->numerify('########') . $this->faker->randomLetter(),
+            'education_level' => $this->faker->randomElement(array_keys(\App\Models\EducationalCenter::getEducationLevels())),
         ];
     }
 

@@ -68,7 +68,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('AÑAAAA'),
             'education_level' => 'EP',
             'institution_name' => 'CIFP zonzamas',
-            'role' => 'Therian',
+            'role' => 'therian',
         ]);
 
         echo "🏁 Seeding completado exitosamente.\n";
