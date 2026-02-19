@@ -25,7 +25,7 @@
                 <p class="text-white/70 text-sm mb-4">Total Usuarios</p>
             </div>
 
-            <div class="border-t border-white/10 pt-3 grid grid-cols-3 gap-2">
+            <div class="border-t border-white/10 pt-3 grid grid-cols-4 gap-2">
                 {{-- Profesores --}}
                 <div class="flex flex-col items-center gap-1 text-center">
                     <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center shrink-0">
@@ -38,7 +38,7 @@
                 </div>
 
                 {{-- Alumnos --}}
-                <div class="flex flex-col items-center gap-1 text-center border-l border-white/5 border-r">
+                <div class="flex flex-col items-center gap-1 text-center border-l border-white/5">
                     <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1" /><path d="M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M17 10h2a2 2 0 0 1 2 2v1" /><path d="M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M3 13v-1a2 2 0 0 1 2 -2h2" /></svg>
                     </div>
@@ -48,10 +48,21 @@
                     </div>
                 </div>
 
-                {{-- Otros --}}
-                <div class="flex flex-col items-center gap-1 text-center">
+                {{-- Administradores --}}
+                <div class="flex flex-col items-center gap-1 text-center border-l border-white/5">
                     <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="7" r="4" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3l3 6l6 1l-4.5 4.5l1 6.5l-5.5 -3l-5.5 3l1 -6.5l-4.5 -4.5l6 -1z" /><circle cx="12" cy="10" r="2" /></svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-bold text-sm">{{ $countAdmins ?? 0 }}</p>
+                        <p class="text-white/50 text-[10px] uppercase tracking-wider">Administradores</p>
+                    </div>
+                </div>
+
+                {{-- Otros --}}
+                <div class="flex flex-col items-center gap-1 text-center border-l border-white/5">
+                    <div class="w-8 h-8 rounded-lg bg-fuchsia-500/20 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e879f9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="12" cy="7" r="4" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
                     </div>
                     <div>
                         <p class="text-white font-bold text-sm">{{ $countOthers ?? 0 }}</p>

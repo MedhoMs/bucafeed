@@ -21,7 +21,7 @@ class User extends Authenticatable
         'role',
         'reputation',
         'educational_center_id',
-        'national_id',
+        'dni',
         'education_level',
         'institution_name',
     ];
@@ -49,6 +49,19 @@ class User extends Authenticatable
     public function student()
     {
         return $this->hasOne(Student::class);
+    }
+
+        /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 }
 

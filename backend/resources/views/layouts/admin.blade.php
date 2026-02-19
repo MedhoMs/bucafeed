@@ -81,10 +81,12 @@
                     if (show) {
                         modalEl.classList.remove('hidden');
                         modalEl.classList.add('flex');
+                        modalEl.setAttribute('aria-hidden', 'false');
                         // Animation check could go here
                     } else {
                         modalEl.classList.add('hidden');
                         modalEl.classList.remove('flex');
+                        modalEl.setAttribute('aria-hidden', 'true');
                     }
                 }
 
@@ -139,7 +141,7 @@
                         e.preventDefault();
                         const mode = navLink.dataset.load; // 'section', 'modal', 'main' (legacy)
                         // Si el modo es 'section', usamos data-url. Si es main, usamos href.
-                        const url = (mode === 'section') ? navLink.dataset.url : navLink.href;
+                        const url = navLink.dataset.url || navLink.href;
                         const title = navLink.dataset.title || 'Detalles';
 
                         if (mode === 'modal') {
@@ -199,6 +201,63 @@
                 // Manejar botones Atrás/Adelante del navegador
                 window.addEventListener('popstate', (e) => {
                      ajaxLoad(window.location.href, mainContent, false, false);
+                });
+
+                // 3. Manejar envío de formularios dentro del modal
+                document.addEventListener("submit", function(e) {
+                    const form = e.target.closest("#modal-body form");
+                    if (form) {
+                        e.preventDefault();
+                        
+                        const formData = new FormData(form);
+                        const url = form.action;
+                        const method = form.method || 'POST';
+
+                        // Mostrar estado de carga (opcionalmente deshabilitar botón)
+                        const submitBtn = form.querySelector('[type="submit"]');
+                        if(submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white inline-block mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Procesando...`;
+                        }
+
+                        fetch(url, {
+                            method: method,
+                            body: formData,
+                            headers: { 
+                                "X-Requested-With": "XMLHttpRequest"
+                            }
+                        })
+                        .then(async r => {
+                            const html = await r.text();
+                            if (!r.ok && r.status !== 422) {
+                                // If error (500, 404, etc), show the HTML response (Laravel error page) in the modal
+                                modalBody.innerHTML = html;
+                                throw new Error("Server Error"); // Throw to skip next then block
+                            }
+                            return html;
+                        })
+                        .then(html => {
+                            // Actualizar contenido del modal con la respuesta (éxito o validación 422)
+                            modalBody.innerHTML = html;
+                            
+                            // Si detectamos éxito
+                            if (html.includes('alert-success') || html.includes('bg-green-500')) {
+                               ajaxLoad(window.location.href, mainContent, false, false);
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            if(submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerText = 'Reintentar';
+                            }
+                             // Mostrar error en el modal (prepend)
+                             const errorDiv = document.createElement('div');
+                             errorDiv.className = "p-4 mb-4 text-red-400 bg-red-900/20 rounded-xl border border-red-500/30";
+                             errorDiv.innerText = `Error: ${err.message}`;
+                             form.prepend(errorDiv);
+                        });
+                    }
                 });
             });
         </script>    
