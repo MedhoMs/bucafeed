@@ -37,6 +37,9 @@ RUN rm -f /etc/nginx/sites-enabled/default
 # Make entrypoint executable (robust search)
 RUN chmod +x $(find /var/www -name entrypoint.sh | head -n 1)
 
+# Copy Supervisor configuration (robust search)
+RUN cp $(find /var/www -name supervisord.conf | head -n 1) /etc/supervisor/conf.d/supervisord.conf
+
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD ["/usr/bin/supervisord"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
