@@ -34,7 +34,8 @@ RUN if [ -d "/var/www/backend" ]; then \
     rm -rf /var/www/backend; \
 fi
 
-RUN chown -R www-data:www-data /var/www && \
+RUN mkdir -p /var/www/storage /var/www/bootstrap/cache && \
+    chown -R www-data:www-data /var/www && \
     chmod -R 755 /var/www/storage
 
 # Copy Nginx configuration (using find to locate file regardless of context structure)
