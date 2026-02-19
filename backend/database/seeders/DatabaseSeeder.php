@@ -18,6 +18,16 @@ class DatabaseSeeder extends Seeder
     {
         echo "🌱 Iniciando seeding de TelamoNet...\n";
 
+        // Crear roles si no existen
+        try {
+            Role::firstOrCreate(['name' => 'admin']);
+            Role::firstOrCreate(['name' => 'teacher']);
+            Role::firstOrCreate(['name' => 'student']);
+            Role::firstOrCreate(['name' => 'therian']);
+        } catch (\Throwable $e) {
+            echo "⚠️  Nota: No se pudieron crear roles de Spatie (¿tablas faltantes?): " . $e->getMessage() . "\n";
+        }
+
         User::factory()->create([
             'name' => 'Antonio',
             'last_name' => 'Morera Marrero',
@@ -49,6 +59,16 @@ class DatabaseSeeder extends Seeder
             'education_level' => 'TM',
             'institution_name' => 'TelamoNet',
             'role' => 'admin',
+        ]);
+        User::factory()->create([
+            'name' => 'Vini',
+            'last_name' => 'Pekka aña',
+            'email' => 'vinipekka@gmail.com',
+            'dni' => '32345678N',
+            'password' => Hash::make('AÑAAAA'),
+            'education_level' => 'EP',
+            'institution_name' => 'CIFP zonzamas',
+            'role' => 'Therian',
         ]);
 
         echo "🏁 Seeding completado exitosamente.\n";

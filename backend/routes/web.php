@@ -11,7 +11,25 @@ Route::get('/', function () {
 Route::get('/prueba', function () {
     return view('prueba');
 });
-
+Route::get('/db-check', function () {
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        $tables = \Illuminate\Support\Facades\DB::select('SHOW TABLES');
+        $tablesList = array_map(function($t) { return array_values((array)$t)[0]; }, $tables);
+        
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Database connected',
+            'tables' => $tablesList,
+            'user_count' => \App\Models\User::count(),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+});
 
 
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
