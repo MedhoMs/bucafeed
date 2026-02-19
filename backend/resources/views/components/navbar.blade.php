@@ -38,15 +38,9 @@
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-messages"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10" /><path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2" /></svg>
 </x-navbar-link>
 
-@if(app()->environment('local'))
-    <x-navbar-link title="Volver" to="http://localhost:5174/home">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="5" y1="12" x2="19" y2="12" /><polyline points="5 12 11 18" /><polyline points="5 12 11 6" /></svg>
-    </x-navbar-link>
-@else
-    <x-navbar-link title="Volver" to="/home">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="5" y1="12" x2="19" y2="12" /><polyline points="5 12 11 18" /><polyline points="5 12 11 6" /></svg>
-    </x-navbar-link>
-@endif
+<x-navbar-link title="Volver" to="{{ rtrim(env('FRONTEND_URL', ''), '/') }}/home">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="5" y1="12" x2="19" y2="12" /><polyline points="5 12 11 18" /><polyline points="5 12 11 6" /></svg>
+</x-navbar-link>
 
     <div class="mt-auto relative">
         <a href="/profile" class="relative flex items-center gap-2.5 mb-5 mr-4 rounded-xl text-[17px] font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#1a3a3a]/50 hover:cursor-pointer active:bg-[#1a3a3a] active:font-bold">
