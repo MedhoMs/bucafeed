@@ -27,6 +27,16 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
+# Handle nested structure (if Railway builds from root) and fix permissions
+RUN if [ -d "/var/www/backend" ]; then \
+    echo "Detected nested backend folder. Moving files..." && \
+    cp -r /var/www/backend/. /var/www/ && \
+    rm -rf /var/www/backend; \
+fi
+
+RUN chown -R www-data:www-data /var/www && \
+    chmod -R 755 /var/www/storage
+
 # Copy Nginx configuration (using find to locate file regardless of context structure)
 RUN cp $(find /var/www -name nginx.railway.conf | head -n 1) /etc/nginx/conf.d/default.conf
 
