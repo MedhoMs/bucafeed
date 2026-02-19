@@ -14,28 +14,38 @@ class AdminController extends Controller
     //
     public function index()
     {
-        $data = [
-            'totalUsers' => User::count(),
-            'countTeachers' => User::where('role', 'teacher')->count(),
-            'countStudents' => User::where('role', 'student')->count(),
-            'countOthers' => User::whereNotIn('role', ['teacher', 'student', 'admin'])->count(),
-            'totalSchools' => EducationalCenter::count(),
-            'totalEvents' => Event::count(),
-            'totalQuestions' => Question::count(),
-            'latestUsers' => User::latest()->take(5)->get(),
-            'latestQuestions' => Question::latest()->take(5)->get(),
-            'pendingAiReviews' => 0, //provisional
-            'usersWithoutSchool' => User::where('role', 'student')->whereNull('educational_center_id')->count(),
-            'topUsers' => User::orderBy('reputation', 'desc')->take(5)->get(),
-            'bannedWords' => BannedWord::all(),
-            'countAdmins' => User::where('role', 'admin')->count(),
-        ];
+        try {
+            $data = [
+                'totalUsers' => User::count(),
+                'countTeachers' => User::where('role', 'teacher')->count(),
+                'countStudents' => User::where('role', 'student')->count(),
+                'countOthers' => User::whereNotIn('role', ['teacher', 'student', 'admin'])->count(),
+                'totalSchools' => EducationalCenter::count(),
+                'totalEvents' => Event::count(),
+                'totalQuestions' => Question::count(),
+                'latestUsers' => User::latest()->take(5)->get(),
+                'latestQuestions' => Question::latest()->take(5)->get(),
+                'pendingAiReviews' => 0, //provisional
+                'usersWithoutSchool' => User::where('role', 'student')->whereNull('educational_center_id')->count(),
+                'topUsers' => User::orderBy('reputation', 'desc')->take(5)->get(),
+                'bannedWords' => BannedWord::all(),
+                'countAdmins' => User::where('role', 'admin')->count(),
+            ];
 
-        if (request()->ajax()) {
-            return view('admin.index', $data)->renderSections()['content'];
+            if (request()->ajax()) {
+                return view('admin.index', $data)->renderSections()['content'];
+            }
+
+            return view('admin.index', $data);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
         }
-
-        return view('admin.index', $data);
     }
 
 
