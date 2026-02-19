@@ -25,12 +25,11 @@ class AuthController extends Controller
 
         //Validaciones adicionales según el rol
         if (in_array($role, ['Student', 'Teacher', 'EI'])) {
-            $rules['educational_center_id'] = 'required|exists:educational_centers,id';
             $rules['institution_name'] = 'required|string|max:255';
         }
 
-        if (in_array($role, ['Student'])) {
-            $rules['education_level'] = 'required|in:primary,secondary';
+        if (in_array($role, ['Student', 'Teacher'])) {
+            $rules['education_level'] = 'required';
         }
 
         try {
@@ -49,10 +48,12 @@ class AuthController extends Controller
             'password'              => Hash::make($validated['password']),
             'role'                  => $validated['role'],
             'dni'                   => $validated['dni'],
-            'educational_center_id' => $validated['educational_center_id'] ?? null,
+            //'educational_center_id' => $validated['educational_center_id'] ?? null,
             'education_level'       => $validated['education_level'] ?? null,
             'institution_name'      => $validated['institution_name'] ?? null,
         ]);
+
+        $user->save();
 
         return response()->json([
             'status'  => 'success',

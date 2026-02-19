@@ -3,8 +3,9 @@
     import FormNavBar from '../components/FormNavBar.vue';
     import ButtonForm from '../components/buttons/ButtonForm.vue';
     import { useTranslations } from '../composables/useTranslations'
+    import { useRouter } from 'vue-router';
     const { t } = useTranslations() //Variable para llamar al archivo de traduccion
-
+    const router = useRouter();
     import { onMounted, ref } from 'vue';
 
     onMounted(() => {
@@ -109,7 +110,7 @@
 
             const EIValueList = {
                 education_level: EIInput[0].value,
-                educational_center_id: EIInput[1].value,
+                institution_name: EIInput[1].value,
             };
 
             //Creo un payload base con lo que tienen que tener todos los usuarios
@@ -134,6 +135,9 @@
                     body: JSON.stringify(payload)
                 });
                 const data = await response.json();
+                if (data.status === 'success') {
+                    router.push('/home');
+                }
                 console.log(data);
             } catch (error) {
                 console.error(error);
@@ -157,9 +161,9 @@
                 <section id="allRolesForm" class="forms flex flex-col mb-32">
                     <label class="font-bold mt-[30px]" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
                     <span class=" text-xs">{{ t.register.emailSpan }}</span>
-                    <input type="text" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="email-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required>
+                    <input type="text" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="email-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required>
                     <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
-                    <input type="password" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="20" autocomplete id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
+                    <input type="password" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
                     <label class="font-bold" for="who-register-form" id="who-register-label">¿Quién eres?</label>
                     <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
                         <option value="EI">Institución Educativa</option>
@@ -171,11 +175,11 @@
 
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="student-name" id="studentName">Nombre</label>
-                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="name-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
                     <label class="font-bold" for="student-name" id="studentName">Apellidos</label>
-                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="surname-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
                     <label class="font-bold" for="student-name" id="studentName">DNI/NIE</label>
-                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="dni-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>                    
+                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>                    
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
@@ -188,14 +192,14 @@
                     </select>
                     <label class="mt-8 font-bold" for="choose-location" id="chooseLocation">¿Cual es su Institucion Educativa?</label>
                     <select name="" id="" class="EIInput border-b border-black pb-1">
-                        <option value="">Saldran todo de la base de datos</option>
+                        <option value="en-el-futuro">Saldran todo de la base de datos</option>
                     </select>
 
                 </section>
 
-                <RouterLink to="/home" id="registerButton" class="absolute bottom-[80px] right-12 text-center hidden">
+                <button id="registerButton" class="absolute bottom-[80px] right-12 text-center hidden">
                     <ButtonForm :value="t.register.submit"></ButtonForm>
-                </RouterLink>
+                </button>
 
                 <ButtonForm id="nextButton" value="Siguiente" class="absolute bottom-[60px] right-[50px] border rounded-lg"></ButtonForm>
 
