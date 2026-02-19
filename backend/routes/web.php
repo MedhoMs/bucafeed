@@ -14,5 +14,5 @@ Route::get('/prueba', function () {
 
 
 
-Route::get('/users', [UserController::class, 'index']);
-Route::get('/admin', [AdminController::class, 'index']);
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::get('/admin/users', [AdminController::class, 'users']);

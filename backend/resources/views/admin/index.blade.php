@@ -1,6 +1,7 @@
 @extends('layouts.admin')
+
 @section('content')
-<div class="p-8 min-h-screen text-white">
+<div class="p-8 min-h-screen text-white bg-gradient-to-b from-[#1a3a3a] via-[#10202e] to-[#0a141d]">
 
     {{-- Header --}}
     <div class="mb-10">
@@ -12,7 +13,7 @@
     {{-- Stat Cards --}}
     <div class="grid grid-cols-2 xl:grid-cols-3 gap-5 mb-10">
 
-        <a href="/admin/users" class="post-card group no-underline flex flex-col justify-between h-full col-span-2 xl:col-span-3">
+        <a href="#" data-url="/admin/users" data-load="section" data-title="Gestión de Usuarios" class="post-card group no-underline flex flex-col justify-between h-full col-span-2 xl:col-span-3 hover:shadow-cyan-900/20">
             <div>
                 <div class="flex items-start justify-between mb-2">
                     <div class="bg-white/10 p-3 rounded-xl group-hover:bg-white/20 transition-colors duration-300">
@@ -62,7 +63,7 @@
 
        
 
-        <a href="/admin/schools" class="post-card group no-underline">
+        <a href="#" data-url="/admin/schools" data-load="section" data-title="Centros Educativos" class="post-card group no-underline">
             <div class="flex items-start justify-between mb-4">
                 <div class="bg-white/10 p-3 rounded-xl group-hover:bg-white/20 transition-colors duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 9l-10 -4l-10 4l10 4l10 -4v6" /><path d="M6 10.6v5.4a6 6 0 0 0 12 0v-5.4" /><path d="M12 20v-10" /></svg>
@@ -73,7 +74,7 @@
             <p class="text-white/70 text-sm">Centros educativos</p>
         </a>
 
-        <a href="/admin/events" class="post-card group no-underline">
+        <a href="#" data-url="/admin/events" data-load="section" data-title="Eventos" class="post-card group no-underline">
             <div class="flex items-start justify-between mb-4">
                 <div class="bg-white/10 p-3 rounded-xl group-hover:bg-white/20 transition-colors duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="4" y="5" width="16" height="16" rx="2" /><line x1="16" y1="3" x2="16" y2="7" /><line x1="8" y1="3" x2="8" y2="7" /><line x1="4" y1="11" x2="20" y2="11" /><rect x="8" y="15" width="2" height="2" /></svg>
@@ -84,7 +85,7 @@
             <p class="text-white/70 text-sm">Eventos publicados</p>
         </a>
 
-        <a href="/admin/questions" class="post-card group no-underline">
+        <a href="#" data-url="/admin/questions" data-load="section" data-title="Preguntas" class="post-card group no-underline">
             <div class="flex items-start justify-between mb-4">
                 <div class="bg-white/10 p-3 rounded-xl group-hover:bg-white/20 transition-colors duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M14 18l-2 3l-2 -3h-3a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v4.5" /><path d="M19 22v.01" /><path d="M19 19a2.003 2.003 0 0 0 .914 -3.782a1.98 1.98 0 0 0 -2.414 .482" /></svg>
@@ -105,7 +106,7 @@
         <div class="xl:col-span-1 post-card">
             <div class="flex items-center justify-between mb-5">
                 <h2 class="text-white font-semibold text-base">Últimos usuarios</h2>
-                <a href="/admin/users" class="text-white text-xs hover:underline">Ver todos</a>
+                <a href="#" data-url="/admin/users" data-load="section" data-title="Gestión de Usuarios" class="text-white text-xs hover:underline">Ver todos</a>
             </div>
             <div class="flex flex-col gap-3">
                 @forelse($latestUsers ?? [] as $user)
@@ -128,7 +129,7 @@
         <div class="xl:col-span-1 post-card">
             <div class="flex items-center justify-between mb-5">
                 <h2 class="text-white font-semibold text-base">Últimas preguntas</h2>
-                <a href="/admin/questions" class="text-white text-xs hover:underline">Ver todas</a>
+                <a href="#" data-url="/admin/questions" data-load="section" data-title="Foro de Preguntas" class="text-white text-xs hover:underline">Ver todas</a>
             </div>
             <div class="flex flex-col gap-3">
                 @forelse($latestQuestions ?? [] as $question)
@@ -201,7 +202,7 @@
                     <h2 class="text-white font-semibold text-base">Palabras vetadas</h2>
                     <p class="text-white/50 text-xs mt-0.5">Palabras bloqueadas por el filtro de contenido</p>
                 </div>
-                <a href="/admin/banned-words/create" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors duration-200 text-white text-sm font-medium px-4 py-2 rounded-xl no-underline">
+                <a href="#" data-url="/admin/banned-words/create" data-load="modal" data-title="Añadir Palabra Vetada" class="btn-modal flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors duration-200 text-white text-sm font-medium px-4 py-2 rounded-xl no-underline">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
                     Añadir palabra
                 </a>

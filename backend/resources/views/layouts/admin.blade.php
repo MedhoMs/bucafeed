@@ -28,14 +28,179 @@
         @endif
     </head>
     <body class="hold-transition sidebar-mini">
-        <div id="app" class="wrapper flex min-h-screen"> <!-- ID app para estilos globales + Flex container -->
+        <div id="app" class="wrapper flex min-h-screen bg-[#0a141d]"> <!-- Override background -->
             <!-- Navbar -->
             @include('components.navbar')
             
             <!-- Contenido Principal -->
-            <div class="content-wrapper flex-1 p-4">
+            <div id="main-content-area" class="content-wrapper flex-1 relative z-0">
                 @yield('content')
             </div>
         </div>
+        
+        <!-- Modal Tailwind (Hidden by default) -->
+        <div id="default-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black/60 backdrop-blur-sm transition-opacity duration-300">
+            <div class="relative p-4 w-full max-w-4xl max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-[#0f1922] rounded-2xl shadow-2xl border border-cyan-900/40">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b border-cyan-900/40 rounded-t">
+                        <h3 class="text-xl font-bold text-white tracking-wide" id="modal-title">
+                            Detalles
+                        </h3>
+                        <button type="button" class="text-gray-400 bg-transparent hover:bg-white/10 hover:text-white rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center transition-colors" data-modal-hide="default-modal">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                            </svg>
+                            <span class="sr-only">Cerrar modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-4 md:p-5 space-y-4 text-white" id="modal-body">
+                         <div class="text-center py-10">
+                            <svg class="animate-spin h-8 w-8 text-cyan-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <p class="text-cyan-200/70 animate-pulse">Cargando datos...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const mainContent = document.getElementById("main-content-area");
+                const modalEl = document.getElementById("default-modal");
+                const modalBody = document.getElementById("modal-body");
+                const modalTitle = document.getElementById("modal-title");
+                
+                // Helper to toggle modal
+                window.toggleModal = function(show) {
+                    if (show) {
+                        modalEl.classList.remove('hidden');
+                        modalEl.classList.add('flex');
+                        // Animation check could go here
+                    } else {
+                        modalEl.classList.add('hidden');
+                        modalEl.classList.remove('flex');
+                    }
+                }
+
+                // Close buttons
+                document.querySelectorAll('[data-modal-hide="default-modal"]').forEach(btn => {
+                    btn.addEventListener('click', () => toggleModal(false));
+                });
+
+                // Close on click outside
+                modalEl.addEventListener('click', (e) => {
+                    if (e.target === modalEl) toggleModal(false);
+                });
+
+                // AJAX Loader
+                window.ajaxLoad = function(url, target, isModal = false, shouldPushState = true) {
+                    // Show loader if main content
+                    if (!isModal) {
+                        target.style.opacity = '0.5';
+                    }
+
+                    fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+                    .then(r => {
+                        if (!r.ok) throw new Error("HTTP " + r.status);
+                        return r.text();
+                    })
+                    .then(html => {
+                        target.innerHTML = html;
+                        target.style.opacity = '1';
+                        if (isModal) toggleModal(true);
+                        
+                        // Re-attach listeners for new content (if needed)
+                        // attachFormListeners(target);
+                        
+                        // Update history only if requested
+                        if (shouldPushState && url !== window.location.href) {
+                            window.history.pushState({path: url}, '', url);
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        target.innerHTML = `<div class="p-4 text-red-400 bg-red-900/20 rounded-xl border border-red-500/30">Error al cargar contenido: ${err.message}. Inténtalo de nuevo.</div>`;
+                        target.style.opacity = '1';
+                    });
+                }
+
+                // Initial Active State Logic removed
+
+                // Navigation Interceptor
+                document.addEventListener("click", function(e) {
+                    const navLink = e.target.closest("a[data-load]");
+                    if (navLink) {
+                        e.preventDefault();
+                        const mode = navLink.dataset.load; // 'section', 'modal', 'main' (legacy)
+                        // If mode is 'section', we use data-url. If main, use href.
+                        const url = (mode === 'section') ? navLink.dataset.url : navLink.href;
+                        const title = navLink.dataset.title || 'Detalles';
+
+                        if (mode === 'modal') {
+                            modalTitle.textContent = title;
+                            // Reset and show loader
+                            modalBody.innerHTML = `
+                                 <div class="text-center py-10">
+                                    <svg class="animate-spin h-8 w-8 text-cyan-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <p class="text-cyan-200/70 animate-pulse">Cargando...</p>
+                                </div>
+                            `;
+                            toggleModal(true);
+                            // Fetch content for modal without changing URL
+                            ajaxLoad(url, modalBody, true /* isModal */, false /* shouldPushState */);
+
+                        } else if (mode === 'section') {
+                            // Section navigation (Users, Schools, etc.) - Stay on /admin
+                            // Load content into main area without pushing state AND WITHOUT MODAL
+                            ajaxLoad(url, mainContent, false /* isModal */, false /* shouldPushState */);
+                        } else {
+                            // Legacy 'main' or normal links - potentially obsolete if all are sections now
+                             ajaxLoad(url, mainContent, false /* isModal */, true /* shouldPushState */);
+                        }
+                        return;
+                    }
+
+                    // 2. Modal Triggers (Buttons/links inside content)
+                    const modalTrigger = e.target.closest(".btn-modal");
+                    if (modalTrigger) {
+                        e.preventDefault();
+                        const url = modalTrigger.dataset.url || modalTrigger.href;
+                        const title = modalTrigger.dataset.title || 'Detalles';
+                        
+                        modalTitle.textContent = title;
+                        // Show loader in modal
+                        modalBody.innerHTML = `
+                             <div class="text-center py-10">
+                                <svg class="animate-spin h-8 w-8 text-cyan-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <p class="text-cyan-200/70 animate-pulse">Cargando...</p>
+                            </div>
+                        `;
+                        toggleModal(true);
+                        
+                        if (url) {
+                            ajaxLoad(url, modalBody, true /* isModal */, false /* shouldPushState */);
+                        }
+                        return;
+                    }
+                });
+
+                // Handle Browser Back/Forward
+                window.addEventListener('popstate', (e) => {
+                     ajaxLoad(window.location.href, mainContent, false, false);
+                });
+            });
+        </script>    
     </body>
 </html>
