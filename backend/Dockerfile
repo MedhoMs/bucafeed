@@ -53,4 +53,9 @@ RUN cp $(find /var/www -name supervisord.conf | head -n 1) /etc/supervisor/conf.
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
+
+# Use entrypoint to handle setup (migrations, cache, etc.)
+ENTRYPOINT ["/var/www/entrypoint.sh"]
+
+# Start Supervisor (which starts Nginx & PHP-FPM)
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
