@@ -41,17 +41,7 @@ if [ ! -f "routes/api.php" ]; then
     php artisan install:api --no-interaction
 fi
 
-# 5. Instalar dependencias de Node solo si falta la carpeta node_modules o esta vacia
-if [ ! -d "node_modules" ] || [ -z "$(ls -A node_modules)" ]; then
-    echo "Instalando dependencias de Node..."
-    npm install
-fi
-
-# 6. Construir assets solo si no existe la carpeta build
-if [ ! -d "public/build" ]; then
-    echo "Compilando assets por primera vez..."
-    npm run build
-fi
+# 5. y 6. Assets compilados en Dockerfile (Build time)
 
 # 7. Limpiar caches para desarrollo (rápido y evita errores)
 php artisan config:clear

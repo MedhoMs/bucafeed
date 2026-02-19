@@ -31,8 +31,21 @@ check(__DIR__ . '/../storage/framework');
 check(__DIR__ . '/../storage/framework/views');
 check(__DIR__ . '/../bootstrap/cache');
 
-echo "\n--- ENVIRONMENT DUMP (Safe) ---\n";
-echo "APP_ENV: " . getenv('APP_ENV') . "\n";
-echo "APP_DEBUG: " . getenv('APP_DEBUG') . "\n";
+echo "\n--- BOOTSTRAP ATTEMPT ---\n";
+try {
+    require_once __DIR__ . '/../vendor/autoload.php';
+    echo "[OK] Composer Autoload loaded\n";
+    
+    $app = require_once __DIR__ . '/../bootstrap/app.php';
+    echo "[OK] Laravel App instance created\n";
+    
+    $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+    echo "[OK] HTTP Kernel resolved\n";
+
+} catch (\Throwable $e) {
+    echo "[CRITICAL ERROR] Message: " . $e->getMessage() . "\n";
+    echo "File: " . $e->getFile() . "\n";
+    echo "Line: " . $e->getLine() . "\n";
+}
 
 echo "</pre>";

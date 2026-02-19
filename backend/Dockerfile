@@ -41,6 +41,12 @@ RUN mkdir -p /var/www/storage /var/www/bootstrap/cache && \
 # Install PHP dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
+# Install Node.js (LTS) and build assets
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm ci && \
+    npm run build
+
 # Copy Nginx configuration (using find to locate file regardless of context structure)
 RUN cp $(find /var/www -name nginx.railway.conf | head -n 1) /etc/nginx/conf.d/default.conf
 
