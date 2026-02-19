@@ -34,8 +34,8 @@ RUN cp $(find /var/www -name nginx.railway.conf | head -n 1) /etc/nginx/conf.d/d
 RUN rm -f /etc/nginx/sites-enabled/default
 
 
-# Make entrypoint executable
-RUN chmod +x /var/www/entrypoint.sh
+# Make entrypoint executable (robust search)
+RUN chmod +x $(find /var/www -name entrypoint.sh | head -n 1)
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
