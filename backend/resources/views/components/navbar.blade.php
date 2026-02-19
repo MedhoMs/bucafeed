@@ -3,7 +3,8 @@
         @if(app()->environment('local'))
             <img class="w-[65px] h-[70px]" src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="Logo">
         @else
-            <img class="w-[65px] h-[70px]" src="{{ asset('assets/logo/logoTelamon.png') }}" alt="Logo">
+            <!-- En producción, los assets se copian a public/assets via Dockerfile -->
+            <img class="w-[65px] h-[70px]" src="/assets/logo/logoTelamon.png" alt="Logo">
         @endif
         <h1 class="font-bold text-[20px] text-white">Telamo<span class="text-[#a0c4d4]">Net</span></h1>
     </div>
@@ -37,24 +38,16 @@
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-messages"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10" /><path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2" /></svg>
 </x-navbar-link>
 
-@if(app()->environment('local'))
-    <x-navbar-link title="Volver" to="http://localhost:5173/home">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="5" y1="12" x2="19" y2="12" /><polyline points="5 12 11 18" /><polyline points="5 12 11 6" /></svg>
-    </x-navbar-link>
-@else
-    <x-navbar-link title="Volver" to="/home">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="5" y1="12" x2="19" y2="12" /><polyline points="5 12 11 18" /><polyline points="5 12 11 6" /></svg>
-    </x-navbar-link>
-@endif
-
-
+<x-navbar-link title="Volver" to="/home">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="5" y1="12" x2="19" y2="12" /><polyline points="5 12 11 18" /><polyline points="5 12 11 6" /></svg>
+</x-navbar-link>
 
     <div class="mt-auto relative">
         <a href="/profile" class="relative flex items-center gap-2.5 mb-5 mr-4 rounded-xl text-[17px] font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#1a3a3a]/50 hover:cursor-pointer active:bg-[#1a3a3a] active:font-bold">
             @if(app()->environment('local'))
                 <img src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
             @else
-                <img src="{{ asset('assets/logo/logoTelamon.png') }}" alt="" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
+                <img src="/assets/logo/logoTelamon.png" alt="" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
             @endif
             Perfil
             <svg id="dots" onclick="toggleDotsPopup(event)" class="absolute right-4 w-6 h-6 z-10 rounded-xl hover:bg-white/10 transition-colors duration-200 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>

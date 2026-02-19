@@ -35,6 +35,10 @@ RUN if [ -d "/var/www/backend" ]; then \
 fi
 
 RUN mkdir -p /var/www/storage /var/www/bootstrap/cache && \
+    if [ -d "/var/www/src/assets" ]; then \
+      mkdir -p /var/www/public/assets; \
+      cp -r /var/www/src/assets/. /var/www/public/assets/; \
+    fi && \
     chown -R www-data:www-data /var/www && \
     chmod -R 755 /var/www/storage
 

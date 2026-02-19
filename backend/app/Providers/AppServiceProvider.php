@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
         // Forzar HTTPS en producción (Railway)
         if (config('app.env') === 'production' || env('APP_ENV') === 'production') {
             \Illuminate\Support\Facades\URL::forceScheme('https');

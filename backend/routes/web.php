@@ -29,3 +29,8 @@ Route::get('/users/show/{id}', [UserController::class, 'show'])->name('user.show
 
 Route::get('/users/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');
 Route::post('/users/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+
+// Fallback for Vue Router
+Route::fallback(function () {
+    return view('welcome');
+});
