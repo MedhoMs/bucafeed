@@ -11,7 +11,7 @@
 
     const checkDbConnection = async () => {
         try {
-            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8001/api'
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
             const response = await fetch(`${apiBase}/test-connection`)
             const data = await response.json()
             if (data.status === 'success' && data.database.includes('correctamente')) {
@@ -36,7 +36,7 @@
 </script>
 
 <template>
-    <nav class="sticky top-0 w-[300px] flex flex-col pl-5 h-[100vh] z-[1]" id="principalNav">
+    <nav class="sticky top-0 w-[300px] flex flex-col pl-5 pr-5 h-[100vh] z-[1]" id="principalNav">
         <div class="flex flex-row items-center gap-3 mb-4">
             <img class="w-[65px] h-[70px]" src="../assets/logo/logoTelamon.png" alt="Logo">
             <h1 class="font-bold text-[20px] text-white">{{ t.nav.title }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span></h1>
@@ -60,18 +60,9 @@
             </template>
         </NavBarLinks>  
 
-        <NavBarLinks to="/prueba" title="Laravel" backend>
+        <NavBarLinks to="/admin" title="Panel de administrador" backend>
             <template #icon>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-database"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6m-8 0a8 3 0 1 0 16 0a8 3 0 1 0 -16 0" /><path d="M4 6v6a8 3 0 0 0 16 0v-6" /><path d="M4 12v6a8 3 0 0 0 16 0v-6" /></svg>
-            </template>
-            <span v-if="dbStatus === 'connected'" class="ml-auto w-3 h-3 bg-green-500 rounded-full" title="Conectado a DB"></span>
-            <span v-else-if="dbStatus === 'error'" class="ml-auto w-3 h-3 bg-red-500 rounded-full" title="Error de conexión"></span>
-            <span v-else class="ml-auto w-3 h-3 bg-yellow-500 rounded-full animate-pulse" title="Cargando..."></span>
-        </NavBarLinks>
-
-        <NavBarLinks to="/users" title="Users" backend>
-            <template #icon>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-database"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 6m-8 0a8 3 0 1 0 16 0a8 3 0 1 0 -16 0" /><path d="M4 6v6a8 3 0 0 0 16 0v-6" /><path d="M4 12v6a8 3 0 0 0 16 0v-6" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"class="icon icon-tabler icons-tabler-outline icon-tabler-adjustments"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="6" cy="10" r="2"/><line x1="6" y1="4" x2="6" y2="8"/><line x1="6" y1="12" x2="6" y2="20"/><circle cx="12" cy="16" r="2"/><line x1="12" y1="4" x2="12" y2="14"/><line x1="12" y1="18" x2="12" y2="20"/><circle cx="18" cy="7" r="2"/><line x1="18" y1="4" x2="18" y2="5"/><line x1="18" y1="9" x2="18" y2="20"/></svg>
             </template>
             <span v-if="dbStatus === 'connected'" class="ml-auto w-3 h-3 bg-green-500 rounded-full" title="Conectado a DB"></span>
             <span v-else-if="dbStatus === 'error'" class="ml-auto w-3 h-3 bg-red-500 rounded-full" title="Error de conexión"></span>
@@ -84,15 +75,15 @@
             </template>
         </NavBarLinks>
 
-        <NavBarLinks to="/videocall" :title=t.nav.videocall>
-            <template #icon>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-video"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" /><path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" /></svg>
-            </template>
-        </NavBarLinks>
-
         <NavBarLinks to="/event" :title=t.nav.event>
             <template #icon>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-event"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12" /><path d="M16 3l0 4" /><path d="M8 3l0 4" /><path d="M4 11l16 0" /><path d="M8 15h2v2h-2l0 -2" /></svg>
+            </template>
+        </NavBarLinks>
+
+        <NavBarLinks to="/video-call" :title=t.nav.videoCall>
+            <template #icon>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-video"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" /><path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" /></svg>
             </template>
         </NavBarLinks>
 

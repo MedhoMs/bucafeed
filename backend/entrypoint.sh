@@ -1,39 +1,55 @@
 #!/bin/bash
-set -e
 
-echo "🚀 Iniciando contenedor del Backend..."
-
-# 1. Crear .env si no existe
+# 1. Asegurar archivo .env
 if [ ! -f ".env" ]; then
     cp .env.example .env
 fi
 
-# 2. Directorios y Permisos
-mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
+# 1.5. Asegurar directorios de storage y cache con permisos correctos
+echo "Preparando directorios de storage y cache..."
+mkdir -p storage/framework/cache/data
+mkdir -p storage/framework/sessions
+mkdir -p storage/framework/views
+mkdir -p storage/logs
+mkdir -p bootstrap/cache
+
+# Ajustar permisos si es necesario
 chmod -R 775 storage bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
-# 3. Dependencias
+# 2. Instalar dependencias de PHP solo si falta el autoload
 if [ ! -f "vendor/autoload.php" ]; then
+    echo "Instalando dependencias de PHP (composer)..."
     composer install --no-interaction --optimize-autoloader
 fi
 
-# 4. Sincronizar DB
-[ -z "$DB_HOST" ] && [ -n "$MYSQLHOST" ] && export DB_HOST="$MYSQLHOST"
-[ -z "$DB_PORT" ] && [ -n "$MYSQLPORT" ] && export DB_PORT="$MYSQLPORT"
-[ -z "$DB_DATABASE" ] && [ -n "$MYSQLDATABASE" ] && export DB_DATABASE="$MYSQLDATABASE"
-[ -z "$DB_USERNAME" ] && [ -n "$MYSQLUSER" ] && export DB_USERNAME="$MYSQLUSER"
-[ -z "$DB_PASSWORD" ] && [ -n "$MYSQLPASSWORD" ] && export DB_PASSWORD="$MYSQLPASSWORD"
+# 3. Generar clave si no existe
+if ! grep -q "APP_KEY=base64" .env; then
+    php artisan key:generate --force
+fi
 
-# 5. Migraciones y Limpieza
-echo "🐘 Ejecutando migraciones..."
-php artisan migrate --force || echo "⚠️ Error en migraciones, continuando..."
+# 4. Instalar API solo si no existe el archivo de rutas
+if [ ! -f "routes/api.php" ]; then
+    echo "Configurando API de Laravel..."
+    php artisan install:api --no-interaction
+fi
 
-echo "🌱 Ejecutando seeders..."
-php artisan db:seed --force || echo "⚠️ Error en seeders, continuando..."
+# 5. Instalar dependencias de Node solo si falta la carpeta node_modules o esta vacia
+if [ ! -d "node_modules" ] || [ -z "$(ls -A node_modules)" ]; then
+    echo "Instalando dependencias de Node..."
+    npm install
+fi
 
+# 6. Construir assets solo si no existe la carpeta build
+if [ ! -d "public/build" ]; then
+    echo "Compilando assets por primera vez..."
+    npm run build
+fi
+
+# 7. Limpiar caches para desarrollo (rápido y evita errores)
 php artisan config:clear
-php artisan cache:clear
+php artisan route:clear
 
+# Iniciar Supervisor (que gestiona PHP y Nginx)
 echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."
-exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+exec "$@"

@@ -1,69 +1,43 @@
-# ETAPA 1: Compilación del Frontend (Vue.js) para el Backend
-FROM node:22-alpine AS build-stage
-WORKDIR /app
+FROM php:8.2-fpm
 
-# Copiar dependencias y configuraciones del root
-COPY package*.json ./
-RUN npm install
-
-# Copiar código fuente y archivos de configuración
-COPY . .
-
-# Compilar los assets de Vue
-RUN npm run build
-
-# ETAPA 2: Servidor Backend (PHP/Laravel)
-FROM php:8.4-fpm
-
-# Dependencias y extensiones
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git curl libpng-dev libonig-dev libxml2-dev zip unzip libzip-dev default-mysql-client \
-    nginx supervisor \
-    && docker-php-ext-install pdo_mysql mbstring bcmath zip pcntl \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    nginx \
+    supervisor
 
-# Composer
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+# Set working directory
+WORKDIR /var/www
 
-# Copiar SOLO el contenido de la carpeta backend
-COPY backend/ .
+# Copy existing application directory contents
+COPY . /var/www
 
-# Crear directorios necesarios que pueden estar en .dockerignore
-RUN mkdir -p storage/framework/cache/data \
-             storage/framework/sessions \
-             storage/framework/views \
-             storage/logs \
-             bootstrap/cache
+# Copy Nginx and Supervisor configurations
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Instalar dependencias de PHP
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+# Remove default Nginx site
+RUN rm -f /etc/nginx/sites-enabled/default
 
-# TRAER LOS ASSETS COMPILADOS DESDE LA ETAPA 1
-COPY --from=build-stage /app/backend/public/frontend ./public/frontend
 
-# DEPUREACIÓN Y ARREGLO DE MANIFEST:
-RUN find ./public/frontend -name "manifest.json"
-RUN if [ -f ./public/frontend/.vite/manifest.json ]; then \
-        mv ./public/frontend/.vite/manifest.json ./public/frontend/manifest.json; \
-    fi
+# Make entrypoint executable
+RUN chmod +x /var/www/entrypoint.sh
 
-# Configuración de Nginx para Railway
-COPY backend/nginx.railway.conf /etc/nginx/sites-available/default
-RUN rm -rf /etc/nginx/sites-enabled/default && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-
-# Configuración de Supervisor
-COPY backend/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Permisos
-RUN chown -R www-data:www-data storage bootstrap/cache public \
-    && chmod -R 775 storage bootstrap/cache public
-
-# EntryPoint
-COPY backend/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-EXPOSE 8080
-
-CMD ["/usr/local/bin/entrypoint.sh"]
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
