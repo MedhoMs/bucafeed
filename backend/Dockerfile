@@ -27,15 +27,15 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
-# Install PHP dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
-
-# Handle nested structure (if Railway builds from root) and fix permissions
+# Handle nested structure (if Railway builds from root) BEFORE installing dependencies
 RUN if [ -d "/var/www/backend" ]; then \
     echo "Detected nested backend folder. Moving files..." && \
     cp -r /var/www/backend/. /var/www/ && \
     rm -rf /var/www/backend; \
 fi
+
+# Install PHP dependencies
+RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 RUN mkdir -p /var/www/storage /var/www/bootstrap/cache && \
     chown -R www-data:www-data /var/www && \
