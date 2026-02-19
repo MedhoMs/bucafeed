@@ -17,6 +17,18 @@
         const registerButton = document.getElementById('registerButton');
         const forms = document.getElementById('forms');
 
+        const allRolesInput = document.querySelectorAll('.allRolesInput');
+        const studentTeacheEuInput = document.querySelectorAll('.studentTeacheEuInput');
+
+
+
+        const email = document.getElementById('email-register-form')
+        const password = document.getElementById('password-register-form')
+        const role = document.getElementById('selectRole')
+        const name = document.getElementById('name-register-form')
+        const surname = document.getElementById('surname-register-form')
+        const dni = document.getElementById('dni-register-form')
+
         let formPath = '';
 
         registerForm.addEventListener('click', function(e){
@@ -91,8 +103,13 @@
         });
 
         function validateForm(formPath) {
-            if (formPath === "IE") {
-                
+            if (formPath === "EU") {
+                const emailValue = email.value;
+                const passwordValue = password.value
+                const roleValue = role.value
+                const nameValue = name.value
+                const surnameValue = surname.value
+                const dniValue = dni.value
             }
         }
     });
@@ -113,11 +130,11 @@
                 <section id="allRolesForm" class="forms flex flex-col mb-32">
                     <label class="font-bold mt-[30px]" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
                     <span class=" text-xs">{{ t.register.emailSpan }}</span>
-                    <input type="text" class="outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required>
+                    <input type="text" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="email-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required>
                     <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
-                    <input type="password" class="outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="20" autocomplete id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
+                    <input type="password" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="20" autocomplete id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
                     <label class="font-bold" for="who-register-form" id="who-register-label">¿Quién eres?</label>
-                    <select name="selectRole" id="selectRole" class="border-b border-black pb-1" required>
+                    <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
                         <option value="EI">Institución Educativa</option>
                         <option value="Student">Estudiante</option>
                         <option value="Teacher">Profesor</option>
@@ -127,23 +144,23 @@
 
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="student-name" id="studentName">Nombre</label>
-                    <input type="text" class="outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="name-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
                     <label class="font-bold" for="student-name" id="studentName">Apellidos</label>
-                    <input type="text" class="outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="surname-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
                     <label class="font-bold" for="student-name" id="studentName">DNI/NIE</label>
-                    <input type="text" class="outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="username-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>                    
+                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete id="dni-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>                    
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="choose-center" id="chooseCenter">Nivel de Enseñanza</label>
-                    <select name="" id="" class="border-b border-black pb-1">
+                    <select name="" id="" class="EIInput border-b border-black pb-1">
                         <option value="PE">Educación Primaria</option>
                         <option value="SE">Educación Secundaria</option>
                         <option value="College">Universidad</option>
                         <option value="FP">Formación Profesional</option>
                     </select>
                     <label class="mt-8 font-bold" for="choose-location" id="chooseLocation">¿Cual es su Institucion Educativa?</label>
-                    <select name="" id="" class="border-b border-black pb-1">
+                    <select name="" id="" class="EIInput border-b border-black pb-1">
                         <option value="">Saldran todo de la base de datos</option>
                     </select>
 
