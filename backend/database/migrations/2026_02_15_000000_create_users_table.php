@@ -25,9 +25,9 @@ return new class extends Migration
             $table->foreignId('educational_center_id')->nullable()
                 ->constrained('educational_centers');
 
-            $table->string('national_id')->unique(); // dni
+            $table->string('dni')->unique(); // dni
 
-            $table->enum('education_level', ['primary','secondary'])->nullable();
+            $table->string('education_level')->nullable();
             $table->string('institution_name')->nullable();
 
             $table->timestamps();

@@ -9,6 +9,22 @@ class EducationalCenter extends Model
 {
     use HasFactory;
 
+    public static $niveles_disponibles = [
+        'EP' => 'Educación Primaria',
+        'ES' => 'Educación Secundaria',
+        'UN' => 'Universidad',
+        'FP' => 'Formación Profesional',
+        'TM' => 'Administrador de TelamoNet'
+    ];
+
+    public static function getEducationLevels(): array
+    {
+        return self::$niveles_disponibles;
+    }
+
+
+
+
     protected $fillable = [
         'name',
         'type',

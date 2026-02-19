@@ -3,69 +3,239 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\EducationalCenter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
-        $users = User::with(['educationalCenter', 'teacher', 'student'])->get();
-        return view('users', compact('users'));
+        if ($request->ajax()) {
+             $users = User::all();
+             return view('users.index', ['users' => $users]);
+        }
+        return view('layouts.admin');
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(Request $request)
+    {
+        $data = ['exito' => ''];
+        $user = new User();
+        
+        if ($request->isMethod('post')) {
+            $validator = Validator::make($request->all(), [
+                'name'            => 'required|string|max:255',
+                'last_name'       => 'required|string|max:255',
+                'email'           => 'required|string|email|max:255|unique:users',
+                'password'        => 'required|string|min:8',
+                'dni'             => 'required|string|max:20|unique:users',
+                'role'            => 'required|string',
+                'education_level' => 'nullable|string',
+                'institution_name'=> 'nullable|string',
+            ]);
+
+            if ($validator->fails()) {
+                if ($request->ajax()) {
+                    return view('users.create', [
+                        'datos' => $data,
+                        'user' => $user,
+                        'education_levels' => EducationalCenter::$niveles_disponibles,
+                        'disabled' => '',
+                        'oper' => 'create'
+                    ])->withErrors($validator);
+                }
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            $user->name             = $request->input('name');
+            $user->last_name        = $request->input('last_name');
+            $user->email            = $request->input('email');
+            $user->password         = Hash::make($request->input('password'));
+            $user->dni              = $request->input('dni');
+            $user->role             = $request->input('role');
+            $user->education_level  = $request->input('education_level');
+            $user->institution_name = $request->input('institution_name');
+            $user->educational_center_id = $request->input('educational_center_id');
+
+            $user->save();   
+            
+            $data['exito'] = 'Operación realizada correctamente';
+        }
+
+        if ($request->ajax()) 
+        {
+            return view('users.create', [
+                'datos' => $data,
+                'user' => $user,
+                'education_levels' => EducationalCenter::$niveles_disponibles,
+                'disabled' => '',
+                'oper' => 'create'
+            ]); 
+        }
+
+        $user = new User();
+
+        return view('users.create',['datos' => $data,'user' => $user,'education_levels' => EducationalCenter::$niveles_disponibles, 'disabled' => '','oper' => 'create']);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
-        try {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'last_name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:8',
-            'role' => 'required|string',
-            'national_id' => 'required|string|unique:users',
-            'educational_center_id' => 'nullable|exists:educational_centers,id',
-            'education_level' => 'nullable|in:primary,secondary',
-            'institution_name' => 'nullable|string',
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $user = User::findOrFail($id);
+        $datos = ['exito' => ''];
+
+        return view('users.create',[
+            'user' => $user,
+            'datos' => $datos,
+            'education_levels' => EducationalCenter::$niveles_disponibles,
+            'disabled' => 'disabled',
+            'oper' => 'show'
         ]);
+    }
 
-        $validated['password'] = Hash::make($validated['password']);
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Request $request, string $id)
+    {
+        $user = User::findOrFail($id);
+        $disabled = '';
+        $datos['exito'] = '';
 
-        return User::create($validated);
-        } catch (\Exception $e) {
-            Log::error('Error creating user: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()], 500);
+        if ($request->isMethod('post')) {
+            $validator = Validator::make($request->all(), [
+                'name'            => 'required|string|max:255',
+                'last_name'       => 'required|string|max:255',
+                'email'           => 'required|string|email|max:255|unique:users,email,'.$user->id,
+                'dni'             => 'required|string|max:20|unique:users,dni,'.$user->id,
+                'role'            => 'required|string',
+                'education_level' => 'nullable|string',
+                'institution_name'=> 'nullable|string',
+            ]);
+
+            if ($validator->fails()) {
+                if ($request->ajax()) {
+                    return view('users.create', [
+                        'datos' => $datos,
+                        'user' => $user,
+                        'education_levels' => EducationalCenter::$niveles_disponibles,
+                        'disabled' => $disabled,
+                        'oper' => 'edit'
+                    ])->withErrors($validator);
+                }
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            $user->name             = $request->input('name');
+            $user->last_name        = $request->input('last_name');
+            $user->email            = $request->input('email');
+            if($request->filled('password')){
+                 $user->password = Hash::make($request->input('password'));
+            }
+            $user->dni              = $request->input('dni');
+            $user->role             = $request->input('role');
+            $user->education_level  = $request->input('education_level');
+            $user->institution_name = $request->input('institution_name');
+            $user->educational_center_id = $request->input('educational_center_id');
+            
+            $user->save();
+
+            $datos['exito'] = 'Operación realizada correctamente';
+            $disabled = 'disabled';
+
+            // Si es AJAX, devolvemos Vista
+            if ($request->ajax()) 
+            {
+                return view('users.create', [
+                    'datos' => $datos,
+                    'user' => $user,
+                    'education_levels' => EducationalCenter::$niveles_disponibles,
+                    'disabled' => $disabled,
+                    'oper' => 'edit' 
+                ]); 
+            }
         }
-    }
 
-    public function show(User $user)
-    {
-        return $user->load(['educationalCenter', 'teacher', 'student']);
-    }
-
-    public function update(Request $request, User $user)
-    {
-        $validated = $request->validate([
-            'name' => 'string',
-            'last_name' => 'string',
-            'email' => 'email|unique:users,email,' . $user->id,
-            'role' => 'string',
-            'national_id' => 'string|unique:users,national_id,' . $user->id,
-            'educational_center_id' => 'nullable|exists:educational_centers,id',
-            'education_level' => 'nullable|in:primary,secondary',
-            'institution_name' => 'nullable|string',
+        return view('users.create', [
+            'user' => $user,
+            'datos' => $datos,
+            'education_levels' => EducationalCenter::$niveles_disponibles,
+            'disabled' => $disabled,
+            'oper' => 'edit'
         ]);
-
-        $user->update($validated);
-
-        return $user;
     }
 
-    public function destroy(User $user)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
     {
-        $user->delete();
-        return response()->noContent();
+        //
     }
-}
 
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Request $request,string $id='')
+    {
+        $user = User::findOrFail($id);
+
+        if (!$user) {
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            };
+        }
+
+        if ($request->isMethod('post')) {
+            $user->delete();
+
+            $data = ['exito' => 'Usuario eliminado correctamente'];
+
+            if ($request->ajax()) {
+                // Devolver Vista con éxito para que se cierre/actualice
+                return view('users.create', [
+                    'user' => $user,
+                    'datos' => $data,
+                    'education_levels' => EducationalCenter::$niveles_disponibles,
+                    'disabled' => 'disabled',
+                    'oper' => 'destroy'
+                ]);
+            }
+
+            return redirect()->route('user.index');
+        }
+
+        // GET: mostrar confirmación en modal
+        $datos = ['exito' => ''];
+        $disabled = 'disabled';
+        return view('users.create', [
+            'user' => $user,
+            'datos' => $datos,
+            'education_levels' => EducationalCenter::$niveles_disponibles,
+            'disabled' => $disabled,
+            'oper' => 'destroy'
+        ]);
+    }
+
+}
