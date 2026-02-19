@@ -32,7 +32,7 @@ fi
 
 # 3.5 Ejecutar migraciones (SIEMPRE en despliegue)
 echo "Ejecutando migraciones..."
-php artisan migrate:fresh --seed --force
+php artisan migrate --force
 
 
 # 4. Instalar API solo si no existe el archivo de rutas
