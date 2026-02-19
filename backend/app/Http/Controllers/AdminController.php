@@ -36,7 +36,8 @@ class AdminController extends Controller
                 return view('admin.index', $data)->renderSections()['content'];
             }
 
-            return view('admin.index', $data);
+            $content = view('admin.index', $data)->render();
+            return response($content);
         } catch (\Throwable $e) {
             return response()->json([
                 'status' => 'error',
