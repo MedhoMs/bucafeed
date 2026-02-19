@@ -23,10 +23,16 @@ if [ ! -f "vendor/autoload.php" ]; then
     composer install --no-interaction --optimize-autoloader
 fi
 
+
 # 3. Generar clave si no existe
 if ! grep -q "APP_KEY=base64" .env; then
     php artisan key:generate --force
 fi
+
+# 3.5 Ejecutar migraciones (SIEMPRE en despliegue)
+echo "Ejecutando migraciones..."
+php artisan migrate --force
+
 
 # 4. Instalar API solo si no existe el archivo de rutas
 if [ ! -f "routes/api.php" ]; then
