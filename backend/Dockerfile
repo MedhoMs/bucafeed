@@ -34,12 +34,12 @@ RUN if [ -d "/var/www/backend" ]; then \
     rm -rf /var/www/backend; \
 fi
 
-# Install PHP dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
-
 RUN mkdir -p /var/www/storage /var/www/bootstrap/cache && \
     chown -R www-data:www-data /var/www && \
     chmod -R 755 /var/www/storage
+
+# Install PHP dependencies
+RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 # Copy Nginx configuration (using find to locate file regardless of context structure)
 RUN cp $(find /var/www -name nginx.railway.conf | head -n 1) /etc/nginx/conf.d/default.conf
