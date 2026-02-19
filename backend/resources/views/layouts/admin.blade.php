@@ -24,7 +24,7 @@
             <link rel="stylesheet" href="http://localhost:5173/src/sytles/main.css">
         @else
             <!-- Modo Producción: Carga los assets compilados -->
-            @vite(['src/sytles/style.css', 'src/sytles/main.css'], 'frontend')
+            @vite(['src/sytles/style.css', 'src/sytles/main.css'])
         @endif
     </head>
     <body class="hold-transition sidebar-mini">
