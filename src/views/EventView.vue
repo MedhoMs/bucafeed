@@ -16,7 +16,7 @@
             <div id="mainBody" class="flex flex-col gap-4 justify-center items-center min-h-[92.9vh] mt-12">
                 <!-- Evento 1 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -27,7 +27,7 @@
 
                 <!-- Evento 2 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -38,7 +38,7 @@
 
                 <!-- Evento 3 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -49,7 +49,7 @@
 
                 <!-- Evento 4 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -60,7 +60,7 @@
 
                 <!-- Evento 5 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -71,7 +71,7 @@
 
                 <!-- Evento 6 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -82,7 +82,7 @@
 
                 <!-- Evento 7 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -93,7 +93,7 @@
 
                 <!-- Evento 8 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -104,7 +104,7 @@
 
                 <!-- Evento 9 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -115,7 +115,7 @@
 
                 <!-- Evento 10 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -126,7 +126,7 @@
 
                 <!-- Evento 11 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
@@ -137,7 +137,7 @@
 
                 <!-- Evento 12 -->
                 <div class="event-card">
-                    <img src="../assets/evento.webp" alt="Imagen del evento">
+                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
                     <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
                     <div class="flex mt-2 ml-4 text-[20px]">
                         <span class="font-bold mr-2">Horario:</span>
