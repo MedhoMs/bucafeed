@@ -74,8 +74,8 @@
                         </td>
                         <td class="px-6 py-4 text-white/70">
                             <div class="flex flex-col">
-                                <span class="text-sm">Grado superior</span>
-                                <span class="text-xs text-white/40">CIFP ZONZAMAS</span>
+                                <span class="text-sm">Administrador</span>
+                                <span class="text-xs text-white/40">TelamoNet</span>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-white/70 text-sm">

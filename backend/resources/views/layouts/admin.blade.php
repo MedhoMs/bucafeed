@@ -76,7 +76,7 @@
                 const modalBody = document.getElementById("modal-body");
                 const modalTitle = document.getElementById("modal-title");
                 
-                // Helper to toggle modal
+                // Función auxiliar para alternar modal
                 window.toggleModal = function(show) {
                     if (show) {
                         modalEl.classList.remove('hidden');
@@ -88,19 +88,19 @@
                     }
                 }
 
-                // Close buttons
+                // Botones de cierre
                 document.querySelectorAll('[data-modal-hide="default-modal"]').forEach(btn => {
                     btn.addEventListener('click', () => toggleModal(false));
                 });
 
-                // Close on click outside
+                // Cerrar al hacer click fuera
                 modalEl.addEventListener('click', (e) => {
                     if (e.target === modalEl) toggleModal(false);
                 });
 
-                // AJAX Loader
+                // Cargador AJAX
                 window.ajaxLoad = function(url, target, isModal = false, shouldPushState = true) {
-                    // Show loader if main content
+                    // Mostrar cargador si es contenido principal
                     if (!isModal) {
                         target.style.opacity = '0.5';
                     }
@@ -115,10 +115,10 @@
                         target.style.opacity = '1';
                         if (isModal) toggleModal(true);
                         
-                        // Re-attach listeners for new content (if needed)
+                        // Re-adjuntar listeners para nuevo contenido (si es necesario)
                         // attachFormListeners(target);
                         
-                        // Update history only if requested
+                        // Actualizar historial solo si se solicita
                         if (shouldPushState && url !== window.location.href) {
                             window.history.pushState({path: url}, '', url);
                         }
@@ -130,21 +130,21 @@
                     });
                 }
 
-                // Initial Active State Logic removed
+                // Lógica de estado activo inicial eliminada
 
-                // Navigation Interceptor
+                // Interceptor de navegación
                 document.addEventListener("click", function(e) {
                     const navLink = e.target.closest("a[data-load]");
                     if (navLink) {
                         e.preventDefault();
                         const mode = navLink.dataset.load; // 'section', 'modal', 'main' (legacy)
-                        // If mode is 'section', we use data-url. If main, use href.
+                        // Si el modo es 'section', usamos data-url. Si es main, usamos href.
                         const url = (mode === 'section') ? navLink.dataset.url : navLink.href;
                         const title = navLink.dataset.title || 'Detalles';
 
                         if (mode === 'modal') {
                             modalTitle.textContent = title;
-                            // Reset and show loader
+                            // Resetear y mostrar cargador
                             modalBody.innerHTML = `
                                  <div class="text-center py-10">
                                     <svg class="animate-spin h-8 w-8 text-cyan-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -155,21 +155,21 @@
                                 </div>
                             `;
                             toggleModal(true);
-                            // Fetch content for modal without changing URL
+                            // Obtener contenido para modal sin cambiar URL
                             ajaxLoad(url, modalBody, true /* isModal */, false /* shouldPushState */);
 
                         } else if (mode === 'section') {
-                            // Section navigation (Users, Schools, etc.) - Stay on /admin
-                            // Load content into main area without pushing state AND WITHOUT MODAL
-                            ajaxLoad(url, mainContent, false /* isModal */, false /* shouldPushState */);
+                            // Navegación de sección (Usuarios, Escuelas, etc.)
+                            // Cargar contenido en el área principal actualizando la URL (SIN MODAL)
+                            ajaxLoad(url, mainContent, false /* esModal */, true /* actualizarUrl */);
                         } else {
-                            // Legacy 'main' or normal links - potentially obsolete if all are sections now
-                             ajaxLoad(url, mainContent, false /* isModal */, true /* shouldPushState */);
+                            // Enlaces 'main' heredados o normales
+                             ajaxLoad(url, mainContent, false /* esModal */, true /* actualizarUrl */);
                         }
                         return;
                     }
 
-                    // 2. Modal Triggers (Buttons/links inside content)
+                    // 2. Disparadores de Modal (Botones/enlaces dentro del contenido)
                     const modalTrigger = e.target.closest(".btn-modal");
                     if (modalTrigger) {
                         e.preventDefault();
@@ -177,7 +177,7 @@
                         const title = modalTrigger.dataset.title || 'Detalles';
                         
                         modalTitle.textContent = title;
-                        // Show loader in modal
+                        // Mostrar cargador en modal
                         modalBody.innerHTML = `
                              <div class="text-center py-10">
                                 <svg class="animate-spin h-8 w-8 text-cyan-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -196,7 +196,7 @@
                     }
                 });
 
-                // Handle Browser Back/Forward
+                // Manejar botones Atrás/Adelante del navegador
                 window.addEventListener('popstate', (e) => {
                      ajaxLoad(window.location.href, mainContent, false, false);
                 });
