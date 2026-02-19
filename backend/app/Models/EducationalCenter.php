@@ -10,9 +10,9 @@ class EducationalCenter extends Model
     use HasFactory;
 
     public static $niveles_disponibles = [
-        'EP' => 'Educación Primaria',
-        'ES' => 'Educación Secundaria',
-        'UN' => 'Universidad',
+        'PE' => 'Educación Primaria',
+        'SE' => 'Educación Secundaria',
+        'College' => 'Universidad',
         'FP' => 'Formación Profesional',
         'TM' => 'Administrador de TelamoNet'
     ];
@@ -21,9 +21,6 @@ class EducationalCenter extends Model
     {
         return self::$niveles_disponibles;
     }
-
-
-
 
     protected $fillable = [
         'name',
@@ -46,9 +43,3 @@ class EducationalCenter extends Model
         return $this->hasMany(Student::class);
     }
 }
-
-
-
-
-
-
