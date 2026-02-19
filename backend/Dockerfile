@@ -27,9 +27,8 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
-# Copy Nginx and Supervisor configurations
-COPY nginx.railway.conf /etc/nginx/conf.d/default.conf
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Copy Nginx configuration
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Remove default Nginx site
 RUN rm -f /etc/nginx/sites-enabled/default
@@ -40,4 +39,4 @@ RUN chmod +x /var/www/entrypoint.sh
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord"]
