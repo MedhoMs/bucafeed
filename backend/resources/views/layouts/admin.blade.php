@@ -6,7 +6,7 @@
         <title>Panel Adminstrador</title>
 
         @if(app()->environment('local'))
-            <link rel="icon" type="image/png" href="http://localhost:5173/src/assets/logo/logoTelamon.png">
+            <link rel="icon" type="image/png" href="http://localhost:5174/src/assets/logo/logoTelamon.png">
         @else
             <link rel="icon" type="image/png" href="{{ asset('assets/logo/logoTelamon.png') }}">
         @endif
@@ -19,12 +19,12 @@
 
         @if(app()->environment('local'))
             <!-- Modo Desarrollo: Carga desde el servidor de Vite -->
-            <script type="module" src="http://localhost:5173/@@vite/client"></script>
-            <link rel="stylesheet" href="http://localhost:5173/src/sytles/style.css">
-            <link rel="stylesheet" href="http://localhost:5173/src/sytles/main.css">
+            <script type="module" src="http://localhost:5174/@@vite/client"></script>
+            <link rel="stylesheet" href="http://localhost:5174/src/sytles/style.css">
+            <link rel="stylesheet" href="http://localhost:5174/src/sytles/main.css">
         @else
             <!-- Modo Producción: Carga los assets compilados -->
-            @vite(['src/sytles/style.css', 'src/sytles/main.css'])
+            @vite(['src/sytles/style.css', 'src/sytles/main.css'], 'frontend')
         @endif
     </head>
     <body class="hold-transition sidebar-mini">

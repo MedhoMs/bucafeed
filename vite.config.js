@@ -7,7 +7,12 @@ export default defineConfig({
   plugins: [
     vue(),
     laravel({
-      input: ['src/main.js', 'backend/resources/css/app.css'],
+      input: [
+        'src/main.js',
+        'backend/resources/css/app.css',
+        'src/sytles/style.css',
+        'src/sytles/main.css'
+      ],
       publicDirectory: 'backend/public',
       buildDirectory: 'frontend',
       refresh: true,
