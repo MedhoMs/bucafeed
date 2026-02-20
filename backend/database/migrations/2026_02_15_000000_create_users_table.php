@@ -14,8 +14,8 @@ return new class extends Migration
 
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('last_name');
+            $table->string('name')->nullable();
+            $table->string('last_name')->nullable();
             $table->string('email')->unique();
             $table->string('password');
 
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->foreignId('educational_center_id')->nullable()
                 ->constrained('educational_centers');
 
-            $table->string('dni')->unique(); // dni
+            $table->string('dni')->nullable()->unique(); // dni
 
             $table->string('education_level')->nullable();
             $table->string('institution_name')->nullable();
@@ -36,7 +36,7 @@ return new class extends Migration
 
 
 
-    
+
     /**
      * Reverse the migrations.
      */
