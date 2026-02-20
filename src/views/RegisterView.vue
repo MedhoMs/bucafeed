@@ -16,13 +16,51 @@
         const EIForm = document.getElementById('EIForm');
         const selectRole = document.getElementById('selectRole');
         const registerButton = document.getElementById('registerButton');
-        const forms = document.getElementById('forms');
+        const textInputs = document.querySelectorAll('input');
 
         const allRolesInput = document.querySelectorAll('.allRolesInput');
         const studentTeacheEuInput = document.querySelectorAll('.studentTeacheEuInput');
         const EIInput = document.querySelectorAll('.EIInput');
 
         let formPath = '';
+        let errorText;
+
+        const patterns = {
+            "name-register-form": /^[A-ZaÉÍouÑ][a-zaéíouñ]{5,12}$/,
+            "surname-register-form": /^[A-ZaÉÍouÑ][a-zaéíouñ]{2,20}\s[A-ZaÉÍouÑ][a-zaéíouñ]{2,20}$/,
+            "dni-register-form": /^(\d{8}[A-Z]|[XYZ]\d{7}[A-Z])$/,
+            "email-register-form": /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            "password-register-form": /^[A-Za-z0-9]{8,}$/
+        };
+
+        textInputs.forEach((input) => {
+            input.addEventListener("keyup", (e) => {
+                const name = e.target.name;
+
+                //Cojo el patron que corresponde al nombre del input
+                const regex = patterns[name];
+
+                //Si existe un patron asociado, valido el campo
+                if (regex) {
+                    validateExpresion(e.target, regex);
+                }
+            });
+        });
+
+        function validateExpresion(input, pattern) {
+
+            errorText = input.nextElementSibling;
+
+            //Compruebo si el valor cumple el patron
+            if (pattern.test(input.value)) {
+                input.classList.add('valido');
+                errorText.hidden = true;
+            } else {
+                input.classList.add('invalido');
+                errorText.classList.add('text-red-500');
+                errorText.hidden = false;
+            }
+        }
 
         registerForm.addEventListener('click', function(e){
             e.preventDefault();
@@ -161,9 +199,11 @@
                 <section id="allRolesForm" class="forms flex flex-col mb-32">
                     <label class="font-bold mt-[30px]" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
                     <span class=" text-xs">{{ t.register.emailSpan }}</span>
-                    <input type="text" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="email-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required>
+                    <input type="text" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="email-register-form" name="email-register-form" :placeholder="t.register.placeholderEmail" required>
+                    <p hidden class="absolute top-[110px] left-[135px] font-bold">Email inválido</p>
                     <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
                     <input type="password" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
+                    <p hidden class="absolute top-[195px] left-[110px] text-[15px] font-bold">Al menos 8 carácteres</p>
                     <label class="font-bold" for="who-register-form" id="who-register-label">¿Quién eres?</label>
                     <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
                         <option value="EI">Institución Educativa</option>
@@ -175,11 +215,14 @@
 
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="student-name" id="studentName">Nombre</label>
-                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="name-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <p hidden>El nombre debe tener entre 5 y 12 letras</p>
                     <label class="font-bold" for="student-name" id="studentName">Apellidos</label>
-                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="surname-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <p hidden>Deben haber 2 apellidos</p>
                     <label class="font-bold" for="student-name" id="studentName">DNI/NIE</label>
-                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="username-register-form" :placeholder="t.register.placeholderEmail" required></input>                    
+                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="dni-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <p hidden>DNI/NIE inválido</p>
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">

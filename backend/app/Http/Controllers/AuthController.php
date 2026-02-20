@@ -15,21 +15,21 @@ class AuthController extends Controller
 
         //Validación base (siempre obligatoria)
         $rules = [
-            'name'        => 'required|string|max:255',
-            'last_name'   => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',
             'password'    => 'required|string|min:8',
             'role'        => 'required|string|in:EU,Student,Teacher,EI',
-            'dni' => 'required|string|max:20|unique:users,dni',
         ];
 
         //Validaciones adicionales según el rol
         if (in_array($role, ['Student', 'Teacher', 'EI'])) {
+            $rules['education_level']  = 'required|string|max:255';
             $rules['institution_name'] = 'required|string|max:255';
         }
 
-        if (in_array($role, ['Student', 'Teacher'])) {
-            $rules['education_level'] = 'required';
+        if (in_array($role, ['Student', 'Teacher', 'EU'])) {
+            $rules['name']      = 'required|string|max:255';
+            $rules['last_name'] = 'required|string|max:255';
+            $rules['dni']       = 'required|string|max:20|unique:users,dni';
         }
 
         try {
@@ -42,12 +42,12 @@ class AuthController extends Controller
         }
 
         $user = User::create([
-            'name'                  => $validated['name'],
-            'last_name'             => $validated['last_name'],
+            'name'                  => $validated['name'] ?? null,
+            'last_name'             => $validated['last_name'] ?? null,
             'email'                 => $validated['email'],
             'password'              => Hash::make($validated['password']),
             'role'                  => $validated['role'],
-            'dni'                   => $validated['dni'],
+            'dni'                   => $validated['dni'] ?? null,
             //'educational_center_id' => $validated['educational_center_id'] ?? null,
             'education_level'       => $validated['education_level'] ?? null,
             'institution_name'      => $validated['institution_name'] ?? null,
