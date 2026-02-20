@@ -1,147 +1,61 @@
 <script setup>
+    import { ref, onMounted } from 'vue';
     import NavBar from '../components/NavBar.vue';
     import SearchBar from '../components/SearchBar.vue';
     import SideBar from '../components/SideBar.vue';
     
     import { useTranslations } from '../composables/useTranslations'
-    const { t } = useTranslations() // Variable para llamar al archivo de traduccion
+    const { t } = useTranslations()
+
+    const events = ref([]);
+
+    onMounted(async () => {
+        try {
+            const response = await fetch('http://localhost:8000/api/events');
+            if (response.ok) {
+                events.value = await response.json();
+            }
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        }
+    });
 </script>
 
 <template>
     <main class="flex min-h-screen justify-between">
         <NavBar></NavBar>
         <section class="text-white w-[1500px] mr-14 pt-8 pb-10">
-            <span class="text-[40px] font-bold">Eventos Disponibles</span>
+            <h1 class="text-[44px] font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40 tracking-tight leading-none mb-2">
+                Eventos Disponibles
+            </h1>
             <SearchBar></SearchBar>
-            <div id="mainBody" class="flex flex-col gap-4 justify-center items-center min-h-[92.9vh] mt-12">
-                <!-- Evento 1 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 2 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 3 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 4 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 5 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 6 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 7 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 8 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 9 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 10 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 11 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
-                    </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
-                </div>
-
-                <!-- Evento 12 -->
-                <div class="event-card">
-                    <img src="../assets/luigi.jpg" alt="Imagen del evento">
-                    <span class="font-bold text-[25px] ml-4">Nombre del evento</span>
-                    <div class="flex mt-2 ml-4 text-[20px]">
-                        <span class="font-bold mr-2">Horario:</span>
-                        <span>00:00</span>
+            <div id="mainBody" class="min-h-[92.9vh] mt-12">
+                <!-- Eventos dinámicos -->
+                <div v-for="event in events" :key="event.id" class="event-card group cursor-pointer hover:border-white/20 transition-all duration-300">
+                    <img :src="event.image_url" alt="Imagen del evento" class="group-hover:scale-105 transition-transform duration-500">
+                    <h2 class="font-bold text-[16px] ml-4 leading-tight pr-4 text-white group-hover:text-cyan-400 transition-colors duration-300">
+                        {{ event.title }}
+                    </h2>
+                    <p class="text-white/60 text-[14px] ml-4 mt-1 pr-6 line-clamp-2 leading-snug">
+                        {{ event.description }}
+                    </p>
+                    <div class="flex flex-col gap-1 mt-2 ml-4">
+                        <!-- Fecha y Ubicación -->
+                        <div class="flex items-center text-[14px] text-white/70">
+                            <span class="mr-1">📅</span>
+                            <span>{{ new Date(event.date).getDate() }}/{{ new Date(event.date).getMonth() + 1 }}/{{ new Date(event.date).getFullYear().toString().slice(-2) }} </span>
+                            <span class="ml-1 mr-1">📍</span>
+                            <span class="truncate">{{ event.location }}</span>
+                        </div>
+                        <!-- Horario -->
+                        <div class="flex items-center text-[14px]">
+                            <span class="mr-1 opacity-70">🕒</span>
+                            <span class="font-bold mr-1 text-cyan-400/80">Horario:</span>
+                            <span class="text-white/90">
+                                {{ event.start_time ? event.start_time.substring(0, 5) : '00:00' }} - 
+                                {{ event.end_time ? event.end_time.substring(0, 5) : '00:00' }}
+                            </span>
+                        </div>
                     </div>
                     <button class="bg-[#0a2d4e] p-2">Entrar</button>
                 </div>
