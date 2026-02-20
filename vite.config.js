@@ -10,8 +10,8 @@ export default defineConfig({
       input: [
         'src/main.js',
         'backend/resources/css/app.css',
-        'src/sytles/style.css',
-        'src/sytles/main.css'
+        'backend/resources/sytles/style.css',
+        'backend/resources/sytles/main.css'
       ],
       publicDirectory: 'backend/public',
       buildDirectory: 'frontend',
@@ -37,13 +37,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@sytles': fileURLToPath(new URL('./backend/resources/sytles', import.meta.url)),
     },
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: '@import "@/sytles/variables.scss";'
-      }
-    }
   }
 });

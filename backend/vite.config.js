@@ -14,9 +14,10 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                `${srcPath}/sytles/style.css`,
-                `${srcPath}/sytles/main.css`
+                'resources/sytles/style.css',
+                'resources/sytles/main.css'
             ],
+            buildDirectory: 'frontend',
             refresh: true,
         }),
     ],

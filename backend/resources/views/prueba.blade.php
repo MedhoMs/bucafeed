@@ -11,7 +11,7 @@
         <link rel="stylesheet" href="http://localhost:5174/backend/resources/css/app.css">
     @else
         <!-- Modo Producción: Carga los assets compilados para Railway -->
-        @vite(['backend/resources/css/app.css'], 'frontend')
+        @vite(['resources/css/app.css'], 'frontend')
     @endif
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen bg-slate-900 text-white font-sans">
