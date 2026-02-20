@@ -29,12 +29,13 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url)),
+            '@sytles': fileURLToPath(new URL('./backend/resources/sytles', import.meta.url)),
         },
     },
     css: {
         preprocessorOptions: {
             scss: {
-                additionalData: '@import "@/sytles/variables.scss";'
+                // variables.scss está ausente
             }
         }
     }
