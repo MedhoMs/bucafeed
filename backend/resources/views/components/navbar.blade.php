@@ -48,30 +48,6 @@
 @endif
 
 
-
-    <div class="mt-auto relative">
-        <a href="/profile" class="relative flex items-center gap-2.5 mb-5 mr-4 rounded-xl text-[17px] font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#1a3a3a]/50 hover:cursor-pointer active:bg-[#1a3a3a] active:font-bold">
-            @if(app()->environment('local'))
-                <img src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
-            @else
-                <img src="{{ asset('assets/logo/logoTelamon.png') }}" alt="" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
-            @endif
-            Perfil
-            <svg id="dots" onclick="toggleDotsPopup(event)" class="absolute right-4 w-6 h-6 z-10 rounded-xl hover:bg-white/10 transition-colors duration-200 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
-        </a>
-
-        <!-- Popup -->
-        <div id="popupMenu" class="hidden absolute right-10 bottom-24 bg-[#0a141d] border border-white/10 rounded-xl shadow-lg transition-all duration-200 ease-out opacity-0 translate-y-[5px]" style="z-index: 50;">
-            <a href="/" class="flex gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-white/10 active:font-semibold">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
-                Añadir cuenta
-            </a>
-            <a href="/login" class="flex gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#ef4444]/20 hover:text-red-400 active:font-semibold">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" /><path d="M15 12h-12l3 -3" /><path d="M6 15l-3 -3" /></svg>
-                Cerrar sesión
-            </a>
-        </div>
-    </div>
 </nav>
 
 <script>
