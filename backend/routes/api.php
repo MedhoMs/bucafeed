@@ -22,4 +22,5 @@ Route::get('/test-connection', function () {
 });
 
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 Route::post('/send-code', [AuthController::class, 'sendVerificationCode']);

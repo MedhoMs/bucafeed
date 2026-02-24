@@ -114,4 +114,32 @@ class AuthController extends Controller
             'user'    => $user,
         ], 201);
     }
+
+    /**
+     * Comprueba que el email existe y que la contraseña es correcta.
+     */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        // Buscar el usuario por email
+        $user = User::where('email', $request->email)->first();
+
+        // Si no existe el usuario o la contraseña no coincide
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'El email o la contraseña son incorrectos',
+            ], 401);
+        }
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Login correcto',
+            'user'    => $user,
+        ]);
+    }
 }
