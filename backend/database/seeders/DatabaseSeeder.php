@@ -288,6 +288,8 @@ class DatabaseSeeder extends Seeder
             return $path;
         };
 
+        $centro_evento = User::where('role', 'EI')->first();
+
         Event::create([
             'title' => '¡Acompañame a domar bestias!',
             'description' => 'Acompañame durante esta noche de hoy a domar bestias',
