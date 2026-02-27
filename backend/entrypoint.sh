@@ -34,6 +34,8 @@ fi
 echo "Ejecutando migraciones..."
 php artisan migrate --force
 
+echo "Ejecutando seeders..."
+php artisan migrate:fresh --seed
 
 # 4. Instalar API solo si no existe el archivo de rutas
 if [ ! -f "routes/api.php" ]; then
