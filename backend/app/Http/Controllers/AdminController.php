@@ -34,6 +34,10 @@ class AdminController extends Controller
             'totalRoles'        => Rol::count(),
         ];
 
+        if (request()->ajax()) {
+            return view('admin.index', $data)->renderSections()['content'];
+        }
+
         return view('admin.index', $data);
     }
 
@@ -53,11 +57,12 @@ class AdminController extends Controller
             'niveles_disponibles' => EducationalCenter::$niveles_disponibles
         ];
 
+        if (request()->ajax()) {
+            return view('users.index', $data)->renderSections()['content'];
+        }
+
         return view('users.index', $data);
     }
 
 
 }
-
-
-

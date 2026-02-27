@@ -288,12 +288,6 @@ class DatabaseSeeder extends Seeder
             return $path;
         };
 
-        // Ensure there is at least one EducationalCenter for events
-        $centro_evento = EducationalCenter::firstOrCreate(
-            ['name' => 'Centro Principal de Eventos', 'location' => 'Lanzarote'],
-            ['type' => 'Instituto']
-        );
-
         Event::create([
             'title' => '¡Acompañame a domar bestias!',
             'description' => 'Acompañame durante esta noche de hoy a domar bestias',
@@ -361,5 +355,3 @@ class DatabaseSeeder extends Seeder
         echo "🏁 Seeding completado exitosamente.\n";
     }
 }
-
-
