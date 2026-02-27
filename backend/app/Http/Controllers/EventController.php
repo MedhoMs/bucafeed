@@ -22,7 +22,7 @@ class EventController extends Controller
             return view('users_events.index', [
                 'events' => $events,
                 'roles_disponibles' => $roles_disponibles
-            ]);
+            ])->renderSections()['content'];
         }
         
         return view('users_events.index', [
@@ -37,7 +37,7 @@ class EventController extends Controller
         $event = new Event();
 
         if ($request->isMethod('post')) {
-            $validated = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'title'                 => 'required|string|max:255',
                 'description'           => 'nullable|string',
                 'location'              => 'nullable|string',
@@ -48,6 +48,21 @@ class EventController extends Controller
                 'target_role'           => 'nullable|string',
                 'image'                 => 'nullable|image|max:2048' // max 2MB
             ]);
+
+            if ($validator->fails()) {
+                if ($request->ajax()) {
+                    return view('users_events.create', [
+                        'datos' => $data,
+                        'event' => $event,
+                        'schools' => EducationalCenter::all(),
+                        'roles' => Rol::all(),
+                        'roles_disponibles' => Rol::all()->mapWithKeys(fn ($r) => [$r->code ?? $r->name => $r->name])->toArray(),
+                        'disabled' => '',
+                        'oper' => 'create'
+                    ])->withErrors($validator);
+                }
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
 
             $event->title = $request->input('title');
             $event->description = $request->input('description');
@@ -115,7 +130,7 @@ class EventController extends Controller
         $datos['exito'] = '';
 
         if ($request->isMethod('post')) {
-            $validated = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'title'                 => 'required|string|max:255',
                 'description'           => 'nullable|string',
                 'location'              => 'nullable|string',
@@ -126,6 +141,21 @@ class EventController extends Controller
                 'target_role'           => 'nullable|string',
                 'image'                 => 'nullable|image|max:2048'
             ]);
+
+            if ($validator->fails()) {
+                if ($request->ajax()) {
+                    return view('users_events.create', [
+                        'datos' => $datos,
+                        'event' => $event,
+                        'schools' => EducationalCenter::all(),
+                        'roles' => Rol::all(),
+                        'roles_disponibles' => Rol::all()->mapWithKeys(fn ($r) => [$r->code ?? $r->name => $r->name])->toArray(),
+                        'disabled' => $disabled,
+                        'oper' => 'edit'
+                    ])->withErrors($validator);
+                }
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
 
             $event->title = $request->input('title');
             $event->description = $request->input('description');
@@ -180,9 +210,17 @@ class EventController extends Controller
                 Storage::disk('public')->delete($event->image);
             }
             $event->delete();
+            $data = ['exito' => 'Evento eliminado correctamente'];
+
             if ($request->ajax()) {
-                return response()->json([
-                    'exito' => 'Evento eliminado correctamente'
+                return view('users_events.create', [
+                    'event' => $event,
+                    'datos' => $data,
+                    'schools' => EducationalCenter::all(),
+                    'roles' => Rol::all(),
+                    'roles_disponibles' => Rol::all()->mapWithKeys(fn ($r) => [$r->code ?? $r->name => $r->name])->toArray(),
+                    'disabled' => 'disabled',
+                    'oper' => 'destroy'
                 ]);
             }
             return redirect()->route('admin.index');
