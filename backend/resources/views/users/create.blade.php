@@ -1,4 +1,4 @@
-<div class="container mx-auto pt-4 relative">
+<div class="container mx-auto pt-4 sticky top-0">
     @if($errors->any())
         <ul class="mb-4 bg-red-500/10 border border-red-500/20 rounded-lg p-4">
             @foreach ($errors->all() as $error)
@@ -86,10 +86,13 @@
                 <label for="idrole" class="block text-sm font-medium text-white/70 mb-1">Rol</label>
                 <select {{ $disabled }} name="role" id="idrole" 
                     class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200">
-                    <option value="user" {{ (old('role', $user->role ?? '') == 'user') ? 'selected' : '' }} class="bg-[#1a202c]">Usuario</option>
-                    <option value="admin" {{ (old('role', $user->role ?? '') == 'admin') ? 'selected' : '' }} class="bg-[#1a202c]">Administrador</option>
-                    <option value="teacher" {{ (old('role', $user->role ?? '') == 'teacher') ? 'selected' : '' }} class="bg-[#1a202c]">Profesor</option>
-                    <option value="student" {{ (old('role', $user->role ?? '') == 'student') ? 'selected' : '' }} class="bg-[#1a202c]">Estudiante</option>
+                    <option value="" class="bg-[#1a202c]">Seleccionar rol...</option>
+                    @foreach($roles as $rolDb)
+                        @php $roleValue = $rolDb->code ?? $rolDb->name; @endphp
+                        <option value="{{ $roleValue }}" {{ (strtolower(old('role', $user->role ?? '')) == strtolower($roleValue)) ? 'selected' : '' }} class="bg-[#1a202c]">
+                            {{ $roles_disponibles[$rolDb->code] ?? $rolDb->name }}
+                        </option>
+                    @endforeach
                 </select>
                 @error('role')
                     <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span>

@@ -25,7 +25,7 @@
                 <p class="text-white/70 text-sm mb-4">Total Usuarios</p>
             </div>
 
-            <div class="border-t border-white/10 pt-3 grid grid-cols-4 gap-2">
+            <div class="border-t border-white/10 pt-3 grid grid-cols-5 gap-2">
                 {{-- Profesores --}}
                 <div class="flex flex-col items-center gap-1 text-center">
                     <div class="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center shrink-0">
@@ -59,6 +59,17 @@
                     </div>
                 </div>
 
+                {{-- Centros Educativos --}}
+                <div class="flex flex-col items-center gap-1 text-center border-l border-white/5">
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21l18 0" /><path d="M9 8l1 0" /><path d="M9 12l1 0" /><path d="M9 16l1 0" /><path d="M14 8l1 0" /><path d="M14 12l1 0" /><path d="M14 16l1 0" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" /></svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-bold text-sm">{{ $countEI ?? 0 }}</p>
+                        <p class="text-white/50 text-[10px] uppercase tracking-wider">Centros</p>
+                    </div>
+                </div>
+
                 {{-- Otros --}}
                 <div class="flex flex-col items-center gap-1 text-center border-l border-white/5">
                     <div class="w-8 h-8 rounded-lg bg-fuchsia-500/20 flex items-center justify-center shrink-0">
@@ -71,8 +82,6 @@
                 </div>
             </div>
         </a>
-
-       
 
         <a href="#" data-url="/admin/schools" data-load="section" data-title="Centros Educativos" class="post-card group no-underline">
             <div class="flex items-start justify-between mb-4">
@@ -106,7 +115,6 @@
             <p class="text-3xl font-bold text-white mb-1">{{ $totalQuestions ?? '—' }}</p>
             <p class="text-white/70 text-sm">Preguntas en el foro</p>
         </a>
-
 
     </div>
 
@@ -205,6 +213,51 @@
 
     </div>
 
+    {{-- Fila para Roles y futuras tarjetas --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 mt-5">
+        {{-- Roles del sistema --}}
+        <div class="col-span-1 xl:col-span-1">
+            <a href="#" data-url="/admin/roles" data-load="modal" data-title="Roles del Sistema" class="btn-modal block no-underline group h-full">
+                <div class="roles-banner h-full flex flex-wrap items-center justify-between gap-4 px-6 py-4 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden relative">
+
+                    {{-- Fondo decorativo sutil --}}
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/[0.04] via-white/[0.02] to-transparent pointer-events-none"></div>
+                    <div class="absolute right-0 top-0 h-full w-64 bg-gradient-to-l from-white/[0.03] to-transparent pointer-events-none"></div>
+
+                    {{-- Icono + texto --}}
+                    <div class="flex items-center gap-4 relative">
+                        <div class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center shrink-0 transition-colors duration-300" style="background: rgba(255,255,255,0.07);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"/>
+                                <path d="M16 19h6"/><path d="M19 16v6"/>
+                                <path d="M6 21v-2a4 4 0 0 1 4 -4h4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-white font-semibold text-sm leading-tight">Roles del sistema</p>
+                            <p class="text-white/40 text-xs mt-0.5">Gestión de permisos</p>
+                        </div>
+                    </div>
+
+                    {{-- Número (simplificado para formato tarjeta estrecho) --}}
+                    <div class="flex items-center gap-4 relative ml-auto">
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-white leading-none">{{ $totalRoles ?? 0 }}</p>
+                        </div>
+
+                        {{-- CTA --}}
+                        <div class="flex items-center gap-1.5 pl-3 border-l border-white/10 relative">
+                            <span class="text-white/45 text-xs group-hover:text-white/75 transition-colors duration-200 hidden sm:inline-block">Ver</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:stroke-white/60 group-hover:translate-x-0.5 transition-all duration-200"><path d="M9 6l6 6l-6 6"/></svg>
+                        </div>
+                    </div>
+
+                </div>
+            </a>
+        </div>
+    </div>
+
     {{-- Palabras vetadas --}}
     <div class="mt-5">
         <div class="post-card">
@@ -243,7 +296,7 @@
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
         border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 20px;
-        padding: 1.5rem; /* Ajustado para el dashboard */
+        padding: 1.5rem;
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
@@ -253,6 +306,10 @@
         background: linear-gradient(135deg, rgba(54, 54, 54, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
         border-color: rgba(255, 255, 255, 0.4);
         box-shadow: 0 0 30px rgba(255,255,255,0.05);
+    }
+
+    .roles-banner {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
     }
 </style>
 @endsection

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\EventController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,7 +32,29 @@ Route::get('/users/show/{id}', [UserController::class, 'show'])->name('user.show
 Route::get('/users/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');
 Route::post('/users/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');
 
-// Fallback for Vue Router
-Route::fallback(function () {
-    return view('welcome');
-});
+// Role CRUD routes
+
+
+Route::get('/admin/roles/create', [RoleController::class, 'create'])->name('role.create');
+Route::post('/admin/roles/create', [RoleController::class, 'create'])->name('role.store');
+
+Route::get('/admin/roles/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
+Route::post('/admin/roles/edit/{id}', [RoleController::class, 'edit'])->name('role.update');
+
+Route::get('/admin/roles/show/{id}', [RoleController::class, 'show'])->name('role.show');
+
+Route::get('/admin/roles/destroy/{id}', [RoleController::class, 'destroy'])->name('role.destroy');
+Route::post('/admin/roles/destroy/{id}', [RoleController::class, 'destroy'])->name('role.destroy.post');
+
+
+Route::get('/admin/events', [EventController::class, 'index'])->name('users_events.index');
+Route::get('/admin/events/create', [EventController::class, 'create'])->name('users_events.create');
+Route::post('/admin/events/create', [EventController::class, 'create'])->name('users_events.create.post');
+
+Route::get('/admin/events/edit/{id}', [EventController::class, 'edit'])->name('users_events.edit');
+Route::post('/admin/events/edit/{id}', [EventController::class, 'edit'])->name('users_events.edit.post');
+
+Route::get('/admin/events/show/{id}', [EventController::class, 'show'])->name('users_events.show');
+
+Route::get('/admin/events/destroy/{id}', [EventController::class, 'destroy'])->name('users_events.destroy');
+Route::post('/admin/events/destroy/{id}', [EventController::class, 'destroy'])->name('users_events.destroy.post');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\EducationalCenter;
+use App\Models\Rol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -15,9 +16,14 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $users = User::all();
+        
         if ($request->ajax()) {
-             $users = User::all();
-             return view('users.index', ['users' => $users]);
+             return view('users.index', [
+                 'users' => $users,
+                 'roles_disponibles' => Rol::$roles_disponibles,
+                 'niveles_disponibles' => EducationalCenter::$niveles_disponibles
+             ]);
         }
         return view('layouts.admin');
     }
@@ -34,7 +40,7 @@ class UserController extends Controller
         $user = new User();
         
         if ($request->isMethod('post')) {
-            $validator = Validator::make($request->all(), [
+            $validated = $request->validate([
                 'name'            => 'required|string|max:255',
                 'last_name'       => 'required|string|max:255',
                 'email'           => 'required|string|email|max:255|unique:users',
@@ -44,19 +50,6 @@ class UserController extends Controller
                 'education_level' => 'nullable|string',
                 'institution_name'=> 'nullable|string',
             ]);
-
-            if ($validator->fails()) {
-                if ($request->ajax()) {
-                    return view('users.create', [
-                        'datos' => $data,
-                        'user' => $user,
-                        'education_levels' => EducationalCenter::$niveles_disponibles,
-                        'disabled' => '',
-                        'oper' => 'create'
-                    ])->withErrors($validator);
-                }
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
 
             $user->name             = $request->input('name');
             $user->last_name        = $request->input('last_name');
@@ -78,7 +71,7 @@ class UserController extends Controller
             return view('users.create', [
                 'datos' => $data,
                 'user' => $user,
-                'education_levels' => EducationalCenter::$niveles_disponibles,
+                'roles' => Rol::all(), 'roles_disponibles' => Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
                 'disabled' => '',
                 'oper' => 'create'
             ]); 
@@ -86,7 +79,7 @@ class UserController extends Controller
 
         $user = new User();
 
-        return view('users.create',['datos' => $data,'user' => $user,'education_levels' => EducationalCenter::$niveles_disponibles, 'disabled' => '','oper' => 'create']);
+        return view('users.create',['datos' => $data,'user' => $user,'roles' => Rol::all(), 'roles_disponibles' => Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles, 'disabled' => '','oper' => 'create']);
     }
 
     /**
@@ -108,7 +101,7 @@ class UserController extends Controller
         return view('users.create',[
             'user' => $user,
             'datos' => $datos,
-            'education_levels' => EducationalCenter::$niveles_disponibles,
+            'roles' => Rol::all(), 'roles_disponibles' => Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
             'disabled' => 'disabled',
             'oper' => 'show'
         ]);
@@ -124,7 +117,7 @@ class UserController extends Controller
         $datos['exito'] = '';
 
         if ($request->isMethod('post')) {
-            $validator = Validator::make($request->all(), [
+            $validated = $request->validate([
                 'name'            => 'required|string|max:255',
                 'last_name'       => 'required|string|max:255',
                 'email'           => 'required|string|email|max:255|unique:users,email,'.$user->id,
@@ -133,19 +126,6 @@ class UserController extends Controller
                 'education_level' => 'nullable|string',
                 'institution_name'=> 'nullable|string',
             ]);
-
-            if ($validator->fails()) {
-                if ($request->ajax()) {
-                    return view('users.create', [
-                        'datos' => $datos,
-                        'user' => $user,
-                        'education_levels' => EducationalCenter::$niveles_disponibles,
-                        'disabled' => $disabled,
-                        'oper' => 'edit'
-                    ])->withErrors($validator);
-                }
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
 
             $user->name             = $request->input('name');
             $user->last_name        = $request->input('last_name');
@@ -170,7 +150,7 @@ class UserController extends Controller
                 return view('users.create', [
                     'datos' => $datos,
                     'user' => $user,
-                    'education_levels' => EducationalCenter::$niveles_disponibles,
+                    'roles' => Rol::all(), 'roles_disponibles' => Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
                     'disabled' => $disabled,
                     'oper' => 'edit' 
                 ]); 
@@ -180,7 +160,7 @@ class UserController extends Controller
         return view('users.create', [
             'user' => $user,
             'datos' => $datos,
-            'education_levels' => EducationalCenter::$niveles_disponibles,
+            'roles' => Rol::all(), 'roles_disponibles' => Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
             'disabled' => $disabled,
             'oper' => 'edit'
         ]);
@@ -210,16 +190,10 @@ class UserController extends Controller
         if ($request->isMethod('post')) {
             $user->delete();
 
-            $data = ['exito' => 'Usuario eliminado correctamente'];
-
             if ($request->ajax()) {
-                // Devolver Vista con éxito para que se cierre/actualice
-                return view('users.create', [
-                    'user' => $user,
-                    'datos' => $data,
-                    'education_levels' => EducationalCenter::$niveles_disponibles,
-                    'disabled' => 'disabled',
-                    'oper' => 'destroy'
+                // Devolver JSON con éxito
+                return response()->json([
+                    'exito' => 'Usuario eliminado correctamente'
                 ]);
             }
 
@@ -232,7 +206,7 @@ class UserController extends Controller
         return view('users.create', [
             'user' => $user,
             'datos' => $datos,
-            'education_levels' => EducationalCenter::$niveles_disponibles,
+            'roles' => Rol::all(), 'roles_disponibles' => Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
             'disabled' => $disabled,
             'oper' => 'destroy'
         ]);

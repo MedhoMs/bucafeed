@@ -14,7 +14,8 @@ class EducationalCenter extends Model
         'SE' => 'Educación Secundaria',
         'College' => 'Universidad',
         'FP' => 'Formación Profesional',
-        'TM' => 'Administrador de TelamoNet'
+        'TM' => 'Administrador de TelamoNet',
+        'US' => 'Usuario'
     ];
 
     public static function getEducationLevels(): array
