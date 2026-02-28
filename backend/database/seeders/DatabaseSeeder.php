@@ -306,14 +306,20 @@ class DatabaseSeeder extends Seeder
         ]);
         // Helper to convert image to base64
         $imageBase64 = function ($path) {
-            // Utilizamos storage_path para que funcione tanto en local como en el contenedor de Docker de Railway
-            $fullPath = storage_path('app/public/' . $path);
+            // Buscamos la imagen en la carpeta assets del frontend (local) o en public/assets (Docker)
+            $filename = basename($path);
+            
+            $localPath = base_path('../src/assets/' . $filename);
+            $dockerPath = public_path('assets/' . $filename);
+            
+            $fullPath = file_exists($localPath) ? $localPath : $dockerPath;
+
             if (file_exists($fullPath)) {
                 $type = pathinfo($fullPath, PATHINFO_EXTENSION);
                 $data = file_get_contents($fullPath);
                 return 'data:image/' . $type . ';base64,' . base64_encode($data);
             }
-            return null; // Si no encuentra la imagen, que guarde null en base de datos para no dar error de string muy largo
+            return null; // Si no encuentra la imagen, que guarde null en base de datos
         };
 
         $centro_evento = User::where('role', 'EI')->first();

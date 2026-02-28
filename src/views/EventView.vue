@@ -11,7 +11,8 @@
 
     onMounted(async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/events');
+            const apiUrl = import.meta.env.VITE_API_URL || '';
+            const response = await fetch(`${apiUrl}/api/events`);
             if (response.ok) {
                 events.value = await response.json();
             }
