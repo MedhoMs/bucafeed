@@ -10,7 +10,12 @@ class Rol extends Model
     
     protected $fillable = [
         'name',
-        'code'
+        'code',
+        'guard_name'
+    ];
+
+    protected $attributes = [
+        'guard_name' => 'web'
     ];
 
     public static $roles_disponibles = [
