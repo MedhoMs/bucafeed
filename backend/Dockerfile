@@ -56,7 +56,10 @@ RUN mkdir -p /var/www/storage /var/www/bootstrap/cache && \
 # Install PHP dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Install Node.js (LTS) and build assets
+# Install Node.js (LTS), pass production API URL, and build assets
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs && \
     npm ci && \

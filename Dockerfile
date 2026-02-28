@@ -26,6 +26,10 @@ export default defineConfig({ \
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } } \
 });" > vite.config.standalone.js
 
+# Pasamos la URL de la API como argumento al momento del build de Railway
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 # Ejecutamos el build usando esta configuración limpia
 RUN npx vite build --config vite.config.standalone.js
 
