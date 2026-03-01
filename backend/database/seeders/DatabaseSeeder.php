@@ -59,8 +59,13 @@ class DatabaseSeeder extends Seeder
             'institution_name' => 'TelamoNet',
             'role' => 'admin',
         ]);
-        
+
         // ----------------- Centros Educativos (EI) -----------------
+        $centro1 = EducationalCenter::create([
+            'name' => 'TelamoNet Institute',
+            'type' => 'SE',
+            'location' => 'Lanzarote'
+        ]);
         User::factory()->create([
             'name' => 'Instituto',
             'last_name' => 'TelamoNet Center',
@@ -70,6 +75,13 @@ class DatabaseSeeder extends Seeder
             'education_level' => 'SE',
             'institution_name' => 'TelamoNet Institute',
             'role' => 'EI',
+            'educational_center_id' => $centro1->id,
+        ]);
+
+        $centro2 = EducationalCenter::create([
+            'name' => 'Colegio San Martín',
+            'type' => 'PE',
+            'location' => 'Arrecife'
         ]);
         User::factory()->create([
             'name' => 'Colegio',
@@ -80,6 +92,13 @@ class DatabaseSeeder extends Seeder
             'education_level' => 'PE',
             'institution_name' => 'Colegio San Martín',
             'role' => 'EI',
+            'educational_center_id' => $centro2->id,
+        ]);
+
+        $centro3 = EducationalCenter::create([
+            'name' => 'Academia Futura',
+            'type' => 'College',
+            'location' => 'Teguise'
         ]);
         User::factory()->create([
             'name' => 'Academia',
@@ -90,6 +109,13 @@ class DatabaseSeeder extends Seeder
             'education_level' => 'College',
             'institution_name' => 'Academia Futura',
             'role' => 'EI',
+            'educational_center_id' => $centro3->id,
+        ]);
+
+        $centro4 = EducationalCenter::create([
+            'name' => 'Centro Avance',
+            'type' => 'FP',
+            'location' => 'San Bartolomé'
         ]);
         User::factory()->create([
             'name' => 'Centro',
@@ -100,6 +126,7 @@ class DatabaseSeeder extends Seeder
             'education_level' => 'FP',
             'institution_name' => 'Centro Avance',
             'role' => 'EI',
+            'educational_center_id' => $centro4->id,
         ]);
 
         // ----------------- Profesores -----------------
@@ -288,6 +315,8 @@ class DatabaseSeeder extends Seeder
             return $path;
         };
 
+        $centro_evento = User::where('role', 'EI')->first();
+
         Event::create([
             'title' => '¡Acompañame a domar bestias!',
             'description' => 'Acompañame durante esta noche de hoy a domar bestias',
@@ -295,7 +324,7 @@ class DatabaseSeeder extends Seeder
             'location' => 'puerto del Carmen',
             'start_time' => '22:00:00',
             'end_time' => '01:00:00',
-            'educational_center_id' => $centro_evento->id,
+            'educational_center_id' => $centro_evento->educational_center_id,
             'image' => $imageBase64('events/evento_luigi.png'),
         ]);
         Event::create([
@@ -305,7 +334,7 @@ class DatabaseSeeder extends Seeder
             'location' => 'Las Palmas',
             'start_time' => '10:00:00',
             'end_time' => '13:00:00',
-            'educational_center_id' => $centro_evento->id,
+            'educational_center_id' => $centro_evento->educational_center_id,
             'image' => $imageBase64('events/evento_robotica.png'),
         ]);
 
@@ -316,7 +345,7 @@ class DatabaseSeeder extends Seeder
             'location' => 'Telde',
             'start_time' => '20:00:00',
             'end_time' => '23:00:00',
-            'educational_center_id' => $centro_evento->id,
+            'educational_center_id' => $centro_evento->educational_center_id,
             'image' => $imageBase64('events/evento_astronomia.png'),
         ]);
 
