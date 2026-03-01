@@ -16,8 +16,11 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-             $users = User::all();
-             return view('users.index', ['users' => $users]);
+             return view('users.index', [
+                 'users' => $users,
+                 'roles_disponibles' => \App\Models\Rol::$roles_disponibles,
+                 'niveles_disponibles' => EducationalCenter::$niveles_disponibles
+             ]);
         }
         return view('layouts.admin');
     }
@@ -50,7 +53,7 @@ class UserController extends Controller
                     return view('users.create', [
                         'datos' => $data,
                         'user' => $user,
-                        'education_levels' => EducationalCenter::$niveles_disponibles,
+                        'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
                         'disabled' => '',
                         'oper' => 'create'
                     ])->withErrors($validator);
@@ -78,7 +81,7 @@ class UserController extends Controller
             return view('users.create', [
                 'datos' => $data,
                 'user' => $user,
-                'education_levels' => EducationalCenter::$niveles_disponibles,
+                'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
                 'disabled' => '',
                 'oper' => 'create'
             ]); 
@@ -86,7 +89,7 @@ class UserController extends Controller
 
         $user = new User();
 
-        return view('users.create',['datos' => $data,'user' => $user,'education_levels' => EducationalCenter::$niveles_disponibles, 'disabled' => '','oper' => 'create']);
+        return view('users.create',['datos' => $data,'user' => $user,'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles, 'disabled' => '','oper' => 'create']);
     }
 
     /**
@@ -108,7 +111,7 @@ class UserController extends Controller
         return view('users.create',[
             'user' => $user,
             'datos' => $datos,
-            'education_levels' => EducationalCenter::$niveles_disponibles,
+            'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
             'disabled' => 'disabled',
             'oper' => 'show'
         ]);
@@ -139,7 +142,7 @@ class UserController extends Controller
                     return view('users.create', [
                         'datos' => $datos,
                         'user' => $user,
-                        'education_levels' => EducationalCenter::$niveles_disponibles,
+                        'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
                         'disabled' => $disabled,
                         'oper' => 'edit'
                     ])->withErrors($validator);
@@ -170,7 +173,7 @@ class UserController extends Controller
                 return view('users.create', [
                     'datos' => $datos,
                     'user' => $user,
-                    'education_levels' => EducationalCenter::$niveles_disponibles,
+                    'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
                     'disabled' => $disabled,
                     'oper' => 'edit' 
                 ]); 
@@ -180,7 +183,7 @@ class UserController extends Controller
         return view('users.create', [
             'user' => $user,
             'datos' => $datos,
-            'education_levels' => EducationalCenter::$niveles_disponibles,
+            'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
             'disabled' => $disabled,
             'oper' => 'edit'
         ]);
@@ -217,7 +220,7 @@ class UserController extends Controller
                 return view('users.create', [
                     'user' => $user,
                     'datos' => $data,
-                    'education_levels' => EducationalCenter::$niveles_disponibles,
+                    'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
                     'disabled' => 'disabled',
                     'oper' => 'destroy'
                 ]);
@@ -232,7 +235,7 @@ class UserController extends Controller
         return view('users.create', [
             'user' => $user,
             'datos' => $datos,
-            'education_levels' => EducationalCenter::$niveles_disponibles,
+            'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
             'disabled' => $disabled,
             'oper' => 'destroy'
         ]);

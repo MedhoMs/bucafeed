@@ -12,10 +12,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('educational_center_id')->constrained('educational_centers')->cascadeOnDelete();
             $table->string('title');
-            $table->text('description');
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
-            $table->string('location_maps');
+            $table->text('description')->nullable();
+            $table->string('image')->nullable();
+            $table->string('location')->nullable();
+            $table->date('date');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->string('target_role')->nullable()->comment('Role allowed to join, null for everyone');
             $table->timestamps();
         });
     }

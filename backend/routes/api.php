@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventController;
 
 // Importante: No hace falta el prefijo /api aquí, Laravel lo añade automáticamente
 Route::get('/test-connection', function () {
@@ -22,5 +23,5 @@ Route::get('/test-connection', function () {
 });
 
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/send-code', [AuthController::class, 'sendVerificationCode']);
+
+Route::get('/events', [EventController::class, 'getEventsApi']);
