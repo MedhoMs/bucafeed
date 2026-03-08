@@ -3,7 +3,7 @@
         @forelse($roles as $role)
             <div class="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl group transition-all duration-200 hover:bg-white/10">
                 <div class="flex items-center gap-3">
-                    <span class="text-white font-medium">{{ $roles_disponibles[$role->code] ?? $role->name }}</span>
+                    <span class="text-white font-medium">{{ $role->name }}</span>
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
                         {{ $role->code ?? '-' }}
                     </span>

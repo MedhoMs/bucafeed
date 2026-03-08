@@ -90,7 +90,7 @@
                         <td class="px-6 py-4 text-center">
                             @if($event->target_role)
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium tracking-wide uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                    {{ collect($roles_disponibles)->mapWithKeys(fn($item, $key) => [strtolower($key) => $item])->get(strtolower($event->target_role), ucfirst($event->target_role)) }}
+                                    {{ $roles_disponibles[$event->target_role] ?? $event->target_role }}
                                 </span>
                             @else
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium tracking-wide uppercase bg-white/10 text-white/50 border border-white/20">

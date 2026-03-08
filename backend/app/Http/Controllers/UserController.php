@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Rol;
 use App\Models\EducationalCenter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,8 +18,10 @@ class UserController extends Controller
     {
          $users = User::all();
          return view('users.index', [
-             'users' => $users,
-             'roles_disponibles' => \App\Models\Rol::$roles_disponibles,
+             'users' => clone $users,
+             'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
+                 return [$r->code ?? $r->name => $r->name];
+             })->toArray(),
              'niveles_disponibles' => EducationalCenter::$niveles_disponibles
          ]);
     }
@@ -51,7 +54,9 @@ class UserController extends Controller
                     return view('users.create', [
                         'datos' => $data,
                         'user' => $user,
-                        'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
+                        'roles' => Rol::all(), 
+                        'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+                        'education_levels' => EducationalCenter::$niveles_disponibles,
                         'disabled' => '',
                         'oper' => 'create'
                     ])->withErrors($validator);
@@ -79,7 +84,11 @@ class UserController extends Controller
             return view('users.create', [
                 'datos' => $data,
                 'user' => $user,
-                'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
+                'roles' => Rol::all(), 
+                'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
+                    return [$r->code ?? $r->name => $r->name];
+                })->toArray(),
+                'education_levels' => EducationalCenter::$niveles_disponibles,
                 'disabled' => '',
                 'oper' => 'create'
             ]); 
@@ -87,7 +96,7 @@ class UserController extends Controller
 
         $user = new User();
 
-        return view('users.create',['datos' => $data,'user' => $user,'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles, 'disabled' => '','oper' => 'create']);
+        return view('users.create',['datos' => $data,'user' => $user,'roles' => Rol::all(), 'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(), 'education_levels' => EducationalCenter::$niveles_disponibles, 'disabled' => '','oper' => 'create']);
     }
 
     /**
@@ -109,7 +118,9 @@ class UserController extends Controller
         return view('users.create',[
             'user' => $user,
             'datos' => $datos,
-            'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
+            'roles' => Rol::all(), 
+            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+            'education_levels' => EducationalCenter::$niveles_disponibles,
             'disabled' => 'disabled',
             'oper' => 'show'
         ]);
@@ -140,7 +151,11 @@ class UserController extends Controller
                     return view('users.create', [
                         'datos' => $datos,
                         'user' => $user,
-                        'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
+                        'roles' => Rol::all(), 
+                        'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
+                            return [$r->code ?? $r->name => $r->name];
+                        })->toArray(),
+                        'education_levels' => EducationalCenter::$niveles_disponibles,
                         'disabled' => $disabled,
                         'oper' => 'edit'
                     ])->withErrors($validator);
@@ -171,7 +186,11 @@ class UserController extends Controller
                 return view('users.create', [
                     'datos' => $datos,
                     'user' => $user,
-                    'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
+                    'roles' => Rol::all(), 
+                    'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
+                        return [$r->code ?? $r->name => $r->name];
+                    })->toArray(),
+                    'education_levels' => EducationalCenter::$niveles_disponibles,
                     'disabled' => $disabled,
                     'oper' => 'edit' 
                 ]); 
@@ -181,7 +200,9 @@ class UserController extends Controller
         return view('users.create', [
             'user' => $user,
             'datos' => $datos,
-            'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
+            'roles' => Rol::all(), 
+            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+            'education_levels' => EducationalCenter::$niveles_disponibles,
             'disabled' => $disabled,
             'oper' => 'edit'
         ]);
@@ -218,7 +239,11 @@ class UserController extends Controller
                 return view('users.create', [
                     'user' => $user,
                     'datos' => $data,
-                    'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
+                    'roles' => Rol::all(), 
+                    'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
+                        return [$r->code ?? $r->name => $r->name];
+                    })->toArray(),
+                    'education_levels' => EducationalCenter::$niveles_disponibles,
                     'disabled' => 'disabled',
                     'oper' => 'destroy'
                 ]);
@@ -233,7 +258,9 @@ class UserController extends Controller
         return view('users.create', [
             'user' => $user,
             'datos' => $datos,
-            'roles' => \App\Models\Rol::all(), 'roles_disponibles' => \App\Models\Rol::$roles_disponibles, 'education_levels' => EducationalCenter::$niveles_disponibles,
+            'roles' => Rol::all(), 
+            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+            'education_levels' => EducationalCenter::$niveles_disponibles,
             'disabled' => $disabled,
             'oper' => 'destroy'
         ]);

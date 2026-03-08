@@ -14,9 +14,7 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $events = Event::with('educationalCenter')->withCount('participants')->get();
-        $roles_disponibles = Rol::all()->mapWithKeys(function ($r) {
-            return [$r->code ?? $r->name => $r->name];
-        })->toArray();
+        $roles_disponibles = Rol::all()->pluck('name', 'code')->toArray();
 
         return view('users_events.index', compact('events', 'roles_disponibles'));
     }
@@ -65,7 +63,7 @@ class EventController extends Controller
                 'event' => $event,
                 'schools' => EducationalCenter::all(),
                 'roles' => Rol::all(),
-                'roles_disponibles' => Rol::all()->mapWithKeys(fn ($r) => [$r->code ?? $r->name => $r->name])->toArray(),
+                'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
                 'disabled' => '',
                 'oper' => 'create'
             ]);
@@ -78,7 +76,7 @@ class EventController extends Controller
             'event' => $event,
             'schools' => EducationalCenter::all(),
             'roles' => Rol::all(),
-            'roles_disponibles' => Rol::all()->mapWithKeys(fn ($r) => [$r->code ?? $r->name => $r->name])->toArray(),
+            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
             'disabled' => '',
             'oper' => 'create'
         ]);
@@ -94,7 +92,7 @@ class EventController extends Controller
             'datos' => $datos,
             'schools' => EducationalCenter::all(),
             'roles' => Rol::all(),
-            'roles_disponibles' => Rol::all()->mapWithKeys(fn ($r) => [$r->code ?? $r->name => $r->name])->toArray(),
+            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
             'disabled' => 'disabled',
             'oper' => 'show'
         ]);
@@ -145,7 +143,7 @@ class EventController extends Controller
                     'event' => $event,
                     'schools' => EducationalCenter::all(),
                     'roles' => Rol::all(),
-                    'roles_disponibles' => Rol::all()->mapWithKeys(fn ($r) => [$r->code ?? $r->name => $r->name])->toArray(),
+                    'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
                     'disabled' => $disabled,
                     'oper' => 'edit' 
                 ]); 
@@ -157,7 +155,7 @@ class EventController extends Controller
             'datos' => $datos,
             'schools' => EducationalCenter::all(),
             'roles' => Rol::all(),
-            'roles_disponibles' => Rol::all()->mapWithKeys(fn ($r) => [$r->code ?? $r->name => $r->name])->toArray(),
+            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
             'disabled' => $disabled,
             'oper' => 'edit'
         ]);
@@ -195,7 +193,7 @@ class EventController extends Controller
             'datos' => $datos,
             'schools' => EducationalCenter::all(),
             'roles' => Rol::all(),
-            'roles_disponibles' => Rol::all()->mapWithKeys(fn ($r) => [$r->code ?? $r->name => $r->name])->toArray(),
+            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
             'disabled' => $disabled,
             'oper' => 'destroy'
         ]);

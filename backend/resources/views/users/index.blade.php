@@ -78,7 +78,7 @@
                         </td>
                         <td class="px-6 py-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                                {{ collect($roles_disponibles)->mapWithKeys(fn($item, $key) => [strtolower($key) => $item])->get(strtolower($user->role), ucfirst($user->role)) }}
+                                {{ $roles_disponibles[$user->role] ?? $user->role }}
                             </span>
                         </td>
                         <td class="px-6 py-4">
