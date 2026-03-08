@@ -46,21 +46,6 @@ class UserController extends Controller
                 'institution_name'=> 'nullable|string',
             ]);
 
-            if ($validator->fails()) {
-                if ($request->ajax()) {
-                    return view('users.create', [
-                        'datos' => $data,
-                        'user' => $user,
-                        'roles' => Rol::all(), 
-                        'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
-                        'education_levels' => EducationalCenter::$niveles_disponibles,
-                        'disabled' => '',
-                        'oper' => 'create'
-                    ])->withErrors($validator);
-                }
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
             $user->name             = $request->input('name');
             $user->last_name        = $request->input('last_name');
             $user->email            = $request->input('email');
@@ -143,23 +128,7 @@ class UserController extends Controller
                 'institution_name'=> 'nullable|string',
             ]);
 
-            if ($validator->fails()) {
-                if ($request->ajax()) {
-                    return view('users.create', [
-                        'datos' => $datos,
-                        'user' => $user,
-                        'roles' => Rol::all(), 
-                        'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
-                            return [$r->code ?? $r->name => $r->name];
-                        })->toArray(),
-                        'education_levels' => EducationalCenter::$niveles_disponibles,
-                        'disabled' => $disabled,
-                        'oper' => 'edit'
-                    ])->withErrors($validator);
-                }
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
+            // $request->validate throws ValidationException if fails, so manual check is redundant unless using Validator::make
             $user->name             = $request->input('name');
             $user->last_name        = $request->input('last_name');
             $user->email            = $request->input('email');
@@ -230,6 +199,7 @@ class UserController extends Controller
             $user->delete();
 
             if ($request->ajax()) {
+                $datos = ['exito' => 'Usuario eliminado correctamente'];
                 // Devolver Vista con éxito para que se cierre/actualice
                 return view('users.create', [
                     'user' => $user,

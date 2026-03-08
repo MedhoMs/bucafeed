@@ -16,59 +16,59 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-        path: '/',
-        name: 'register',
-        component: RegisterView
+            path: '/',
+            name: 'register',
+            component: RegisterView
         },
         {
-        path: '/home',
-        name: 'home',
-        component: HomeView
+            path: '/home',
+            name: 'home',
+            component: HomeView
         },
         {
-        path: '/login',
-        name: 'login',
-        component: LoginView
+            path: '/login',
+            name: 'login',
+            component: LoginView
         },
         {
-        path: '/profile/:id?',
-        name: 'profile',
-        component: ProfileView
+            path: '/profile/:id?',
+            name: 'profile',
+            component: ProfileView
         },
         {
-        path: '/question',
-        name: 'question',
-        component: QuestionView
+            path: '/question',
+            name: 'question',
+            component: QuestionView
         },
         {
-        path: '/explore',
-        name: 'explore',
-        component: ExploreView
+            path: '/explore',
+            name: 'explore',
+            component: ExploreView
         },
         {
-        path: '/notification',
-        name: 'notification',
-        component: NotificationView
+            path: '/notification',
+            name: 'notification',
+            component: NotificationView
         },
         {
-        path: '/event',
-        name: 'event',
-        component: EventView
+            path: '/event',
+            name: 'event',
+            component: EventView
         },
         {
-        path: '/meeting',
-        name: 'meeting',
-        component: MeetingView
+            path: '/meeting',
+            name: 'meeting',
+            component: MeetingView
         },
         {
-        path: '/videocall/:id?',
-        name: 'videocall',
-        component: VideoCallView
+            path: '/videocall/:id?',
+            name: 'videocall',
+            component: VideoCallView
         },
         {
-        path: '/laravel',
-        name: 'laravel',
-        component: LaravelTestView
+            path: '/laravel',
+            name: 'laravel',
+            component: LaravelTestView
         }
     ]
 })

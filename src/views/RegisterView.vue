@@ -3,10 +3,8 @@
     import FormNavBar from '@/components/NavBar/FormNavBar.vue';
     import ButtonForm from '@/components/buttons/ButtonForm.vue';
     import { useTranslations } from '@/composables/useTranslations'
-    import { useRouter } from 'vue-router';
     import axios from 'axios';
     const { t } = useTranslations()
-    const router = useRouter();
     import { onMounted, ref } from 'vue';
 
     onMounted(() => {

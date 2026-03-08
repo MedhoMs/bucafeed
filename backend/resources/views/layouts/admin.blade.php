@@ -81,6 +81,7 @@
                 
                 // Función auxiliar para alternar modal
                 window.toggleModal = function(show) {
+                    if (!modalEl) return;
                     if (show) {
                         modalEl.classList.remove('hidden');
                         modalEl.classList.add('flex');
@@ -104,6 +105,7 @@
 
                 // Cargador AJAX
                 window.ajaxLoad = function(url, target, isModal = false, shouldPushState = true) {
+                    if (!target) return;
                     if (!isModal) {
                         target.style.opacity = '0.5';
                     }

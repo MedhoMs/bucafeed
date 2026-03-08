@@ -33,9 +33,7 @@ Route::get('/users/show/{id}', [UserController::class, 'show'])->name('user.show
 Route::get('/users/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');
 Route::post('/users/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');
 
-// Role CRUD routes
-
-
+Route::get('/admin/roles', [RoleController::class, 'index'])->name('role.index');
 Route::get('/admin/roles/create', [RoleController::class, 'create'])->name('role.create');
 Route::post('/admin/roles/create', [RoleController::class, 'create'])->name('role.store');
 
