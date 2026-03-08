@@ -44,6 +44,7 @@ class UserController extends Controller
                 'role'            => 'required|string',
                 'education_level' => 'nullable|string',
                 'institution_name'=> 'nullable|string',
+                'description'     => 'nullable|string|max:1000',
             ]);
 
             $user->name             = $request->input('name');
@@ -55,6 +56,7 @@ class UserController extends Controller
             $user->education_level  = $request->input('education_level');
             $user->institution_name = $request->input('institution_name');
             $user->educational_center_id = $request->input('educational_center_id');
+            $user->description      = $request->input('description');
 
             $user->save();   
             
@@ -126,9 +128,11 @@ class UserController extends Controller
                 'role'            => 'required|string',
                 'education_level' => 'nullable|string',
                 'institution_name'=> 'nullable|string',
+                'description'     => 'nullable|string|max:1000',
+                'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'banner'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
             ]);
 
-            // $request->validate throws ValidationException if fails, so manual check is redundant unless using Validator::make
             $user->name             = $request->input('name');
             $user->last_name        = $request->input('last_name');
             $user->email            = $request->input('email');
@@ -140,6 +144,23 @@ class UserController extends Controller
             $user->education_level  = $request->input('education_level');
             $user->institution_name = $request->input('institution_name');
             $user->educational_center_id = $request->input('educational_center_id');
+            $user->description      = $request->input('description');
+
+            // Handle Profile Picture
+            if ($request->hasFile('profile_picture')) {
+                $file = $request->file('profile_picture');
+                $filename = time() . '_pfp_' . $user->id . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/profiles'), $filename);
+                $user->profile_picture = '/uploads/profiles/' . $filename;
+            }
+
+            // Handle Banner
+            if ($request->hasFile('banner')) {
+                $file = $request->file('banner');
+                $filename = time() . '_banner_' . $user->id . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/banners'), $filename);
+                $user->banner = '/uploads/banners/' . $filename;
+            }
             
             $user->save();
 
