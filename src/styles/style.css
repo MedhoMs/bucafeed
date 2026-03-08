@@ -1,0 +1,11 @@
+/*Esta hoja de estilos es global, principalmente afectará a todas las vistas, cada vista tendra su style scoped propio*/
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    font-family: "Montserrat", sans-serif;
+    min-height: 100vh;
+}

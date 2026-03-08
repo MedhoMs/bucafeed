@@ -1,9 +1,60 @@
 <!--Vista de formulario de registro-->
 <script setup>
-    import FormNavBar from '../components/FormNavBar.vue';
-    import ButtonForm from '../components/buttons/ButtonForm.vue';
-    import { useTranslations } from '../composables/useTranslations'
-    const { t } = useTranslations() // Variable para llamar al archivo de traduccion
+    import FormNavBar from '@/components/NavBar/FormNavBar.vue';
+    import ButtonForm from '@/components/buttons/ButtonForm.vue';
+    import { useTranslations } from '@/composables/useTranslations'
+    import { useRouter } from 'vue-router';
+    import { onMounted } from 'vue';
+
+    const { t } = useTranslations()
+    const router = useRouter();
+
+    onMounted(() => {
+        const loginButton = document.getElementById('loginButton');
+        const emailInput  = document.getElementById('username-register-form');
+        const passInput   = document.getElementById('password-register-form');
+        const errorMsg    = document.getElementById('loginErrorMsg');
+
+        loginButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            // Validación básica de campos vacíos
+            if (emailInput.value === '' || passInput.value === '') {
+                errorMsg.textContent = 'Por favor, rellena todos los campos';
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${apiBase}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email:    emailInput.value,
+                        password: passInput.value,
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    router.push('/home');
+                } else {
+                    // Mostrar el mensaje de error que devuelve Laravel
+                    errorMsg.textContent = data.message || 'Credenciales incorrectas';
+                    errorMsg.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+                errorMsg.textContent = 'Error de conexión, inténtalo de nuevo';
+                errorMsg.classList.remove('hidden');
+            }
+        });
+    });
 </script>
 
 <template>

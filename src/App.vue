@@ -1,5 +1,6 @@
 <script setup>
-import NavBar from './components/NavBar.vue'
+import NavBar from './components/NavBar/NavBar.vue';
+
 </script>
 
 <!--Desde la App se maneja todo lo que se va a ver, usando <router-view /> es lo que me permite elegir que vista va a ver el usuario-->
