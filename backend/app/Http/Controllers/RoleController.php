@@ -11,16 +11,9 @@ class RoleController extends Controller
     {
         $roles = Rol::all();
         
-        if ($request->ajax()) {
-            return view('roles.index', [
-                'roles' => $roles,
-                'roles_disponibles' => Rol::$roles_disponibles
-            ])->renderSections()['content'];
-        }
-        
         return view('roles.index', [
             'roles' => $roles,
-            'roles_disponibles' => Rol::$roles_disponibles
+            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray()
         ]);
     }
 

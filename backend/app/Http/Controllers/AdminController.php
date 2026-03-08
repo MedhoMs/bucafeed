@@ -34,10 +34,6 @@ class AdminController extends Controller
             'totalRoles'        => Rol::count(),
         ];
 
-        if (request()->ajax()) {
-            return view('admin.index', $data)->renderSections()['content'];
-        }
-
         return view('admin.index', $data);
     }
 
@@ -51,15 +47,9 @@ class AdminController extends Controller
 
         $data = [
             'users' => $users,
-            'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
-                return [$r->code ?? $r->name => $r->name];
-            })->toArray(),
+            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
             'niveles_disponibles' => EducationalCenter::$niveles_disponibles
         ];
-
-        if (request()->ajax()) {
-            return view('users.index', $data)->renderSections()['content'];
-        }
 
         return view('users.index', $data);
     }

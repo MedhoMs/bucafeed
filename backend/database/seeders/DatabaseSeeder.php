@@ -20,7 +20,15 @@ class DatabaseSeeder extends Seeder
         echo "🌱 Iniciando seeding de TelamoNet...\n";
 
         // Seed roles
-        foreach (Rol::$roles_disponibles as $code => $name) {
+        $roles_iniciales = [
+            'EU' => 'Usuario externo',
+            'Student' => 'Estudiante',
+            'Teacher' => 'Profesor',
+            'Admin' => 'Administrador',
+            'EI' => 'Centro educativo'
+        ];
+
+        foreach ($roles_iniciales as $code => $name) {
             Rol::firstOrCreate(
                 ['code' => $code],
                 ['name' => $name]

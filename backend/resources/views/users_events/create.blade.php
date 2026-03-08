@@ -168,7 +168,7 @@
                                 </div>
                             </div>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide bg-purple-500/10 text-purple-300 border border-purple-500/20">
-                                {{ collect($roles_disponibles)->mapWithKeys(fn($item, $key) => [strtolower($key) => $item])->get(strtolower($participant->role), ucfirst($participant->role)) }}
+                                {{ $roles_disponibles[$participant->role] ?? $participant->role }}
                             </span>
                         </div>
                     @endforeach
@@ -183,17 +183,21 @@
         @endif
 
         <div class="flex items-center justify-end gap-3 mt-8">
-            @if (!$disabled || $oper == 'edit')
-                <button type="submit" class="px-6 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold shadow-lg shadow-cyan-500/20 transition-all duration-200">
-                    {{ $oper == 'edit' ? 'Actualizar Evento' : 'Crear Evento' }}
+            @if (!$disabled)
+                <button type="submit" class="btn-primary px-6 py-2 rounded-xl font-semibold transition-all duration-200">
+                    Guardar
                 </button>
             @endif
 
-            @if ($oper == 'destroy' && empty($datos['exito']))
+            @if ($oper == 'destroy')
                 <button type="submit" class="px-6 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-all duration-200">
-                    Confirmar Eliminación
+                    Eliminar evento
                 </button>
             @endif
         </div>
     </form>
+
+    <button type="button" class="mt-4 px-4 py-2 rounded-xl bg-slate-700/50 hover:bg-slate-700 text-white transition-all duration-200" data-bs-dismiss="modal" onclick="document.getElementById('default-modal').classList.add('hidden')">
+        Volver
+    </button>
 </div>

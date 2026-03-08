@@ -47,7 +47,7 @@
 
         <div class="flex items-center justify-end gap-3 mt-8">
             @if (!$disabled || $oper == 'edit')
-                <button type="submit" class="px-6 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold shadow-lg shadow-cyan-500/20 transition-all duration-200">
+                <button type="submit" class="btn-primary px-6 py-2 rounded-xl font-semibold transition-all duration-200">
                     {{ ($oper == 'edit') ? 'Actualizar Rol' : 'Guardar Rol' }}
                 </button>
             @endif

@@ -12,12 +12,4 @@ class Rol extends Model
         'name',
         'code'
     ];
-
-    public static $roles_disponibles = [
-        'EU' => 'Usuario externo',
-        'Student' => 'Estudiante',
-        'Teacher' => 'Profesor',
-        'Admin' => 'Administrador',
-        'EI' => 'Centro educativo'
-    ];
 }

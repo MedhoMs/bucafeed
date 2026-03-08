@@ -9,7 +9,7 @@
             <p class="text-white/60 text-sm mt-1">Administra los eventos de los centros educativos.</p>
         </div>
         <button 
-            class="btn-modal bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-lg shadow-cyan-900/20 flex items-center gap-2 w-full sm:w-auto justify-center"
+            class="btn-modal btn-primary px-5 py-2.5 rounded-xl font-medium flex items-center gap-2 w-full sm:w-auto justify-center"
             data-url="{{ route('users_events.create') }}"
             data-title="Crear Nuevo Evento"
             data-load="modal"
@@ -63,7 +63,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center gap-3">
                                 @if($event->image_url)
-                                    <img src="{{ $event->image_url }}" class="w-10 h-10 rounded-lg object-cover shadow-md" alt="">
+                                    <img src="{{ $event->image_url }}" class="w-10 h-10 rounded-lg object-cover shadow-md" alt="" loading="lazy">
                                 @else
                                     <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
                                         {{ substr($event->title, 0, 1) }}
@@ -90,7 +90,7 @@
                         <td class="px-6 py-4 text-center">
                             @if($event->target_role)
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium tracking-wide uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                    {{ collect($roles_disponibles)->mapWithKeys(fn($item, $key) => [strtolower($key) => $item])->get(strtolower($event->target_role), ucfirst($event->target_role)) }}
+                                    {{ $roles_disponibles[$event->target_role] ?? $event->target_role }}
                                 </span>
                             @else
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium tracking-wide uppercase bg-white/10 text-white/50 border border-white/20">
