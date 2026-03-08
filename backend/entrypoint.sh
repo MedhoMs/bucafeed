@@ -12,6 +12,8 @@ mkdir -p storage/framework/sessions
 mkdir -p storage/framework/views
 mkdir -p storage/logs
 mkdir -p bootstrap/cache
+mkdir -p public/uploads/profiles
+mkdir -p public/uploads/banners
 
 # Ajustar permisos SIEMPRE al inicio (vital para volúmenes de Railway)
 echo "Corrigiendo permisos de storage y bootstrap/cache..."
