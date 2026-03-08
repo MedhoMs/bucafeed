@@ -1,8 +1,8 @@
 <!--Vista de formulario de login-->
 <script setup>
-    import FormNavBar from '../components/FormNavBar.vue';
-    import ButtonForm from '../components/buttons/ButtonForm.vue';
-    import { useTranslations } from '../composables/useTranslations'
+    import FormNavBar from '@/components/NavBar/FormNavBar.vue';
+    import ButtonForm from '@/components/buttons/ButtonForm.vue';
+    import { useTranslations } from '@/composables/useTranslations'
     import { useRouter } from 'vue-router';
     import { onMounted } from 'vue';
 

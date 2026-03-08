@@ -1,16 +1,16 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import HomeView from "../views/home/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import ProfileView from "../views/ProfileView.vue";
 import RegisterView from "../views/RegisterView.vue";
-import QuestionView from "../views/QuestionView.vue";
-import ExploreView from "../views/ExploreView.vue";
-import NotificationView from "../views/NotificationView.vue";
-import EventView from "../views/EventView.vue";
-import MeetingView from "../views/MeetingView.vue";
-import MeetingChatView from "../views/MeetingChatView.vue";
+import QuestionView from "../views/home/QuestionView.vue";
+import ExploreView from "../views/home/ExploreView.vue";
+import NotificationView from "../views/home/NotificationView.vue";
+import EventView from "../views/home/EventView.vue";
+import MeetingView from "../views/home/MeetingView.vue";
+import MeetingChatView from "../views/home/MeetingChatView.vue";
 import LaravelTestView from "../views/LaravelTestView.vue";
-import VideoCallView from "../views/VideoCallView.vue";
+import VideoCallView from "../views/home/VideoCallView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),

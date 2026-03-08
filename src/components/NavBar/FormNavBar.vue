@@ -1,7 +1,7 @@
 <!--Componente de barra de navegacion-->
 <script setup>
 import { ref } from 'vue'
-import { useTranslations } from '../composables/useTranslations'
+import { useTranslations } from '@/composables/useTranslations'
 
 const { t, locale, setLocale } = useTranslations()
 
@@ -33,12 +33,12 @@ const languageSelector = () => {
             <div id="languages-buttons" :class="{ 'show': showLanguages }">
                 <div class="language-flag-container" @click="changeLanguage('es')" >
                     <p id="spanish-selector" class="language-button">Español</p>
-                    <img src="../assets/flags-icons/spain.png" alt="Spain Flag">
+                    <img src="../../assets/flags-icons/spain.png" alt="Spain Flag">
                 </div>
                 
                 <div class="language-flag-container" @click="changeLanguage('en')">
                     <p id="english-selector" class="language-button">English</p>
-                    <img src="../assets/flags-icons/united-kingdom.png" alt="United Kingdom Flag">
+                    <img src="../../assets/flags-icons/united-kingdom.png" alt="United Kingdom Flag">
                 </div>
             </div>
         </div>

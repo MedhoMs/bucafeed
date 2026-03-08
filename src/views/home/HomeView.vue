@@ -1,9 +1,9 @@
 <script setup>
-    import NavBar from '../components/NavBar.vue';
-    import SearchBar from '../components/SearchBar.vue';
+    import NavBar from '../../components/NavBar/NavBar.vue';
+    import SearchBar from '../../components/SearchBar.vue';
     import { onMounted } from 'vue';
 
-    import { useTranslations } from '../composables/useTranslations'
+    import { useTranslations } from '../../composables/useTranslations'
 
     const { t } = useTranslations() // Variable para llamar al archivo de traduccion
     
