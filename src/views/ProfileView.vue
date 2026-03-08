@@ -1,9 +1,9 @@
 <script setup>
-import NavBar from '../components/NavBar.vue';
-import SideBar from '../components/SideBar.vue';
-import SearchBar from '../components/SearchBar.vue';
-import ButtonTemplate from '../components/buttons/ButtonTemplate.vue';
-import { useTranslations } from '../composables/useTranslations'
+import NavBar from '@/components/NavBar/NavBar.vue';
+import SideBar from '@/components/SideBar.vue';
+import SearchBar from '@/components/SearchBar.vue';
+import ButtonTemplate from '@/components/buttons/ButtonTemplate.vue';
+import { useTranslations } from '@/composables/useTranslations'
 
 const { t } = useTranslations()
 

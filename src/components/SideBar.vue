@@ -1,6 +1,6 @@
 <script setup>
-import ButtonTemplate from '../components/buttons/ButtonTemplate.vue';
-import { useTranslations } from '../composables/useTranslations'
+import ButtonTemplate from '@/components/buttons/ButtonTemplate.vue';
+import { useTranslations } from '@/composables/useTranslations'
 
 const { t } = useTranslations()
 

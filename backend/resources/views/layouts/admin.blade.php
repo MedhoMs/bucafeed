@@ -21,11 +21,11 @@
         @if(app()->environment('local'))
             <!-- Modo Desarrollo: Carga desde el servidor de Vite -->
             <script type="module" src="http://localhost:5173/@@vite/client"></script>
-            <link rel="stylesheet" href="http://localhost:5173/src/sytles/style.css">
-            <link rel="stylesheet" href="http://localhost:5173/src/sytles/main.css">
+            <link rel="stylesheet" href="http://localhost:5173/src/styles/style.css">
+            <link rel="stylesheet" href="http://localhost:5173/src/styles/main.css">
         @else
             <!-- Modo Producción: Carga los assets compilados -->
-            @vite(['src/sytles/style.css', 'src/sytles/main.css'], 'frontend')
+            @vite(['src/styles/style.css', 'src/styles/main.css'], 'frontend')
         @endif
     </head>
     <body class="hold-transition sidebar-mini">

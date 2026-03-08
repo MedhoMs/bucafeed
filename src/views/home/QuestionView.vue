@@ -1,9 +1,9 @@
 <script setup>
-    import NavBar from '../components/NavBar.vue';
-    import SearchBar from '../components/SearchBar.vue';
-    import SideBar from '../components/SideBar.vue';
+    import NavBar from '../../components/NavBar/NavBar.vue';
+    import SearchBar from '../../components/SearchBar.vue';
+    import SideBar from '../../components/SideBar.vue';
     
-    import { useTranslations } from '../composables/useTranslations'
+    import { useTranslations } from '../../composables/useTranslations'
     const { t } = useTranslations() // Variable para llamar al archivo de traduccion
 </script>
 

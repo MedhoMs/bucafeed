@@ -1,10 +1,11 @@
 <!--Vista de formulario de registro-->
 <script setup>
-    import FormNavBar from '../components/FormNavBar.vue';
-    import ButtonForm from '../components/buttons/ButtonForm.vue';
-    import { useTranslations } from '../composables/useTranslations'
+    import FormNavBar from '@/components/NavBar/FormNavBar.vue';
+    import ButtonForm from '@/components/buttons/ButtonForm.vue';
+    import { useTranslations } from '@/composables/useTranslations'
     import { useRouter } from 'vue-router';
-    const { t } = useTranslations() //Variable para llamar al archivo de traduccion
+    import axios from 'axios';
+    const { t } = useTranslations()
     const router = useRouter();
     import { onMounted, ref } from 'vue';
 
@@ -14,6 +15,8 @@
         const allRolesForm = document.getElementById('allRolesForm');
         const studentTeacheEuForm = document.getElementById('studentTeacheEuForm');
         const EIForm = document.getElementById('EIForm');
+        const validateEmailForm = document.getElementById('validateEmailForm');
+        const validateEmailText = document.getElementById('validateEmailText');
         const selectRole = document.getElementById('selectRole');
         const registerButton = document.getElementById('registerButton');
         const textInputs = document.querySelectorAll('input');
@@ -21,6 +24,7 @@
         const allRolesInput = document.querySelectorAll('.allRolesInput');
         const studentTeacheEuInput = document.querySelectorAll('.studentTeacheEuInput');
         const EIInput = document.querySelectorAll('.EIInput');
+        const codeInput = document.getElementById('code-register-form');
 
         let formPath = '';
         let errorText;
@@ -36,11 +40,7 @@
         textInputs.forEach((input) => {
             input.addEventListener("keyup", (e) => {
                 const name = e.target.name;
-
-                //Cojo el patron que corresponde al nombre del input
                 const regex = patterns[name];
-
-                //Si existe un patron asociado, valido el campo
                 if (regex) {
                     validateExpresion(e.target, regex);
                 }
@@ -48,16 +48,16 @@
         });
 
         function validateExpresion(input, pattern) {
-
             errorText = input.nextElementSibling;
-
-            //Compruebo si el valor cumple el patron
             if (pattern.test(input.value)) {
                 input.classList.add('valido');
+                input.classList.remove('border-red-500');
+                input.classList.add('border-green-500');
                 errorText.hidden = true;
             } else {
                 input.classList.add('invalido');
                 errorText.classList.add('text-red-500');
+                input.classList.add('border-red-500');
                 errorText.hidden = false;
             }
         }
@@ -67,95 +67,45 @@
         });
 
         registerButton.addEventListener('click', function() {
-            validateForm(formPath);
+            validateForm();
         });
 
-        nextButton.addEventListener('click', function() {
-            if (selectRole.value === "EI") {
-                formPath = "EI";
-
-                allRolesForm.classList.remove('flex');
-                allRolesForm.classList.add('hidden');
-                EIForm.classList.remove('hidden');
-                EIForm.classList.add('flex');
-                registerButton.classList.remove('hidden');
-                registerButton.classList.add('flex');
-                nextButton.classList.add('hidden');
-
-            } else if (selectRole.value === "Student") {
-                formPath = "Student"; 
-
-                allRolesForm.classList.remove('flex');
-                allRolesForm.classList.add('hidden');
-                studentTeacheEuForm.classList.remove('hidden');
-                studentTeacheEuForm.classList.add('flex');
-
-                if (nextButton.id === "studentButton") {
-                    studentTeacheEuForm.classList.add('hidden');
-                    studentTeacheEuForm.classList.remove('flex');
-                    EIForm.classList.remove('hidden');
-                    EIForm.classList.add('flex');
-                    registerButton.classList.remove('hidden');
-                    registerButton.classList.add('flex');
-                    nextButton.classList.add('hidden');
+        function validateInputs(inputs) {
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].classList.contains('border-red-500') || inputs[i].value === '') {
+                    let formErrWarning = document.getElementById('formErrWarning');
+                    formErrWarning.classList.toggle('opacity-100');
+                    setTimeout(() => {
+                        formErrWarning.classList.toggle('opacity-100');
+                    }, 3000);
+                    return false;
                 }
-                nextButton.id = "studentButton";
-
-            } else if (selectRole.value === "Teacher") {
-                formPath = "Teacher";
-
-                allRolesForm.classList.remove('flex');
-                allRolesForm.classList.add('hidden');
-                studentTeacheEuForm.classList.remove('hidden');
-                studentTeacheEuForm.classList.add('flex');
-
-                if (nextButton.id === "teacherButton") {
-                    studentTeacheEuForm.classList.add('hidden');
-                    studentTeacheEuForm.classList.remove('flex');
-                    EIForm.classList.remove('hidden');
-                    EIForm.classList.add('flex');
-                    registerButton.classList.remove('hidden');
-                    registerButton.classList.add('flex');
-                    nextButton.classList.add('hidden');
-                }
-                nextButton.id = "teacherButton";
-
-            } else if (selectRole.value === "EU") {
-                formPath = "EU";
-
-                allRolesForm.classList.remove('flex');
-                allRolesForm.classList.add('hidden');
-                studentTeacheEuForm.classList.remove('hidden');
-                studentTeacheEuForm.classList.add('flex');
-                registerButton.classList.remove('hidden');
-                registerButton.classList.add('flex');
-                nextButton.classList.add('hidden');
             }
-        });
+            return true;
+        }
 
-        async function validateForm() {
-            const allRolesValueList = { 
-                email: allRolesInput[0].value, 
-                password: allRolesInput[1].value, 
-                role: allRolesInput[2].value,
+        //Llamo a /api/send-code, guardo el payload en Laravel cache y envia el email
+        async function sendVerificationCode() {
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+            const allRolesValueList = {
+                email:    allRolesInput[0].value,
+                password: allRolesInput[1].value,
+                role:     allRolesInput[2].value,
             };
-
             const studentTeacheEuValueList = {
-                name: studentTeacheEuInput[0].value,
+                name:      studentTeacheEuInput[0].value,
                 last_name: studentTeacheEuInput[1].value,
-                dni: studentTeacheEuInput[2].value,
+                dni:       studentTeacheEuInput[2].value,
             };
-
             const EIValueList = {
-                education_level: EIInput[0].value,
+                education_level:  EIInput[0].value,
                 institution_name: EIInput[1].value,
             };
 
-            //Creo un payload base con lo que tienen que tener todos los usuarios
-            let payload = { ...allRolesValueList }; //... Copia todo el contenido de un array y lo introduce en una variable
-
+            let payload = { ...allRolesValueList };
             if (formPath === 'EU') {
-                payload = { ...payload, ...studentTeacheEuValueList }; //payload = lo que habia en el payload base + el array correspondiente
+                payload = { ...payload, ...studentTeacheEuValueList };
             } else if (formPath === 'Student' || formPath === 'Teacher') {
                 payload = { ...payload, ...studentTeacheEuValueList, ...EIValueList };
             } else if (formPath === 'EI') {
@@ -163,7 +113,58 @@
             }
 
             try {
-                const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${apiBase}/send-code`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    validateEmailText.textContent = `Hemos enviado un código de verificación a ${allRolesInput[0].value}`;
+                } else {
+                    console.error('Error al enviar el código:', data);
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+            }
+        }
+
+        //Envio el payload completo + el codigo a /api/register
+        async function validateForm() {
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+            const allRolesValueList = {
+                email:    allRolesInput[0].value,
+                password: allRolesInput[1].value,
+                role:     allRolesInput[2].value,
+            };
+            const studentTeacheEuValueList = {
+                name:      studentTeacheEuInput[0].value,
+                last_name: studentTeacheEuInput[1].value,
+                dni:       studentTeacheEuInput[2].value,
+            };
+            const EIValueList = {
+                education_level:  EIInput[0].value,
+                institution_name: EIInput[1].value,
+            };
+
+            let payload = { ...allRolesValueList };
+            if (formPath === 'EU') {
+                payload = { ...payload, ...studentTeacheEuValueList };
+            } else if (formPath === 'Student' || formPath === 'Teacher') {
+                payload = { ...payload, ...studentTeacheEuValueList, ...EIValueList };
+            } else if (formPath === 'EI') {
+                payload = { ...payload, ...EIValueList };
+            }
+
+            //Añado el codigo de verificacion introducido por el usuario
+            payload.verification_code = codeInput.value;
+
+            try {
                 const response = await fetch(`${apiBase}/register`, {
                     method: 'POST',
                     headers: {
@@ -181,12 +182,102 @@
                 console.error(error);
             }
         }
+
+        nextButton.addEventListener('click', function () {
+
+            if (selectRole.value === "EI") {
+                formPath = "EI";
+
+                if (nextButton.id === "nextButton") {
+                    if (!validateInputs(allRolesInput)) return;
+                    allRolesForm.classList.replace('flex', 'hidden');
+                    EIForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "validateEmail";
+
+                } else if (nextButton.id === "validateEmail") {
+                    EIForm.classList.replace('flex', 'hidden');
+                    validateEmailForm.classList.replace('hidden', 'flex');
+                    registerButton.classList.replace('hidden', 'flex');
+                    nextButton.classList.add('hidden');
+                    sendVerificationCode();
+                }
+
+            } else if (selectRole.value === "Student") {
+                formPath = "Student";
+
+                if (nextButton.id === "nextButton") {
+                    if (!validateInputs(allRolesInput)) return;
+                    allRolesForm.classList.replace('flex', 'hidden');
+                    studentTeacheEuForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "studentButton";
+
+                } else if (nextButton.id === "studentButton") {
+                    if (!validateInputs(studentTeacheEuInput)) return;
+                    studentTeacheEuForm.classList.replace('flex', 'hidden');
+                    EIForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "validateEmail";
+
+                } else if (nextButton.id === "validateEmail") {
+                    EIForm.classList.replace('flex', 'hidden');
+                    validateEmailForm.classList.replace('hidden', 'flex');
+                    registerButton.classList.replace('hidden', 'flex');
+                    nextButton.classList.add('hidden');
+                    sendVerificationCode();
+                }
+
+            } else if (selectRole.value === "Teacher") {
+                formPath = "Teacher";
+
+                if (nextButton.id === "nextButton") {
+                    if (!validateInputs(allRolesInput)) return;
+                    allRolesForm.classList.replace('flex', 'hidden');
+                    studentTeacheEuForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "teacherButton";
+
+                } else if (nextButton.id === "teacherButton") {
+                    if (!validateInputs(studentTeacheEuInput)) return;
+                    studentTeacheEuForm.classList.replace('flex', 'hidden');
+                    EIForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "validateEmail";
+
+                } else if (nextButton.id === "validateEmail") {
+                    EIForm.classList.replace('flex', 'hidden');
+                    validateEmailForm.classList.replace('hidden', 'flex');
+                    registerButton.classList.replace('hidden', 'flex');
+                    nextButton.classList.add('hidden');
+                    sendVerificationCode();
+                }
+
+            } else if (selectRole.value === "EU") {
+                formPath = "EU";
+
+                if (nextButton.id === "nextButton") {
+                    if (!validateInputs(allRolesInput)) return;
+                    allRolesForm.classList.replace('flex', 'hidden');
+                    studentTeacheEuForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "validateEmail";
+
+                } else if (nextButton.id === "validateEmail") {
+                    if (!validateInputs(studentTeacheEuInput)) return;
+                    studentTeacheEuForm.classList.replace('flex', 'hidden');
+                    validateEmailForm.classList.replace('hidden', 'flex');
+                    registerButton.classList.replace('hidden', 'flex');
+                    nextButton.classList.add('hidden');
+                    sendVerificationCode();
+                }
+            }
+        });
     });
 </script>
 
 <template>
     <main class="relative flex flex-col justify-center items-center min-h-screen bg-black/50">
         <FormNavBar></FormNavBar>
+
+        <span id="formErrWarning" class="absolute opacity-0 top-5 p-2 bg-red-300/80 border-2 rounded-xl border-red-500/80 transition-all duration-300">
+            <p class="font-bold text-white [text-shadow:-1px_1px_1px_black]">Faltan datos o hay datos erroneos</p>
+        </span>
+
         <h1 class="text-6xl mb-[70px] text-white [text-shadow:-3px_3px_1px_black]">{{ t.register.title }}</h1>
         <div class="flex justify-center items-center mb-[150px]" id="form-container">
             <div class="flex flex-col justify-center items-center h-[400px] w-[400px] p-[10px] text-white rounded-bl-xl rounded-tl-xl" id="side-panel">
@@ -200,10 +291,10 @@
                     <label class="font-bold mt-[30px]" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
                     <span class=" text-xs">{{ t.register.emailSpan }}</span>
                     <input type="text" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="email-register-form" name="email-register-form" :placeholder="t.register.placeholderEmail" required>
-                    <p hidden class="absolute top-[110px] left-[135px] font-bold">Email inválido</p>
+                    <p hidden class="absolute top-[110px] left-[135px] font-semibold">Email inválido</p>
                     <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
                     <input type="password" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
-                    <p hidden class="absolute top-[195px] left-[110px] text-[15px] font-bold">Al menos 8 carácteres</p>
+                    <p hidden class="absolute top-[195px] left-[110px] text-[15px] font-semibold">Al menos 8 carácteres</p>
                     <label class="font-bold" for="who-register-form" id="who-register-label">¿Quién eres?</label>
                     <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
                         <option value="EI">Institución Educativa</option>
@@ -216,13 +307,13 @@
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="student-name" id="studentName">Nombre</label>
                     <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="name-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <p hidden>El nombre debe tener entre 5 y 12 letras</p>
+                    <p hidden class="absolute top-[90px] left-[30px] font-semibold">El nombre debe tener entre 5 y 12 letras</p>
                     <label class="font-bold" for="student-name" id="studentName">Apellidos</label>
                     <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="surname-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <p hidden>Deben haber 2 apellidos</p>
+                    <p hidden class="absolute top-[180px] left-[100px] text-[15px] font-semibold">Deben haber 2 apellidos</p>
                     <label class="font-bold" for="student-name" id="studentName">DNI/NIE</label>
                     <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="dni-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <p hidden>DNI/NIE inválido</p>
+                    <p hidden class="absolute top-[265px] left-[125px] text-[15px] font-semibold">DNI/NIE inválido</p>
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
@@ -237,7 +328,11 @@
                     <select name="" id="" class="EIInput border-b border-black pb-1">
                         <option value="en-el-futuro">Saldran todo de la base de datos</option>
                     </select>
+                </section>
 
+                <section id="validateEmailForm" class="forms hidden flex-col items-center mb-16">
+                    <p id="validateEmailText" class="mb-5 text-center font-bold">Hemos enviado un código de verificación a tu correo</p>
+                    <input type="text" class="validateEmailInput outline-none border-b border-black mb-[30px] p-[2px] w-32 text-center text-xl" maxlength="6" autocomplete="off" id="code-register-form" name="code-register-form" required></input>
                 </section>
 
                 <button id="registerButton" class="absolute bottom-[80px] right-12 text-center hidden">
@@ -256,6 +351,6 @@
 
 <style scoped>
     #side-panel {
-        background: linear-gradient(140deg, #326465,#1d2e3e);/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        background: linear-gradient(140deg, #326465,#1d2e3e);
     }
-</style> 
+</style>
