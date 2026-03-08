@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Rol;
 use App\Models\EducationalCenter;
-use App\Models\Rol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -27,9 +26,6 @@ class UserController extends Controller
          ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     /**
      * Show the form for creating a new resource.
      */
