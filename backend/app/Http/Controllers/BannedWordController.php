@@ -88,19 +88,23 @@ class BannedWordController extends Controller
             $bannedWord->delete();
 
             if ($request->ajax()) {
-                return response()->json([
-                    'exito' => 'Palabra eliminada correctamente'
+                return view('banned_words.create', [
+                    'bannedWord' => $bannedWord,
+                    'datos'      => ['exito' => 'Palabra eliminada correctamente'],
+                    'disabled'   => 'disabled',
+                    'oper'       => 'destroy'
                 ]);
             }
             return redirect()->route('admin.index');
         }
 
         $datos = ['exito' => ''];
+        $disabled = 'disabled';
         
         return view('banned_words.create', [
             'bannedWord' => $bannedWord,
             'datos'      => $datos,
-            'disabled'   => 'disabled',
+            'disabled'   => $disabled,
             'oper'       => 'destroy'
         ]);
     }

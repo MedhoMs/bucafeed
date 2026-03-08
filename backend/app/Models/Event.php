@@ -48,7 +48,8 @@ class Event extends Model
                 // If the app is being fetched via API or we want to optimize, 
                 // we return a permanent URL to the streaming endpoint.
                 if (str_starts_with($this->image, 'data:')) {
-                    return route('api.event.image', ['id' => $this->id]);
+                    $timestamp = $this->updated_at ? $this->updated_at->timestamp : time();
+                    return route('api.event.image', ['id' => $this->id, 'v' => $timestamp]);
                 }
                 
                 if (str_starts_with($this->image, 'http')) return $this->image;

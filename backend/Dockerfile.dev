@@ -18,6 +18,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 COPY zz-docker.conf /etc/php/8.4/fpm/pool.d/zz-docker.conf
 COPY php-optimize.ini /usr/local/etc/php/conf.d/php-optimize.ini
+RUN sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' /usr/local/etc/php/php.ini-development || true && \
+    sed -i 's/post_max_size = 8M/post_max_size = 50M/g' /usr/local/etc/php/php.ini-development || true
 RUN mkdir -p /etc/supervisor/conf.d
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 

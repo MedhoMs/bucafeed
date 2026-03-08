@@ -198,6 +198,9 @@ class UserController extends Controller
         if ($request->isMethod('post')) {
             $user->delete();
 
+            $datos = ['exito' => 'Usuario eliminado correctamente'];
+            $disabled = 'disabled';
+
             if ($request->ajax()) 
             {
                 return view('users.create', [
@@ -207,7 +210,7 @@ class UserController extends Controller
                     'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
                     'education_levels' => EducationalCenter::$niveles_disponibles,
                     'disabled' => $disabled,
-                    'oper' => 'edit'
+                    'oper' => 'destroy'
                 ]);
             }
 

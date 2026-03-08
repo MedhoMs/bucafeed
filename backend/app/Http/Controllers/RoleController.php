@@ -135,6 +135,9 @@ class RoleController extends Controller
             return redirect()->route('role.index');
         }
 
+        $datos = ['exito' => ''];
+        $disabled = 'disabled';
+
         return view('roles.create', [
             'role' => $role,
             'oper' => 'destroy',
