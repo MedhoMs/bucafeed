@@ -11,6 +11,25 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Rutas de emergencia para Railway (Migraciones y Seeders)
+Route::get('/migrate', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return "Migraciones ejecutadas: " . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return "Error en migraciones: " . $e->getMessage();
+    }
+});
+
+Route::get('/seed', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        return "Seeders ejecutados: " . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return "Error en seeders: " . $e->getMessage();
+    }
+});
+
 Route::get('/prueba', function () {
     return view('prueba');
 });
