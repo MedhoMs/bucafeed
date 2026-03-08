@@ -20,7 +20,7 @@ class RoleController extends Controller
         
         return view('roles.index', [
             'roles' => $roles,
-            'roles_disponibles' => Rol::$roles_disponibles
+            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray()
         ]);
     }
 

@@ -9,7 +9,7 @@
             <p class="text-white/60 text-sm mt-1">Administra los usuarios registrados en la plataforma.</p>
         </div>
         <button 
-            class="btn-modal bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-lg shadow-cyan-900/20 flex items-center gap-2 w-full sm:w-auto justify-center"
+            class="btn-modal btn-primary px-5 py-2.5 rounded-xl font-medium flex items-center gap-2 w-full sm:w-auto justify-center"
             data-url="{{ route('user.create') }}"
             data-title="Crear Nuevo Usuario"
             data-load="modal"
@@ -78,7 +78,7 @@
                         </td>
                         <td class="px-6 py-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                                {{ collect($roles_disponibles)->mapWithKeys(fn($item, $key) => [strtolower($key) => $item])->get(strtolower($user->role), ucfirst($user->role)) }}
+                                {{ $roles_disponibles[$user->role] ?? $user->role }}
                             </span>
                         </td>
                         <td class="px-6 py-4">

@@ -1,3 +1,4 @@
+@if(!request()->ajax())
 <!DOCTYPE html>
 <html lang="es">
     <head>
@@ -34,7 +35,9 @@
             
             <!-- Contenido Principal -->
             <div id="main-content-area" class="content-wrapper flex-1 relative z-0">
+@endif
                 @yield('content')
+@if(!request()->ajax())
             </div>
         </div>
         
@@ -263,8 +266,4 @@
         </script>    
     </body>
 </html>
-
-
-
-
-
+@endif

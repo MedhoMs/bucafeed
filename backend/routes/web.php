@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\BannedWordController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -58,3 +59,16 @@ Route::get('/admin/events/show/{id}', [EventController::class, 'show'])->name('u
 
 Route::get('/admin/events/destroy/{id}', [EventController::class, 'destroy'])->name('users_events.destroy');
 Route::post('/admin/events/destroy/{id}', [EventController::class, 'destroy'])->name('users_events.destroy.post');
+
+
+
+Route::get('/admin/banned-words', [BannedWordController::class, 'index'])->name('banned_words.index');
+
+Route::get('/admin/banned-words/create', [BannedWordController::class, 'create'])->name('banned_words.create');
+Route::post('/admin/banned-words/create', [BannedWordController::class, 'create'])->name('banned_words.create.post');
+
+Route::get('/admin/banned-words/edit/{id}', [BannedWordController::class, 'edit'])->name('banned_words.edit');
+Route::post('/admin/banned-words/edit/{id}', [BannedWordController::class, 'edit'])->name('banned_words.edit.post');
+
+Route::get('/admin/banned-words/{id}', [BannedWordController::class, 'destroy'])->name('banned_words.destroy');
+Route::post('/admin/banned-words/{id}', [BannedWordController::class, 'destroy'])->name('banned_words.destroy.post');

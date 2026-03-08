@@ -44,8 +44,15 @@ class Event extends Model
         return Attribute::make(
             get: function () {
                 if (!$this->image) return null;
-                if (str_starts_with($this->image, 'data:')) return $this->image;
+                
+                // If the app is being fetched via API or we want to optimize, 
+                // we return a permanent URL to the streaming endpoint.
+                if (str_starts_with($this->image, 'data:')) {
+                    return route('api.event.image', ['id' => $this->id]);
+                }
+                
                 if (str_starts_with($this->image, 'http')) return $this->image;
+                
                 return Storage::disk('public')->url($this->image);
             },
         );

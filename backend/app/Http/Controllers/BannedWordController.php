@@ -7,24 +7,94 @@ use Illuminate\Http\Request;
 
 class BannedWordController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return BannedWord::all();
+        $bannedWords = BannedWord::all();
+
+        return view('banned_words.index', compact('bannedWords'));
     }
 
-    public function store(Request $request)
+    public function create(Request $request)
     {
-        $validated = $request->validate([
-            'word' => 'required|string|unique:banned_words,word',
+        $data = ['exito' => ''];
+        $bannedWord = new BannedWord();
+
+        if ($request->isMethod('post')) {
+            $validated = $request->validate([
+                'word' => 'required|string|unique:banned_words,word'
+            ]);
+
+            $bannedWord->word = $request->input('word');
+            $bannedWord->save();
+
+            $data['exito'] = 'Palabra vetada añadida correctamente';
+        }
+
+
+        return view('banned_words.create', [
+            'datos'      => $data,
+            'bannedWord' => $bannedWord,
+            'disabled'   => '',
+            'oper'       => 'create'
         ]);
-
-        return BannedWord::create($validated);
     }
 
-    public function destroy(BannedWord $bannedWord)
+    public function edit(Request $request, $id)
     {
-        $bannedWord->delete();
-        return response()->noContent();
+        $bannedWord = BannedWord::find($id);
+        $disabled = '';
+        $datos['exito'] = '';
+
+        if ($request->isMethod('post')) {
+            $validated = $request->validate([
+                'word' => 'required|string|unique:banned_words,word,'.$bannedWord->id
+            ]);
+
+            $bannedWord->word = $request->input('word');
+            $bannedWord->save();
+
+            $datos['exito'] = 'Operación realizada correctamente';
+            $disabled = 'disabled';
+
+
+        }
+
+        return view('banned_words.create', [
+            'bannedWord' => $bannedWord,
+            'datos'      => $datos,
+            'disabled'   => $disabled,
+            'oper'       => 'edit'
+        ]);
+    }
+
+    public function destroy(Request $request, $id = '')
+    {
+        $bannedWord = BannedWord::find($id);
+
+        if (!$bannedWord) {
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Palabra no encontrada'], 404);
+            }
+        }
+
+        if ($request->isMethod('post')) {
+            $bannedWord->delete();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'exito' => 'Palabra eliminada correctamente'
+                ]);
+            }
+            return redirect()->route('admin.index');
+        }
+
+        $datos = ['exito' => ''];
+        
+        return view('banned_words.create', [
+            'bannedWord' => $bannedWord,
+            'datos'      => $datos,
+            'disabled'   => 'disabled',
+            'oper'       => 'destroy'
+        ]);
     }
 }
-
