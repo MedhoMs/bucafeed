@@ -256,36 +256,46 @@
                 </div>
             </a>
         </div>
-    </div>
+        {{-- Palabras Vetadas --}}
+        <div class="col-span-1 xl:col-span-1">
+            <a href="#" data-url="/admin/banned-words" data-load="modal" data-title="Palabras Vetadas" class="btn-modal block no-underline group h-full">
+                <div class="roles-banner h-full flex flex-wrap items-center justify-between gap-4 px-6 py-4 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden relative">
 
-    {{-- Palabras vetadas --}}
-    <div class="mt-5">
-        <div class="post-card">
-            <div class="flex items-center justify-between mb-5">
-                <div>
-                    <h2 class="text-white font-semibold text-base">Palabras vetadas</h2>
-                    <p class="text-white/50 text-xs mt-0.5">Palabras bloqueadas por el filtro de contenido</p>
-                </div>
-                <a href="#" data-url="/admin/banned-words/create" data-load="modal" data-title="Añadir Palabra Vetada" class="btn-modal flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors duration-200 text-white text-sm font-medium px-4 py-2 rounded-xl no-underline">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                    Añadir palabra
-                </a>
-            </div>
-            <div class="flex flex-wrap gap-2">
-                @forelse($bannedWords ?? [] as $word)
-                    <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 group">
-                        <span class="text-white/70 text-sm">{{ $word->word }}</span>
-                        <form action="/admin/banned-words/{{ $word->id }}" method="POST" class="inline">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="text-white/30 hover:text-red-400 transition-colors duration-150">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            </button>
-                        </form>
+                    {{-- Fondo decorativo sutil --}}
+                    <div class="absolute inset-0 bg-gradient-to-r from-red-500/[0.04] via-red-500/[0.02] to-transparent pointer-events-none"></div>
+                    <div class="absolute right-0 top-0 h-full w-64 bg-gradient-to-l from-red-500/[0.03] to-transparent pointer-events-none"></div>
+
+                    {{-- Icono + texto --}}
+                    <div class="flex items-center gap-4 relative">
+                        <div class="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center shrink-0 transition-colors duration-300" style="background: rgba(255,255,255,0.07);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M12 5v14" />
+                                <path d="M5 12h14" />
+                                <path d="M19 5l-14 14" />
+                                <path d="M5 5l14 14" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-white font-semibold text-sm leading-tight">Palabras vetadas</p>
+                            <p class="text-white/40 text-xs mt-0.5">Gestión de censura</p>
+                        </div>
                     </div>
-                @empty
-                    <p class="text-white/50 text-sm">No hay palabras vetadas aún.</p>
-                @endforelse
-            </div>
+
+                    <div class="flex items-center gap-4 relative ml-auto">
+                        <div class="text-right">
+                            <p class="text-2xl font-bold text-white leading-none">{{ count($bannedWords ?? []) }}</p>
+                        </div>
+
+                        {{-- CTA --}}
+                        <div class="flex items-center gap-1.5 pl-3 border-l border-white/10 relative">
+                            <span class="text-white/45 text-xs group-hover:text-white/75 transition-colors duration-200 hidden sm:inline-block">Ver</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:stroke-white/60 group-hover:translate-x-0.5 transition-all duration-200"><path d="M9 6l6 6l-6 6"/></svg>
+                        </div>
+                    </div>
+
+                </div>
+            </a>
         </div>
     </div>
 

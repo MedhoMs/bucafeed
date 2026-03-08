@@ -15,14 +15,12 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-             return view('users.index', [
-                 'users' => $users,
-                 'roles_disponibles' => \App\Models\Rol::$roles_disponibles,
-                 'niveles_disponibles' => EducationalCenter::$niveles_disponibles
-             ]);
-        }
-        return view('layouts.admin');
+         $users = User::all();
+         return view('users.index', [
+             'users' => $users,
+             'roles_disponibles' => \App\Models\Rol::$roles_disponibles,
+             'niveles_disponibles' => EducationalCenter::$niveles_disponibles
+         ]);
     }
 
     /**
