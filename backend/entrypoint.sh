@@ -17,9 +17,9 @@ mkdir -p public/uploads/banners
 mkdir -p public/uploads/events
 
 # Ajustar permisos SIEMPRE al inicio (vital para volúmenes de Railway)
-echo "Corrigiendo permisos de storage y bootstrap/cache..."
-chown -R www-data:www-data storage bootstrap/cache
-chmod -R 775 storage bootstrap/cache
+echo "Corrigiendo permisos de storage, bootstrap/cache y public/uploads..."
+chown -R www-data:www-data storage bootstrap/cache public/uploads
+chmod -R 775 storage bootstrap/cache public/uploads
 
 # 2. Instalar dependencias de PHP solo si falta el autoload
 if [ ! -f "vendor/autoload.php" ]; then

@@ -312,22 +312,33 @@ class DatabaseSeeder extends Seeder
             'institution_name' => 'External Inc',
             'role' => 'EU',
         ]);
-        // Helper to convert image to base64
-        $imageBase64 = function ($path) {
-            // Buscamos la imagen en la carpeta assets del frontend (local) o en public/assets (Docker)
+        // Helper to handle event images (copy to uploads/events and return public path)
+        $eventImageHandler = function ($path) {
             $filename = basename($path);
             
-            $localPath = base_path('../src/assets/' . $filename);
-            $dockerPath = public_path('assets/' . $filename);
-            
-            $fullPath = file_exists($localPath) ? $localPath : $dockerPath;
+            // Source paths
+            $localSource = base_path('../src/assets/' . $filename);
+            $dockerSource = public_path('assets/' . $filename);
+            $sourcePath = file_exists($localSource) ? $localSource : $dockerSource;
 
-            if (file_exists($fullPath)) {
-                $type = pathinfo($fullPath, PATHINFO_EXTENSION);
-                $data = file_get_contents($fullPath);
-                return 'data:image/' . $type . ';base64,' . base64_encode($data);
+            if (file_exists($sourcePath)) {
+                $targetDir = public_path('uploads/events');
+                if (!file_exists($targetDir)) {
+                    mkdir($targetDir, 0775, true);
+                }
+                
+                $targetFilename = 'seeded_' . $filename;
+                $targetPath = $targetDir . '/' . $targetFilename;
+                
+                // Copy the file if it doesn't exist already to avoid redundant work
+                if (!file_exists($targetPath)) {
+                    copy($sourcePath, $targetPath);
+                    chmod($targetPath, 0664);
+                }
+                
+                return '/uploads/events/' . $targetFilename;
             }
-            return null; // Si no encuentra la imagen, que guarde null en base de datos
+            return null;
         };
 
         $centro_evento = User::where('role', 'EI')->first();
@@ -340,7 +351,7 @@ class DatabaseSeeder extends Seeder
             'start_time' => '22:00:00',
             'end_time' => '01:00:00',
             'educational_center_id' => $centro_evento->educational_center_id,
-            'image' => $imageBase64('events/evento_luigi.png'),
+            'image' => $eventImageHandler('events/evento_luigi.png'),
         ]);
         Event::create([
             'title' => 'Taller de robótica',
@@ -350,7 +361,7 @@ class DatabaseSeeder extends Seeder
             'start_time' => '10:00:00',
             'end_time' => '13:00:00',
             'educational_center_id' => $centro_evento->educational_center_id,
-            'image' => $imageBase64('events/evento_robotica.png'),
+            'image' => $eventImageHandler('events/evento_robotica.png'),
         ]);
 
         Event::create([
@@ -361,7 +372,7 @@ class DatabaseSeeder extends Seeder
             'start_time' => '20:00:00',
             'end_time' => '23:00:00',
             'educational_center_id' => $centro_evento->educational_center_id,
-            'image' => $imageBase64('events/evento_astronomia.png'),
+            'image' => $eventImageHandler('events/evento_astronomia.png'),
         ]);
 
         Event::create([
@@ -372,7 +383,7 @@ class DatabaseSeeder extends Seeder
             'start_time' => '18:00:00',
             'end_time' => '20:30:00',
             'educational_center_id' => $centro_evento->id,
-            'image' => $imageBase64('events/evento_musica.png'),
+            'image' => $eventImageHandler('events/evento_musica.png'),
         ]);
 
         Event::create([
@@ -383,7 +394,7 @@ class DatabaseSeeder extends Seeder
             'start_time' => '09:00:00',
             'end_time' => '15:00:00',
             'educational_center_id' => $centro_evento->id,
-            'image' => $imageBase64('events/evento_ciencias.png'),
+            'image' => $eventImageHandler('events/evento_ciencias.png'),
         ]);
 
         Event::create([
@@ -394,7 +405,7 @@ class DatabaseSeeder extends Seeder
             'start_time' => '11:00:00',
             'end_time' => '16:00:00',
             'educational_center_id' => $centro_evento->id,
-            'image' => $imageBase64('events/evento_ajedrez.png'),
+            'image' => $eventImageHandler('events/evento_ajedrez.png'),
         ]);
         echo "🏁 Seeding completado exitosamente.\n";
     }
