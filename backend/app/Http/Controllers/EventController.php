@@ -34,7 +34,7 @@ class EventController extends Controller
                 'end_time'              => 'required|regex:/^\d{2}:\d{2}(:\d{2})?$/',
                 'educational_center_id' => 'required|exists:educational_centers,id',
                 'target_role'           => 'nullable|string',
-                'image'                 => 'nullable|image|max:2048' // max 2MB
+                'image'                 => 'nullable|image|max:10240' // max 10MB
             ]);
 
             $event->title = $request->input('title');
@@ -114,7 +114,7 @@ class EventController extends Controller
                 'end_time'              => 'required|regex:/^\d{2}:\d{2}(:\d{2})?$/',
                 'educational_center_id' => 'required|exists:educational_centers,id',
                 'target_role'           => 'nullable|string',
-                'image'                 => 'nullable|image|max:2048'
+                'image'                 => 'nullable|image|max:10240'
             ]);
 
             $event->title = $request->input('title');
@@ -178,8 +178,15 @@ class EventController extends Controller
             $event->delete();
 
             if ($request->ajax()) {
-                return response()->json([
-                    'exito' => 'Evento eliminado correctamente'
+                // Devolver Vista para que el modal sepa qué mostrar y se actualice el fondo
+                return view('users_events.create', [
+                    'event' => $event,
+                    'datos' => ['exito' => 'Evento eliminado correctamente'],
+                    'schools' => EducationalCenter::all(),
+                    'roles' => Rol::all(),
+                    'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+                    'disabled' => 'disabled',
+                    'oper' => 'destroy'
                 ]);
             }
 

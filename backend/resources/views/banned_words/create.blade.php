@@ -11,7 +11,7 @@
         <p class="mb-4 bg-green-500/10 border border-green-500/20 text-green-400 p-4 rounded-lg"> {{ $datos['exito'] }} </p>
     @endif
 
-    <form id="formGeneral" data-oper="{{ $oper }}" action="@if($oper == 'create'){{ url('/admin/banned-words/create') }}@elseif($oper == 'destroy'){{ url('/admin/banned-words/' . ($bannedWord->id ?? 0)) }}@endif" method="POST" class="space-y-6">
+    <form id="formGeneral" data-oper="{{ $oper }}" action="@if($oper == 'create'){{ url('/admin/banned-words/create') }}@elseif($oper == 'edit'){{ url('/admin/banned-words/edit/' . ($bannedWord->id ?? 0)) }}@elseif($oper == 'destroy'){{ url('/admin/banned-words/' . ($bannedWord->id ?? 0)) }}@endif" method="POST" class="space-y-6">
         @csrf
 
         @if($oper != 'destroy')

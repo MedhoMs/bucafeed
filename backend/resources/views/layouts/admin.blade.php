@@ -85,7 +85,6 @@
                         modalEl.classList.remove('hidden');
                         modalEl.classList.add('flex');
                         modalEl.setAttribute('aria-hidden', 'false');
-                        // Animation check could go here
                     } else {
                         modalEl.classList.add('hidden');
                         modalEl.classList.remove('flex');
@@ -105,7 +104,6 @@
 
                 // Cargador AJAX
                 window.ajaxLoad = function(url, target, isModal = false, shouldPushState = true) {
-                    // Mostrar cargador si es contenido principal
                     if (!isModal) {
                         target.style.opacity = '0.5';
                     }
@@ -120,10 +118,6 @@
                         target.style.opacity = '1';
                         if (isModal) toggleModal(true);
                         
-                        // Re-adjuntar listeners para nuevo contenido (si es necesario)
-                        // attachFormListeners(target);
-                        
-                        // Actualizar historial solo si se solicita
                         if (shouldPushState && url !== window.location.href) {
                             window.history.pushState({path: url}, '', url);
                         }
@@ -135,21 +129,17 @@
                     });
                 }
 
-                // Lógica de estado activo inicial eliminada
-
                 // Interceptor de navegación
                 document.addEventListener("click", function(e) {
                     const navLink = e.target.closest("a[data-load]");
                     if (navLink) {
                         e.preventDefault();
-                        const mode = navLink.dataset.load; // 'section', 'modal', 'main' (legacy)
-                        // Si el modo es 'section', usamos data-url. Si es main, usamos href.
+                        const mode = navLink.dataset.load;
                         const url = navLink.dataset.url || navLink.href;
                         const title = navLink.dataset.title || 'Detalles';
 
                         if (mode === 'modal') {
                             modalTitle.textContent = title;
-                            // Resetear y mostrar cargador
                             modalBody.innerHTML = `
                                  <div class="text-center py-10">
                                     <svg class="animate-spin h-8 w-8 text-cyan-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -160,21 +150,14 @@
                                 </div>
                             `;
                             toggleModal(true);
-                            // Obtener contenido para modal sin cambiar URL
-                            ajaxLoad(url, modalBody, true /* isModal */, false /* shouldPushState */);
+                            ajaxLoad(url, modalBody, true, false);
 
-                        } else if (mode === 'section') {
-                            // Navegación de sección (Usuarios, Escuelas, etc.)
-                            // Cargar contenido en el área principal actualizando la URL (SIN MODAL)
-                            ajaxLoad(url, mainContent, false /* esModal */, true /* actualizarUrl */);
-                        } else {
-                            // Enlaces 'main' heredados o normales
-                             ajaxLoad(url, mainContent, false /* esModal */, true /* actualizarUrl */);
+                        } else if (mode === 'section' || mode === 'main') {
+                            ajaxLoad(url, mainContent, false, true);
                         }
                         return;
                     }
 
-                    // 2. Disparadores de Modal (Botones/enlaces dentro del contenido)
                     const modalTrigger = e.target.closest(".btn-modal");
                     if (modalTrigger) {
                         e.preventDefault();
@@ -182,7 +165,6 @@
                         const title = modalTrigger.dataset.title || 'Detalles';
                         
                         modalTitle.textContent = title;
-                        // Mostrar cargador en modal
                         modalBody.innerHTML = `
                              <div class="text-center py-10">
                                 <svg class="animate-spin h-8 w-8 text-cyan-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -195,18 +177,17 @@
                         toggleModal(true);
                         
                         if (url) {
-                            ajaxLoad(url, modalBody, true /* isModal */, false /* shouldPushState */);
+                            ajaxLoad(url, modalBody, true, false);
                         }
                         return;
                     }
                 });
 
-                // Manejar botones Atrás/Adelante del navegador
                 window.addEventListener('popstate', (e) => {
                      ajaxLoad(window.location.href, mainContent, false, false);
                 });
 
-                // 3. Manejar envío de formularios dentro del modal
+                // Manejar envío de formularios dentro del modal
                 document.addEventListener("submit", function(e) {
                     const form = e.target.closest("#modal-body form");
                     if (form) {
@@ -216,7 +197,6 @@
                         const url = form.action;
                         const method = form.method || 'POST';
 
-                        // Mostrar estado de carga (opcionalmente deshabilitar botón)
                         const submitBtn = form.querySelector('[type="submit"]');
                         if(submitBtn) {
                             submitBtn.disabled = true;
@@ -232,19 +212,57 @@
                         })
                         .then(async r => {
                             const html = await r.text();
+                            
+                            if (!r.ok && r.status === 422) {
+                                try {
+                                    const json = JSON.parse(html);
+                                    if (json.errors) {
+                                        let errorList = '<ul class="p-4 mb-4 text-red-400 bg-red-900/20 rounded-xl border border-red-500/30 list-disc list-inside">';
+                                        for (let field in json.errors) {
+                                            json.errors[field].forEach(msg => {
+                                                errorList += `<li>${msg}</li>`;
+                                            });
+                                        }
+                                        errorList += '</ul>';
+                                        
+                                        // Inyectamos los errores al principio del formulario o del modal
+                                        const existingErrors = modalBody.querySelector('.text-red-400');
+                                        if (existingErrors) existingErrors.remove();
+                                        modalBody.insertAdjacentHTML('afterbegin', errorList);
+                                        
+                                        if(submitBtn) {
+                                            submitBtn.disabled = false;
+                                            submitBtn.innerText = 'Reintentar';
+                                        }
+                                        return; // Detener flujo para no sobreescribir con HTML vacío/malo
+                                    }
+                                } catch(e) {}
+                            }
+                            
                             if (!r.ok && r.status !== 422) {
-                                // If error (500, 404, etc), show the HTML response (Laravel error page) in the modal
                                 modalBody.innerHTML = html;
-                                throw new Error("Server Error"); // Throw to skip next then block
+                                throw new Error("Server Error");
                             }
                             return html;
                         })
                         .then(html => {
-                            // Actualizar contenido del modal con la respuesta (éxito o validación 422)
+                            // Detectar respuesta JSON pura (éxito)
+                            try {
+                                const json = JSON.parse(html);
+                                if (json.exito) {
+                                    modalBody.innerHTML = `<div class="p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg">${json.exito}</div>`;
+                                    setTimeout(() => {
+                                        toggleModal(false);
+                                        ajaxLoad(window.location.href, mainContent, false, false);
+                                    }, 1500);
+                                    return;
+                                }
+                            } catch(e) {}
+
                             modalBody.innerHTML = html;
                             
-                            // Si detectamos éxito
-                            if (html.includes('alert-success') || html.includes('bg-green-500')) {
+                            // Si detectamos éxito en el HTML (clases comunes de éxito)
+                            if (html.includes('alert-success') || html.includes('bg-green-500') || html.includes('exito')) {
                                ajaxLoad(window.location.href, mainContent, false, false);
                             }
                         })
@@ -254,7 +272,6 @@
                                 submitBtn.disabled = false;
                                 submitBtn.innerText = 'Reintentar';
                             }
-                             // Mostrar error en el modal (prepend)
                              const errorDiv = document.createElement('div');
                              errorDiv.className = "p-4 mb-4 text-red-400 bg-red-900/20 rounded-xl border border-red-500/30";
                              errorDiv.innerText = `Error: ${err.message}`;
@@ -263,7 +280,8 @@
                     }
                 });
             });
-        </script>    
+        </script>
+    
     </body>
 </html>
 @endif

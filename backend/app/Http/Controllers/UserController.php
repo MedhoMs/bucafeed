@@ -233,7 +233,7 @@ class UserController extends Controller
                 // Devolver Vista con éxito para que se cierre/actualice
                 return view('users.create', [
                     'user' => $user,
-                    'datos' => $data,
+                    'datos' => $datos,
                     'roles' => Rol::all(), 
                     'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
                         return [$r->code ?? $r->name => $r->name];
