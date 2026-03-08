@@ -34,7 +34,7 @@ class EventController extends Controller
                 'end_time'              => 'required|regex:/^\d{2}:\d{2}(:\d{2})?$/',
                 'educational_center_id' => 'required|exists:educational_centers,id',
                 'target_role'           => 'nullable|string',
-                'image'                 => 'nullable|image|max:10240' // max 10MB
+                'image'                 => 'nullable|image|max:51200' // max 50MB
             ]);
 
             $event->title = $request->input('title');
@@ -48,9 +48,25 @@ class EventController extends Controller
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $extension = $file->getClientOriginalExtension();
-                $base64 = base64_encode(file_get_contents($file->getRealPath()));
-                $event->image = "data:image/{$extension};base64,{$base64}";
+                $extension = strtolower($file->getClientOriginalExtension());
+                $tempPath = $file->getRealPath();
+                $resizedImage = $this->resizeImage($tempPath, 800);
+                
+                if ($resizedImage) {
+                    ob_start();
+                    if (in_array($extension, ['jpg', 'jpeg'])) imagejpeg($resizedImage, null, 80);
+                    elseif ($extension == 'png') imagepng($resizedImage, null, 8);
+                    elseif ($extension == 'webp') imagewebp($resizedImage, null, 80);
+                    else imagejpeg($resizedImage, null, 80);
+                    
+                    $imageData = ob_get_clean();
+                    $base64 = base64_encode($imageData);
+                    $event->image = "data:image/{$extension};base64,{$base64}";
+                    imagedestroy($resizedImage);
+                } else {
+                    $base64 = base64_encode(file_get_contents($tempPath));
+                    $event->image = "data:image/{$extension};base64,{$base64}";
+                }
             }
 
             $event->save();
@@ -114,7 +130,7 @@ class EventController extends Controller
                 'end_time'              => 'required|regex:/^\d{2}:\d{2}(:\d{2})?$/',
                 'educational_center_id' => 'required|exists:educational_centers,id',
                 'target_role'           => 'nullable|string',
-                'image'                 => 'nullable|image|max:10240'
+                'image'                 => 'nullable|image|max:51200'
             ]);
 
             $event->title = $request->input('title');
@@ -128,9 +144,25 @@ class EventController extends Controller
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $extension = $file->getClientOriginalExtension();
-                $base64 = base64_encode(file_get_contents($file->getRealPath()));
-                $event->image = "data:image/{$extension};base64,{$base64}";
+                $extension = strtolower($file->getClientOriginalExtension());
+                $tempPath = $file->getRealPath();
+                $resizedImage = $this->resizeImage($tempPath, 800);
+                
+                if ($resizedImage) {
+                    ob_start();
+                    if (in_array($extension, ['jpg', 'jpeg'])) imagejpeg($resizedImage, null, 80);
+                    elseif ($extension == 'png') imagepng($resizedImage, null, 8);
+                    elseif ($extension == 'webp') imagewebp($resizedImage, null, 80);
+                    else imagejpeg($resizedImage, null, 80);
+                    
+                    $imageData = ob_get_clean();
+                    $base64 = base64_encode($imageData);
+                    $event->image = "data:image/{$extension};base64,{$base64}";
+                    imagedestroy($resizedImage);
+                } else {
+                    $base64 = base64_encode(file_get_contents($tempPath));
+                    $event->image = "data:image/{$extension};base64,{$base64}";
+                }
             }
 
             $event->save();
@@ -164,10 +196,20 @@ class EventController extends Controller
     public function destroy(Request $request, $id='')
     {
         $event = Event::find($id);
+        $datos = ['exito' => '']; 
+        $disabled = 'disabled'; 
 
         if (!$event) {
             if ($request->ajax()) {
-                return response()->json(['error' => 'Evento no encontrado'], 404);
+                return view('users_events.create', [
+                    'event' => $event,
+                    'datos' => $datos,
+                    'schools' => EducationalCenter::all(),
+                    'roles' => Rol::all(),
+                    'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+                    'disabled' => $disabled,
+                    'oper' => 'edit'
+                ]);
             }
         }
 
@@ -175,17 +217,15 @@ class EventController extends Controller
             if ($event->image) {
                 Storage::disk('public')->delete($event->image);
             }
-            $event->delete();
-
+            $datos['exito'] = 'Evento eliminado correctamente';
             if ($request->ajax()) {
-                // Devolver Vista para que el modal sepa qué mostrar y se actualice el fondo
                 return view('users_events.create', [
                     'event' => $event,
-                    'datos' => ['exito' => 'Evento eliminado correctamente'],
+                    'datos' => $datos,
                     'schools' => EducationalCenter::all(),
                     'roles' => Rol::all(),
                     'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
-                    'disabled' => 'disabled',
+                    'disabled' => $disabled,
                     'oper' => 'destroy'
                 ]);
             }
@@ -250,5 +290,45 @@ class EventController extends Controller
         }
 
         return response()->json(['error' => 'Not found'], 404);
+    }
+
+    /**
+     * Helper to resize images using GD.
+     */
+    private function resizeImage($path, $maxWidth)
+    {
+        list($width, $height, $type) = getimagesize($path);
+        
+        if ($width <= $maxWidth) {
+            $newWidth = $width;
+            $newHeight = $height;
+        } else {
+            $ratio = $width / $height;
+            $newWidth = $maxWidth;
+            $newHeight = $maxWidth / $ratio;
+        }
+
+        $src = null;
+        switch ($type) {
+            case IMAGETYPE_JPEG: $src = imagecreatefromjpeg($path); break;
+            case IMAGETYPE_PNG:  $src = imagecreatefrompng($path);  break;
+            case IMAGETYPE_WEBP: $src = imagecreatefromwebp($path); break;
+            default: return null;
+        }
+
+        if (!$src) return null;
+
+        $dst = imagecreatetruecolor($newWidth, $newHeight);
+        
+        // Preserve transparency
+        if ($type == IMAGETYPE_PNG || $type == IMAGETYPE_WEBP) {
+            imagealphablending($dst, false);
+            imagesavealpha($dst, true);
+        }
+
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+        imagedestroy($src);
+
+        return $dst;
     }
 }

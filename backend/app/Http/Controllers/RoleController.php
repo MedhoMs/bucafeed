@@ -14,7 +14,7 @@ class RoleController extends Controller
         if ($request->ajax()) {
             return view('roles.index', [
                 'roles' => $roles,
-                'roles_disponibles' => Rol::$roles_disponibles
+                'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray()
             ]);
         }
         
@@ -40,6 +40,9 @@ class RoleController extends Controller
             $role->save();
 
             $datos['exito'] = 'Rol creado correctamente.';
+            if ($request->ajax()) {
+                return response()->json(['exito' => 'Rol creado correctamente.']);
+            }
         }
 
         if ($request->ajax()) {
@@ -81,12 +84,7 @@ class RoleController extends Controller
             $disabled = 'disabled';
             
             if ($request->ajax()) {
-                return view('roles.create', [
-                    'role' => $role,
-                    'oper' => 'edit',
-                    'disabled' => $disabled,
-                    'datos' => $datos
-                ]);
+                return response()->json(['exito' => 'Rol actualizado correctamente']);
             }
         }
 
@@ -126,8 +124,11 @@ class RoleController extends Controller
             $role->delete();
 
             if ($request->ajax()) {
-                return response()->json([
-                    'exito' => 'Rol eliminado correctamente'
+                return view('roles.create', [
+                    'role' => $role,
+                    'oper' => 'destroy',
+                    'disabled' => 'disabled',
+                    'datos' => ['exito' => 'Rol eliminado correctamente']
                 ]);
             }
 

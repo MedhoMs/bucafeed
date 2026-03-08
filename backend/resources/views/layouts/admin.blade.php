@@ -99,9 +99,11 @@
                 });
 
                 // Cerrar al hacer click fuera
-                modalEl.addEventListener('click', (e) => {
-                    if (e.target === modalEl) toggleModal(false);
-                });
+                if (modalEl) {
+                    modalEl.addEventListener('click', (e) => {
+                        if (e.target === modalEl) toggleModal(false);
+                    });
+                }
 
                 // Cargador AJAX
                 window.ajaxLoad = function(url, target, isModal = false, shouldPushState = true) {
@@ -202,8 +204,13 @@
                         const submitBtn = form.querySelector('[type="submit"]');
                         if(submitBtn) {
                             submitBtn.disabled = true;
+                            submitBtn.dataset.originalText = submitBtn.innerHTML;
                             submitBtn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white inline-block mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Procesando...`;
                         }
+
+                        // Limpiar errores previos
+                        const existingErrors = modalBody.querySelector('.validation-errors');
+                        if (existingErrors) existingErrors.remove();
 
                         fetch(url, {
                             method: method,
@@ -213,71 +220,61 @@
                             }
                         })
                         .then(async r => {
-                            const html = await r.text();
-                            
-                            if (!r.ok && r.status === 422) {
-                                try {
-                                    const json = JSON.parse(html);
-                                    if (json.errors) {
-                                        let errorList = '<ul class="p-4 mb-4 text-red-400 bg-red-900/20 rounded-xl border border-red-500/30 list-disc list-inside">';
-                                        for (let field in json.errors) {
-                                            json.errors[field].forEach(msg => {
-                                                errorList += `<li>${msg}</li>`;
-                                            });
-                                        }
-                                        errorList += '</ul>';
-                                        
-                                        // Inyectamos los errores al principio del formulario o del modal
-                                        const existingErrors = modalBody.querySelector('.text-red-400');
-                                        if (existingErrors) existingErrors.remove();
-                                        modalBody.insertAdjacentHTML('afterbegin', errorList);
-                                        
-                                        if(submitBtn) {
-                                            submitBtn.disabled = false;
-                                            submitBtn.innerText = 'Reintentar';
-                                        }
-                                        return; // Detener flujo para no sobreescribir con HTML vacío/malo
-                                    }
-                                } catch(e) {}
-                            }
-                            
-                            if (!r.ok && r.status !== 422) {
-                                modalBody.innerHTML = html;
-                                throw new Error("Server Error");
-                            }
-                            return html;
-                        })
-                        .then(html => {
-                            // Detectar respuesta JSON pura (éxito)
-                            try {
-                                const json = JSON.parse(html);
-                                if (json.exito) {
-                                    modalBody.innerHTML = `<div class="p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg">${json.exito}</div>`;
-                                    setTimeout(() => {
-                                        toggleModal(false);
-                                        ajaxLoad(window.location.href, mainContent, false, false);
-                                    }, 1500);
-                                    return;
-                                }
-                            } catch(e) {}
+                            const responseText = await r.text();
+                            let data = null;
+                            try { data = JSON.parse(responseText); } catch(e) { }
 
-                            modalBody.innerHTML = html;
+                            if (!r.ok) {
+                                if (r.status === 422 && data && data.errors) {
+                                    // Error de validación estructurado
+                                    let errorList = '<div class="validation-errors bg-red-500/10 border border-red-500/20 p-4 rounded-xl mb-6"><ul class="text-red-400 text-sm list-disc list-inside">';
+                                    for (let field in data.errors) {
+                                        data.errors[field].forEach(msg => {
+                                            errorList += `<li>${msg}</li>`;
+                                        });
+                                    }
+                                    errorList += '</ul></div>';
+                                    modalBody.insertAdjacentHTML('afterbegin', errorList);
+                                    
+                                    if(submitBtn) {
+                                        submitBtn.disabled = false;
+                                        submitBtn.innerHTML = submitBtn.dataset.originalText || 'Reintentar';
+                                    }
+                                    return null; // Detener flujo
+                                }
+                                
+                                // Otros errores (500, etc)
+                                modalBody.innerHTML = responseText;
+                                throw new Error("Error del servidor (HTTP " + r.status + ")");
+                            }
                             
-                            // Si detectamos éxito en el HTML (clases comunes de éxito)
-                            if (html.includes('alert-success') || html.includes('bg-green-500') || html.includes('exito')) {
-                               ajaxLoad(window.location.href, mainContent, false, false);
+                            return { html: responseText, json: data };
+                        })
+                        .then(res => {
+                            if (!res) return;
+
+                            // Si es JSON de éxito
+                            if (res.json && res.json.exito) {
+                                // En lugar de el overlay, volvemos a cargar la vista para que salga el formulario con el mensaje
+                                ajaxLoad(url, modalBody, true, false);
+                                ajaxLoad(window.location.href, mainContent, false, false);
+                                return;
+                            }
+
+                            // Si es HTML, inyectar directamente
+                            modalBody.innerHTML = res.html;
+                            
+                            // Si detectamos éxito por texto/clase en el HTML
+                            if (res.html.includes('alert-success') || res.html.includes('bg-green-500') || res.html.includes('exito') || res.html.includes('eliminado')) {
+                                ajaxLoad(window.location.href, mainContent, false, false);
                             }
                         })
                         .catch(err => {
                             console.error(err);
                             if(submitBtn) {
                                 submitBtn.disabled = false;
-                                submitBtn.innerText = 'Reintentar';
+                                submitBtn.innerHTML = submitBtn.dataset.originalText || 'Reintentar';
                             }
-                             const errorDiv = document.createElement('div');
-                             errorDiv.className = "p-4 mb-4 text-red-400 bg-red-900/20 rounded-xl border border-red-500/30";
-                             errorDiv.innerText = `Error: ${err.message}`;
-                             form.prepend(errorDiv);
                         });
                     }
                 });

@@ -150,7 +150,7 @@
         </div>
 
 
-        @if(isset($event->id) && $oper != 'create' && $oper != 'destroy')
+        @if(isset($event->id) && $oper != 'create')
         <div class="pt-4 mt-6 border-t border-white/10">
             <h3 class="text-white font-semibold text-lg mb-3">Participantes Inscritos ({{ $event->participants->count() }})</h3>
             

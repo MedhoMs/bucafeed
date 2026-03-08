@@ -198,19 +198,16 @@ class UserController extends Controller
         if ($request->isMethod('post')) {
             $user->delete();
 
-            if ($request->ajax()) {
-                $datos = ['exito' => 'Usuario eliminado correctamente'];
-                // Devolver Vista con éxito para que se cierre/actualice
+            if ($request->ajax()) 
+            {
                 return view('users.create', [
                     'user' => $user,
                     'datos' => $datos,
                     'roles' => Rol::all(), 
-                    'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
-                        return [$r->code ?? $r->name => $r->name];
-                    })->toArray(),
+                    'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
                     'education_levels' => EducationalCenter::$niveles_disponibles,
-                    'disabled' => 'disabled',
-                    'oper' => 'destroy'
+                    'disabled' => $disabled,
+                    'oper' => 'edit'
                 ]);
             }
 

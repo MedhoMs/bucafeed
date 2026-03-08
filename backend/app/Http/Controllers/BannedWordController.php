@@ -56,7 +56,14 @@ class BannedWordController extends Controller
             $datos['exito'] = 'Operación realizada correctamente';
             $disabled = 'disabled';
 
-
+            if ($request->ajax()) {
+                return view('banned_words.create', [
+                    'bannedWord' => $bannedWord,
+                    'oper' => 'edit',
+                    'disabled' => $disabled,
+                    'datos' => $datos
+                ]);
+            }
         }
 
         return view('banned_words.create', [

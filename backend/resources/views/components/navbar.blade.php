@@ -1,7 +1,7 @@
 <nav class="w-[300px] shrink-0 flex flex-col pl-5 pr-5 h-screen sticky top-0 overflow-y-auto overflow-x-hidden z-[1] bg-gradient-to-b from-[#142b2b] to-[#0a141d] shadow-[5px_0px_20px_rgba(0,0,0,0.6)]" id="principalNav">
     <div class="flex flex-row items-center gap-3 mb-4">
         @if(app()->environment('local'))
-            <img class="w-[65px] h-[70px]" src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="Logo">
+            <img class="w-[65px] h-[70px]" src="http://localhost:5174/src/assets/logo/logoTelamon.png" alt="Logo">
         @else
             <!-- En producción, los assets se copian a public/assets via Dockerfile -->
             <img class="w-[65px] h-[70px]" src="/assets/logo/logoTelamon.png" alt="Logo">
