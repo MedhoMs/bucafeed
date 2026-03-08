@@ -214,9 +214,10 @@ class EventController extends Controller
         }
 
         if ($request->isMethod('post')) {
-            if ($event->image) {
+            if ($event->image && !str_starts_with($event->image, 'data:')) {
                 Storage::disk('public')->delete($event->image);
             }
+            $event->delete();
             $datos['exito'] = 'Evento eliminado correctamente';
             if ($request->ajax()) {
                 return view('users_events.create', [

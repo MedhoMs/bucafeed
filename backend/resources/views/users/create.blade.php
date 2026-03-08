@@ -138,7 +138,7 @@
                 </button>
             @endif
 
-            @if ($oper == 'destroy')
+            @if ($oper == 'destroy' && empty($datos['exito']))
                 <button type="submit" class="px-6 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-all duration-200">
                     Eliminar usuario
                 </button>
