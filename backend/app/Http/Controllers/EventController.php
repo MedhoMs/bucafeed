@@ -205,6 +205,43 @@ class EventController extends Controller
     public function getEventsApi()
     {
         $events = Event::with('educationalCenter')->get();
-        return response()->json($events);
+        // Hide the heavy base64 'image' column to keep the JSON payload small
+        return response()->json($events->makeHidden(['image']));
+    }
+
+    /**
+     * Streams the event image directly.
+     */
+    public function streamImage($id)
+    {
+        $event = Event::findOrFail($id);
+        
+        if (!$event->image) {
+            return response()->json(['error' => 'No image'], 404);
+        }
+
+        // If it's a full URL, we could redirect or proxy, but usually it's base64 or a path
+        if (str_starts_with($event->image, 'data:')) {
+            // Extract the metadata and data from the base64 string
+            // Format: data:image/png;base64,iVBOR...
+            if (preg_match('/^data:([^;]+);base64,(.+)$/', $event->image, $matches)) {
+                $contentType = $matches[1];
+                $data = base64_decode($matches[2]);
+                
+                return response($data)
+                    ->header('Content-Type', $contentType)
+                    ->header('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
+            }
+        }
+
+        // If it's a path in storage
+        if (Storage::disk('public')->exists($event->image)) {
+            $path = Storage::disk('public')->path($event->image);
+            return response()->file($path, [
+                'Cache-Control' => 'public, max-age=86400'
+            ]);
+        }
+
+        return response()->json(['error' => 'Not found'], 404);
     }
 }

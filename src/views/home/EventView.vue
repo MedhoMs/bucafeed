@@ -32,7 +32,7 @@
             <div id="mainBody" class="min-h-[92.9vh] mt-12">
                 <!-- Eventos dinámicos -->
                 <div v-for="event in events" :key="event.id" class="event-card group cursor-pointer hover:border-white/20 transition-all duration-300">
-                    <img :src="event.image_url" alt="Imagen del evento" class="group-hover:scale-105 transition-transform duration-500">
+                    <img :src="event.image_url" alt="Imagen del evento" class="group-hover:scale-105 transition-transform duration-500" loading="lazy">
                     <h2 class="font-bold text-[16px] ml-4 leading-tight pr-4 text-white group-hover:text-cyan-400 transition-colors duration-300">
                         {{ event.title }}
                     </h2>

@@ -63,7 +63,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center gap-3">
                                 @if($event->image_url)
-                                    <img src="{{ $event->image_url }}" class="w-10 h-10 rounded-lg object-cover shadow-md" alt="">
+                                    <img src="{{ $event->image_url }}" class="w-10 h-10 rounded-lg object-cover shadow-md" alt="" loading="lazy">
                                 @else
                                     <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
                                         {{ substr($event->title, 0, 1) }}
