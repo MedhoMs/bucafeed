@@ -17,6 +17,12 @@ mkdir -p bootstrap/cache
 chmod -R 775 storage bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
+# Asegurar enlace simbólico de storage
+if [ ! -L "public/storage" ]; then
+    echo "Creando enlace simbólico de storage..."
+    php artisan storage:link
+fi
+
 # 2. Instalar dependencias de PHP solo si falta el autoload
 if [ ! -f "vendor/autoload.php" ]; then
     echo "Instalando dependencias de PHP (composer)..."
