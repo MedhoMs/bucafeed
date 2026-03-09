@@ -130,8 +130,12 @@
             <div class="flex flex-col gap-3">
                 @forelse($latestUsers ?? [] as $user)
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden border border-white/10">
+                            @if($user->profile_picture)
+                                <img src="{{ $user->profile_picture }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                            @else
+                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                            @endif
                         </div>
                         <div class="min-w-0">
                             <p class="text-white text-sm font-medium truncate">{{ $user->name }}</p>
@@ -196,9 +200,13 @@
                         @forelse($topUsers ?? [] as $index => $user)
                             <div class="flex items-center gap-2">
                                 <span class="text-white text-xs font-bold w-4">#{{ $index + 1 }}</span>
-                                <div class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
-                                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                                </div>
+                                    <div class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-white text-[10px] font-bold shrink-0 overflow-hidden border border-white/10">
+                                        @if($user->profile_picture)
+                                            <img src="{{ $user->profile_picture }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            {{ strtoupper(substr($user->name, 0, 1)) }}
+                                        @endif
+                                    </div>
                                 <span class="text-white text-sm truncate flex-1">{{ $user->name }}</span>
                                 <span class="text-white text-xs font-semibold">{{ $user->reputation }} pts</span>
                             </div>

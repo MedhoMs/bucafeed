@@ -23,6 +23,9 @@ class User extends Authenticatable
         'dni',
         'education_level',
         'institution_name',
+        'profile_picture',
+        'banner',
+        'description',
     ];
 
     protected $hidden = [
