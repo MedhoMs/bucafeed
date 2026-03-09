@@ -48,9 +48,9 @@ class EventController extends Controller
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $extension = $file->getClientOriginalExtension();
-                $base64 = base64_encode(file_get_contents($file->getRealPath()));
-                $event->image = "data:image/{$extension};base64,{$base64}";
+                $filename = 'event_' . time() . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/events'), $filename);
+                $event->image = '/uploads/events/' . $filename;
             }
 
             $event->save();
@@ -128,9 +128,9 @@ class EventController extends Controller
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $extension = $file->getClientOriginalExtension();
-                $base64 = base64_encode(file_get_contents($file->getRealPath()));
-                $event->image = "data:image/{$extension};base64,{$base64}";
+                $filename = 'event_' . $event->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/events'), $filename);
+                $event->image = '/uploads/events/' . $filename;
             }
 
             $event->save();
@@ -173,6 +173,13 @@ class EventController extends Controller
 
         if ($request->isMethod('post')) {
             if ($event->image) {
+                // Remove file from public/uploads/events or profile folders
+                $publicPath = public_path(ltrim($event->image, '/'));
+                if (file_exists($publicPath) && !is_dir($publicPath)) {
+                    unlink($publicPath);
+                }
+                
+                // Backup check for Storage disk
                 Storage::disk('public')->delete($event->image);
             }
             $event->delete();
@@ -220,21 +227,27 @@ class EventController extends Controller
             return response()->json(['error' => 'No image'], 404);
         }
 
-        // If it's a full URL, we could redirect or proxy, but usually it's base64 or a path
+        // 1. Handle new path-based storage (public/uploads/events/...)
+        $publicPath = public_path(ltrim($event->image, '/'));
+        if (file_exists($publicPath) && !is_dir($publicPath)) {
+            return response()->file($publicPath, [
+                'Cache-Control' => 'public, max-age=86400'
+            ]);
+        }
+
+        // 2. Handle legacy Base64
         if (str_starts_with($event->image, 'data:')) {
-            // Extract the metadata and data from the base64 string
-            // Format: data:image/png;base64,iVBOR...
             if (preg_match('/^data:([^;]+);base64,(.+)$/', $event->image, $matches)) {
                 $contentType = $matches[1];
                 $data = base64_decode($matches[2]);
                 
                 return response($data)
                     ->header('Content-Type', $contentType)
-                    ->header('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
+                    ->header('Cache-Control', 'public, max-age=86400');
             }
         }
 
-        // If it's a path in storage
+        // 3. Fallback for storage disk
         if (Storage::disk('public')->exists($event->image)) {
             $path = Storage::disk('public')->path($event->image);
             return response()->file($path, [

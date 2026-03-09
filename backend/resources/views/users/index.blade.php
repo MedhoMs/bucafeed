@@ -64,8 +64,17 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                                    {{ substr($user->name, 0, 1) }}
+                                <div 
+                                    class="btn-modal w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-md cursor-pointer overflow-hidden transition-transform hover:scale-110 active:scale-95 border-2 border-white/20"
+                                    data-url="{{ route('user.profile_modal', $user->id) }}"
+                                    data-title="Perfil de {{ $user->name }}"
+                                    data-load="modal"
+                                >
+                                    @if($user->profile_picture)
+                                        <img src="{{ $user->profile_picture }}" alt="Avatar" class="w-full h-full object-cover">
+                                    @else
+                                        <img src="{{ asset('logoTelamon.png') }}" alt="Avatar" class="w-full h-full object-cover opacity-60">
+                                    @endif
                                 </div>
                                 <div>
                                     <div class="font-semibold text-white">{{ $user->name }} {{ $user->last_name }}</div>
