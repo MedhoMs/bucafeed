@@ -35,6 +35,7 @@ class EventController extends Controller
                 'educational_center_id' => 'required|exists:educational_centers,id',
                 'target_role'           => 'nullable|string',
                 'image'                 => 'nullable|image|max:51200' 
+                
             ]);
 
             $event->title = $request->input('title');
