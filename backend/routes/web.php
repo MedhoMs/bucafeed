@@ -48,6 +48,7 @@ Route::get('/users/edit/{id}', [UserController::class, 'edit'])->name('user.edit
 Route::post('/users/edit/{id}', [UserController::class, 'edit'])->name('user.edit.post');
 
 Route::get('/users/show/{id}', [UserController::class, 'show'])->name('user.show');
+Route::get('/users/profile-modal/{id}', [UserController::class, 'profileModal'])->name('user.profile_modal');
 
 Route::get('/users/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');
 Route::post('/users/destroy/{id}', [UserController::class, 'destroy'])->name('user.destroy');

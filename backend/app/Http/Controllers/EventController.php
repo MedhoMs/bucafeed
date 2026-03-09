@@ -188,11 +188,9 @@ class EventController extends Controller
                 if (file_exists($publicPath) && !is_dir($publicPath)) {
                     unlink($publicPath);
                 }
-
+                
                 // Backup check for Storage disk
-                if (!str_starts_with($event->image, 'data:')) {
-                    Storage::disk('public')->delete($event->image);
-                }
+                Storage::disk('public')->delete($event->image);
             }
             $event->delete();
             $datos['exito'] = 'Evento eliminado correctamente';

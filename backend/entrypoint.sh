@@ -21,6 +21,12 @@ echo "Corrigiendo permisos de storage, bootstrap/cache y public/uploads..."
 chown -R www-data:www-data storage bootstrap/cache public/uploads
 chmod -R 775 storage bootstrap/cache public/uploads
 
+# Asegurar enlace simbólico de storage
+if [ ! -L "public/storage" ]; then
+    echo "Creando enlace simbólico de storage..."
+    php artisan storage:link
+fi
+
 # 2. Instalar dependencias de PHP solo si falta el autoload
 if [ ! -f "vendor/autoload.php" ]; then
     echo "Instalando dependencias de PHP (composer)..."

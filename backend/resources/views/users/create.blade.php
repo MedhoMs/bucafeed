@@ -1,4 +1,4 @@
-<div class="container mx-auto pt-4 sticky top-0">
+<div class="w-full pt-4 sticky top-0 px-2">
     @if($errors->any())
         <ul class="mb-4 bg-red-500/10 border border-red-500/20 rounded-lg p-4">
             @foreach ($errors->all() as $error)
@@ -15,11 +15,34 @@
     data-oper="{{ $oper }}"
     action="@if($oper == 'create'){{ route('user.create') }}@elseif($oper == 'destroy'){{ route('user.destroy', $user->id ?? 0) }}@else{{ route('user.edit.post', $user->id ?? 0) }}@endif"   
     method="POST"
+    enctype="multipart/form-data"
     class="space-y-6"
     >
         @csrf
 
         <input name="id" type="hidden" value="{{ $user->id ?? '' }}" />
+
+        <!-- Campos de imagen y banner -->
+        @if($oper !== 'create')
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-white/5 rounded-xl border border-white/10">
+            <div>
+                <label for="idprofile_picture" class="block text-sm font-medium text-white/70 mb-1">Foto de Perfil</label>
+                <input {{ $disabled }} type="file" name="profile_picture" id="idprofile_picture" 
+                    class="w-full text-sm text-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-400 hover:file:bg-blue-500/20 transition-all cursor-pointer">
+                @if($user->profile_picture)
+                    <p class="text-xs text-blue-400 mt-1">Tiene una imagen configurada</p>
+                @endif
+            </div>
+            <div>
+                <label for="idbanner" class="block text-sm font-medium text-white/70 mb-1">Banner</label>
+                <input {{ $disabled }} type="file" name="banner" id="idbanner" 
+                    class="w-full text-sm text-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-500/10 file:text-purple-400 hover:file:bg-purple-500/20 transition-all cursor-pointer">
+                @if($user->banner)
+                    <p class="text-xs text-purple-400 mt-1">Tiene un banner configurado</p>
+                @endif
+            </div>
+        </div>
+        @endif
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Nombre -->
@@ -128,6 +151,17 @@
                     <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span>
                 @enderror
             </div>
+        </div>
+
+        <!-- Descripción -->
+        <div>
+            <label for="iddescription" class="block text-sm font-medium text-white/70 mb-1">Descripción / Biografía</label>
+            <textarea {{ $disabled }} name="description" id="iddescription" rows="4"
+                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200" 
+                placeholder="Cuenta algo sobre el usuario...">{{ old('description', $user->description ?? '') }}</textarea>
+            @error('description')
+                <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span>
+            @enderror
         </div>
 
 

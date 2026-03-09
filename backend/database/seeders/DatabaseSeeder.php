@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             );
         }
 
+
         User::updateOrCreate(['email' => 'antoniomorera784@gmail.com'], [
             'name' => 'Antonio',
             'last_name' => 'Morera Marrero',
@@ -66,10 +67,12 @@ class DatabaseSeeder extends Seeder
         ]);
         
         // ----------------- Centros Educativos (EI) -----------------
+
         $centro1 = EducationalCenter::firstOrCreate(['name' => 'TelamoNet Institute'], [
             'type' => 'SE',
             'location' => 'Lanzarote'
         ]);
+
         User::updateOrCreate(['email' => 'contact@telamonet.edu'], [
             'name' => 'Instituto',
             'last_name' => 'TelamoNet Center',
@@ -81,6 +84,8 @@ class DatabaseSeeder extends Seeder
             'educational_center_id' => $centro1->id,
         ]);
         
+
+        
         $centro2 = EducationalCenter::firstOrCreate(['name' => 'Colegio San Martín'], [
             'type' => 'PE',
             'location' => 'Arrecife'
@@ -88,6 +93,7 @@ class DatabaseSeeder extends Seeder
         User::updateOrCreate(['email' => 'contact@sanmartin.edu'], [
             'name' => 'Colegio',
             'last_name' => 'San Martín',
+            'email' => 'contact@sanmartin.edu',
             'dni' => '56789012E',
             'password' => Hash::make('institution456'),
             'education_level' => 'PE',
@@ -284,33 +290,15 @@ class DatabaseSeeder extends Seeder
             'institution_name' => 'External Inc',
             'role' => 'EU',
         ]);
-        // Helper to handle event images (copy to uploads/events and return public path)
-        $eventImageHandler = function ($path) {
-            $filename = basename($path);
-            
-            // Source paths
-            $localSource = base_path('../src/assets/' . $filename);
-            $dockerSource = public_path('assets/' . $filename);
-            $sourcePath = file_exists($localSource) ? $localSource : $dockerSource;
-
-            if (file_exists($sourcePath)) {
-                $targetDir = public_path('uploads/events');
-                if (!file_exists($targetDir)) {
-                    mkdir($targetDir, 0775, true);
-                }
-                
-                $targetFilename = 'seeded_' . $filename;
-                $targetPath = $targetDir . '/' . $targetFilename;
-                
-                // Copy the file if it doesn't exist already to avoid redundant work
-                if (!file_exists($targetPath)) {
-                    copy($sourcePath, $targetPath);
-                    chmod($targetPath, 0664);
-                }
-                
-                return '/uploads/events/' . $targetFilename;
+        // Helper to convert image to base64
+        $imageBase64 = function ($path) {
+            $fullPath = base_path('../backend/storage/app/public/' . $path);
+            if (file_exists($fullPath)) {
+                $type = pathinfo($fullPath, PATHINFO_EXTENSION);
+                $data = file_get_contents($fullPath);
+                return 'data:image/' . $type . ';base64,' . base64_encode($data);
             }
-            return null;
+            return $path;
         };
 
         $centro_evento = User::where('role', 'EI')->first();

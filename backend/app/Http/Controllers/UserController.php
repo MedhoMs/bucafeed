@@ -206,7 +206,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request,string $id='')
+    public function destroy(request $request,string $id='')
     {
         $user = User::findOrFail($id);
 
@@ -250,6 +250,15 @@ class UserController extends Controller
             'disabled' => $disabled,
             'oper' => 'destroy'
         ]);
+    }
+
+    /**
+     * Admin: Show profile modal.
+     */
+    public function profileModal($id)
+    {
+        $user = User::findOrFail($id);
+        return view('users.profile_modal', compact('user'));
     }
 
 }

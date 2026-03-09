@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\UserController;
 
 // Importante: No hace falta el prefijo /api aquí, Laravel lo añade automáticamente
 Route::get('/test-connection', function () {
