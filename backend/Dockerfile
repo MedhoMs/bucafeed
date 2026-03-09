@@ -43,6 +43,9 @@ RUN rm -f /etc/nginx/sites-enabled/default
 # Make entrypoint executable
 RUN chmod +x /var/www/entrypoint.sh
 
+# Set entrypoint
+ENTRYPOINT ["/var/www/entrypoint.sh"]
+
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
