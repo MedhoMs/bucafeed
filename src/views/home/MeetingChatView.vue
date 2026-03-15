@@ -1,20 +1,21 @@
 <script setup>
     import NavBar from '../../components/NavBar/NavBar.vue';
-    import SearchBar from '../../components/SearchBar.vue';
-    import SideBar from '../../components/SideBar.vue';
+    import MeetingChat from '../../components/MeetingChat.vue';
+    import ChatMembers from '../../components/ChatMembers.vue';
     
     import { useTranslations } from '../../composables/useTranslations'
     const { t } = useTranslations() // Variable para llamar al archivo de traduccion
 </script>
 
 <template>
-    <main class="flex min-h-screen justify-between">
+    <main class="flex h-screen w-full overflow-hidden">
         <NavBar></NavBar>
-        <section class="text-white w-[1500px] mr-14 mb-4">
-            <SearchBar></SearchBar>
-            <div id="mainBody" class="flex flex-col gap-4 justify-center items-center min-h-[92.9vh]">
-                <h1 class="text-4xl font-bold">No hay ningun meeting</h1>
-            </div>
-        </section>
+
+        <div class="text-white flex flex-col flex-1 pt-8 pl-10 pr-10 pb-6 overflow-hidden">
+            <p class="text-[40px] font-bold shrink-0 mb-4">Nombre del meeting</p>
+            <MeetingChat class="flex-1 overflow-hidden" />
+        </div>
+
+        <ChatMembers />
     </main>
 </template>
