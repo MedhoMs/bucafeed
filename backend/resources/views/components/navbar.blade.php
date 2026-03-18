@@ -1,12 +1,36 @@
-<nav class="w-[300px] shrink-0 flex flex-col pl-5 pr-5 h-screen sticky top-0 overflow-y-auto overflow-x-hidden z-[1] bg-gradient-to-b from-[#142b2b] to-[#0a141d] shadow-[5px_0px_20px_rgba(0,0,0,0.6)]" id="principalNav">
-    <div class="flex flex-row items-center gap-3 mb-4">
+<!-- Mobile Header (Visible below lg) -->
+<div class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#142b2b] border-b border-white/10 flex items-center justify-between px-4 z-[55] shadow-md">
+    <div class="flex items-center gap-2">
+        @if(app()->environment('local'))
+            <img class="w-8 h-8" src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="Logo">
+        @else
+            <img class="w-8 h-8" src="{{ asset('assets/logo/logoTelamon.png') }}" alt="Logo">
+        @endif
+        <span class="text-white font-bold text-lg">Telamo<span class="text-[#a0c4d4]">Net</span></span>
+    </div>
+    <button id="mobile-toggle" class="p-2 text-white/70 hover:text-white transition-colors active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+</div>
+
+<!-- Mobile Overlay -->
+<div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[58] lg:hidden transition-opacity duration-300 opacity-0"></div>
+
+<nav class="fixed lg:sticky top-0 inset-y-0 right-0 lg:left-0 w-[300px] h-screen bg-gradient-to-b from-[#142b2b] to-[#0a141d] shadow-[-5px_0px_20px_rgba(0,0,0,0.6)] z-[60] transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pl-5 pr-5 overflow-y-auto overflow-x-hidden" id="principalNav">
+    <div class="hidden lg:flex flex-row items-center gap-3 mb-4 mt-4">
         @if(app()->environment('local'))
             <img class="w-[65px] h-[70px]" src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="Logo">
         @else
             <img class="w-[65px] h-[70px]" src="{{ asset('assets/logo/logoTelamon.png') }}" alt="Logo">
         @endif
-        <h1 class="font-bold text-[20px] text-white">Telamo<span class="text-[#a0c4d4]">Net</span></h1>
+        <h1 class="font-bold text-[20px] text-white tracking-wide">Telamo<span class="text-[#a0c4d4]">Net</span></h1>
     </div>
+    <!-- Spacer for mobile drawer content to not start at the very top if branding is hidden -->
+    <div class="lg:hidden h-8"></div>
 
 
 <x-navbar-link title="Inicio" to="#" data-url="/admin" data-load="section">
@@ -78,12 +102,51 @@
     document.addEventListener('click', function(event) {
         const popup = document.getElementById('popupMenu');
         const dots = document.getElementById('dots');
-        if (!popup.classList.contains('hidden') && !popup.contains(event.target) && event.target !== dots) {
+        if (popup && !popup.classList.contains('hidden') && !popup.contains(event.target) && event.target !== dots) {
             popup.classList.remove('opacity-100', 'translate-y-0');
             popup.classList.add('opacity-0', 'translate-y-[5px]');
             setTimeout(() => {
                 popup.classList.add('hidden');
             }, 200);
+        }
+    });
+
+    // Mobile Sidebar Logic
+    const mobileToggle = document.getElementById('mobile-toggle');
+    const sidebar = document.getElementById('principalNav');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    function toggleMobileSidebar(show) {
+        if (show) {
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            sidebar.classList.remove('translate-x-full');
+            sidebar.classList.add('translate-x-0');
+        } else {
+            overlay.classList.remove('opacity-100');
+            sidebar.classList.remove('translate-x-0');
+            sidebar.classList.add('translate-x-full');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+    }
+
+    if (mobileToggle) {
+        mobileToggle.addEventListener('click', () => {
+            const isHidden = sidebar.classList.contains('translate-x-full');
+            toggleMobileSidebar(isHidden);
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener('click', () => toggleMobileSidebar(false));
+    }
+
+    // Close on navigation
+    sidebar.addEventListener('click', (e) => {
+        if (window.innerWidth < 1024 && (e.target.closest('a') || e.target.closest('button'))) {
+            // Don't close if clicking dots
+            if (e.target.closest('#dots')) return;
+            toggleMobileSidebar(false);
         }
     });
 </script>

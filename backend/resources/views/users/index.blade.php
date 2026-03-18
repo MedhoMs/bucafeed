@@ -3,19 +3,21 @@
 @section('content')
 <div class="p-4 sm:p-8 min-h-screen text-white bg-gradient-to-b from-[#1a3a3a] via-[#10202e] to-[#0a141d]">
     
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 sm:gap-0">
-        <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-white">Gestión de Usuarios</h1>
-            <p class="text-white/60 text-sm mt-1">Administra los usuarios registrados en la plataforma.</p>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-5">
+        <div class="space-y-1">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Gestión de Usuarios</h1>
+            <p class="text-cyan-200/50 text-sm font-medium">Administra los usuarios registrados en la plataforma.</p>
         </div>
         <button 
-            class="btn-modal btn-primary px-5 py-2.5 rounded-xl font-medium flex items-center gap-2 w-full sm:w-auto justify-center"
+            class="btn-modal btn-primary px-6 py-3 rounded-2xl font-bold flex items-center gap-2.5 w-full md:w-auto justify-center shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all active:scale-95 border border-white/10"
             data-url="{{ route('user.create') }}"
             data-title="Crear Nuevo Usuario"
             data-load="modal"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-            Nuevo Usuario
+            <div class="bg-white/20 p-1 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+            </div>
+            <span>Nuevo Usuario</span>
         </button>
     </div>
 
@@ -25,13 +27,13 @@
                 <thead class="text-xs text-white uppercase bg-[#1a3a3a]/90 sticky top-0 z-10 backdrop-blur-md">
                     <tr>
                         <th scope="col" class="px-6 py-4 font-bold tracking-wider">Acciones</th>
-                        <th scope="col" class="px-6 py-4 font-bold tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-4 font-bold tracking-wider hidden sm:table-cell">ID</th>
                         <th scope="col" class="px-6 py-4 font-bold tracking-wider">Usuario</th>
-                        <th scope="col" class="px-6 py-4 font-bold tracking-wider">DNI/NIE</th>
-                        <th scope="col" class="px-6 py-4 font-bold tracking-wider">Rol</th>
-                        <th scope="col" class="px-6 py-4 font-bold tracking-wider">Reputación</th>
-                        <th scope="col" class="px-6 py-4 font-bold tracking-wider">Nivel / Institución</th>
-                        <th scope="col" class="px-6 py-4 font-bold tracking-wider">Registro</th>
+                        <th scope="col" class="px-6 py-4 font-bold tracking-wider hidden lg:table-cell">DNI/NIE</th>
+                        <th scope="col" class="px-6 py-4 font-bold tracking-wider hidden md:table-cell">Rol</th>
+                        <th scope="col" class="px-6 py-4 font-bold tracking-wider hidden sm:table-cell">Reputación</th>
+                        <th scope="col" class="px-6 py-4 font-bold tracking-wider hidden xl:table-cell">Nivel / Institución</th>
+                        <th scope="col" class="px-6 py-4 font-bold tracking-wider hidden lg:table-cell">Registro</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
@@ -59,41 +61,50 @@
                                 </a>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-white/70">
+                        <td class="px-6 py-4 whitespace-nowrap text-white/70 hidden sm:table-cell">
                             #{{ $user->id }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                                    {{ substr($user->name, 0, 1) }}
+                                <div 
+                                    class="btn-modal w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-md cursor-pointer overflow-hidden transition-transform hover:scale-110 active:scale-95 border-2 border-white/20"
+                                    data-url="{{ route('user.profile_modal', $user->id) }}"
+                                    data-title="Perfil de {{ $user->name }}"
+                                    data-load="modal"
+                                >
+                                    @if($user->profile_picture)
+                                        <img src="{{ $user->profile_picture }}" alt="Avatar" class="w-full h-full object-cover">
+                                    @else
+                                        <img src="{{ asset('logoTelamon.png') }}" alt="Avatar" class="w-full h-full object-cover opacity-60">
+                                    @endif
                                 </div>
                                 <div>
-                                    <div class="font-semibold text-white">{{ $user->name }} {{ $user->last_name }}</div>
-                                    <div class="text-xs text-white/50">{{ $user->email }}</div>
+                                    <div class="font-semibold text-white text-sm sm:text-base">{{ $user->name }} {{ $user->last_name }}</div>
+                                    <div class="text-[10px] sm:text-xs text-white/50">{{ $user->email }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-white/70">
+                        <td class="px-6 py-4 text-white/70 hidden lg:table-cell">
                             {{ $user->dni ?? '-' }}
                         </td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        <td class="px-6 py-4 hidden md:table-cell">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
                                 {{ $roles_disponibles[$user->role] ?? $user->role }}
                             </span>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 hidden sm:table-cell">
                            <div class="flex items-center gap-1 text-yellow-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-coins"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14c0 1.657 2.686 3 6 3s6 -1.343 6 -3s-2.686 -3 -6 -3s-6 1.343 -6 3z" /><path d="M9 14v4c0 1.656 2.686 3 6 3s6 -1.344 6 -3v-4" /><path d="M3 6c0 1.072 1.144 2.062 3 2.598s4.144 .536 6 0c1.856 -.536 3 -1.526 3 -2.598c0 -1.072 -1.144 -2.062 -3 -2.598s-4.144 -.536 -6 0c-1.856 .536 -3 1.526 -3 2.598z" /><path d="M3 6v10c0 .888 .772 1.45 2 2" /><path d="M3 11c0 .888 .772 1.45 2 2" /></svg>
-                                <span class="font-bold">{{ $user->reputation }}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-coins"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14c0 1.657 2.686 3 6 3s6 -1.343 6 -3s-2.686 -3 -6 -3s-6 1.343 -6 3z" /><path d="M9 14v4c0 1.656 2.686 3 6 3s6 -1.344 6 -3v-4" /><path d="M3 6c0 1.072 1.144 2.062 3 2.598s4.144 .536 6 0c1.856 -.536 3 -1.526 3 -2.598c0 -1.072 -1.144 -2.062 -3 -2.598s-4.144 -.536 -6 0c-1.856 .536 -3 1.526 -3 2.598z" /><path d="M3 6v10c0 .888 .772 1.45 2 2" /><path d="M3 11c0 .888 .772 1.45 2 2" /></svg>
+                                <span class="font-bold text-xs">{{ $user->reputation }}</span>
                            </div>
                         </td>
-                        <td class="px-6 py-4 text-white/70">
+                        <td class="px-6 py-4 text-white/70 hidden xl:table-cell">
                             <div class="flex flex-col">
-                                <span class="text-sm">{{ $niveles_disponibles[$user->education_level] ?? $user->education_level ?? '-' }}</span>
-                                <span class="text-xs text-white/40">{{ $user->institution_name ?? '-' }}</span>
+                                <span class="text-xs">{{ $niveles_disponibles[$user->education_level] ?? $user->education_level ?? '-' }}</span>
+                                <span class="text-[10px] text-white/40">{{ $user->institution_name ?? '-' }}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-white/70 text-sm">
+                        <td class="px-6 py-4 text-white/70 text-xs hidden lg:table-cell">
                             {{ $user->created_at->format('Y-m-d') }}
                         </td>
                     </tr>
@@ -101,6 +112,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
         
     </div>
 </div>

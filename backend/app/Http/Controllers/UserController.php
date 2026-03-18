@@ -47,6 +47,7 @@ class UserController extends Controller
                 'role'            => 'required|string',
                 'education_level' => 'nullable|string',
                 'institution_name'=> 'nullable|string',
+                'description'     => 'nullable|string|max:1000',
             ]);
 
             if ($validator->fails()) {
@@ -73,6 +74,7 @@ class UserController extends Controller
             $user->education_level  = $request->input('education_level');
             $user->institution_name = $request->input('institution_name');
             $user->educational_center_id = $request->input('educational_center_id');
+            $user->description      = $request->input('description');
 
             $user->save();   
             
@@ -144,6 +146,9 @@ class UserController extends Controller
                 'role'            => 'required|string',
                 'education_level' => 'nullable|string',
                 'institution_name'=> 'nullable|string',
+                'description'     => 'nullable|string|max:1000',
+                'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'banner'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
             ]);
 
             if ($validator->fails()) {
@@ -174,6 +179,23 @@ class UserController extends Controller
             $user->education_level  = $request->input('education_level');
             $user->institution_name = $request->input('institution_name');
             $user->educational_center_id = $request->input('educational_center_id');
+            $user->description      = $request->input('description');
+
+            // Handle Profile Picture
+            if ($request->hasFile('profile_picture')) {
+                $file = $request->file('profile_picture');
+                $filename = time() . '_pfp_' . $user->id . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/profiles'), $filename);
+                $user->profile_picture = '/uploads/profiles/' . $filename;
+            }
+
+            // Handle Banner
+            if ($request->hasFile('banner')) {
+                $file = $request->file('banner');
+                $filename = time() . '_banner_' . $user->id . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('uploads/banners'), $filename);
+                $user->banner = '/uploads/banners/' . $filename;
+            }
             
             $user->save();
 
@@ -219,7 +241,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request,string $id='')
+    public function destroy(request $request,string $id='')
     {
         $user = User::findOrFail($id);
 
@@ -264,6 +286,15 @@ class UserController extends Controller
             'disabled' => $disabled,
             'oper' => 'destroy'
         ]);
+    }
+
+    /**
+     * Admin: Show profile modal.
+     */
+    public function profileModal($id)
+    {
+        $user = User::findOrFail($id);
+        return view('users.profile_modal', compact('user'));
     }
 
 }

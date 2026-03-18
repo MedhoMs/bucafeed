@@ -45,15 +45,13 @@ class Event extends Model
             get: function () {
                 if (!$this->image) return null;
                 
-                // If the app is being fetched via API or we want to optimize, 
-                // we return a permanent URL to the streaming endpoint.
-                if (str_starts_with($this->image, 'data:')) {
-                    return route('api.event.image', ['id' => $this->id]);
-                }
-                
+                // If it's a full URL (external), return it directly
                 if (str_starts_with($this->image, 'http')) return $this->image;
-                
-                return Storage::disk('public')->url($this->image);
+
+                // For everything else (Base64 or internal /uploads paths), 
+                // use the streaming API route for consistency and performance.
+                // We add a timestamp as a query parameter to avoid browser caching issues after updates.
+                return route('api.event.image', ['id' => $this->id, 't' => $this->updated_at?->timestamp]);
             },
         );
     }
