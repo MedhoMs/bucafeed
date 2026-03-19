@@ -5,6 +5,7 @@
     import { useTranslations } from '@/composables/useTranslations'
     import { useRouter } from 'vue-router';
     import { onMounted } from 'vue';
+    import { login } from '@/stores/auth';
 
     const { t } = useTranslations()
     const router = useRouter();
@@ -42,6 +43,10 @@
                 const data = await response.json();
 
                 if (data.status === 'success') {
+                    // Guardar los datos del usuario en el estado
+                    if (data.user) {
+                        login(data.user);
+                    }
                     router.push('/home');
                 } else {
                     // Mostrar el mensaje de error que devuelve Laravel
