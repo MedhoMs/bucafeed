@@ -5,6 +5,8 @@
     import { useTranslations } from '@/composables/useTranslations'
     const { t } = useTranslations() //Variable para llamar al archivo de traduccion
 
+    import { user } from '@/stores/auth' //Import que contiene toda la info del usuario logueado
+
     const dbStatus = ref('loading') // loading, connected, error
 
     const checkDbConnection = async () => {
@@ -88,7 +90,7 @@
 
         <router-link class="relative flex items-center gap-2.5 mb-5 mr-4 mt-auto rounded-xl text-[17px] font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#406071] hover:cursor-pointer active:bg-[#406071] active:font-bold" id="profile" to="/profile">
             <img src="../../assets/logo/logoTelamon.png" alt="" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm">
-            {{ t.nav.profile }}
+            <p>{{ user ? user.name : 'Usuario' }}</p>
             <svg id="dots" @click.stop.prevent="toggleDotsPopup" class="absolute right-4 w-6 h-6 z-10 rounded-xl hover:bg-[#447c9a] transition-colors duration-200 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
         </router-link>
 
