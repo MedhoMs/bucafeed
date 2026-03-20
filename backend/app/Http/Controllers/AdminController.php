@@ -39,19 +39,57 @@ class AdminController extends Controller
 
 
     
-    public function users()
+    public function users(Request $request)
     {
-        
-        $users = User::all();
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('last_name', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%")
+                  ->orWhere('dni', 'like', "%$search%");
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        if ($request->filled('institution')) {
+             $query->where('institution_name', $request->institution);
+        }
+
+        if ($request->filled('level')) {
+             $query->where('education_level', $request->level);
+        }
+
+        $users = $query->paginate(10);
         $countAdmins = User::where('role', 'admin')->count();
 
         $data = [
             'users' => $users,
-            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
-            'niveles_disponibles' => EducationalCenter::$niveles_disponibles
+            'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
+                return [$r->code ?? $r->name => $r->name];
+            })->toArray(),
+            'niveles_disponibles' => EducationalCenter::$niveles_disponibles,
+            'instituciones_existentes' => array_combine($this->getInstitucionesExistentes(), $this->getInstitucionesExistentes())
         ];
 
         return view('users.index', $data);
+    }
+
+    /**
+     * Obtiene la lista de instituciones (nombres manuales + centros educativos).
+     */
+    protected function getInstitucionesExistentes()
+    {
+        return EducationalCenter::pluck('name')
+            ->unique()
+            ->sort()
+            ->values()
+            ->toArray();
     }
 
 

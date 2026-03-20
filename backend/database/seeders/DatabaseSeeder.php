@@ -65,72 +65,7 @@ class DatabaseSeeder extends Seeder
             'institution_name' => 'TelamoNet',
             'role' => 'admin',
         ]);
-        
-        // ----------------- Centros Educativos (EI) -----------------
-
-        $centro1 = EducationalCenter::firstOrCreate(['name' => 'TelamoNet Institute'], [
-            'type' => 'SE',
-            'location' => 'Lanzarote'
-        ]);
-
-        User::updateOrCreate(['email' => 'contact@telamonet.edu'], [
-            'name' => 'Instituto',
-            'last_name' => 'TelamoNet Center',
-            'dni' => '45678901D',
-            'password' => Hash::make('institution123'),
-            'education_level' => 'SE',
-            'institution_name' => 'TelamoNet Institute',
-            'role' => 'EI',
-            'educational_center_id' => $centro1->id,
-        ]);
-        
-
-        
-        $centro2 = EducationalCenter::firstOrCreate(['name' => 'Colegio San Martín'], [
-            'type' => 'PE',
-            'location' => 'Arrecife'
-        ]);
-        User::updateOrCreate(['email' => 'contact@sanmartin.edu'], [
-            'name' => 'Colegio',
-            'last_name' => 'San Martín',
-            'email' => 'contact@sanmartin.edu',
-            'dni' => '56789012E',
-            'password' => Hash::make('institution456'),
-            'education_level' => 'PE',
-            'institution_name' => 'Colegio San Martín',
-            'role' => 'EI',
-            'educational_center_id' => $centro2->id,
-        ]);
-
-        $centro3 = EducationalCenter::firstOrCreate(['name' => 'Academia Futura'], [
-            'type' => 'College',
-            'location' => 'Teguise'
-        ]);
-        User::updateOrCreate(['email' => 'info@academiafutura.edu'], [
-            'name' => 'Academia',
-            'last_name' => 'Futura',
-            'dni' => '67890123F',
-            'password' => Hash::make('institution789'),
-            'education_level' => 'College',
-            'institution_name' => 'Academia Futura',
-            'role' => 'EI',
-            'educational_center_id' => $centro3->id,
-        ]);
-
-        $centro4 = EducationalCenter::firstOrCreate(['name' => 'Centro Avance'], [
-            'type' => 'FP',
-            'location' => 'San Bartolomé'
-        ]);
-        User::updateOrCreate(['email' => 'info@centroavance.edu'], [
-            'name' => 'Centro',
-            'last_name' => 'Avance',
-            'dni' => '78901234G',
-            'password' => Hash::make('institution321'),
-            'education_level' => 'FP',
-            'institution_name' => 'Centro Avance',
-            'role' => 'EI',
-            'educational_center_id' => $centro4->id,
-        ]);
+     
 
         // ----------------- Profesores -----------------
         User::updateOrCreate(['email' => 'maria.gomez@teacher.com'], [
@@ -371,6 +306,13 @@ class DatabaseSeeder extends Seeder
             'educational_center_id' => $centro_evento->id,
             'image' => $eventImageHandler('events/event_3_1773005324.png'),
         ]);
+
+        echo "- Seeding de eventos completado exitosamente.\n";
+        $this->call([
+            EducationalsCentersSeeder::class,
+        ]);
+        echo "- Seeding de centros educativos completado exitosamente.\n";
+
         echo "🏁 Seeding completado exitosamente.\n";
     }
 }

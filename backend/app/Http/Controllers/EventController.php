@@ -13,10 +13,34 @@ class EventController extends Controller
 {
     public function index(Request $request)
     {
-        $events = Event::with('educationalCenter')->withCount('participants')->get();
-        $roles_disponibles = Rol::all()->pluck('name', 'code')->toArray();
+        $query = Event::with('educationalCenter')->withCount('participants');
 
-        return view('users_events.index', compact('events', 'roles_disponibles'));
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                  ->orWhere('description', 'like', "%$search%")
+                  ->orWhere('location', 'like', "%$search%");
+            });
+        }
+
+        if ($request->filled('center')) {
+            $query->where('educational_center_id', $request->center);
+        }
+
+        if ($request->filled('role')) {
+            $query->where('target_role', $request->role);
+        }
+
+        if ($request->filled('date')) {
+            $query->whereDate('date', $request->date);
+        }
+
+        $events = $query->paginate(10);
+        $roles_disponibles = Rol::all()->pluck('name', 'code')->toArray();
+        $schools = EducationalCenter::pluck('name', 'id')->toArray();
+
+        return view('users_events.index', compact('events', 'roles_disponibles', 'schools'));
     }
 
     public function create(Request $request)

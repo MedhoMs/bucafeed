@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\EducationalCenterController;
 
 // Importante: No hace falta el prefijo /api aquí, Laravel lo añade automáticamente
 Route::get('/test-connection', function () {
@@ -27,3 +28,4 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/events', [EventController::class, 'getEventsApi']);
 Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name('api.event.image');
+Route::get('/educational-centers', [EducationalCenterController::class, 'apiIndex']);

@@ -180,6 +180,113 @@
                 console.error(error);
             }
         }
+
+        nextButton.addEventListener('click', function () {
+
+            if (selectRole.value === "EI") {
+                formPath = "EI";
+
+                if (nextButton.id === "nextButton") {
+                    if (!validateInputs(allRolesInput)) return;
+                    allRolesForm.classList.replace('flex', 'hidden');
+                    EIForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "validateEmail";
+
+                } else if (nextButton.id === "validateEmail") {
+                    EIForm.classList.replace('flex', 'hidden');
+                    validateEmailForm.classList.replace('hidden', 'flex');
+                    registerButton.classList.replace('hidden', 'flex');
+                    nextButton.classList.add('hidden');
+                    sendVerificationCode();
+                }
+
+            } else if (selectRole.value === "Student") {
+                formPath = "Student";
+
+                if (nextButton.id === "nextButton") {
+                    if (!validateInputs(allRolesInput)) return;
+                    allRolesForm.classList.replace('flex', 'hidden');
+                    studentTeacheEuForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "studentButton";
+
+                } else if (nextButton.id === "studentButton") {
+                    if (!validateInputs(studentTeacheEuInput)) return;
+                    studentTeacheEuForm.classList.replace('flex', 'hidden');
+                    EIForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "validateEmail";
+
+                } else if (nextButton.id === "validateEmail") {
+                    EIForm.classList.replace('flex', 'hidden');
+                    validateEmailForm.classList.replace('hidden', 'flex');
+                    registerButton.classList.replace('hidden', 'flex');
+                    nextButton.classList.add('hidden');
+                    sendVerificationCode();
+                }
+
+            } else if (selectRole.value === "Teacher") {
+                formPath = "Teacher";
+
+                if (nextButton.id === "nextButton") {
+                    if (!validateInputs(allRolesInput)) return;
+                    allRolesForm.classList.replace('flex', 'hidden');
+                    studentTeacheEuForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "teacherButton";
+
+                } else if (nextButton.id === "teacherButton") {
+                    if (!validateInputs(studentTeacheEuInput)) return;
+                    studentTeacheEuForm.classList.replace('flex', 'hidden');
+                    EIForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "validateEmail";
+
+                } else if (nextButton.id === "validateEmail") {
+                    EIForm.classList.replace('flex', 'hidden');
+                    validateEmailForm.classList.replace('hidden', 'flex');
+                    registerButton.classList.replace('hidden', 'flex');
+                    nextButton.classList.add('hidden');
+                    sendVerificationCode();
+                }
+
+            } else if (selectRole.value === "EU") {
+                formPath = "EU";
+
+                if (nextButton.id === "nextButton") {
+                    if (!validateInputs(allRolesInput)) return;
+                    allRolesForm.classList.replace('flex', 'hidden');
+                    studentTeacheEuForm.classList.replace('hidden', 'flex');
+                    nextButton.id = "validateEmail";
+
+                } else if (nextButton.id === "validateEmail") {
+                    if (!validateInputs(studentTeacheEuInput)) return;
+                    studentTeacheEuForm.classList.replace('flex', 'hidden');
+                    validateEmailForm.classList.replace('hidden', 'flex');
+                    registerButton.classList.replace('hidden', 'flex');
+                    nextButton.classList.add('hidden');
+                    sendVerificationCode();
+                }
+            }
+            const educationLevelSelect = document.getElementById('educationLevelSelect');
+            const institutionSelect = document.getElementById('institutionSelect');
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+            async function loadCenters(type) {
+                const response = await fetch(`${apiBase}/educational-centers?type=${type}`);
+                const centers = await response.json();
+                institutionSelect.innerHTML = '';
+                centers.forEach(center => {
+                    const option = document.createElement('option');
+                    option.value = center.id;
+                    option.textContent = center.name;
+                    institutionSelect.appendChild(option);
+                });
+            }
+
+            educationLevelSelect.addEventListener('change', function () {
+                loadCenters(this.value);
+            });
+
+            // Cargar centros del nivel por defecto al mostrar el formulario
+            loadCenters(educationLevelSelect.value);
+        });
     });
 </script>
 
@@ -225,16 +332,16 @@
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
-                    <label class="font-bold" for="choose-center" id="chooseCenter">Nivel de Enseñanza</label>
-                    <select name="" id="" class="EIInput border-b border-black pb-1">
+                    <label class="font-bold" for="choose-center">Nivel de Enseñanza</label>
+                    <select id="educationLevelSelect" class="EIInput border-b border-black pb-1">
                         <option value="PE">Educación Primaria</option>
                         <option value="SE">Educación Secundaria</option>
                         <option value="College">Universidad</option>
                         <option value="FP">Formación Profesional</option>
                     </select>
-                    <label class="mt-8 font-bold" for="choose-location" id="chooseLocation">¿Cual es su Institucion Educativa?</label>
-                    <select name="" id="" class="EIInput border-b border-black pb-1">
-                        <option value="en-el-futuro">Saldran todo de la base de datos</option>
+                    <label class="mt-8 font-bold">¿Cuál es su Institución Educativa?</label>
+                    <select id="institutionSelect" class="EIInput border-b border-black pb-1">
+                        <option value="">Selecciona un nivel primero</option>
                     </select>
 
                 </section>

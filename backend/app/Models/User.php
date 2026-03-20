@@ -53,7 +53,17 @@ class User extends Authenticatable
         return $this->hasOne(Student::class);
     }
 
-        /**
+    public function assignedTeachers()
+    {
+        return $this->belongsToMany(User::class, 'student_teacher', 'student_id', 'teacher_id');
+    }
+
+    public function assignedStudents()
+    {
+        return $this->belongsToMany(User::class, 'student_teacher', 'teacher_id', 'student_id');
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

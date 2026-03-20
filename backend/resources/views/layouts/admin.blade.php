@@ -18,6 +18,9 @@
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
         
 
+        {{-- Constants --}}
+        <x-admin.constants.colors />
+
         @if(app()->environment('local'))
             <!-- Modo Desarrollo: Carga desde el servidor de Vite -->
             <script type="module" src="http://localhost:5174/@@vite/client"></script>
@@ -25,7 +28,7 @@
             <link rel="stylesheet" href="http://localhost:5174/backend/resources/sytles/main.css">
         @else
             <!-- Modo Producción: Carga los assets compilados -->
-            @vite(['resources/sytles/style.css', 'resources/sytles/main.css'], 'frontend')
+            @vite(['resources/css/app.css', 'resources/js/app.js'], 'frontend')
         @endif
     </head>
     <body class="hold-transition sidebar-mini">
@@ -42,7 +45,7 @@
         </div>
         
         <!-- Modal Tailwind (Hidden by default) -->
-        <div id="default-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black/60 backdrop-blur-sm transition-opacity duration-300">
+        <div id="default-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black/60 transition-opacity duration-300">
             <div class="relative p-4 w-full max-w-4xl max-h-full">
                 <!-- Modal content -->
                 <div class="relative bg-[#0f1922] rounded-2xl shadow-2xl border border-cyan-900/40">
@@ -120,8 +123,21 @@
                     .then(html => {
                         target.innerHTML = html;
                         target.style.opacity = '1';
+                        
+                        // Execute scripts in the loaded HTML
+                        const scripts = target.querySelectorAll('script');
+                        scripts.forEach(oldScript => {
+                            const newScript = document.createElement('script');
+                            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                            newScript.innerHTML = oldScript.innerHTML;
+                            if (oldScript.parentNode) {
+                                oldScript.parentNode.replaceChild(newScript, oldScript);
+                            }
+                        });
+
                         if (isModal) toggleModal(true);
                         
+                        // Actualizar historial solo si se solicita
                         if (shouldPushState && url !== window.location.href) {
                             window.history.pushState({path: url}, '', url);
                         }
@@ -135,6 +151,23 @@
 
                 // Interceptor de navegación
                 document.addEventListener("click", function(e) {
+                    // Logic for custom dropdowns
+                    const toggle = e.target.closest('.dropdown-toggle');
+                    if (toggle) {
+                        const menu = toggle.nextElementSibling;
+                        // Close other menus
+                        document.querySelectorAll('.dropdown-menu').forEach(m => {
+                            if (m !== menu) m.classList.add('hidden');
+                        });
+                        menu.classList.toggle('hidden');
+                        return;
+                    }
+
+                    // Close menus when clicking outside
+                    if (!e.target.closest('.filter-dropdown')) {
+                        document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
+                    }
+
                     const navLink = e.target.closest("a[data-load]");
                     if (navLink) {
                         e.preventDefault();
