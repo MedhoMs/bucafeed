@@ -9,7 +9,17 @@ class RoleController extends Controller
 {
     public function index(Request $request)
     {
-        $roles = Rol::all();
+        $query = Rol::query();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('code', 'like', "%$search%");
+            });
+        }
+
+        $roles = $query->paginate(10);
         
         return view('roles.index', [
             'roles' => $roles,

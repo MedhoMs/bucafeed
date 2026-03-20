@@ -24,6 +24,11 @@ class Teacher extends Model
     {
         return $this->belongsTo(EducationalCenter::class);
     }
+
+    public function students()
+    {
+        return $this->belongsToMany(Student::class);
+    }
 }
 
 
