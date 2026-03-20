@@ -266,6 +266,28 @@
                     sendVerificationCode();
                 }
             }
+            const educationLevelSelect = document.getElementById('educationLevelSelect');
+            const institutionSelect = document.getElementById('institutionSelect');
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+            async function loadCenters(type) {
+                const response = await fetch(`${apiBase}/educational-centers?type=${type}`);
+                const centers = await response.json();
+                institutionSelect.innerHTML = '';
+                centers.forEach(center => {
+                    const option = document.createElement('option');
+                    option.value = center.id;
+                    option.textContent = center.name;
+                    institutionSelect.appendChild(option);
+                });
+            }
+
+            educationLevelSelect.addEventListener('change', function () {
+                loadCenters(this.value);
+            });
+
+            // Cargar centros del nivel por defecto al mostrar el formulario
+            loadCenters(educationLevelSelect.value);
         });
     });
 </script>
@@ -317,16 +339,16 @@
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
-                    <label class="font-bold" for="choose-center" id="chooseCenter">Nivel de Enseñanza</label>
-                    <select name="" id="" class="EIInput border-b border-black pb-1">
+                    <label class="font-bold" for="choose-center">Nivel de Enseñanza</label>
+                    <select id="educationLevelSelect" class="EIInput border-b border-black pb-1">
                         <option value="PE">Educación Primaria</option>
                         <option value="SE">Educación Secundaria</option>
                         <option value="College">Universidad</option>
                         <option value="FP">Formación Profesional</option>
                     </select>
-                    <label class="mt-8 font-bold" for="choose-location" id="chooseLocation">¿Cual es su Institucion Educativa?</label>
-                    <select name="" id="" class="EIInput border-b border-black pb-1">
-                        <option value="en-el-futuro">Saldran todo de la base de datos</option>
+                    <label class="mt-8 font-bold">¿Cuál es su Institución Educativa?</label>
+                    <select id="institutionSelect" class="EIInput border-b border-black pb-1">
+                        <option value="">Selecciona un nivel primero</option>
                     </select>
                 </section>
 

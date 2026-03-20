@@ -9,7 +9,14 @@ class BannedWordController extends Controller
 {
     public function index(Request $request)
     {
-        $bannedWords = BannedWord::all();
+        $query = BannedWord::query();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('word', 'like', "%$search%");
+        }
+
+        $bannedWords = $query->paginate(10);
 
         return view('banned_words.index', compact('bannedWords'));
     }
