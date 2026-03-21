@@ -24,17 +24,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 
 # Copiar el código del backend
-COPY . .
+COPY backend/ .
 
 # Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Configurar Nginx para Railway (usando el archivo que ya tienes)
-COPY nginx.railway.conf /etc/nginx/sites-available/default
+COPY backend/nginx.railway.conf /etc/nginx/sites-available/default
 RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # Configurar Supervisord
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY backend/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Permisos para Laravel
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
