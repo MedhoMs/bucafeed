@@ -26,6 +26,13 @@ WORKDIR /var/www
 # Copiar el código del backend
 COPY backend/ .
 
+# Crear directorios necesarios para Laravel y asegurar que existan para composer
+RUN mkdir -p storage/framework/cache/data \
+             storage/framework/sessions \
+             storage/framework/views \
+             storage/logs \
+             bootstrap/cache
+
 # Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
