@@ -33,6 +33,9 @@ RUN mkdir -p storage/framework/cache/data \
              storage/logs \
              bootstrap/cache
 
+# Instalar dependencias de Node y compilar assets (Vite)
+RUN npm install && npm run build
+
 # Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
