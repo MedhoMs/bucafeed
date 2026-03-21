@@ -81,11 +81,7 @@ class UserController extends Controller
                     return view('users.create', [
                         'datos' => $data,
                         'user' => $user,
-                        'roles' => Rol::all(), 
-                        'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
-                        'education_levels' => EducationalCenter::$niveles_disponibles,
-                        'instituciones_existentes' => $this->getInstitucionesExistentes(),
-                        'educational_centers' => EducationalCenter::pluck('name', 'id')->toArray(),
+                        'fields' => $this->getUserFields($user),
                         'disabled' => '',
                         'oper' => 'create'
                     ])->withErrors($validator);
@@ -101,7 +97,6 @@ class UserController extends Controller
             $user->role             = $request->input('role');
             $user->education_level  = $request->input('education_level');
             $user->institution_name = $request->input('institution_name');
-            $user->educational_center_id = $request->input('educational_center_id');
             $user->description      = $request->input('description');
 
             $user->save();   
@@ -109,31 +104,10 @@ class UserController extends Controller
             $data['exito'] = 'Operación realizada correctamente';
         }
 
-        if ($request->ajax()) 
-        {
-            return view('users.create', [
-                'datos' => $data,
-                'user' => $user,
-                'roles' => Rol::all(), 
-                'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
-                    return [$r->code ?? $r->name => $r->name];
-                })->toArray(),
-                'education_levels' => EducationalCenter::$niveles_disponibles,
-                'instituciones_existentes' => $this->getInstitucionesExistentes(),
-                'educational_centers' => EducationalCenter::pluck('name', 'id')->toArray(),
-                'disabled' => '',
-                'oper' => 'create'
-            ]); 
-        }
-
-        return view('users.create',[
+        return view('users.create', [
             'datos' => $data,
             'user' => $user,
-            'roles' => Rol::all(), 
-            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(), 
-            'education_levels' => EducationalCenter::$niveles_disponibles, 
-            'instituciones_existentes' => $this->getInstitucionesExistentes(),
-            'educational_centers' => EducationalCenter::pluck('name', 'id')->toArray(),
+            'fields' => $this->getUserFields($user),
             'disabled' => '',
             'oper' => 'create'
         ]);
@@ -158,11 +132,7 @@ class UserController extends Controller
         return view('users.create',[
             'user' => $user,
             'datos' => $datos,
-            'roles' => Rol::all(), 
-            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
-            'education_levels' => EducationalCenter::$niveles_disponibles,
-            'instituciones_existentes' => $this->getInstitucionesExistentes(),
-            'educational_centers' => EducationalCenter::pluck('name', 'id')->toArray(),
+            'fields' => $this->getUserFields($user),
             'disabled' => 'disabled',
             'oper' => 'show'
         ]);
@@ -196,13 +166,7 @@ class UserController extends Controller
                     return view('users.create', [
                         'datos' => $datos,
                         'user' => $user,
-                        'roles' => Rol::all(), 
-                        'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
-                            return [$r->code ?? $r->name => $r->name];
-                        })->toArray(),
-                        'education_levels' => EducationalCenter::$niveles_disponibles,
-                        'instituciones_existentes' => $this->getInstitucionesExistentes(),
-                        'educational_centers' => EducationalCenter::pluck('name', 'id')->toArray(),
+                        'fields' => $this->getUserFields($user),
                         'disabled' => $disabled,
                         'oper' => 'edit'
                     ])->withErrors($validator);
@@ -220,7 +184,6 @@ class UserController extends Controller
             $user->role             = $request->input('role');
             $user->education_level  = $request->input('education_level');
             $user->institution_name = $request->input('institution_name');
-            $user->educational_center_id = $request->input('educational_center_id');
             $user->description      = $request->input('description');
 
             // Handle Profile Picture
@@ -250,13 +213,7 @@ class UserController extends Controller
                 return view('users.create', [
                     'datos' => $datos,
                     'user' => $user,
-                    'roles' => Rol::all(), 
-                    'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
-                        return [$r->code ?? $r->name => $r->name];
-                    })->toArray(),
-                    'education_levels' => EducationalCenter::$niveles_disponibles,
-                    'instituciones_existentes' => $this->getInstitucionesExistentes(),
-                    'educational_centers' => EducationalCenter::pluck('name', 'id')->toArray(),
+                    'fields' => $this->getUserFields($user),
                     'disabled' => $disabled,
                     'oper' => 'edit' 
                 ]); 
@@ -266,11 +223,7 @@ class UserController extends Controller
         return view('users.create', [
             'user' => $user,
             'datos' => $datos,
-            'roles' => Rol::all(), 
-            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
-            'education_levels' => EducationalCenter::$niveles_disponibles,
-            'instituciones_existentes' => $this->getInstitucionesExistentes(),
-            'educational_centers' => EducationalCenter::pluck('name', 'id')->toArray(),
+            'fields' => $this->getUserFields($user),
             'disabled' => $disabled,
             'oper' => 'edit'
         ]);
@@ -307,13 +260,7 @@ class UserController extends Controller
                 return view('users.create', [
                     'user' => $user,
                     'datos' => $data,
-                    'roles' => Rol::all(), 
-                    'roles_disponibles' => Rol::all()->mapWithKeys(function ($r) {
-                        return [$r->code ?? $r->name => $r->name];
-                    })->toArray(),
-                    'education_levels' => EducationalCenter::$niveles_disponibles,
-                    'instituciones_existentes' => $this->getInstitucionesExistentes(),
-                    'educational_centers' => EducationalCenter::pluck('name', 'id')->toArray(),
+                    'fields' => $this->getUserFields($user),
                     'disabled' => 'disabled',
                     'oper' => 'destroy'
                 ]);
@@ -328,11 +275,7 @@ class UserController extends Controller
         return view('users.create', [
             'user' => $user,
             'datos' => $datos,
-            'roles' => Rol::all(), 
-            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
-            'education_levels' => EducationalCenter::$niveles_disponibles,
-            'instituciones_existentes' => $this->getInstitucionesExistentes(),
-            'educational_centers' => EducationalCenter::pluck('name', 'id')->toArray(),
+            'fields' => $this->getUserFields($user),
             'disabled' => $disabled,
             'oper' => 'destroy'
         ]);
@@ -348,6 +291,35 @@ class UserController extends Controller
     }
 
     /**
+     * Define los campos para el formulario de usuarios.
+     * Esta es la "plantilla" que centraliza la estructura.
+     */
+    protected function getUserFields($user = null)
+    {
+        $roles = Rol::all();
+        $roles_disponibles = $roles->pluck('name', 'code')->toArray();
+        $education_levels = EducationalCenter::$niveles_disponibles;
+        $instituciones_existentes = $this->getInstitucionesExistentes();
+
+        $roleOptions = [];
+        foreach($roles as $rolDb) {
+            $roleOptions[$rolDb->code ?? $rolDb->name] = $roles_disponibles[$rolDb->code] ?? $rolDb->name;
+        }
+
+        return [
+            ['name' => 'name', 'label' => 'Nombre', 'placeholder' => 'Ej: Juan', 'value' => old('name', $user->name ?? ''), 'required' => true],
+            ['name' => 'last_name', 'label' => 'Apellidos', 'placeholder' => 'Ej: Pérez García', 'value' => old('last_name', $user->last_name ?? ''), 'required' => true],
+            ['name' => 'email', 'type' => 'email', 'label' => 'Email', 'placeholder' => 'juan@ejemplo.com', 'value' => old('email', $user->email ?? ''), 'required' => true],
+            ['name' => 'password', 'type' => 'password', 'label' => 'Contraseña', 'placeholder' => '********', 'required' => !$user?->id],
+            ['name' => 'dni', 'label' => 'DNI/NIE', 'placeholder' => '12345678A', 'value' => old('dni', $user->dni ?? ''), 'required' => true],
+            ['name' => 'role', 'type' => 'select', 'label' => 'Rol', 'options' => $roleOptions, 'selectedValue' => old('role', $user->role ?? ''), 'placeholder' => 'Seleccionar rol...', 'required' => true],
+            ['name' => 'education_level', 'type' => 'select', 'label' => 'Nivel Educativo', 'options' => $education_levels, 'selectedValue' => old('education_level', $user->education_level ?? ''), 'placeholder' => 'Seleccionar...'],
+            ['name' => 'institution_name', 'type' => 'select', 'label' => 'Institución', 'options' => ['' => '-- Ninguna --'] + array_combine($instituciones_existentes, $instituciones_existentes), 'selectedValue' => old('institution_name', $user->institution_name ?? ''), 'placeholder' => 'Seleccionar institución...'],
+            ['name' => 'description', 'type' => 'textarea', 'label' => 'Descripción / Biografía', 'placeholder' => 'Cuenta algo sobre el usuario...', 'value' => old('description', $user->description ?? ''), 'full' => true]
+        ];
+    }
+
+    /**
      * Obtiene la lista de instituciones (nombres manuales + centros educativos).
      */
     protected function getInstitucionesExistentes()
@@ -358,5 +330,4 @@ class UserController extends Controller
             ->values()
             ->toArray();
     }
-
 }

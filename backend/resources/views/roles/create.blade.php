@@ -9,19 +9,6 @@
     editText="Actualizar Rol"
 >
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            @foreach([
-                ['name' => 'name', 'label' => 'Nombre del Rol',         'placeholder' => 'Ej: Editor', 'value' => $role->name ?? ''],
-                ['name' => 'code', 'label' => 'Código del Rol (Unico)', 'placeholder' => 'Ej: EDTR',   'value' => $role->code ?? '']
-            ] as $field)
-                <x-admin.form.input 
-                    :name="$field['name']" 
-                    :label="$field['label']" 
-                    :value="old($field['name'], $field['value'])" 
-                    :placeholder="$field['placeholder']" 
-                    :disabled="$disabled" 
-                />
-            @endforeach
-        </div>
+        <x-admin.form-template :disabled="$disabled" :fields="$fields" />
 
 </x-admin.crud-form>

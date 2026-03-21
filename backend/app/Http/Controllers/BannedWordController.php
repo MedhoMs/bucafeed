@@ -27,9 +27,22 @@ class BannedWordController extends Controller
         $bannedWord = new BannedWord();
 
         if ($request->isMethod('post')) {
-            $validated = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'word' => 'required|string|unique:banned_words,word'
             ]);
+
+            if ($validator->fails()) {
+                if ($request->ajax()) {
+                    return view('banned_words.create', [
+                        'datos'      => $data,
+                        'bannedWord' => $bannedWord,
+                        'fields'     => $this->getBannedWordFields($bannedWord),
+                        'disabled'   => '',
+                        'oper'       => 'create'
+                    ])->withErrors($validator);
+                }
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
 
             $bannedWord->word = $request->input('word');
             $bannedWord->save();
@@ -37,10 +50,10 @@ class BannedWordController extends Controller
             $data['exito'] = 'Palabra vetada añadida correctamente';
         }
 
-
         return view('banned_words.create', [
             'datos'      => $data,
             'bannedWord' => $bannedWord,
+            'fields'     => $this->getBannedWordFields($bannedWord),
             'disabled'   => '',
             'oper'       => 'create'
         ]);
@@ -48,26 +61,38 @@ class BannedWordController extends Controller
 
     public function edit(Request $request, $id)
     {
-        $bannedWord = BannedWord::find($id);
+        $bannedWord = BannedWord::findOrFail($id);
         $disabled = '';
         $datos['exito'] = '';
 
         if ($request->isMethod('post')) {
-            $validated = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'word' => 'required|string|unique:banned_words,word,'.$bannedWord->id
             ]);
+
+            if ($validator->fails()) {
+                if ($request->ajax()) {
+                    return view('banned_words.create', [
+                        'bannedWord' => $bannedWord,
+                        'fields'     => $this->getBannedWordFields($bannedWord),
+                        'datos'      => $datos,
+                        'disabled'   => $disabled,
+                        'oper'       => 'edit'
+                    ])->withErrors($validator);
+                }
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
 
             $bannedWord->word = $request->input('word');
             $bannedWord->save();
 
             $datos['exito'] = 'Operación realizada correctamente';
             $disabled = 'disabled';
-
-
         }
 
         return view('banned_words.create', [
             'bannedWord' => $bannedWord,
+            'fields'     => $this->getBannedWordFields($bannedWord),
             'datos'      => $datos,
             'disabled'   => $disabled,
             'oper'       => 'edit'
@@ -76,20 +101,18 @@ class BannedWordController extends Controller
 
     public function destroy(Request $request, $id = '')
     {
-        $bannedWord = BannedWord::find($id);
-
-        if (!$bannedWord) {
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Palabra no encontrada'], 404);
-            }
-        }
+        $bannedWord = BannedWord::findOrFail($id);
 
         if ($request->isMethod('post')) {
             $bannedWord->delete();
 
             if ($request->ajax()) {
-                return response()->json([
-                    'exito' => 'Palabra eliminada correctamente'
+                return view('banned_words.create', [
+                    'bannedWord' => $bannedWord,
+                    'fields'     => $this->getBannedWordFields($bannedWord),
+                    'datos'      => ['exito' => 'Palabra eliminada correctamente'],
+                    'disabled'   => 'disabled',
+                    'oper'       => 'destroy'
                 ]);
             }
             return redirect()->route('admin.index');
@@ -99,9 +122,20 @@ class BannedWordController extends Controller
         
         return view('banned_words.create', [
             'bannedWord' => $bannedWord,
+            'fields'     => $this->getBannedWordFields($bannedWord),
             'datos'      => $datos,
             'disabled'   => 'disabled',
             'oper'       => 'destroy'
         ]);
+    }
+
+    /**
+     * Define los campos para el formulario de palabras prohibidas.
+     */
+    protected function getBannedWordFields($bannedWord = null)
+    {
+        return [
+            ['name' => 'word', 'label' => 'Palabra', 'placeholder' => 'Ej: spam', 'value' => old('word', $bannedWord->word ?? ''), 'required' => true, 'full' => true]
+        ];
     }
 }

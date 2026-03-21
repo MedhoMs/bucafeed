@@ -29,12 +29,13 @@ class RoleController extends Controller
 
     public function create()
     {
-        $datos = ['exito' => ''];
+        $role = new Rol();
         return view('roles.create', [
-            'role' => new Rol(),
+            'role' => $role,
+            'fields' => $this->getRoleFields($role),
             'oper' => 'create',
             'disabled' => '',
-            'datos' => $datos
+            'datos' => ['exito' => '']
         ]);
     }
 
@@ -52,6 +53,7 @@ class RoleController extends Controller
 
         return view('roles.create', [
             'role' => $role,
+            'fields' => $this->getRoleFields($role),
             'oper' => 'edit',
             'disabled' => '',
             'datos' => ['exito' => 'Rol creado correctamente.']
@@ -61,13 +63,13 @@ class RoleController extends Controller
     public function edit($id)
     {
         $role = Rol::findOrFail($id);
-        $datos = ['exito' => ''];
         
         return view('roles.create', [
             'role' => $role,
+            'fields' => $this->getRoleFields($role),
             'oper' => 'edit',
             'disabled' => '',
-            'datos' => $datos
+            'datos' => ['exito' => '']
         ]);
     }
 
@@ -85,6 +87,7 @@ class RoleController extends Controller
 
         return view('roles.create', [
             'role' => $role,
+            'fields' => $this->getRoleFields($role),
             'oper' => 'edit',
             'disabled' => '',
             'datos' => ['exito' => 'Rol actualizado correctamente']
@@ -97,6 +100,7 @@ class RoleController extends Controller
         
         return view('roles.create', [
             'role' => $role,
+            'fields' => $this->getRoleFields($role),
             'oper' => 'show',
             'disabled' => 'disabled',
             'datos' => ['exito' => '']
@@ -106,13 +110,13 @@ class RoleController extends Controller
     public function destroy($id)
     {
         $role = Rol::findOrFail($id);
-        $datos = ['exito' => ''];
         
         return view('roles.create', [
             'role' => $role,
+            'fields' => $this->getRoleFields($role),
             'oper' => 'destroy',
             'disabled' => 'disabled',
-            'datos' => $datos
+            'datos' => ['exito' => '']
         ]);
     }
 
@@ -122,10 +126,22 @@ class RoleController extends Controller
         $role->delete();
 
         return view('roles.create', [
-            'role' => new Rol(),
+            'role' => $role,
+            'fields' => $this->getRoleFields($role),
             'oper' => 'destroy',
             'disabled' => 'disabled',
             'datos' => ['exito' => 'Rol eliminado correctamente']
         ]);
+    }
+
+    /**
+     * Define los campos para el formulario de roles.
+     */
+    protected function getRoleFields($role = null)
+    {
+        return [
+            ['name' => 'name', 'label' => 'Nombre del Rol', 'placeholder' => 'Ej: Editor', 'value' => old('name', $role->name ?? ''), 'required' => true],
+            ['name' => 'code', 'label' => 'Código del Rol (Único)', 'placeholder' => 'Ej: EDTR', 'value' => old('code', $role->code ?? ''), 'required' => true]
+        ];
     }
 }
