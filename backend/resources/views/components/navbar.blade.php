@@ -4,7 +4,7 @@
         @if(app()->environment('local'))
             <img class="w-8 h-8" src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="Logo">
         @else
-            <img class="w-8 h-8" src="{{ asset('assets/logo/logoTelamon.png') }}" alt="Logo">
+            <img class="w-8 h-8" src="{{ asset('logoTelamon.png') }}" alt="Logo">
         @endif
         <span class="text-white font-bold text-lg">Telamo<span class="text-[#a0c4d4]">Net</span></span>
     </div>
@@ -22,7 +22,7 @@
             <img class="w-[65px] h-[70px]" src="http://localhost:5174/src/assets/logo/logoTelamon.png" alt="Logo">
         @else
             <!-- En producción, los assets se copian a public/assets via Dockerfile -->
-            <img class="w-[65px] h-[70px]" src="/assets/logo/logoTelamon.png" alt="Logo">
+            <img class="w-[65px] h-[70px]" src="/logoTelamon.png" alt="Logo">
         @endif
         <h1 class="font-bold text-[20px] text-white tracking-wide">Telamo<span class="text-[#a0c4d4]">Net</span></h1>
     </div>

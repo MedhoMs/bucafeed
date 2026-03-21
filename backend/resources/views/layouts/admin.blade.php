@@ -9,7 +9,7 @@
         @if(app()->environment('local'))
             <link rel="icon" type="image/png" href="http://localhost:5174/src/assets/logo/logoTelamon.png">
         @else
-            <link rel="icon" type="image/png" href="{{ asset('assets/logo/logoTelamon.png') }}">
+            <link rel="icon" type="image/png" href="{{ asset('logoTelamon.png') }}">
         @endif
         
         <!-- Fonts -->
