@@ -32,9 +32,9 @@
         </div>
         
         <div class="min-w-0 flex-1">
-            <div class="font-semibold text-white truncate" title="{{ $title }}">{{ $title }}</div>
+            <div class="font-semibold text-white line-clamp-1" title="{{ $title }}">{{ $title }}</div>
             @if($subtitle)
-                <div class="text-[10px] sm:text-xs text-white/50 w-full truncate" title="{{ $subtitle }}">{{ $subtitle }}</div>
+                <div class="text-[10px] sm:text-xs text-white/50 line-clamp-2" title="{{ $subtitle }}">{{ $subtitle }}</div>
             @endif
         </div>
     </div>

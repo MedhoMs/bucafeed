@@ -34,10 +34,12 @@
     <body class="hold-transition sidebar-mini">
         <div id="app" class="wrapper flex min-h-screen bg-[#0a141d]"> <!-- Override background -->
             <!-- Navbar -->
-            @include('components.navbar')
+            <div class="shrink-0 z-50">
+                @include('components.navbar')
+            </div>
             
             <!-- Contenido Principal -->
-            <div id="main-content-area" class="content-wrapper flex-1 relative z-0">
+            <div id="main-content-area" class="content-wrapper flex-1 relative z-0 min-w-0">
 @endif
                 @yield('content')
 @if(!request()->ajax())

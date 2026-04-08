@@ -10,7 +10,7 @@
     :models="$events"
     :headers="[
         'ID' => 'hidden sm:table-cell',
-        'Evento' => '',
+        'Evento' => 'min-w-[250px] max-w-[450px]',
         'Centro Educativo' => 'hidden md:table-cell',
         'Fecha / Horario' => 'hidden lg:table-cell',
         'Lugar' => 'hidden xl:table-cell',
@@ -38,7 +38,7 @@
             $columns = [
                 ['type' => 'actions', 'class' => 'text-left', 'showUrl' => route('users_events.show', $event->id), 'showTitle' => 'Consultar Evento', 'editUrl' => route('users_events.edit', $event->id), 'editTitle' => 'Editar Evento', 'deleteUrl' => route('users_events.destroy', $event->id), 'deleteTitle' => 'Eliminar Evento'],
                 ['type' => 'text', 'value' => '#'.$event->id, 'class' => 'text-white/70 hidden sm:table-cell'],
-                ['type' => 'avatar', 'image' => $event->image_url, 'title' => $event->title, 'subtitle' => $event->description ?: 'Sin descripción', 'fallback' => substr($event->title, 0, 1)],
+                ['type' => 'avatar', 'image' => $event->image_url, 'title' => $event->title, 'subtitle' => $event->description ?: 'Sin descripción', 'fallback' => substr($event->title, 0, 1), 'class' => 'min-w-[250px] max-w-[450px]'],
                 ['type' => 'text', 'value' => $event->educationalCenter->name ?? '-', 'class' => 'text-white/80 max-w-[150px] truncate hidden md:table-cell', 'title' => $event->educationalCenter->name ?? '-'],
                 ['type' => 'date', 'date' => $event->date, 'startTime' => $event->start_time, 'endTime' => $event->end_time, 'class' => 'hidden lg:table-cell'],
                 ['type' => 'text', 'value' => $event->location ?? '-', 'class' => 'text-white/70 max-w-[150px] truncate hidden xl:table-cell', 'title' => $event->location ?? '-'],

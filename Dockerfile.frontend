@@ -36,7 +36,8 @@ ARG VITE_APP_NAME
 ENV VITE_APP_NAME=${VITE_APP_NAME}
 
 # Build de producción usando la config específica de frontend
-RUN npx vite build --config vite.config.frontend.js
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+RUN npm run build -- --config vite.config.frontend.js
 
 # ==========================================
 # Etapa 2: Servidor Nginx

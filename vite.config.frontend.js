@@ -12,18 +12,8 @@ export default defineConfig({
             '@sytles': fileURLToPath(new URL('./backend/resources/sytles', import.meta.url)),
         },
     },
-    css: {
-        preprocessorOptions: {
-            scss: {
-                // variables.scss está ausente, no se importa nada por ahora
-            }
-        }
-    },
     build: {
         outDir: 'dist',
         emptyOutDir: true,
-        rollupOptions: {
-            input: 'index.html',
-        },
     },
 });
