@@ -9,7 +9,7 @@
 <div class="relative inline-block text-left filter-dropdown">
     <button 
         type="button" 
-        class="dropdown-toggle inline-flex justify-between items-center w-full px-5 py-2.5 bg-[var(--admin-bg-input)] border border-[var(--admin-primary)]/40 rounded-xl text-xs font-bold text-white hover:bg-[var(--admin-primary)]/10 transition-all active:scale-95 border-dashed"
+        class="dropdown-toggle inline-flex justify-between items-center w-full px-5 py-2.5 bg-[var(--admin-bg-input)] border border-[var(--admin-primary)]/40 rounded-xl text-xs font-bold text-white hover:bg-[var(--admin-primary)]/10 transition-all active:scale-95"
     >
         <span>{{ $label }}</span>
         <x-admin.constants.icons name="filter" />
