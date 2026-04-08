@@ -49,13 +49,13 @@ class EventController extends Controller
         $event = new Event();
 
         if ($request->isMethod('post')) {
-            $validated = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'title'                 => 'required|string|max:255',
                 'description'           => 'nullable|string',
                 'location'              => 'nullable|string',
                 'date'                  => 'required|date',
-                'start_time'            => 'required|regex:/^\d{2}:\d{2}(:\d{2})?$/',
-                'end_time'              => 'required|regex:/^\d{2}:\d{2}(:\d{2})?$/',
+                'start_time'            => 'required',
+                'end_time'              => 'required',
                 'educational_center_id' => 'required|exists:educational_centers,id',
                 'target_role'           => 'nullable|string',
                 'image'                 => 'nullable|image|max:51200' 
@@ -82,26 +82,10 @@ class EventController extends Controller
             $data['exito'] = 'Operación realizada correctamente';
         }
 
-        if ($request->ajax()) {
-            return view('users_events.create', [
-                'datos' => $data,
-                'event' => $event,
-                'schools' => EducationalCenter::all(),
-                'roles' => Rol::all(),
-                'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
-                'disabled' => '',
-                'oper' => 'create'
-            ]);
-        }
-
-        $event = new Event();
-
         return view('users_events.create', [
             'datos' => $data,
             'event' => $event,
-            'schools' => EducationalCenter::all(),
-            'roles' => Rol::all(),
-            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+            'fields' => $this->getEventFields($event),
             'disabled' => '',
             'oper' => 'create'
         ]);
@@ -109,15 +93,13 @@ class EventController extends Controller
 
     public function show($id)
     {
-        $event = Event::with('participants', 'educationalCenter')->find($id);
+        $event = Event::with('participants', 'educationalCenter')->findOrFail($id);
         $datos = ['exito' => ''];
 
         return view('users_events.create',[
             'event' => $event,
             'datos' => $datos,
-            'schools' => EducationalCenter::all(),
-            'roles' => Rol::all(),
-            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+            'fields' => $this->getEventFields($event),
             'disabled' => 'disabled',
             'oper' => 'show'
         ]);
@@ -125,22 +107,35 @@ class EventController extends Controller
 
     public function edit(Request $request, $id)
     {
-        $event = Event::find($id);
+        $event = Event::findOrFail($id);
         $disabled = '';
         $datos['exito'] = '';
 
         if ($request->isMethod('post')) {
-            $validated = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'title'                 => 'required|string|max:255',
                 'description'           => 'nullable|string',
                 'location'              => 'nullable|string',
                 'date'                  => 'required|date',
-                'start_time'            => 'required|regex:/^\d{2}:\d{2}(:\d{2})?$/',
-                'end_time'              => 'required|regex:/^\d{2}:\d{2}(:\d{2})?$/',
+                'start_time'            => 'required',
+                'end_time'              => 'required',
                 'educational_center_id' => 'required|exists:educational_centers,id',
                 'target_role'           => 'nullable|string',
                 'image'                 => 'nullable|image|max:51200'
             ]);
+
+            if ($validator->fails()) {
+                if ($request->ajax()) {
+                    return view('users_events.create', [
+                        'datos' => $datos,
+                        'event' => $event,
+                        'fields' => $this->getEventFields($event),
+                        'disabled' => $disabled,
+                        'oper' => 'edit'
+                    ])->withErrors($validator);
+                }
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
 
             $event->title = $request->input('title');
             $event->description = $request->input('description');
@@ -166,9 +161,7 @@ class EventController extends Controller
                 return view('users_events.create', [
                     'datos' => $datos,
                     'event' => $event,
-                    'schools' => EducationalCenter::all(),
-                    'roles' => Rol::all(),
-                    'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+                    'fields' => $this->getEventFields($event),
                     'disabled' => $disabled,
                     'oper' => 'edit' 
                 ]); 
@@ -178,9 +171,7 @@ class EventController extends Controller
         return view('users_events.create', [
             'event' => $event,
             'datos' => $datos,
-            'schools' => EducationalCenter::all(),
-            'roles' => Rol::all(),
-            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+            'fields' => $this->getEventFields($event),
             'disabled' => $disabled,
             'oper' => 'edit'
         ]);
@@ -208,13 +199,10 @@ class EventController extends Controller
 
         if ($request->isMethod('post')) {
             if ($event->image) {
-                // Remove file from public/uploads/events or profile folders
                 $publicPath = public_path(ltrim($event->image, '/'));
                 if (file_exists($publicPath) && !is_dir($publicPath)) {
                     unlink($publicPath);
                 }
-                
-                // Backup check for Storage disk
                 Storage::disk('public')->delete($event->image);
             }
             $event->delete();
@@ -222,11 +210,9 @@ class EventController extends Controller
             if ($request->ajax()) {
                 return view('users_events.create', [
                     'event' => $event,
-                    'datos' => $datos,
-                    'schools' => EducationalCenter::all(),
-                    'roles' => Rol::all(),
-                    'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
-                    'disabled' => $disabled,
+                    'datos' => ['exito' => 'Evento eliminado correctamente'],
+                    'fields' => $this->getEventFields($event),
+                    'disabled' => 'disabled',
                     'oper' => 'destroy'
                 ]);
             }
@@ -239,12 +225,38 @@ class EventController extends Controller
         return view('users_events.create', [
             'event' => $event,
             'datos' => $datos,
-            'schools' => EducationalCenter::all(),
-            'roles' => Rol::all(),
-            'roles_disponibles' => Rol::all()->pluck('name', 'code')->toArray(),
+            'fields' => $this->getEventFields($event),
             'disabled' => $disabled,
             'oper' => 'destroy'
         ]);
+    }
+
+    /**
+     * Define los campos para el formulario de eventos.
+     */
+    protected function getEventFields($event = null)
+    {
+        $schools = EducationalCenter::all()->pluck('name', 'id')->toArray();
+        $roles = Rol::all();
+        $roles_disponibles = Rol::all()->pluck('name', 'code')->toArray();
+
+        $roleOptions = [];
+        foreach($roles as $rolDb) {
+            $roleValue = $rolDb->code ?? $rolDb->name;
+            $roleOptions[$roleValue] = 'Solo ' . ($roles_disponibles[$rolDb->code] ?? $rolDb->name);
+        }
+
+        return [
+            ['name' => 'title', 'label' => 'Nombre del Evento', 'placeholder' => 'Ej: Jornada...', 'value' => old('title', $event->title ?? ''), 'required' => true],
+            ['name' => 'educational_center_id', 'type' => 'select', 'label' => 'Centro Organizador', 'options' => $schools, 'selectedValue' => old('educational_center_id', $event->educational_center_id ?? ''), 'placeholder' => 'Seleccionar centro...', 'required' => true],
+            ['name' => 'description', 'type' => 'textarea', 'label' => 'Descripción', 'placeholder' => 'Detalles...', 'value' => old('description', $event->description ?? ''), 'rows' => 3, 'full' => true],
+            ['name' => 'date', 'type' => 'date', 'label' => 'Fecha', 'value' => old('date', $event->date ?? ''), 'required' => true],
+            ['name' => 'start_time', 'type' => 'time', 'label' => 'Hora Inicio', 'value' => old('start_time', $event->start_time ? \Carbon\Carbon::parse($event->start_time)->format('H:i') : ''), 'required' => true],
+            ['name' => 'end_time', 'type' => 'time', 'label' => 'Hora Fin', 'value' => old('end_time', $event->end_time ? \Carbon\Carbon::parse($event->end_time)->format('H:i') : ''), 'required' => true],
+            ['name' => 'location', 'label' => 'Lugar Exacto', 'placeholder' => 'Aula 104', 'value' => old('location', $event->location ?? '')],
+            ['name' => 'target_role', 'type' => 'select', 'label' => 'Dirigido A', 'options' => $roleOptions, 'selectedValue' => old('target_role', $event->target_role ?? ''), 'placeholder' => 'Todos los roles pueden unirse'],
+            ['name' => 'image', 'type' => 'file', 'label' => 'Imagen de Portada', 'full' => true]
+        ];
     }
 
     /**

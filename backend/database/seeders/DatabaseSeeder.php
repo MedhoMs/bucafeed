@@ -19,6 +19,11 @@ class DatabaseSeeder extends Seeder
     {
         echo "🌱 Iniciando seeding de TelamoNet...\n";
 
+        $this->call([
+            EducationalsCentersSeeder::class,
+        ]);
+        echo "- Seeding de centros educativos completado exitosamente.\n";
+
         // Seed roles
         $roles_iniciales = [
             'EU' => 'Usuario externo',
@@ -225,94 +230,8 @@ class DatabaseSeeder extends Seeder
             'institution_name' => 'External Inc',
             'role' => 'EU',
         ]);
-        // Helper to convert image to base64
-        $imageBase64 = function ($path) {
-            $fullPath = base_path('../backend/storage/app/public/' . $path);
-            if (file_exists($fullPath)) {
-                $type = pathinfo($fullPath, PATHINFO_EXTENSION);
-                $data = file_get_contents($fullPath);
-                return 'data:image/' . $type . ';base64,' . base64_encode($data);
-            }
-            return $path;
-        };
-
-        $centro_evento = User::where('role', 'EI')->first();
-
-        Event::firstOrCreate(['title' => '¡Acompañame a domar bestias!'], [
-            'description' => 'Acompañame durante esta noche de hoy a domar bestias',
-            'date' => '2026-02-20',
-            'location' => 'puerto del Carmen',
-            'start_time' => '22:00:00',
-            'end_time' => '01:00:00',
-            'educational_center_id' => $centro_evento->educational_center_id,
-            'image' => $eventImageHandler('events/evento_luigi.png'),
-        ]);
-        Event::firstOrCreate(['title' => 'Taller de robótica'], [
-            'description' => 'Aprende a construir y programar tu primer robot',
-            'date' => '2026-02-22',
-            'location' => 'Las Palmas',
-            'start_time' => '10:00:00',
-            'end_time' => '13:00:00',
-            'educational_center_id' => $centro_evento->educational_center_id,
-            'image' => $eventImageHandler('events/evento_robotica.png'),
-        ]);
-
-        Event::firstOrCreate(['title' => 'Clase de astronomía'], [
-            'description' => 'Observaremos las estrellas y planetas con telescopios',
-            'date' => '2026-02-25',
-            'location' => 'Telde',
-            'start_time' => '20:00:00',
-            'end_time' => '23:00:00',
-            'educational_center_id' => $centro_evento->educational_center_id,
-            'image' => $eventImageHandler('events/evento_astronomia.png'),
-        ]);
-
-        Event::firstOrCreate(['title' => 'Concierto de música clásica'], [
-            'description' => 'Disfruta de un repertorio de grandes compositores',
-            'date' => '2026-03-01',
-            'location' => 'Arrecife',
-            'start_time' => '18:00:00',
-            'end_time' => '20:30:00',
-            'educational_center_id' => $centro_evento->id,
-            'image' => $eventImageHandler('events/evento_musica.png'),
-        ]);
-
-        Event::firstOrCreate(['title' => 'Feria de ciencias'], [
-            'description' => 'Proyectos y experimentos realizados por estudiantes',
-            'date' => '2026-03-05',
-            'location' => 'Puerto del Carmen',
-            'start_time' => '09:00:00',
-            'end_time' => '15:00:00',
-            'educational_center_id' => $centro_evento->id,
-            'image' => $eventImageHandler('events/evento_ciencias.png'),
-        ]);
-
-        Event::firstOrCreate(['title' => 'Torneo de ajedrez'], [
-            'description' => 'Compite y demuestra tu habilidad estratégica',
-            'date' => '2026-03-10',
-            'location' => 'Las Palmas',
-            'start_time' => '11:00:00',
-            'end_time' => '16:00:00',
-            'educational_center_id' => $centro_evento->id,
-            'image' => $eventImageHandler('events/evento_ajedrez.png'),
-        ]);
-
-        Event::firstOrCreate(['title' => 'Cita mágica con mi sol radiante ☀️💕'], [
-            'description' => 'Un encuentro lleno de chispas, risas y miradas que solo nosotros entendemos',
-            'date' => '2026-03-14',
-            'location' => 'Jardines del Paraíso 🌺✨',
-            'start_time' => '20:00:00',
-            'end_time' => '23:00:00',
-            'educational_center_id' => $centro_evento->id,
-            'image' => $eventImageHandler('events/event_3_1773005324.png'),
-        ]);
-
-        echo "- Seeding de eventos completado exitosamente.\n";
-        $this->call([
-            EducationalsCentersSeeder::class,
-        ]);
-        echo "- Seeding de centros educativos completado exitosamente.\n";
-
+        // Finalizar seeding
+        echo "- Seeding básico completado exitosamente.\n";
         echo "🏁 Seeding completado exitosamente.\n";
     }
 }

@@ -6,8 +6,10 @@ use App\Models\EducationalCenter;
 use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Student;
+use App\Models\Cycle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+
 
 class EducationalCenterController extends Controller
 {
@@ -65,14 +67,16 @@ class EducationalCenterController extends Controller
 
             if ($validator->fails()) {
                 if ($request->ajax()) {
-                    return view('educational_centers.create', compact('center', 'datos', 'adminUsers', 'disabled'))->with('oper', 'create')->withErrors($validator);
+                    return view('educational_centers.create', [
+                        'center' => $center,
+                        'datos' => $datos,
+                        'fields' => $this->getCenterFields($center, $adminUsers),
+                        'disabled' => $disabled,
+                        'oper' => 'create'
+                    ])->withErrors($validator);
                 }
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
-            $cycles = $request->filled('cycles') 
-                ? array_filter(array_map('trim', explode(',', $request->input('cycles')))) 
-                : [];
 
             $center->name = $request->input('name');
             $center->type = $request->input('type', 'N/A');
@@ -96,7 +100,6 @@ class EducationalCenterController extends Controller
 
             if ($request->filled('admin_user_id')) {
                 User::where('educational_center_id', $center->id)->where('role', 'EI')->update(['educational_center_id' => null]);
-                
                 $adminUser = User::find($request->input('admin_user_id'));
                 if ($adminUser) {
                     $adminUser->educational_center_id = $center->id;
@@ -105,13 +108,15 @@ class EducationalCenterController extends Controller
             }
 
             $datos['exito'] = 'Centro Educativo creado correctamente.';
-            
-            if ($request->ajax()) {
-                return view('educational_centers.create', compact('center', 'datos', 'adminUsers', 'disabled'))->with('oper', 'edit');
-            }
         }
 
-        return view('educational_centers.create', compact('center', 'datos', 'adminUsers', 'disabled'))->with('oper', 'create');
+        return view('educational_centers.create', [
+            'center' => $center,
+            'datos' => $datos,
+            'fields' => $this->getCenterFields($center, $adminUsers),
+            'disabled' => $disabled,
+            'oper' => 'create'
+        ]);
     }
 
     public function edit(Request $request, $id)
@@ -136,7 +141,13 @@ class EducationalCenterController extends Controller
 
             if ($validator->fails()) {
                 if ($request->ajax()) {
-                    return view('educational_centers.create', compact('center', 'datos', 'adminUsers', 'disabled'))->with('oper', 'edit')->withErrors($validator);
+                    return view('educational_centers.create', [
+                        'center' => $center,
+                        'datos' => $datos,
+                        'fields' => $this->getCenterFields($center, $adminUsers),
+                        'disabled' => $disabled,
+                        'oper' => 'edit'
+                    ])->withErrors($validator);
                 }
                 return redirect()->back()->withErrors($validator)->withInput();
             }
@@ -163,9 +174,7 @@ class EducationalCenterController extends Controller
 
             if ($request->has('admin_user_id')) {
                 $adminId = $request->input('admin_user_id');
-                // Remove center from the previous admin if any
                 User::where('educational_center_id', $center->id)->where('role', 'EI')->update(['educational_center_id' => null]);
-
                 if ($request->filled('admin_user_id')) {
                     $adminUser = User::find($adminId);
                     if ($adminUser) {
@@ -176,13 +185,16 @@ class EducationalCenterController extends Controller
             }
 
             $datos['exito'] = 'Centro Educativo actualizado correctamente.';
-            
-            if ($request->ajax()) {
-                return view('educational_centers.create', compact('center', 'datos', 'adminUsers', 'disabled'))->with('oper', 'edit');
-            }
+            $disabled = 'disabled';
         }
 
-        return view('educational_centers.create', compact('center', 'datos', 'adminUsers', 'disabled'))->with('oper', 'edit');
+        return view('educational_centers.create', [
+            'center' => $center,
+            'datos' => $datos,
+            'fields' => $this->getCenterFields($center, $adminUsers),
+            'disabled' => $disabled,
+            'oper' => 'edit'
+        ]);
     }
 
     public function destroy(Request $request, $id)
@@ -190,22 +202,31 @@ class EducationalCenterController extends Controller
         $center = EducationalCenter::findOrFail($id);
         $datos = ['exito' => ''];
         $disabled = 'disabled';
-        $adminUsers = [];
 
         if ($request->isMethod('post')) {
-            // Nullify educational_center_id so we don't end up with constraint errors depending on cascade setup
             User::where('educational_center_id', $center->id)->update(['educational_center_id' => null]);
             $center->delete();
             $datos['exito'] = 'Centro eliminado correctamente.';
             
             if ($request->ajax()) {
-                $center = new EducationalCenter();
-                return view('educational_centers.create', compact('center', 'datos', 'adminUsers', 'disabled'))->with('oper', 'destroy');
+                return view('educational_centers.create', [
+                    'center' => $center,
+                    'datos' => $datos,
+                    'fields' => $this->getCenterFields($center),
+                    'disabled' => $disabled,
+                    'oper' => 'destroy'
+                ]);
             }
             return redirect()->route('educational_centers.index');
         }
 
-        return view('educational_centers.create', compact('center', 'datos', 'adminUsers', 'disabled'))->with('oper', 'destroy');
+        return view('educational_centers.create', [
+            'center' => $center,
+            'datos' => $datos,
+            'fields' => $this->getCenterFields($center),
+            'disabled' => $disabled,
+            'oper' => 'destroy'
+        ]);
     }
 
     public function show($id)
@@ -213,17 +234,41 @@ class EducationalCenterController extends Controller
         $center = EducationalCenter::with(['teachers', 'students', 'adminUser'])->findOrFail($id);
         $datos = ['exito' => ''];
         $disabled = 'disabled';
+        
         $adminUsers = User::where('role', 'EI')->get()->mapWithKeys(function($user) {
             return [$user->id => trim($user->name . ' ' . $user->last_name) . ' (' . $user->email . ')'];
         })->toArray();
 
-        return view('educational_centers.create', compact('center', 'datos', 'adminUsers', 'disabled'))->with('oper', 'show');
+        return view('educational_centers.create', [
+            'center' => $center,
+            'datos' => $datos,
+            'fields' => $this->getCenterFields($center, $adminUsers),
+            'disabled' => $disabled,
+            'oper' => 'show'
+        ]);
+    }
+
+    /**
+     * Define los campos para el formulario de centros educativos.
+     */
+    protected function getCenterFields($center = null, $adminUsers = [])
+    {
+        $adminOptions = ['' => '-- Sin Administrador --'] + $adminUsers;
+        
+        return [
+            ['name' => 'name', 'label' => 'Nombre del Centro', 'placeholder' => 'Ej: IES Zonzamas', 'value' => old('name', $center->name ?? ''), 'required' => true],
+            ['name' => 'admin_user_id', 'type' => 'select', 'label' => 'Administrador Principal (EI)', 'options' => $adminOptions, 'selectedValue' => old('admin_user_id', $center->adminUser ? $center->adminUser->id : ''), 'placeholder' => 'Selecciona al responsable'],
+            ['name' => 'location', 'label' => 'Ubicación / Municipio', 'placeholder' => 'Ej: Arrecife', 'value' => old('location', $center->location ?? '')],
+            ['name' => 'type', 'type' => 'select', 'label' => 'Tipo de Educación', 'options' => EducationalCenter::$niveles_disponibles, 'selectedValue' => old('type', $center->type ?? ''), 'placeholder' => 'Selecciona el nivel...'],
+            ['name' => 'icon', 'type' => 'file', 'label' => 'Logo / Icono', 'previewUrl' => $center->icon ?? null],
+            ['name' => 'banner', 'type' => 'file', 'label' => 'Imagen de Banner', 'previewUrl' => $center->banner ?? null]
+        ];
     }
 
     public function manageCycles($id)
     {
         $center = EducationalCenter::with('cycles')->findOrFail($id);
-        $globalCycles = \App\Models\Cycle::orderBy('name')->get();
+        $globalCycles = Cycle::orderBy('name')->get();
         return view('educational_centers.manage_cycles', compact('center', 'globalCycles'));
     }
 
@@ -236,7 +281,7 @@ class EducationalCenterController extends Controller
         if ($cycleId) {
             $center->cycles()->syncWithoutDetaching([$cycleId]);
         } elseif ($newCycleName) {
-            $cycle = \App\Models\Cycle::firstOrCreate(['name' => $newCycleName]);
+            $cycle = Cycle::firstOrCreate(['name' => $newCycleName]);
             $center->cycles()->syncWithoutDetaching([$cycle->id]);
         }
 

@@ -8,55 +8,9 @@
     deleteText="Eliminar evento"
 >
 
-        @php
-            $schoolOptions = [];
-            foreach($schools as $schoolDb) {
-                $schoolOptions[$schoolDb->id] = $schoolDb->name;
-            }
+        <x-admin.form-template :disabled="$disabled" :fields="$fields" />
 
-            $roleOptions = [];
-            foreach($roles as $rolDb) {
-                $roleValue = $rolDb->code ?? $rolDb->name;
-                $roleOptions[$roleValue] = 'Solo ' . ($roles_disponibles[$rolDb->code] ?? $rolDb->name);
-            }
-        @endphp
-
-        <x-admin.form.builder :disabled="$disabled" :rows="[
-            [
-                ['name' => 'title', 'label' => 'Nombre del Evento', 'value' => old('title', $event->title ?? ''), 'placeholder' => 'Ej: Jornada...'],
-                ['component' => 'select', 'name' => 'educational_center_id', 'label' => 'Centro Educativo Organizador', 'options' => $schoolOptions, 'selectedValue' => old('educational_center_id', $event->educational_center_id ?? ''), 'placeholder' => 'Seleccionar centro...']
-            ],
-            [
-                ['component' => 'textarea', 'name' => 'description', 'label' => 'Descripción', 'value' => old('description', $event->description ?? ''), 'placeholder' => 'Detalles sobre el evento...', 'rows' => 3]
-            ],
-            [
-                ['type' => 'date', 'name' => 'date', 'label' => 'Fecha', 'value' => old('date', $event->date ?? '')],
-                ['type' => 'time', 'name' => 'start_time', 'label' => 'Hora Inicio', 'value' => old('start_time', $event->start_time ? \Carbon\Carbon::parse($event->start_time)->format('H:i') : '')],
-                ['type' => 'time', 'name' => 'end_time', 'label' => 'Hora Fin', 'value' => old('end_time', $event->end_time ? \Carbon\Carbon::parse($event->end_time)->format('H:i') : '')]
-            ],
-            [
-                ['name' => 'location', 'label' => 'Lugar Exacto (Dirección o Aula)', 'value' => old('location', $event->location ?? ''), 'placeholder' => 'Aula 104, Edificio A...'],
-                ['component' => 'select', 'name' => 'target_role', 'label' => 'Dirigido Especificamente A (Opcional)', 'options' => $roleOptions, 'selectedValue' => old('target_role', $event->target_role ?? ''), 'placeholder' => 'Todos los roles pueden unirse']
-            ]
-        ]" />
-
-        <p class="text-white/40 text-xs mt-1 mb-6">Si dejas el target_role en "Todos", cualquier usuario podrá inscribirse.</p>
-
-        {{-- Custom Field: Image --}}
-        <div class="mt-6">
-            <label for="idimage" class="block text-sm font-medium text-white/70 mb-1">Imagen de Portada</label>
-            <div class="flex items-center gap-4">
-                @if($event->image_url)
-                    <img src="{{ $event->image_url }}" class="w-12 h-12 rounded bg-black/50 object-cover border border-white/10">
-                @endif
-                <input {{ $disabled }} type="file" name="image" accept="image/*"
-                    class="w-full text-sm text-white/70 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500/30 transition-all duration-200" 
-                    id="idimage">
-            </div>
-            @error('image')
-                <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span>
-            @enderror
-        </div>
+        <p class="text-white/40 text-xs mt-1 mb-6">Nota: Si dejas el campo "Dirigido A" vacío, cualquier usuario podrá inscribirse.</p>
 
 
         @if(isset($event->id) && $oper != 'create' && empty($datos['exito']))
@@ -77,7 +31,7 @@
                                 </div>
                             </div>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide bg-purple-500/10 text-purple-300 border border-purple-500/20">
-                                {{ $roles_disponibles[$participant->role] ?? $participant->role }}
+                                {{ $participant->role }}
                             </span>
                         </div>
                     @endforeach

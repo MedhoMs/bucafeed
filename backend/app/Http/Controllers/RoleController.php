@@ -36,14 +36,22 @@ class RoleController extends Controller
 
     public function create(Request $request)
     {
-        $datos = ['exito' => ''];
         $role = new Rol();
-        
-        if ($request->isMethod('post')) {
-            $request->validate([
-                'name' => 'required|string|max:255|unique:roles,name',
-                'code' => 'required|string|max:50|unique:roles,code',
-            ]);
+        return view('roles.create', [
+            'role' => $role,
+            'fields' => $this->getRoleFields($role),
+            'oper' => 'create',
+            'disabled' => '',
+            'datos' => ['exito' => '']
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name',
+            'code' => 'required|string|max:50|unique:roles,code',
+        ]);
 
             $role->name = $request->name;
             $role->code = $request->code;
@@ -58,19 +66,23 @@ class RoleController extends Controller
         if ($request->ajax()) {
             return view('roles.create', [
                 'role' => $role,
-                'oper' => 'create',
+                'fields' => $this->getRoleFields($role),
+            'oper' => 'create',
                 'disabled' => '',
                 'datos' => $datos
             ]);
         }
 
-        $role = new Rol();
-
+    public function edit($id)
+    {
+        $role = Rol::findOrFail($id);
+        
         return view('roles.create', [
             'role' => $role,
-            'oper' => 'create',
+            'fields' => $this->getRoleFields($role),
+            'oper' => 'edit',
             'disabled' => '',
-            'datos' => $datos
+            'datos' => ['exito' => '']
         ]);
     }
 
@@ -100,6 +112,7 @@ class RoleController extends Controller
 
         return view('roles.create', [
             'role' => $role,
+            'fields' => $this->getRoleFields($role),
             'oper' => 'edit',
             'disabled' => $disabled,
             'datos' => $datos
@@ -112,6 +125,7 @@ class RoleController extends Controller
         
         return view('roles.create', [
             'role' => $role,
+            'fields' => $this->getRoleFields($role),
             'oper' => 'show',
             'disabled' => 'disabled',
             'datos' => ['exito' => '']
@@ -121,26 +135,15 @@ class RoleController extends Controller
     public function destroy(Request $request, $id)
     {
         $role = Rol::findOrFail($id);
-        $datos = ['exito' => ''];
-        $disabled = 'disabled';
         
-        if (!$role) {
-            if ($request->ajax()) {
-                return response()->json(['error' => 'Rol no encontrado'], 404);
-            }
-        }
-
-        if ($request->isMethod('post')) {
-            $role->delete();
-
-            if ($request->ajax()) {
-                return view('roles.create', [
-                    'role' => $role,
-                    'oper' => 'destroy',
-                    'disabled' => 'disabled',
-                    'datos' => ['exito' => 'Rol eliminado correctamente']
-                ]);
-            }
+        return view('roles.create', [
+            'role' => $role,
+            'fields' => $this->getRoleFields($role),
+            'oper' => 'destroy',
+            'disabled' => 'disabled',
+            'datos' => ['exito' => '']
+        ]);
+    }
 
             return redirect()->route('role.index');
         }
@@ -150,9 +153,21 @@ class RoleController extends Controller
 
         return view('roles.create', [
             'role' => $role,
+            'fields' => $this->getRoleFields($role),
             'oper' => 'destroy',
-            'disabled' => $disabled,
-            'datos' => $datos
+            'disabled' => 'disabled',
+            'datos' => ['exito' => 'Rol eliminado correctamente']
         ]);
+    }
+
+    /**
+     * Define los campos para el formulario de roles.
+     */
+    protected function getRoleFields($role = null)
+    {
+        return [
+            ['name' => 'name', 'label' => 'Nombre del Rol', 'placeholder' => 'Ej: Editor', 'value' => old('name', $role->name ?? ''), 'required' => true],
+            ['name' => 'code', 'label' => 'Código del Rol (Único)', 'placeholder' => 'Ej: EDTR', 'value' => old('code', $role->code ?? ''), 'required' => true]
+        ];
     }
 }
