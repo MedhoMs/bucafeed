@@ -9,9 +9,6 @@
     'searchPlaceholder' => 'Buscar...',
 ])
 
-@extends('layouts.admin')
-
-@section('content')
 <div class="p-4 sm:p-8 min-h-screen text-white bg-gradient-to-b from-[var(--admin-bg-gradient-start)] via-[var(--admin-bg-gradient-via)] to-[var(--admin-bg-main)]">
     
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-5">
@@ -88,7 +85,7 @@
     <div class="bg-[var(--admin-bg-card)] border border-white/10 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-subtle">
         <div class="overflow-x-auto custom-scroll">
             <table class="w-full text-sm text-left text-white/70">
-                <thead class="text-[10px] text-white/40 uppercase bg-[#0f1922]/80 sticky top-0 z-10 border-b border-white/5">
+                <thead class="text-xs text-white/60 uppercase bg-[#0f1922]/80 sticky top-0 z-10 border-b border-white/5">
                     <tr>
                         <th scope="col" class="px-6 py-5 font-black tracking-widest">Acciones</th>
                         @if(!empty($headers))
@@ -120,4 +117,4 @@
         
     {{ $slot }}
 </div>
-@endsection
+
