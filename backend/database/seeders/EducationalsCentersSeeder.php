@@ -84,6 +84,7 @@ class EducationalsCentersSeeder extends Seeder
             ['name' => 'IES Blas Cabrera Felipe',      'type' => 'SE'],
             ['name' => 'IES César Manrique',           'type' => 'SE'],
             ['name' => 'IES Las Salinas',              'type' => 'SE'],
+            ['name' => 'IES en Altavista',             'type' => 'SE'],
 
             // 🟣 FP
             ['name' => 'CIFP Zonzamas',                'type' => 'FP'],

@@ -6,13 +6,7 @@
     :disabled="$disabled"
     deleteText="Eliminar palabra"
 >        @if($oper != 'destroy')
-            <x-admin.form.input 
-                name="word" 
-                label="Palabra Vetada" 
-                :value="old('word', $bannedWord->word ?? '')" 
-                placeholder="Ej: insulto" 
-                :disabled="$disabled" 
-            />
+            <x-admin.form-template :disabled="$disabled" :fields="$fields" />
         @else
             <p class="text-white text-base bg-red-500/10 border border-red-500/20 p-4 rounded-xl">
                 ¿Estás seguro de que deseas eliminar la palabra vetada <strong class="text-red-400">"{{ $bannedWord->word }}"</strong>?

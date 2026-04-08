@@ -30,42 +30,7 @@
         </div>
         @endif
 
-        @php
-            $roleOptions = [];
-            foreach($roles as $rolDb) {
-                $roleOptions[$rolDb->code ?? $rolDb->name] = $roles_disponibles[$rolDb->code] ?? $rolDb->name;
-            }
-            
-            $educationOptions = [];
-            foreach($education_levels as $key => $label) {
-                $educationOptions[$key] = $label;
-            }
-        @endphp
-
-        <x-admin.form.builder :disabled="$disabled" :rows="[
-            [
-                ['name' => 'name',      'label' => 'Nombre',    'placeholder' => 'Ej: Juan',         'value' => old('name', $user->name ?? '')],
-                ['name' => 'last_name', 'label' => 'Apellidos', 'placeholder' => 'Ej: Pérez García', 'value' => old('last_name', $user->last_name ?? '')]
-            ],
-            [
-                ['name' => 'email',    'type' => 'email',    'label' => 'Email',      'placeholder' => 'juan@ejemplo.com', 'value' => old('email', $user->email ?? '')],
-                ['name' => 'password', 'type' => 'password', 'label' => 'Contraseña', 'placeholder' => '********']
-            ],
-            [
-                ['name' => 'dni', 'label' => 'DNI/NIE', 'placeholder' => '12345678A', 'value' => old('dni', $user->dni ?? '')],
-                ['name' => 'role', 'component' => 'select', 'label' => 'Rol', 'options' => $roleOptions, 'selectedValue' => old('role', $user->role ?? ''), 'placeholder' => 'Seleccionar rol...']
-            ],
-            [
-                ['name' => 'education_level', 'component' => 'select', 'label' => 'Nivel Educativo', 'options' => $educationOptions, 'selectedValue' => old('education_level', $user->education_level ?? ''), 'placeholder' => 'Seleccionar...'],
-                ['name' => 'institution_name', 'component' => 'select', 'label' => 'Institución (Si no pertenece a un centro)', 'options' => ['' => '-- Ninguna --'] + array_combine($instituciones_existentes, $instituciones_existentes), 'selectedValue' => old('institution_name', $user->institution_name ?? ''), 'placeholder' => 'Seleccionar institución existente...']
-            ],
-            [
-                ['name' => 'educational_center_id', 'component' => 'select', 'label' => 'Centro Educativo (Vinculación oficial)', 'options' => ['' => '-- Ninguno --'] + ($educational_centers ?? []), 'selectedValue' => old('educational_center_id', $user->educational_center_id ?? request('center') ?? ''), 'placeholder' => 'Selecciona un centro...']
-            ],
-            [
-                ['name' => 'description', 'component' => 'textarea', 'label' => 'Descripción / Biografía', 'placeholder' => 'Cuenta algo sobre el usuario...', 'value' => old('description', $user->description ?? '')]
-            ]
-        ]" />
+        <x-admin.form-template :disabled="$disabled" :fields="$fields" />
 
 
 </x-admin.crud-form>
