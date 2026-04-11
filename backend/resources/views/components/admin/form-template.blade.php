@@ -4,7 +4,12 @@
     @foreach($fields as $field)
         @php
             $type = $field['type'] ?? 'text';
-            $component = 'admin.form.' . ($type === 'textarea' ? 'textarea' : ($type === 'select' || isset($field['options']) ? 'select' : 'input'));
+            $component = 'admin.form.' . match($type) {
+                'textarea' => 'textarea',
+                'checkbox-group' => 'checkbox-group',
+                'select' => 'select',
+                default => (isset($field['options']) ? 'select' : 'input')
+            };
             
             if (isset($field['component'])) {
                 $component = 'admin.form.' . $field['component'];
@@ -32,6 +37,7 @@
                 :rows="$field['rows'] ?? 4"
                 :disabled="$disabled"
                 :required="$field['required'] ?? false"
+                :multiple="$field['multiple'] ?? false"
             />
         </div>
     @endforeach

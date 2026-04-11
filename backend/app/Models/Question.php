@@ -13,6 +13,7 @@ class Question extends Model
         'user_id',
         'title',
         'content',
+        'image',
         'is_ai_validated',
         'answer_count',
     ];

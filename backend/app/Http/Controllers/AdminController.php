@@ -9,6 +9,7 @@ use App\Models\EducationalCenter;
 use App\Models\Event;
 use App\Models\Question;
 use App\Models\BannedWord;
+use App\Models\Cycle;
 
 class AdminController extends Controller
 {
@@ -41,7 +42,7 @@ class AdminController extends Controller
     
     public function users(Request $request)
     {
-        $query = User::query();
+        $query = User::with(['student.cycle', 'teacher', 'groupsAsStudent.cycle', 'groupsAsTeacher.subjectsWithTeachers']);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -65,6 +66,17 @@ class AdminController extends Controller
              $query->where('education_level', $request->level);
         }
 
+        if ($request->filled('cycle')) {
+            $cycleId = $request->cycle;
+            $query->where(function($q) use ($cycleId) {
+                $q->whereHas('student', function($sq) use ($cycleId) {
+                    $sq->where('cycle_id', $cycleId);
+                })->orWhereHas('groupsAsTeacher', function($tq) use ($cycleId) {
+                    $tq->where('cycle_id', $cycleId);
+                });
+            });
+        }
+
         $users = $query->paginate(10);
         $countAdmins = User::where('role', 'admin')->count();
 
@@ -74,7 +86,8 @@ class AdminController extends Controller
                 return [$r->code ?? $r->name => $r->name];
             })->toArray(),
             'niveles_disponibles' => EducationalCenter::$niveles_disponibles,
-            'instituciones_existentes' => array_combine($this->getInstitucionesExistentes(), $this->getInstitucionesExistentes())
+            'instituciones_existentes' => array_combine($this->getInstitucionesExistentes(), $this->getInstitucionesExistentes()),
+            'ciclos_disponibles' => Cycle::orderBy('name')->pluck('name', 'id')->toArray()
         ];
 
         return view('users.index', $data);

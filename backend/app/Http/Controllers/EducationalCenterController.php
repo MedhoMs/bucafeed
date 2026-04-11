@@ -383,6 +383,125 @@ class EducationalCenterController extends Controller
         return view('educational_centers.profile_modal', compact('center'));
     }
 
+    public function manageGroups($id)
+    {
+        $center = EducationalCenter::with(['groups.tutor', 'groups.cycle', 'groups.students', 'groups.subjectsWithTeachers', 'teachers', 'students', 'cycles.tags'])->findOrFail($id);
+        
+        // Asignaturas sugeridas según el tipo de centro si no tiene ciclos
+        $suggestedTags = collect([]);
+        if ($center->type === 'PE') {
+            $suggestedTags = \App\Models\Tag::whereIn('name', ['Lengua Castellana', 'Matemáticas', 'Ciencias Naturales', 'Ciencias Sociales', 'Inglés', 'Educación Física', 'Plástica', 'Religión/Valores'])->get();
+        } elseif ($center->type === 'SE') {
+            $suggestedTags = \App\Models\Tag::whereIn('name', ['Geografía e Historia', 'Física y Química', 'Biología y Geología', 'Matemáticas', 'Lengua Castellana', 'Inglés', 'Tecnología', 'Educación Física'])->get();
+        }
+
+        $allTags = \App\Models\Tag::orderBy('name')->get();
+        
+        return view('educational_centers.manage_groups', compact('center', 'suggestedTags', 'allTags'));
+    }
+
+    public function storeGroup(Request $request, $id)
+    {
+        $center = EducationalCenter::findOrFail($id);
+        
+        \Log::info('Group Store Attempt at center ' . $id, $request->all());
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'cycle_id' => 'nullable|exists:cycles,id',
+            'tutor_id' => 'nullable|exists:users,id',
+            'students' => 'nullable|array',
+            'students.*' => 'exists:users,id',
+            'teachers' => 'nullable|array', // tag_id => teacher_id
+        ]);
+
+        $group = $center->groups()->create([
+            'name' => $validated['name'],
+            'cycle_id' => $validated['cycle_id'],
+            'tutor_id' => $validated['tutor_id'],
+        ]);
+
+        if (!empty($validated['students'])) {
+            $group->students()->attach($validated['students']);
+        }
+
+        if (!empty($validated['teachers'])) {
+            foreach ($validated['teachers'] as $tagId => $teacherId) {
+                if ($teacherId) {
+                    $group->subjectsWithTeachers()->attach($tagId, ['user_id' => $teacherId]);
+                }
+            }
+        }
+
+        if ($request->ajax()) {
+            return $this->manageGroups($id);
+        }
+        
+        return back()->with('success', 'Grupo creado correctamente.');
+    }
+
+    public function deleteGroup(Request $request, $id, $groupId)
+    {
+        $group = \App\Models\Group::where('educational_center_id', $id)->findOrFail($groupId);
+        $group->delete();
+
+        if ($request->ajax()) {
+            return $this->manageGroups($id);
+        }
+        return back();
+    }
+
+    public function editGroup($id, $groupId)
+    {
+        $group = \App\Models\Group::with(['students', 'subjectsWithTeachers'])->where('educational_center_id', $id)->findOrFail($groupId);
+        return response()->json($group);
+    }
+
+    public function groupDetailsModal($id, $groupId)
+    {
+        $center = EducationalCenter::findOrFail($id);
+        $group = \App\Models\Group::with(['students', 'subjectsWithTeachers', 'tutor', 'cycle'])->where('educational_center_id', $id)->findOrFail($groupId);
+        
+        return view('educational_centers.group_details_modal', compact('center', 'group'));
+    }
+
+    public function updateGroup(Request $request, $id, $groupId)
+    {
+        $group = \App\Models\Group::where('educational_center_id', $id)->findOrFail($groupId);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'cycle_id' => 'nullable|exists:cycles,id',
+            'tutor_id' => 'nullable|exists:users,id',
+            'students' => 'nullable|array',
+            'teachers' => 'nullable|array',
+        ]);
+
+        $group->update([
+            'name' => $validated['name'],
+            'cycle_id' => $validated['cycle_id'],
+            'tutor_id' => $validated['tutor_id'],
+        ]);
+
+        $group->students()->sync($validated['students'] ?? []);
+
+        // Actualizar materias y profesores
+        $syncData = [];
+        if (!empty($validated['teachers'])) {
+            foreach ($validated['teachers'] as $tagId => $teacherId) {
+                if ($teacherId) {
+                    $syncData[$tagId] = ['user_id' => $teacherId];
+                }
+            }
+        }
+        $group->subjectsWithTeachers()->sync($syncData);
+
+        if ($request->ajax()) {
+            return $this->manageGroups($id);
+        }
+        return back();
+    }
+
     public function apiIndex(Request $request)
     {
         $query = EducationalCenter::select('id', 'name', 'type')->orderBy('name');

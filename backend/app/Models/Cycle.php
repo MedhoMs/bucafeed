@@ -19,4 +19,9 @@ class Cycle extends Model
     {
         return $this->belongsToMany(EducationalCenter::class);
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
 }

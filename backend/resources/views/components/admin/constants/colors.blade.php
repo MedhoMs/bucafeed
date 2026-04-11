@@ -26,16 +26,16 @@
         /* Gradiente superior della página (Medio) */
         --admin-bg-gradient-via: #10202e;
         
-        /* Fondo de las tarjetas/tablas */
-        --admin-bg-card: rgba(15, 25, 34, 0.4);
+        /* Fondo de las tarjetas/tablas (SIN BLUR) */
+        --admin-bg-card: #0f1922;
         
-        /* Fondo de los inputs y dropdowns */
-        --admin-bg-input: rgba(15, 25, 34, 0.6);
+        /* Fondo de los inputs y dropdowns (SIN BLUR) */
+        --admin-bg-input: #0d1b26;
         
         /* --- BORDES Y TEXTOS --- */
         
         /* Borde general de tablas y botones */
-        --admin-border: rgba(255, 255, 255, 0.1);
+        --admin-border: rgba(255, 255, 255, 0.08);
         
         /* Texto principal (Blanco) */
         --admin-text-main: #ffffff;
@@ -61,9 +61,6 @@
         --admin-accent-neutral-border: rgba(255, 255, 255, 0.15);
 
         /* --- MAPEO DE ETIQUETAS (BADGES) --- */
-        
-        /* Estas etiquetas ahora comparten los acentos para ser más formales */
-        
         --admin-badge-purple-bg: var(--admin-accent-1-bg);
         --admin-badge-purple-text: var(--admin-accent-1);
         --admin-badge-purple-border: var(--admin-accent-1-border);
@@ -89,10 +86,17 @@
         --admin-badge-white-border: var(--admin-accent-neutral-border);
     }
 
+    /* FIX DEFINITIVO PARA DROPDOWNS BLANCOS */
+    select, option, select:focus, select:active {
+        background-color: #0d1b26 !important;
+        color: white !important;
+        color-scheme: dark !important;
+    }
+
     /* Helper classes using these variables */
     .bg-admin-card { background-color: var(--admin-bg-card); }
     .border-admin { border-color: var(--admin-border); }
     .text-admin-main { color: var(--admin-text-main); }
     .text-admin-muted { color: var(--admin-text-muted); }
-    .ring-admin-primary:focus { --tw-ring-color: var(--admin-primary-focus); }
+    .ring-admin-primary:focus { --tw-ring-color: var(--admin-primary-glow); }
 </style>

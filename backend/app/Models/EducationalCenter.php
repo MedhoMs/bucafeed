@@ -59,4 +59,9 @@ class EducationalCenter extends Model
     {
         return $this->hasMany(User::class)->where('role', 'Teacher');
     }
+
+    public function groups()
+    {
+        return $this->hasMany(Group::class);
+    }
 }

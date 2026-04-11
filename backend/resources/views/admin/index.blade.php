@@ -140,19 +140,7 @@
             </div>
             <div class="flex flex-col gap-3">
                 @forelse($latestUsers ?? [] as $user)
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden border border-white/10">
-                            @if($user->profile_picture)
-                                <img src="{{ $user->profile_picture }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
-                            @else
-                                {{ strtoupper(substr($user->name, 0, 1)) }}
-                            @endif
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-white text-sm font-medium truncate">{{ $user->name }}</p>
-                            <p class="text-white/70 text-xs truncate">{{ $user->email }}</p>
-                        </div>
-                    </div>
+                    <x-admin.user-avatar :user="$user" size="w-8 h-8" />
                 @empty
                     <p class="text-white/70 text-sm">Sin datos aún.</p>
                 @endforelse
@@ -165,11 +153,28 @@
                 <h2 class="text-white font-semibold text-base">Últimas preguntas</h2>
                 <a href="#" data-url="/admin/questions" data-load="section" data-title="Foro de Preguntas" class="text-white text-xs hover:underline">Ver todas</a>
             </div>
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-4">
                 @forelse($latestQuestions ?? [] as $question)
-                    <div class="border-b border-white/10 pb-3 last:border-0 last:pb-0">
-                        <p class="text-white text-sm font-medium line-clamp-2 leading-snug">{{ $question->title }}</p>
-                        <p class="text-white/70 text-xs mt-1">{{ \Carbon\Carbon::parse($question->created_at)->diffForHumans() }}</p>
+                    <div class="border-b border-white/10 pb-4 last:border-0 last:pb-0 flex items-start justify-between gap-3">
+                        <div class="flex gap-3 min-w-0">
+                            {{-- User Avatar (Logo) --}}
+                            <x-admin.user-avatar :user="$question->user" size="w-8 h-8" :showName="false" class="shrink-0" />
+                            
+                            <div class="min-w-0">
+                                <p class="text-white text-sm font-bold truncate">{{ $question->user->name }}</p>
+                                <p class="text-white/80 text-xs line-clamp-2 leading-snug mt-1" title="{{ $question->title }}">{{ $question->title }}</p>
+                            </div>
+                        </div>
+
+                        {{-- Lupa (Details Link) --}}
+                        <a href="#" 
+                           data-url="{{ route('question.show', $question->id) }}" 
+                           data-load="modal" 
+                           data-title="Detalle de Pregunta"
+                           class="p-2 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 rounded-lg border border-cyan-500/20 transition-all shrink-0" 
+                           title="Ver pregunta y respuestas">
+                           <x-admin.constants.icons name="search" />
+                        </a>
                     </div>
                 @empty
                     <p class="text-white/70 text-sm">Sin datos aún.</p>
@@ -205,19 +210,13 @@
                     </div>
                 </div>
 
-                <div class="mt-2">
+                <div class="mt-2 text-white">
                     <p class="text-white/70 text-xs font-medium uppercase tracking-widest mb-3">Top reputación</p>
                     <div class="flex flex-col gap-2">
                         @forelse($topUsers ?? [] as $index => $user)
                             <div class="flex items-center gap-2">
                                 <span class="text-white text-xs font-bold w-4">#{{ $index + 1 }}</span>
-                                    <div class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-white text-[10px] font-bold shrink-0 overflow-hidden border border-white/10">
-                                        @if($user->profile_picture)
-                                            <img src="{{ $user->profile_picture }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
-                                        @else
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                                        @endif
-                                    </div>
+                                <x-admin.user-avatar :user="$user" size="w-6 h-6" :showName="false" />
                                 <span class="text-white text-sm truncate flex-1">{{ $user->name }}</span>
                                 <span class="text-white text-xs font-semibold">{{ $user->reputation }} pts</span>
                             </div>

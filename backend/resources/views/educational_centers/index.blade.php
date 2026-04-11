@@ -88,6 +88,13 @@
                    data-title="Gestión de Ciclos"
                    data-load="modal">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19 4v16" /><path d="M9 4v16" /><path d="M14 20l2 -5h4l2 5" /><path d="M11 16h-5a2 2 0 0 0 -2 2v2" /><path d="M7 13a4 4 0 1 0 0 -8a4 4 0 0 0 0 8z" /></svg>
+                </a>
+                <a class="btn-modal p-2 text-white/60 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-colors cursor-pointer border border-transparent hover:border-blue-500/30" 
+                   title="Gestionar Grupos / Niveles"
+                   data-url="'. route("educational_centers.manage_groups", $center->id) .'"
+                   data-title="Gestión de Grupos Académicos"
+                   data-load="modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 13a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M8 21v-1a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v1" /><path d="M15 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M17 10h2a2 2 0 0 1 2 2v1" /><path d="M5 5a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M3 13v-1a2 2 0 0 1 2 -2h2" /></svg>
                 </a>';
 
             $columns = [
