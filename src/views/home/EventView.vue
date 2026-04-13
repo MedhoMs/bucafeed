@@ -8,6 +8,13 @@
     const { t } = useTranslations()
 
     const events = ref([]);
+    const imgBase = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, '') : 'http://localhost:8000';
+
+    const getEventImage = (event) => {
+        if (!event.image_url) return '';
+        if (event.image_url.startsWith('http')) return event.image_url;
+        return imgBase + event.image_url;
+    };
 
     onMounted(async () => {
         try {
@@ -33,7 +40,7 @@
             <div id="mainBody" class="min-h-[92.9vh] mt-12">
                 <!-- Eventos dinámicos -->
                 <div v-for="event in events" :key="event.id" class="event-card group cursor-pointer hover:border-white/20 transition-all duration-300">
-                    <img :src="event.image_url" alt="Imagen del evento" class="group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                    <img :src="getEventImage(event)" alt="Imagen del evento" class="group-hover:scale-105 transition-transform duration-500" loading="lazy">
                     <h2 class="font-bold text-[16px] ml-4 leading-tight pr-4 text-white group-hover:text-cyan-400 transition-colors duration-300">
                         {{ event.title }}
                     </h2>

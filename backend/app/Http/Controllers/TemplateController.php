@@ -178,7 +178,7 @@ abstract class TemplateController extends Controller
                 if ($field === 'profile_picture') $path = 'uploads/profiles';
                 
                 $file->storeAs('public/' . $path, $filename);
-                $data[$field] = $path . '/' . $filename;
+                $data[$field] = '/' . $path . '/' . $filename;
             }
         }
 

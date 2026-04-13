@@ -9,7 +9,11 @@
     import defaultAvatar from '../../assets/logo/logoTelamon.png';
     const getAvatar = (user) => {
         const baseSrc = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, '') : 'http://localhost:8000';
-        return user?.profile_picture ? baseSrc + user.profile_picture : defaultAvatar;
+        if (!user?.profile_picture) return defaultAvatar;
+        
+        // Asegurar que no hay doble barra ni falta de ella
+        const path = user.profile_picture.startsWith('/') ? user.profile_picture : '/' + user.profile_picture;
+        return baseSrc + path;
     };
     
     const questions = ref([]);

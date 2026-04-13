@@ -68,8 +68,8 @@ class Event extends TemplateModel
                 if (str_starts_with($this->image, 'http')) return $this->image;
 
                 // For everything else (Base64 or internal /uploads paths), 
-                // use the streaming API route for consistency and performance.
-                return route('api.event.image', ['id' => $this->id, 't' => $this->updated_at?->timestamp]);
+                // use the streaming API route path.
+                return "/api/events/{$this->id}/image";
             },
         );
     }
