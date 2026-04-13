@@ -44,4 +44,3 @@ class Question extends TemplateModel
         return $this->hasOne(AiValidation::class);
     }
 }
-

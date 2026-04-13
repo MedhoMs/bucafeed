@@ -67,4 +67,9 @@ class EducationalCenter extends TemplateModel
     {
         return self::$niveles_disponibles;
     }
+
+    public static function getEducationLevels(): array
+    {
+        return self::$niveles_disponibles;
+    }
 }

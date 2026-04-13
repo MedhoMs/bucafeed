@@ -108,4 +108,3 @@ class QuestionController extends TemplateController
         return response()->json($tags->unique('id')->pluck('name', 'id'));
     }
 }
-

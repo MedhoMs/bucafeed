@@ -83,7 +83,7 @@
                     }
                     return '<span class="text-white/10 italic text-[10px]">N/A</span>';
                 })($user, $niveles_disponibles), 'class' => 'hidden sm:table-cell'],
-                ['type' => 'text', 'value' => $user->created_at ? $user->created_at->format('Y-m-d') : '-', 'class' => 'text-white/70 text-xs hidden lg:table-cell']
+                ['type' => 'text', 'value' => $user->created_at->format('Y-m-d'), 'class' => 'text-white/70 text-xs hidden lg:table-cell']
             ];
         @endphp
         <x-admin.table.row-builder :columns="$columns" />

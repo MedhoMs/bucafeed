@@ -56,12 +56,11 @@ class UserController extends TemplateController
 
     protected function indexExtras(Request $request)
     {
-
         return [
             'roles_disponibles' => Rol::pluck('name', 'code')->toArray(),
             'niveles_disponibles' => EducationalCenter::$niveles_disponibles,
             'centros' => EducationalCenter::orderBy('name')->pluck('name', 'id')->toArray(),
-            'ciclos_disponibles' => Cycle::orderBy('name')->pluck('name', 'id')->toArray()
+            'ciclos_disponibles' => \App\Models\Cycle::orderBy('name')->pluck('name', 'id')->toArray()
         ];
     }
 

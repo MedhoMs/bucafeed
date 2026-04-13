@@ -51,12 +51,7 @@ abstract class TemplateController extends Controller
             return response(base64_decode($data[1]))->header('Content-Type', 'image/png');
         }
 
-        $cleanPath = ltrim($content, '/');
-        $publicPath = public_path($cleanPath);
-        if (file_exists($publicPath)) {
-            return response()->file($publicPath);
-        }
-        return response()->file(storage_path('app/public/' . $cleanPath));
+        return response()->file(storage_path('app/public/' . $content));
     }
 
     /**
@@ -178,7 +173,7 @@ abstract class TemplateController extends Controller
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
                 $filename = time() . '_' . $field . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
-                $path = 'uploads/' . strtolower(class_basename($this->model)) . 's'; // Forzamos plural
+                $path = 'uploads/' . strtolower(class_basename($this->model));
                 if ($field === 'profile_picture') $path = 'uploads/profiles';
                 
                 $file->move(public_path($path), $filename);
