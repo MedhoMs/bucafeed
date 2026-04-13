@@ -399,7 +399,8 @@ class SchoolOrganizationSeeder extends Seeder
             'date' => now()->addDays(15),
             'start_time' => '09:00:00',
             'end_time' => '14:00:00',
-            'target_role' => 'Student'
+            'target_role' => 'Student',
+            'image' => 'https://images.unsplash.com/photo-1544531585-9847b68c8c86?q=80&w=1000'
         ]);
 
         Event::updateOrCreate(['title' => 'Taller de Ciberseguridad'], [
@@ -409,7 +410,8 @@ class SchoolOrganizationSeeder extends Seeder
             'date' => now()->addDays(20),
             'start_time' => '16:00:00',
             'end_time' => '19:00:00',
-            'target_role' => 'Student'
+            'target_role' => 'Student',
+            'image' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000'
         ]);
 
         $topham = $centers['ceipadolfotopham'];
@@ -420,7 +422,8 @@ class SchoolOrganizationSeeder extends Seeder
             'date' => now()->addDays(30),
             'start_time' => '10:00:00',
             'end_time' => '13:00:00',
-            'target_role' => null
+            'target_role' => null,
+            'image' => 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=1000'
         ]);
 
         if (isset($centers['miyagidokarate'])) {
@@ -440,7 +443,8 @@ class SchoolOrganizationSeeder extends Seeder
                 'date' => now()->addDays(5),
                 'start_time' => '18:00:00',
                 'end_time' => '21:00:00',
-                'target_role' => 'Student'
+                'target_role' => 'Student',
+                'image' => 'https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?q=80&w=1000&auto=format&fit=crop'
             ]);
         }
 

@@ -52,6 +52,10 @@ abstract class TemplateController extends Controller
         }
 
         $cleanPath = ltrim($content, '/');
+        $publicPath = public_path($cleanPath);
+        if (file_exists($publicPath)) {
+            return response()->file($publicPath);
+        }
         return response()->file(storage_path('app/public/' . $cleanPath));
     }
 
@@ -174,10 +178,10 @@ abstract class TemplateController extends Controller
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
                 $filename = time() . '_' . $field . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
-                $path = 'uploads/' . strtolower(class_basename($this->model));
+                $path = 'uploads/' . strtolower(class_basename($this->model)) . 's'; // Forzamos plural
                 if ($field === 'profile_picture') $path = 'uploads/profiles';
                 
-                $file->storeAs('public/' . $path, $filename);
+                $file->move(public_path($path), $filename);
                 $data[$field] = '/' . $path . '/' . $filename;
             }
         }
