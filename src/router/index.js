@@ -10,7 +10,7 @@ import EventView from "../views/home/EventView.vue";
 import MeetingView from "../views/home/MeetingView.vue";
 import MeetingChatView from "../views/home/MeetingChatView.vue";
 import LaravelTestView from "../views/LaravelTestView.vue";
-//import VideoCallView from "../views/VideoCallView.vue";
+import VideoCallView from "../views/home/VideoCallView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -60,11 +60,11 @@ const router = createRouter({
             name: 'meeting',
             component: MeetingView
         },
-        /*{
+        {
             path: '/videocall/:id?',
             name: 'videocall',
             component: VideoCallView
-        },*/
+        },
         {
             path: '/laravel',
             name: 'laravel',
