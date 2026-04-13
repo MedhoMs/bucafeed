@@ -52,7 +52,7 @@
  
 <template>
     <!--Hamburger menu-->
-    <svg v-show="!menu" @click="activeMenu()" class="lg:hidden fixed top-5 left-6 z-50 text-white cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none" /> <path d="M4 6l16 0" /><path d="M4 12l16 0" /><path d="M4 18l16 0" /></svg>
+    <svg v-show="!menu" @click="activeMenu()" class="lg:hidden absolute top-5 left-6 z-5 text-white cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none" /> <path d="M4 6l16 0" /><path d="M4 12l16 0" /><path d="M4 18l16 0" /></svg>
  
     <!--Overlay oscuro-->
     <Transition
@@ -62,7 +62,7 @@
         leave-active-class="transition-opacity duration-300 ease-in"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0">
-        <div v-if="menu" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"></div>
+        <div v-if="menu" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60"></div>
     </Transition>
  
     <!--Sidebar siempre visible en desktop, toggle en móvil-->
