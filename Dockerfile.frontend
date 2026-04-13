@@ -12,15 +12,15 @@ COPY package.json package-lock.json ./
 RUN npm install
 
 # Copiar archivos de configuración
-COPY vite.config.js ./
 COPY vite.config.frontend.js ./
 COPY tailwind.config.js ./
 COPY postcss.config.js ./
 COPY index.html ./
 
-# Copiar código fuente
+# Copiar código fuente y estilos necesarios
 COPY src ./src
 COPY public ./public
+COPY backend/resources ./backend/resources
 
 # Copiar variables de entorno (ARG)
 ARG VITE_API_URL
@@ -36,7 +36,7 @@ ARG VITE_APP_NAME
 ENV VITE_APP_NAME=${VITE_APP_NAME}
 
 # Build de producción usando la config específica de frontend
-# (Evita que intente buscar archivos del backend que no existen aquí)
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build -- --config vite.config.frontend.js
 
 # ==========================================

@@ -20,9 +20,12 @@ class User extends Authenticatable
         'role',
         'reputation',
         'educational_center_id',
-        'national_id',
+        'dni',
         'education_level',
         'institution_name',
+        'profile_picture',
+        'banner',
+        'description',
     ];
 
     protected $hidden = [
@@ -49,4 +52,32 @@ class User extends Authenticatable
     {
         return $this->hasOne(Student::class);
     }
+
+    public function assignedTeachers()
+    {
+        return $this->belongsToMany(User::class, 'student_teacher', 'student_id', 'teacher_id');
+    }
+
+    public function assignedStudents()
+    {
+        return $this->belongsToMany(User::class, 'student_teacher', 'teacher_id', 'student_id');
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 }
+
+
+
+
+

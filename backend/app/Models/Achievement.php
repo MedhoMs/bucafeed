@@ -22,3 +22,6 @@ class Achievement extends Model
                     ->withTimestamps();
     }
 }
+
+
+

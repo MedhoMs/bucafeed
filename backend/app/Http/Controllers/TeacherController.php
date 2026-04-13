@@ -46,3 +46,4 @@ class TeacherController extends Controller
         return response()->noContent();
     }
 }
+

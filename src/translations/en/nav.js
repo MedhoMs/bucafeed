@@ -7,7 +7,7 @@ export const nav = {
     explore: "Explore",
     notification: "Notifications",
     meeting: "Meeting",
-    videocall: "Video Calls",
+    meetingChat: "Chat Charla",
     event: "Events",
     post: "Post",
     profile: "Profile",
@@ -17,3 +17,6 @@ export const nav = {
     logout: "Logout",
     selectLanguage: "Select your language"
 };
+
+
+

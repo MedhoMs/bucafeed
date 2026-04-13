@@ -20,6 +20,7 @@ COPY index.html ./
 # Copiar código fuente
 COPY src ./src
 COPY public ./public
+COPY backend/resources/sytles ./backend/resources/sytles
 
 # Variables de entorno para el build
 ARG VITE_API_URL

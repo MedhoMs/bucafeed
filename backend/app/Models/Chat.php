@@ -29,3 +29,8 @@ class Chat extends Model
         return $this->belongsTo(EducationalCenter::class);
     }
 }
+
+
+
+
+

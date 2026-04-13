@@ -9,21 +9,11 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url)),
+            '@sytles': fileURLToPath(new URL('./backend/resources/sytles', import.meta.url)),
         },
-    },
-    css: {
-        preprocessorOptions: {
-            scss: {
-                // Manteniendo el typo "sytles" tal cual está en el proyecto original
-                additionalData: '@import "@/sytles/variables.scss";'
-            }
-        }
     },
     build: {
         outDir: 'dist',
         emptyOutDir: true,
-        rollupOptions: {
-            input: 'index.html',
-        },
     },
 });

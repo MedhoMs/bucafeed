@@ -1,69 +1,56 @@
-# ETAPA 1: Compilación del Frontend (Vue.js) para el Backend
-FROM node:22-alpine AS build-stage
-WORKDIR /app
-
-# Copiar dependencias y configuraciones del root
-COPY package*.json ./
-RUN npm install
-
-# Copiar código fuente y archivos de configuración
-COPY . .
-
-# Compilar los assets de Vue
-RUN npm run build
-
-# ETAPA 2: Servidor Backend (PHP/Laravel)
 FROM php:8.4-fpm
 
-# Dependencias y extensiones
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    git curl libpng-dev libonig-dev libxml2-dev zip unzip libzip-dev default-mysql-client \
-    nginx supervisor \
-    && docker-php-ext-install pdo_mysql mbstring bcmath zip pcntl \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    nodejs \
+    npm \
+    supervisor \
+    nginx \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Composer
+# Instalar extensiones de PHP
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd opcache
+
+# Obtener Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-# Copiar SOLO el contenido de la carpeta backend
+# Copiar el código del backend
 COPY backend/ .
 
-# Crear directorios necesarios que pueden estar en .dockerignore
+# Crear directorios necesarios para Laravel y asegurar que existan para composer
 RUN mkdir -p storage/framework/cache/data \
              storage/framework/sessions \
              storage/framework/views \
              storage/logs \
              bootstrap/cache
 
+# Instalar dependencias de Node y compilar assets (Vite)
+RUN npm install && npm run build
+
 # Instalar dependencias de PHP
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# TRAER LOS ASSETS COMPILADOS DESDE LA ETAPA 1
-COPY --from=build-stage /app/backend/public/frontend ./public/frontend
-
-# DEPUREACIÓN Y ARREGLO DE MANIFEST:
-RUN find ./public/frontend -name "manifest.json"
-RUN if [ -f ./public/frontend/.vite/manifest.json ]; then \
-        mv ./public/frontend/.vite/manifest.json ./public/frontend/manifest.json; \
-    fi
-
-# Configuración de Nginx para Railway
+# Configurar Nginx para Railway (usando el archivo que ya tienes)
 COPY backend/nginx.railway.conf /etc/nginx/sites-available/default
-RUN rm -rf /etc/nginx/sites-enabled/default && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# Configuración de Supervisor
+# Configurar Supervisord
 COPY backend/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Permisos
-RUN chown -R www-data:www-data storage bootstrap/cache public \
-    && chmod -R 775 storage bootstrap/cache public
+# Permisos para Laravel
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# EntryPoint
-COPY backend/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
+# Exponer el puerto que Railway espera (8080)
 EXPOSE 8080
 
-CMD ["/usr/local/bin/entrypoint.sh"]
+# Iniciar procesos a través de Supervisord
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

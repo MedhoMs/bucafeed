@@ -41,3 +41,8 @@ class Question extends Model
         return $this->hasOne(AiValidation::class);
     }
 }
+
+
+
+
+

@@ -7,3 +7,4 @@ export const sidebar = {
     follow:             "Seguir"
 
 };
+

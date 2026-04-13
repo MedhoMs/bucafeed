@@ -1,62 +1,61 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuarios Registrados | TelamoNet</title>
-    <!-- CARGA DE TAILWIND (BACKEND) -->
-    @if(app()->environment('local'))
-        <script type="module" src="http://localhost:5174/@@vite/client"></script>
-        <link rel="stylesheet" href="http://localhost:5174/backend/resources/css/app.css">
-    @else
-        @vite(['backend/resources/css/app.css'], 'frontend')
-    @endif
-</head>
-<body class="bg-slate-900 text-white font-sans p-8">
-    <div class="max-w-6xl mx-auto">
-        <div class="flex justify-between items-center mb-10">
-            <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-                Usuarios en Base de Datos
-            </h1>
-            <a href="{{ config('app.frontend_url') }}/home" 
-               class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-bold rounded-xl text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-blue-500/20 group">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Volver a TelamoNet
-            </a>
-        </div>
+@extends('layouts.admin')
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @forelse($users as $user)
-                <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl hover:border-blue-500/50 transition-all group">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="h-12 w-12 bg-blue-600/20 rounded-xl flex items-center justify-center text-blue-400 font-bold text-xl">
-                            {{ strtoupper(substr($user->nombre, 0, 1)) }}
-                        </div>
-                        <span class="px-3 py-1 bg-slate-700 rounded-full text-xs font-bold uppercase tracking-wider text-slate-300">
-                            Usuario
-                        </span>
-                    </div>
+@section('content')
+<x-admin.crud-index
+    title="Gestión de Usuarios"
+    description="Administra los usuarios registrados en la plataforma."
+    createUrl="{{ route('user.create') }}"
+    createTitle="Crear Nuevo Usuario"
+    createText="Nuevo Usuario"
+    :models="$users"
+    :headers="[
+        'ID' => 'hidden sm:table-cell',
+        'Usuario' => '',
+        'DNI/NIE' => 'hidden lg:table-cell',
+        'Rol' => 'hidden md:table-cell',
+        'Reputación' => 'hidden sm:table-cell',
+        'Nivel / Institución' => 'hidden xl:table-cell',
+        'Registro' => 'hidden lg:table-cell'
+    ]"
+>
+    <x-slot:filters>
+        <x-admin.filter-dropdown 
+            label="Rol" 
+            name="role" 
+            :options="$roles_disponibles" 
+            :selected="request('role')" 
+        />
+        <x-admin.filter-dropdown 
+            label="Nivel" 
+            name="level" 
+            :options="$niveles_disponibles" 
+            :selected="request('level')" 
+        />
+        <x-admin.filter-dropdown 
+            label="Institución" 
+            name="institution" 
+            :options="$instituciones_existentes" 
+            :selected="request('institution')" 
+            align="right"
+        />
+    </x-slot:filters>
 
-                    <h3 class="text-lg font-bold mb-1 truncate">{{ $user->nombre }}</h3>
-                    <p class="text-sm text-slate-500 truncate mb-4">{{ $user->email }}</p>
-                    
-                    <div class="mt-4 pt-4 border-t border-slate-700/50">
-                        <p class="text-sm text-slate-400">
-                            <span class="font-bold text-slate-200">ID:</span> {{ $user->id }}
-                        </p>
-                        <p class="text-sm text-slate-400">
-                            <span class="font-bold text-slate-200">Fecha:</span> {{ $user->created_at->format('d/m/Y') }}
-                        </p>
-                    </div>
-                </div>
-            @empty
-                <div class="col-span-full bg-slate-800/50 border border-dashed border-slate-700 p-12 text-center rounded-3xl">
-                    <p class="text-slate-500 text-lg italic">Todavía no hay usuarios registrados en la tabla 'usuarios'.</p>
-                </div>
-            @endforelse
-        </div>
-    </div>
-</body>
-</html>
+    <x-slot:tbody>
+        @foreach($users as $user)
+        @php
+            $columns = [
+                ['type' => 'actions', 'class' => 'text-left', 'showUrl' => route('user.show', $user->id), 'showTitle' => 'Consultar Usuario', 'editUrl' => route('user.edit', $user->id), 'editTitle' => 'Editar Usuario', 'deleteUrl' => route('user.destroy', $user->id), 'deleteTitle' => 'Eliminar Usuario'],
+                ['type' => 'text', 'value' => '#'.$user->id, 'class' => 'text-white/70 hidden sm:table-cell'],
+                ['type' => 'avatar', 'image' => $user->profile_picture, 'title' => $user->name . ' ' . $user->last_name, 'subtitle' => $user->email, 'shape' => 'rounded-full', 'imageSize' => 'w-9 h-9', 'modalUrl' => route('user.profile_modal', $user->id), 'modalTitle' => 'Perfil de ' . $user->name, 'fallback' => '<img src="' . asset('logoTelamon.png') . '" alt="Avatar" class="w-full h-full object-cover opacity-60">'],
+                ['type' => 'text', 'value' => $user->dni ?? '-', 'class' => 'text-white/70 hidden lg:table-cell'],
+                ['type' => 'badge', 'text' => $roles_disponibles[$user->role] ?? $user->role, 'color' => 'purple', 'class' => 'hidden md:table-cell'],
+                ['type' => 'html', 'content' => '<div class="flex items-center gap-1 text-yellow-500"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-coins"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14c0 1.657 2.686 3 6 3s6 -1.343 6 -3s-2.686 -3 -6 -3s-6 1.343 -6 3z" /><path d="M9 14v4c0 1.656 2.686 3 6 3s6 -1.344 6 -3v-4" /><path d="M3 6c0 1.072 1.144 2.062 3 2.598s4.144 .536 6 0c1.856 -.536 3 -1.526 3 -2.598c0 -1.072 -1.144 -2.062 -3 -2.598s-4.144 -.536 -6 0c-1.856 .536 -3 1.526 -3 2.598z" /><path d="M3 6v10c0 .888 .772 1.45 2 2" /><path d="M3 11c0 .888 .772 1.45 2 2" /></svg> <span class="font-bold text-xs">'.($user->reputation ?? '0').'</span></div>', 'class' => 'hidden sm:table-cell'],
+                ['type' => 'html', 'content' => '<div class="flex flex-col"><span class="text-xs text-wrap">'.($niveles_disponibles[$user->education_level] ?? $user->education_level ?? '-').'</span><span class="text-[10px] text-white/40">'.($user->institution_name ?? '-').'</span></div>', 'class' => 'hidden xl:table-cell'],
+                ['type' => 'text', 'value' => $user->created_at->format('Y-m-d'), 'class' => 'text-white/70 text-xs hidden lg:table-cell']
+            ];
+        @endphp
+        <x-admin.table.row-builder :columns="$columns" />
+        @endforeach
+    </x-slot:tbody>
+</x-admin.crud-index>
+@endsection

@@ -20,3 +20,10 @@ return new class extends Migration
         Schema::dropIfExists('banned_words');
     }
 };
+
+
+
+
+
+
+

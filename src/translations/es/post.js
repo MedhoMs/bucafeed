@@ -3,3 +3,4 @@ export const post = {
     title: "Título",
     question: "Pregunta",
 };
+

@@ -13,3 +13,11 @@ class BannedWord extends Model
         'word',
     ];
 }
+
+
+
+
+
+
+
+

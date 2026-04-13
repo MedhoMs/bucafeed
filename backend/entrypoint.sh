@@ -1,51 +1,66 @@
 #!/bin/bash
-set -e
 
-echo "🚀 Iniciando contenedor del Backend..."
-
-# 1. Crear .env si no existe
+# 1. Asegurar archivo .env
 if [ ! -f ".env" ]; then
     cp .env.example .env
 fi
 
-# 2. Directorios y Permisos
-mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
-chmod -R 775 storage bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+# 1.5. Asegurar directorios de storage y cache con permisos correctos
+echo "Preparando directorios de storage y cache..."
+mkdir -p storage/framework/cache/data
+mkdir -p storage/framework/sessions
+mkdir -p storage/framework/views
+mkdir -p storage/logs
+mkdir -p bootstrap/cache
+mkdir -p public/uploads/profiles
+mkdir -p public/uploads/banners
+mkdir -p public/uploads/events
 
-# 3. Dependencias
+# Ajustar permisos SIEMPRE al inicio (vital para volúmenes de Railway)
+echo "Corrigiendo permisos de storage, bootstrap/cache y public/uploads..."
+chown -R www-data:www-data storage bootstrap/cache public/uploads
+chmod -R 775 storage bootstrap/cache public/uploads
+
+# Asegurar enlace simbólico de storage
+if [ ! -L "public/storage" ]; then
+    echo "Creando enlace simbólico de storage..."
+    php artisan storage:link
+fi
+
+# 2. Instalar dependencias de PHP solo si falta el autoload
 if [ ! -f "vendor/autoload.php" ]; then
-    composer install --no-interaction --optimize-autoloader --no-scripts
+    echo "Instalando dependencias de PHP (composer)..."
+    composer install --no-interaction --optimize-autoloader
 fi
 
-# 4. Sincronizar DB
-[ -z "$DB_HOST" ] && [ -n "$MYSQLHOST" ] && export DB_HOST="$MYSQLHOST"
-[ -z "$DB_PORT" ] && [ -n "$MYSQLPORT" ] && export DB_PORT="$MYSQLPORT"
-[ -z "$DB_DATABASE" ] && [ -n "$MYSQLDATABASE" ] && export DB_DATABASE="$MYSQLDATABASE"
-[ -z "$DB_USERNAME" ] && [ -n "$MYSQLUSER" ] && export DB_USERNAME="$MYSQLUSER"
-[ -z "$DB_PASSWORD" ] && [ -n "$MYSQLPASSWORD" ] && export DB_PASSWORD="$MYSQLPASSWORD"
 
-# 5. Migraciones y Limpieza
-echo "🐘 Ejecutando migraciones..."
-php artisan migrate --force || echo "⚠️ Error en migraciones, continuando..."
+# 3. Generar clave si no existe
+if ! grep -q "APP_KEY=base64" .env; then
+    php artisan key:generate --force
+fi
 
-echo "🌱 Ejecutando seeders..."
-php artisan db:seed --force || echo "⚠️ Error en seeders, continuando..."
+# 3.5 Ejecutar migraciones (SIEMPRE en despliegue)
+# echo "Limpiando base de datos..."
+# php artisan db:wipe --force
 
+echo "Ejecutando migraciones..."
+php artisan migrate --force
+
+# echo "Ejecutando seeders..."
+# php artisan db:seed --force
+
+# 4. Instalar API solo si no existe el archivo de rutas
+if [ ! -f "routes/api.php" ]; then
+    echo "Configurando API de Laravel..."
+    php artisan install:api --no-interaction
+fi
+
+# 5. y 6. Assets compilados en Dockerfile (Build time)
+
+# 7. Limpiar caches para desarrollo (rápido y evita errores)
 php artisan config:clear
-php artisan cache:clear
+php artisan route:clear
 
-if [ -x "/usr/bin/supervisord" ]; then
-    echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
-else
-    echo "✅ Backend listo. Arrancando PHP-FPM..."
-    exec php-fpm
-fi
-
-
-
-
-
-
-
+# Iniciar Supervisor (que gestiona PHP y Nginx)
+echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."
+exec "$@"

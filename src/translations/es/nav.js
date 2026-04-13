@@ -7,7 +7,7 @@ export const nav = {
     explore: "Explorar",
     notification: "Notificaciones",
     meeting: "Charlas",
-    videocall: "Videollamadas",
+    meetingChat: "Chat Charla",
     event: "Eventos",
     post: "Crear",
     profile: "Perfil",
@@ -17,3 +17,8 @@ export const nav = {
     logout: "Cerrar Sesión",
     selectLanguage: "Selecciona tu idioma"
 };
+
+
+
+
+

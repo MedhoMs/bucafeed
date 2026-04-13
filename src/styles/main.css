@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tus estilos personalizados aquí */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  font-family: "Montserrat", sans-serif;
+  min-height: 100vh;
+  background: -webkit-linear-gradient(180deg, #367fdd,#255683,#000000);/* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(180deg, #367fdd,#255683,#000000);/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  background: -webkit-linear-gradient(180deg, #326465,#1d2e3e);/* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(180deg, #326465,#1d2e3e);/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+:root {
+  --btn-primary-bg: #0891b2;        /* cyan-600 */
+  --btn-primary-hover: #06b6d4;     /* cyan-500 */
+  --btn-primary-shadow: rgba(8, 145, 178, 0.2);
+}
+
+@layer components {
+  .btn-primary {
+    background-color: var(--btn-primary-bg);
+    color: white;
+    box-shadow: 0 10px 15px -3px var(--btn-primary-shadow), 0 4px 6px -4px var(--btn-primary-shadow);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-primary:hover {
+    background-color: var(--btn-primary-hover);
+  }
+}

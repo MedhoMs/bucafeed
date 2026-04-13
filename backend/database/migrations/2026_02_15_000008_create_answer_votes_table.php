@@ -22,3 +22,6 @@ return new class extends Migration
         Schema::dropIfExists('answer_votes');
     }
 };
+
+
+

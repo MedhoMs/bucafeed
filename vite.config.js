@@ -7,7 +7,12 @@ export default defineConfig({
   plugins: [
     vue(),
     laravel({
-      input: ['src/main.js', 'backend/resources/css/app.css'],
+      input: [
+        'src/main.js',
+        'backend/resources/css/app.css',
+        'backend/resources/sytles/style.css',
+        'backend/resources/sytles/main.css'
+      ],
       publicDirectory: 'backend/public',
       buildDirectory: 'frontend',
       refresh: true,
@@ -32,13 +37,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@sytles': fileURLToPath(new URL('./backend/resources/sytles', import.meta.url)),
     },
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: '@import "@/sytles/variables.scss";'
-      }
-    }
   }
 });
