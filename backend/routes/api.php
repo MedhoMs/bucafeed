@@ -29,13 +29,8 @@ Route::get('/test-connection', function () {
 });
 
 Route::post('/register', [AuthController::class, 'register']);
-<<<<<<< HEAD
-
-Route::get('/events', [EventController::class, 'getEventsApi']);
-=======
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/events', [EventController::class, 'apiIndex']);
->>>>>>> 3fa5096 (Merge pull request #74 from MedhoMs/feat/preguntas-refactor-backend)
 Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name('api.event.image');
 Route::get('/educational-centers', [EducationalCenterController::class, 'apiIndex']);
 

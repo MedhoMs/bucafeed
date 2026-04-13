@@ -108,7 +108,4 @@ class QuestionController extends TemplateController
         return response()->json($tags->unique('id')->pluck('name', 'id'));
     }
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 3fa5096 (Merge pull request #74 from MedhoMs/feat/preguntas-refactor-backend)

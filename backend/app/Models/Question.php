@@ -44,11 +44,4 @@ class Question extends TemplateModel
         return $this->hasOne(AiValidation::class);
     }
 }
-<<<<<<< HEAD
 
-
-
-
-
-=======
->>>>>>> 3fa5096 (Merge pull request #74 from MedhoMs/feat/preguntas-refactor-backend)
