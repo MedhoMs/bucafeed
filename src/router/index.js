@@ -36,9 +36,9 @@ const router = createRouter({
             component: ProfileView
         },
         {
-        path: '/question/:id?',
-        name: 'question',
-        component: QuestionView
+            path: '/question/:id?',
+            name: 'question',
+            component: QuestionView
         },
         {
             path: '/explore',
@@ -59,6 +59,11 @@ const router = createRouter({
             path: '/meeting',
             name: 'meeting',
             component: MeetingView
+        },
+        {
+            path: '/meetingchat',
+            name: 'meetingchat',
+            component: MeetingChatView
         },
         {
             path: '/videocall/:id?',

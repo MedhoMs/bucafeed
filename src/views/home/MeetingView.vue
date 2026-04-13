@@ -42,27 +42,29 @@
 </script>
 
 <template>
-    <NavBar></NavBar>
-    <main class="flex min-h-screen justify-between lg:pl-[300px]">
-        <section class="text-white lg:w-[1500px] w-[350px] mt-6 mx-auto lg:mr-14 mb-4 flex flex-col min-h-screen">
-            <p class="text-[40px] font-bold shrink-0">Charlas Disponibles</p>
-            <SearchBar :meetings="meetings" @update:filtered="filteredMeetings = $event" class="shrink-0" />
+    <div class="flex flex-row min-h-screen">
+        <NavBar />
+        <main class="flex-1 lg:pl-0">
+            <section class="text-white lg:w-[1500px] w-[350px] mt-6 mx-auto lg:mr-14 mb-4 flex flex-col min-h-screen">
+                <p class="text-[40px] font-bold shrink-0">Charlas Disponibles</p>
+                <SearchBar :meetings="meetings" @update:filtered="filteredMeetings = $event" class="shrink-0" />
+                
+                <div v-if="filteredMeetings.length > 0" class="grid grid-cols-4 gap-4">
+                    <Meeting
+                        v-for="meeting in filteredMeetings"
+                        :key="meeting.id"
+                        :id="meeting.id"
+                        :name="meeting.name"
+                        :teacher="meeting.teacher"
+                        :schedule="meeting.schedule"
+                        :description="meeting.description"
+                    />
+                </div>
             
-            <div v-if="filteredMeetings.length > 0" class="grid grid-cols-4 gap-4">
-                <Meeting
-                    v-for="meeting in filteredMeetings"
-                    :key="meeting.id"
-                    :id="meeting.id"
-                    :name="meeting.name"
-                    :teacher="meeting.teacher"
-                    :schedule="meeting.schedule"
-                    :description="meeting.description"
-                />
-            </div>
-        
-            <div v-else class="w-fit bg-[#2a4a5a] p-8 mx-auto my-auto rounded-[30px] shadow-xl border border-white/10 text-center">
-                <h3 class="text-2xl font-bold text-white mb-2">No se han encontrado reuniones</h3>
-            </div>
-        </section>
-    </main>
+                <div v-else class="w-fit bg-[#2a4a5a] p-8 mx-auto my-auto rounded-[30px] shadow-xl border border-white/10 text-center">
+                    <h3 class="text-2xl font-bold text-white mb-2">No se han encontrado reuniones</h3>
+                </div>
+            </section>
+        </main>
+    </div>
 </template>

@@ -30,46 +30,48 @@
 </script>
 
 <template>
-    <NavBar></NavBar>
-    <main class="flex min-h-screen justify-between lg:pl-[300px]">
-        <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4 pt-8 pb-10">
-            <h1 class="text-[44px] font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40 tracking-tight leading-none mb-2">
-                Eventos Disponibles
-            </h1>
-            <SearchBar></SearchBar>
-            <div id="mainBody" class="min-h-[92.9vh] mt-12">
-                <!-- Eventos dinámicos -->
-                <div v-for="event in events" :key="event.id" class="event-card group cursor-pointer hover:border-white/20 transition-all duration-300">
-                    <img :src="getEventImage(event)" alt="Imagen del evento" class="group-hover:scale-105 transition-transform duration-500" loading="lazy">
-                    <h2 class="font-bold text-[16px] ml-4 leading-tight pr-4 text-white group-hover:text-cyan-400 transition-colors duration-300">
-                        {{ event.title }}
-                    </h2>
-                    <p class="text-white/60 text-[14px] ml-4 mt-1 pr-6 line-clamp-2 leading-snug">
-                        {{ event.description }}
-                    </p>
-                    <div class="flex flex-col gap-1 mt-2 ml-4">
-                        <!-- Fecha y Ubicación -->
-                        <div class="flex items-center text-[14px] text-white/70">
-                            <span class="mr-1">📅</span>
-                            <span>{{ new Date(event.date).getDate() }}/{{ new Date(event.date).getMonth() + 1 }}/{{ new Date(event.date).getFullYear().toString().slice(-2) }} </span>
-                            <span class="ml-1 mr-1">📍</span>
-                            <span class="truncate">{{ event.location }}</span>
+    <div class="flex flex-row min-h-screen">
+        <NavBar />
+        <main class="flex-1 lg:pl-0">
+            <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4 pt-8 pb-10">
+                <h1 class="text-[44px] font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40 tracking-tight leading-none mb-2">
+                    Eventos Disponibles
+                </h1>
+                <SearchBar></SearchBar>
+                <div id="mainBody" class="min-h-[92.9vh] mt-12">
+                    <!-- Eventos dinámicos -->
+                    <div v-for="event in events" :key="event.id" class="event-card group cursor-pointer hover:border-white/20 transition-all duration-300">
+                        <img :src="getEventImage(event)" alt="Imagen del evento" class="group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                        <h2 class="font-bold text-[16px] ml-4 leading-tight pr-4 text-white group-hover:text-cyan-400 transition-colors duration-300">
+                            {{ event.title }}
+                        </h2>
+                        <p class="text-white/60 text-[14px] ml-4 mt-1 pr-6 line-clamp-2 leading-snug">
+                            {{ event.description }}
+                        </p>
+                        <div class="flex flex-col gap-1 mt-2 ml-4">
+                            <!-- Fecha y Ubicación -->
+                            <div class="flex items-center text-[14px] text-white/70">
+                                <span class="mr-1">📅</span>
+                                <span>{{ new Date(event.date).getDate() }}/{{ new Date(event.date).getMonth() + 1 }}/{{ new Date(event.date).getFullYear().toString().slice(-2) }} </span>
+                                <span class="ml-1 mr-1">📍</span>
+                                <span class="truncate">{{ event.location }}</span>
+                            </div>
+                            <!-- Horario -->
+                            <div class="flex items-center text-[14px]">
+                                <span class="mr-1 opacity-70">🕒</span>
+                                <span class="font-bold mr-1 text-cyan-400/80">Horario:</span>
+                                <span class="text-white/90">
+                                    {{ event.start_time ? event.start_time.substring(0, 5) : '00:00' }} - 
+                                    {{ event.end_time ? event.end_time.substring(0, 5) : '00:00' }}
+                                </span>
+                            </div>
                         </div>
-                        <!-- Horario -->
-                        <div class="flex items-center text-[14px]">
-                            <span class="mr-1 opacity-70">🕒</span>
-                            <span class="font-bold mr-1 text-cyan-400/80">Horario:</span>
-                            <span class="text-white/90">
-                                {{ event.start_time ? event.start_time.substring(0, 5) : '00:00' }} - 
-                                {{ event.end_time ? event.end_time.substring(0, 5) : '00:00' }}
-                            </span>
-                        </div>
+                        <button class="bg-[#0a2d4e] p-2">Entrar</button>
                     </div>
-                    <button class="bg-[#0a2d4e] p-2">Entrar</button>
                 </div>
-            </div>
-        </section>
-    </main>
+            </section>
+        </main>
+    </div>
 </template>
 
 <style scoped>
