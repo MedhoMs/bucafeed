@@ -59,14 +59,14 @@
 </script>
 
 <template>
+    <NavBar></NavBar>
     <main class="flex min-h-screen justify-between">
-        <NavBar></NavBar>
-        <section class="text-white w-[1500px] mr-14 mb-4">
+        <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4">
             <SearchBar></SearchBar>
             <div id="mainBody" class="flex flex-col gap-4 justify-center items-center min-h-[92.9vh]">
                 <div v-if="!questions || questions.length === 0" class="text-white/40 italic py-10">Cargando preguntas del servidor...</div>
 
-                <div v-for="q in questions" :key="q.id" class="post-card text-left">
+                <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">
                     <div class="flex gap-4 items-center mb-4">
                         <router-link :to="'/profile/' + q.user_id" class="shrink-0 hover:scale-105 transition-transform" title="Ver perfil">
                             <img :src="getAvatar(q.user)" alt="icono" class="w-10 h-10 rounded-full border border-white/20 shadow-lg object-cover bg-[#15202b]" />
@@ -116,7 +116,6 @@
     .post-card {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
         border: 1px solid rgba(255, 255, 255, 0.12);
-        width: 1500px;
         border-radius: 20px;
         padding: 1.75rem;
         position: relative;
