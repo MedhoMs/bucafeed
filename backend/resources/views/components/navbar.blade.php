@@ -1,22 +1,22 @@
 <!-- Mobile Header (Visible below lg) -->
-<div class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#142b2b] border-b border-white/10 flex items-center justify-between px-4 z-[55] shadow-md">
+<div class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#142b2b] border-b border-white/10 flex justify-between items-center px-4 z-[55] shadow-md">
+    <button id="mobile-toggle" class="p-2 text-white/70 hover:text-white transition-colors active:scale-95">
+        <x-admin.constants.icons name="menu" />
+    </button>
     <div class="flex items-center gap-2">
+        <span class="text-white font-bold text-lg">Telamo<span class="text-[#a0c4d4]">Net</span></span>
         @if(app()->environment('local'))
             <img class="w-8 h-8" src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="Logo">
         @else
             <img class="w-8 h-8" src="{{ asset('assets/logo/logoTelamon.png') }}" alt="Logo">
         @endif
-        <span class="text-white font-bold text-lg">Telamo<span class="text-[#a0c4d4]">Net</span></span>
     </div>
-    <button id="mobile-toggle" class="p-2 text-white/70 hover:text-white transition-colors active:scale-95">
-        <x-admin.constants.icons name="menu" />
-    </button>
 </div>
 
 <!-- Mobile Overlay -->
-<div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/60 z-[58] lg:hidden transition-opacity duration-300 opacity-0"></div>
+<div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/60 z-[58] lg:hidden transition-opacity duration-300 opacity-0 ease-out"></div>
 
-<nav class="fixed lg:sticky top-0 inset-y-0 right-0 lg:left-0 w-[300px] h-screen bg-gradient-to-b from-[#142b2b] to-[#0a141d] shadow-[-5px_0px_20px_rgba(0,0,0,0.6)] z-[60] transform translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col pl-5 pr-5 overflow-y-auto overflow-x-hidden" id="principalNav">
+<nav class="fixed lg:sticky top-0 inset-y-0 left-0 w-[300px] h-screen bg-gradient-to-b from-[#142b2b] to-[#0a141d] shadow-[-5px_0px_20px_rgba(0,0,0,0.6)] z-[60] transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-out flex flex-col pl-5 pr-5 overflow-y-auto overflow-x-hidden" id="principalNav">
     <div class="hidden lg:flex flex-row items-center gap-3 mb-4 mt-4">
         @if(app()->environment('local'))
             <img class="w-[65px] h-[70px]" src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="Logo">
@@ -75,7 +75,7 @@
         event.preventDefault();
         event.stopPropagation();
         const popup = document.getElementById('popupMenu');
-        
+
         if (popup.classList.contains('hidden')) {
             // Show
             popup.classList.remove('hidden');
@@ -114,21 +114,23 @@
 
     function toggleMobileSidebar(show) {
         if (show) {
-            overlay.classList.remove('hidden');
+            overlay.classList.remove('hidden', 'ease-in');
+            overlay.classList.add('ease-out');
             setTimeout(() => overlay.classList.add('opacity-100'), 10);
-            sidebar.classList.remove('translate-x-full');
-            sidebar.classList.add('translate-x-0');
+            sidebar.classList.remove('-translate-x-full', 'ease-in');
+            sidebar.classList.add('translate-x-0', 'ease-out');
         } else {
-            overlay.classList.remove('opacity-100');
-            sidebar.classList.remove('translate-x-0');
-            sidebar.classList.add('translate-x-full');
+            overlay.classList.remove('opacity-100', 'ease-out');
+            overlay.classList.add('ease-in');
+            sidebar.classList.remove('translate-x-0', 'ease-out');
+            sidebar.classList.add('-translate-x-full', 'ease-in');
             setTimeout(() => overlay.classList.add('hidden'), 300);
         }
     }
 
     if (mobileToggle) {
         mobileToggle.addEventListener('click', () => {
-            const isHidden = sidebar.classList.contains('translate-x-full');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
             toggleMobileSidebar(isHidden);
         });
     }
