@@ -85,9 +85,10 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 4. Organización Escolar (La nueva estructura lógica)
+        // 4. Organización Escolar y Foro
         $this->call([
             SchoolOrganizationSeeder::class,
+            QuestionSeeder::class,
         ]);
 
         echo "🏁 Seeding Maestro completado.\n";
