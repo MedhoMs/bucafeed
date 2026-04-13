@@ -56,11 +56,15 @@ RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 # Configurar Supervisord
 COPY backend/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Permisos para Laravel
+# Permisos para Laravel y entrypoint
+RUN chmod +x /var/www/entrypoint.sh
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Exponer el puerto que Railway espera (8080)
+# Exponer el puerto
 EXPOSE 8080
 
-# Iniciar procesos a través de Supervisord
+# Entrada del contenedor
+ENTRYPOINT ["/var/www/entrypoint.sh"]
+
+# Iniciar procesos a través de Supervisord (se pasa como argumento al entrypoint)
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
