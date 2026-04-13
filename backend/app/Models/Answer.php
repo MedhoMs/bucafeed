@@ -14,6 +14,7 @@ class Answer extends Model
         'user_id',
         'content',
         'reputation',
+        'is_useful',
     ];
 
     public function question()

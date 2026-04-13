@@ -17,6 +17,11 @@ class Tag extends Model
     {
         return $this->belongsToMany(Question::class);
     }
+
+    public function cycles()
+    {
+        return $this->belongsToMany(Cycle::class);
+    }
 }
 
 
