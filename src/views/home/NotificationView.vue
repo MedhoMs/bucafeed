@@ -8,9 +8,9 @@
 </script>
 
 <template>
-    <main class="flex min-h-screen justify-between">
-        <NavBar></NavBar>
-        <section class="text-white w-[1500px] mr-14 mb-4">
+    <NavBar></NavBar>
+    <main class="flex flex-col min-h-screen items-center lg:pl-[300px]">
+        <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4">
             <!-- Filtro de notificaciones -->
             <div id="notificationFilter" class="flex justify-around text-[35px] mt-4">
                 <span>Todo</span>

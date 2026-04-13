@@ -63,9 +63,9 @@
 </script>
 
 <template>
-    <main class="flex min-h-screen justify-between">
-        <NavBar></NavBar>
-        <section class="text-white w-[1500px] mr-14 mb-4">
+    <NavBar></NavBar>
+    <main class="flex min-h-screen justify-between lg:pl-[300px]">
+        <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4">
             <SearchBar></SearchBar>
             <div id="mainBody" class="flex flex-col gap-4 justify-center items-center min-h-[92.9vh]">
                 <div v-if="!questions || questions.length === 0" class="text-white/40 italic py-10">Cargando preguntas del servidor...</div>
