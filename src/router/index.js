@@ -66,7 +66,7 @@ const router = createRouter({
         component: MeetingView
         },
         {
-        path: '/meetingchat',
+        path: '/meetingchat/:id',
         name: 'meetingchat',
         component: MeetingChatView
         },
