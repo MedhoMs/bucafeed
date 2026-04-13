@@ -59,7 +59,7 @@
                             {{-- Mostrar sugeridas o todas si no hay --}}
                             @php $displayTags = $suggestedTags->isNotEmpty() ? $suggestedTags : $allTags->take(15); @endphp
                             @foreach($displayTags as $tag)
-                                <tr class="hover:bg-white/5 transition-colors">
+                                <tr class="hover:bg-white/5 transition-colors tag-row" data-tag-id="{{ $tag->id }}">
                                     <td class="px-4 py-2 text-white font-medium">{{ $tag->name }}</td>
                                     <td class="px-4 py-2">
                                         <select name="teachers[{{ $tag->id }}]" data-tag-id="{{ $tag->id }}" class="teacher-select w-full bg-white/5 border border-white/10 rounded-lg py-1 px-2 text-white/80 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 [color-scheme:dark]">
@@ -73,6 +73,37 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <script>
+                        (function(){
+                            const cycleMap = @json($cycleTagsMap ?? []);
+                            const select = document.getElementById('group-cycle-id');
+                            
+                            function updateSubjects() {
+                                if(!select) return;
+                                const cid = select.value;
+                                const rows = document.querySelectorAll('.tag-row');
+                                rows.forEach(r => {
+                                    if(!cid) {
+                                        r.style.display = ''; // Mostrar genéricas si no hay ciclo seleccionado
+                                    } else {
+                                        const tid = parseInt(r.getAttribute('data-tag-id'));
+                                        if(cycleMap[cid] && cycleMap[cid].includes(tid)) {
+                                            r.style.display = '';
+                                        } else {
+                                            r.style.display = 'none';
+                                            const sel = r.querySelector('.teacher-select');
+                                            if (sel) sel.value = '';
+                                        }
+                                    }
+                                });
+                            }
+                            
+                            if(select) {
+                                select.addEventListener('change', updateSubjects);
+                                updateSubjects(); // Ejecutar al inicio para ocultar si no hay ciclo seleccionado por defecto
+                            }
+                        })();
+                    </script>
                 </div>
             </div>
 
@@ -98,7 +129,7 @@
                         <div>
                             <h4 class="text-white font-black text-lg">{{ $group->name }}</h4>
                             <p class="text-[10px] text-indigo-300 font-bold uppercase tracking-widest mt-1">
-                                {{ $group->cycle ? $group->cycle->name : $center->type }}
+                                {{ $group->cycle ? $group->cycle->name : (\App\Models\EducationalCenter::$niveles_disponibles[$center->type] ?? $center->type) }}
                             </p>
                         </div>
                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -200,14 +231,28 @@
             .catch(error => {
                 console.error('Error:', error);
                 
-                let errorMsg = 'Error al guardar el grupo.';
+                const errorContainer = document.getElementById('group-form-errors');
+                const errorList = errorContainer.querySelector('ul');
+                errorList.innerHTML = '';
+                
+                let errors = [];
                 if (error.errors) {
-                    errorMsg = Object.values(error.errors).flat().join('\n');
+                    errors = Object.values(error.errors).flat();
                 } else if (error.message) {
-                    errorMsg = error.message;
+                    errors = [error.message];
+                } else {
+                    errors = ['Error desconocido al procesar la solicitud.'];
                 }
                 
-                alert(errorMsg);
+                errors.forEach(msg => {
+                    const li = document.createElement('li');
+                    li.innerText = msg;
+                    errorList.appendChild(li);
+                });
+                
+                errorContainer.classList.remove('hidden');
+                errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
                 button.disabled = false;
                 button.innerText = 'Crear Grupo e Iniciar Nivel';
             });

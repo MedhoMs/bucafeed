@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('educational_centers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('type');
+            $table->string('type'); // Nivel (PE, SE, HE...)
+            $table->string('category')->nullable(); // Categoría (CEIP, IES, CIFP...)
             $table->string('location');
             $table->timestamps();
         });

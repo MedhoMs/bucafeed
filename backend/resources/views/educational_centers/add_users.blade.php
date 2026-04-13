@@ -14,6 +14,11 @@
     <form action="{{ route('educational_centers.store_users', $center->id) }}" method="POST" id="addUsersForm" class="space-y-6">
         @csrf
         
+        {{-- Contenedor de errores --}}
+        <div id="add-users-errors" class="hidden mb-4 bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+            <ul class="text-red-400 text-sm list-disc list-inside"></ul>
+        </div>
+        
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Selector de Alumnos -->
             <div class="bg-white/5 border border-white/10 rounded-2xl p-5">

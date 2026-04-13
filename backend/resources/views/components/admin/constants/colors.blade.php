@@ -26,10 +26,9 @@
         /* Gradiente superior della página (Medio) */
         --admin-bg-gradient-via: #10202e;
         
-        /* Fondo de las tarjetas/tablas (SIN BLUR) */
+
         --admin-bg-card: #0f1922;
         
-        /* Fondo de los inputs y dropdowns (SIN BLUR) */
         --admin-bg-input: #0d1b26;
         
         /* --- BORDES Y TEXTOS --- */
@@ -86,8 +85,8 @@
         --admin-badge-white-border: var(--admin-accent-neutral-border);
     }
 
-    /* FIX DEFINITIVO PARA DROPDOWNS BLANCOS */
-    select, option, select:focus, select:active {
+    /* FIX PARA DROPDOWNS BLANCOS */
+    select, option {
         background-color: #0d1b26 !important;
         color: white !important;
         color-scheme: dark !important;
@@ -98,5 +97,4 @@
     .border-admin { border-color: var(--admin-border); }
     .text-admin-main { color: var(--admin-text-main); }
     .text-admin-muted { color: var(--admin-text-muted); }
-    .ring-admin-primary:focus { --tw-ring-color: var(--admin-primary-glow); }
 </style>

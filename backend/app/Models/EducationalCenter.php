@@ -2,57 +2,45 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class EducationalCenter extends Model
+/**
+ * MODELO DE CENTROS EDUCATIVOS
+ */
+class EducationalCenter extends TemplateModel
 {
-    use HasFactory;
-
-    public static $niveles_disponibles = [
-        'PE' => 'Educación Primaria',
-        'SE' => 'Educación Secundaria',
-        'College' => 'Universidad',
-        'FP' => 'Formación Profesional',
-        'TM' => 'Administrador de TelamoNet',
-        'US' => 'Usuario'
-    ];
-
-    public static function getEducationLevels(): array
-    {
-        return self::$niveles_disponibles;
-    }
-
+    /**
+     * Campos asignables.
+     */
     protected $fillable = [
         'name',
-        'type',
         'location',
-        'cycles',
+        'type',
         'icon',
         'banner',
+        'category',
+        'admin_user_id',
     ];
 
-    protected $casts = [
+    /**
+     * Propiedades estáticas de utilidad.
+     */
+    public static $niveles_disponibles = [
+        'PE' => 'Primaria',
+        'SE' => 'Secundaria',
+        'HE' => 'FP Superior',
+        'FP' => 'Formación Profesional',
+        'UR' => 'Universidad',
+        'TM' => 'Administrador',
+        'US' => 'Usuario Externo',
+        'EI' => 'Centro Educativo'
     ];
 
-    public function cycles()
-    {
-        return $this->belongsToMany(Cycle::class, 'educational_center_cycle');
-    }
-
-    public function users()
-    {
-        return $this->hasMany(User::class);
-    }
+    /**
+     * RELACIONES
+     */
 
     public function adminUser()
     {
-        return $this->hasOne(User::class)->where('role', 'EI');
-    }
-
-    public function students()
-    {
-        return $this->hasMany(User::class)->where('role', 'Student');
+        return $this->belongsTo(User::class, 'admin_user_id');
     }
 
     public function teachers()
@@ -60,8 +48,23 @@ class EducationalCenter extends Model
         return $this->hasMany(User::class)->where('role', 'Teacher');
     }
 
+    public function students()
+    {
+        return $this->hasMany(User::class)->where('role', 'Student');
+    }
+
     public function groups()
     {
         return $this->hasMany(Group::class);
+    }
+
+    public function cycles()
+    {
+        return $this->belongsToMany(Cycle::class, 'educational_center_cycle', 'educational_center_id', 'cycle_id');
+    }
+
+    public static function getEducationLevels(): array
+    {
+        return self::$niveles_disponibles;
     }
 }

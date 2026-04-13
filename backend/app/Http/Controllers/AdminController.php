@@ -26,7 +26,7 @@ class AdminController extends Controller
             'totalEvents'       => Event::count(),
             'totalQuestions'    => Question::count(),
             'latestUsers'       => User::latest()->take(6)->get(),
-            'latestQuestions'   => Question::latest()->take(5)->get(),
+            'latestQuestions'   => Question::with(['user', 'answers.user'])->latest()->take(5)->get(),
             'pendingAiReviews'  => 0, //provisional
             'usersWithoutSchool'=> User::where('role', 'student')->whereNull('educational_center_id')->count(),
             'topUsers'          => User::orderBy('reputation', 'desc')->take(3)->get(),
@@ -59,7 +59,7 @@ class AdminController extends Controller
         }
 
         if ($request->filled('institution')) {
-             $query->where('institution_name', $request->institution);
+            $query->where('educational_center_id', $request->institution);
         }
 
         if ($request->filled('level')) {
@@ -86,7 +86,7 @@ class AdminController extends Controller
                 return [$r->code ?? $r->name => $r->name];
             })->toArray(),
             'niveles_disponibles' => EducationalCenter::$niveles_disponibles,
-            'instituciones_existentes' => array_combine($this->getInstitucionesExistentes(), $this->getInstitucionesExistentes()),
+            'centros' => EducationalCenter::orderBy('name')->pluck('name', 'id')->toArray(),
             'ciclos_disponibles' => Cycle::orderBy('name')->pluck('name', 'id')->toArray()
         ];
 

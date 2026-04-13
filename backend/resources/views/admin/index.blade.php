@@ -155,26 +155,28 @@
             </div>
             <div class="flex flex-col gap-4">
                 @forelse($latestQuestions ?? [] as $question)
-                    <div class="border-b border-white/10 pb-4 last:border-0 last:pb-0 flex items-start justify-between gap-3">
-                        <div class="flex gap-3 min-w-0">
-                            {{-- User Avatar (Logo) --}}
-                            <x-admin.user-avatar :user="$question->user" size="w-8 h-8" :showName="false" class="shrink-0" />
-                            
-                            <div class="min-w-0">
-                                <p class="text-white text-sm font-bold truncate">{{ $question->user->name }}</p>
-                                <p class="text-white/80 text-xs line-clamp-2 leading-snug mt-1" title="{{ $question->title }}">{{ $question->title }}</p>
+                    <div class="border-b border-white/10 pb-4 last:border-0 last:pb-0">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex gap-3 min-w-0">
+                                {{-- User Avatar (Logo) --}}
+                                <x-admin.user-avatar :user="$question->user" size="w-8 h-8" :showName="false" class="shrink-0" />
+                                
+                                <div class="min-w-0">
+                                    <p class="text-white text-sm font-bold truncate">{{ $question->user->name }}</p>
+                                    <p class="text-white/80 text-xs line-clamp-2 leading-snug mt-1" title="{{ $question->title }}">{{ $question->title }}</p>
+                                </div>
                             </div>
-                        </div>
 
-                        {{-- Lupa (Details Link) --}}
-                        <a href="#" 
-                           data-url="{{ route('question.show', $question->id) }}" 
-                           data-load="modal" 
-                           data-title="Detalle de Pregunta"
-                           class="p-2 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 rounded-lg border border-cyan-500/20 transition-all shrink-0" 
-                           title="Ver pregunta y respuestas">
-                           <x-admin.constants.icons name="search" />
-                        </a>
+                            {{-- Lupa (Details Link) --}}
+                            <a href="#" 
+                               data-url="{{ route('question.show', $question->id) }}" 
+                               data-load="modal" 
+                               data-title="Detalle de Pregunta"
+                               class="p-2 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 rounded-lg border border-cyan-500/20 transition-all shrink-0 mt-1" 
+                               title="Ver pregunta y respuestas">
+                               <x-admin.constants.icons name="search" />
+                            </a>
+                        </div>
                     </div>
                 @empty
                     <p class="text-white/70 text-sm">Sin datos aún.</p>

@@ -5,50 +5,25 @@ namespace App\Http\Controllers;
 use App\Models\Answer;
 use Illuminate\Http\Request;
 
-class AnswerController extends Controller
+class AnswerController extends TemplateController
 {
-    public function index()
+    protected $model = Answer::class;
+    protected $viewPath = 'answers';
+    protected $with = ['user', 'question'];
+
+    protected function getFormFields($answer = null)
     {
-        return Answer::with(['user', 'question'])->get();
+        return [
+            ['name' => 'content', 'type' => 'textarea', 'label' => 'Respuesta', 'value' => old('content', $answer->content ?? ''), 'required' => true, 'full' => true],
+            ['name' => 'is_useful', 'type' => 'select', 'label' => '¿Es útil?', 'options' => [0 => 'No', 1 => 'Sí'], 'selectedValue' => old('is_useful', $answer->is_useful ?? 0)],
+        ];
     }
 
-    public function store(Request $request)
+    protected function rules($answer = null)
     {
-        $validated = $request->validate([
-            'question_id' => 'required|exists:questions,id',
-            'user_id' => 'required|exists:users,id',
+        return [
             'content' => 'required|string',
-        ]);
-
-        $answer = Answer::create($validated);
-        
-        // Optionally increment answer count on question
-        $answer->question->increment('answer_count');
-
-        return $answer;
-    }
-
-    public function show(Answer $answer)
-    {
-        return $answer->load(['user', 'question']);
-    }
-
-    public function update(Request $request, Answer $answer)
-    {
-        $validated = $request->validate([
-            'content' => 'string',
-        ]);
-
-        $answer->update($validated);
-
-        return $answer;
-    }
-
-    public function destroy(Answer $answer)
-    {
-        $answer->question->decrement('answer_count');
-        $answer->delete();
-        return response()->noContent();
+        ];
     }
 
     public function markAsUseful(Answer $answer)

@@ -15,6 +15,10 @@
         'Ciclos' => 'hidden md:table-cell',
         'Usuarios' => 'hidden sm:table-cell text-center'
     ]"
+    :filterLabels="[
+        'location' => $locations ?? [],
+        'type' => $types ?? [],
+    ]"
 >
     <x-slot:filters>
         @if(!empty($locations))
