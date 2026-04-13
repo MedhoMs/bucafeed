@@ -7,6 +7,7 @@
     'headers' => [],
     'models' => null, {{-- Varias para paginación --}}
     'searchPlaceholder' => 'Buscar...',
+    'filterLabels' => [], {{-- Mapeo de valores a nombres legibles --}}
 ])
 
 <div class="p-4 sm:p-8 min-h-screen text-white bg-gradient-to-b from-[var(--admin-bg-gradient-start)] via-[var(--admin-bg-gradient-via)] to-[var(--admin-bg-main)]">
@@ -72,6 +73,27 @@
                              <a href="{{ url()->current() }}?{{ http_build_query(request()->except('search')) }}" data-load="section" class="hover:text-white"><x-admin.constants.icons name="delete" /></a>
                         </div>
                     @endif
+
+                    @foreach($activeFilters as $key => $value)
+                        @if($value)
+                            @php
+                                $friendlyKeys = [
+                                    'type' => 'Tipo',
+                                    'role' => 'Rol',
+                                    'level' => 'Nivel',
+                                    'institution' => 'Centro',
+                                    'cycle' => 'Ciclo'
+                                ];
+                                $displayKey = $friendlyKeys[$key] ?? ucfirst($key);
+                                $displayValue = $filterLabels[$key][$value] ?? ($filterLabels[$value] ?? ($filterLabels[$key] ?? $value));
+                            @endphp
+                            <div class="px-3 py-1.5 bg-white/10 border border-white/20 text-white/90 rounded-full flex items-center gap-2">
+                                <span class="text-white/40 uppercase font-bold text-[9px]">{{ $displayKey }}:</span>
+                                <span class="font-medium">{{ $displayValue }}</span>
+                                <a href="{{ url()->current() }}?{{ http_build_query(request()->except($key)) }}" data-load="section" class="hover:text-white"><x-admin.constants.icons name="delete" /></a>
+                            </div>
+                        @endif
+                    @endforeach
 
                     <a href="{{ url()->current() }}" data-load="section" class="px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white/60 hover:text-white rounded-full transition-all flex items-center gap-2">
                         <x-admin.constants.icons name="close" class="!w-3 !h-3" />

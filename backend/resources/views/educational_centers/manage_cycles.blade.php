@@ -21,7 +21,7 @@
                         <option value="">-- Seleccionar Ciclo Existente --</option>
                         @foreach($globalCycles as $gc)
                             @if(!$center->cycles->contains($gc->id))
-                                <option value="{{ $gc->id }}">{{ $gc->name }} ({{ $gc->level ?? '?' }})</option>
+                                <option value="{{ $gc->id }}">{{ $gc->name }}</option>
                             @endif
                         @endforeach
                     </select>
@@ -63,8 +63,8 @@
         @forelse($center->cycles as $cycle)
             <div class="group flex items-center justify-between p-4 bg-white/5 border border-transparent hover:border-white/10 hover:bg-white/[0.07] rounded-2xl transition-all">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center border border-white/10">
-                        <span class="text-[10px] font-bold text-blue-400">{{ $cycle->level}}</span>
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center border border-white/10 text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 9l-10 -4l-10 4l10 4l10 -4v6" /><path d="M6 10.6v5.4a6 6 0 0 0 12 0v-5.4" /></svg>
                     </div>
                     <span class="font-bold text-sm tracking-wide">{{ $cycle->name }}</span>
                 </div>
@@ -111,7 +111,7 @@
 
     window.removeCenterCycle = function(id, button) {
         const container = document.getElementById('modal-body');
-        if (!confirm('¿Seguro que deseas desvincular este ciclo de este centro? (Seguirá existiendo en el registro global)')) return;
+        // Eliminado el confirm por petición del usuario
         
         button.disabled = true;
         const formData = new FormData();

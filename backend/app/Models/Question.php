@@ -2,28 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class Question extends Model
+/**
+ * MODELO DE PREGUNTAS / FORO
+ */
+class Question extends TemplateModel
 {
-    use HasFactory;
-
+    /**
+     * Campos asignables.
+     */
     protected $fillable = [
-        'user_id',
         'title',
         'content',
-        'is_ai_validated',
-        'answer_count',
+        'user_id',
+        'image',
     ];
 
-    protected $casts = [
-        'is_ai_validated' => 'boolean',
-    ];
+    /**
+     * RELACIONES
+     */
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'question_tag');
     }
 
     public function answers()
@@ -31,18 +36,19 @@ class Question extends Model
         return $this->hasMany(Answer::class);
     }
 
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class);
-    }
-
+    /**
+     * Relación opcional con validaciones de IA
+     */
     public function aiValidations()
     {
         return $this->hasOne(AiValidation::class);
     }
 }
+<<<<<<< HEAD
 
 
 
 
 
+=======
+>>>>>>> 3fa5096 (Merge pull request #74 from MedhoMs/feat/preguntas-refactor-backend)

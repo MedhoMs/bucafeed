@@ -5,26 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 
-class TagController extends Controller
+class TagController extends TemplateController
 {
-    public function index()
+    protected $model = Tag::class;
+    protected $viewPath = 'tags';
+
+    protected function getFormFields($tag = null)
     {
-        return Tag::all();
+        return [
+            ['name' => 'name', 'label' => 'Nombre del Tag', 'placeholder' => 'Ej: Matemáticas', 'value' => old('name', $tag->name ?? ''), 'required' => true, 'full' => true]
+        ];
     }
 
-    public function store(Request $request)
+    protected function rules($tag = null)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|unique:tags,name',
-        ]);
-
-        return Tag::create($validated);
-    }
-
-    public function destroy(Tag $tag)
-    {
-        $tag->delete();
-        return response()->noContent();
+        return [
+            'name' => 'required|string|max:100|unique:tags,name,' . ($tag->id ?? 'NULL'),
+        ];
     }
 }
 

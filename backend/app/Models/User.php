@@ -63,6 +63,18 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'student_teacher', 'teacher_id', 'student_id');
     }
 
+    public function groupsAsStudent()
+    {
+        return $this->belongsToMany(Group::class, 'group_student', 'user_id', 'group_id');
+    }
+
+    public function groupsAsTeacher()
+    {
+        return $this->belongsToMany(Group::class, 'group_tag_teacher', 'user_id', 'group_id')
+                    ->withPivot('tag_id')
+                    ->distinct();
+    }
+
     /**
      * Get the attributes that should be cast.
      *

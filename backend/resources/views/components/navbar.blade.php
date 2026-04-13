@@ -58,15 +58,12 @@
     <x-admin.constants.icons name="messages" />
 </x-navbar-link>
 
-@if(app()->environment('local'))
-    <x-navbar-link title="Volver" to="http://localhost:5173/home">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="5" y1="12" x2="19" y2="12" /><polyline points="5 12 11 18" /><polyline points="5 12 11 6" /></svg>
-    </x-navbar-link>
-@else
-        <x-navbar-link title="Volver" to="/home">
-            <x-admin.constants.icons name="arrow-left" />
-        </x-navbar-link>
-@endif
+@php
+    $frontendUrl = env('FRONTEND_URL', 'http://localhost:5173');
+@endphp
+<x-navbar-link title="Volver" to="{{ rtrim($frontendUrl, '/') }}/home">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="5" y1="12" x2="19" y2="12" /><polyline points="5 12 11 18" /><polyline points="5 12 11 6" /></svg>
+</x-navbar-link>
 
 
 </nav>

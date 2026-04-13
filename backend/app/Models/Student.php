@@ -12,8 +12,14 @@ class Student extends Model
     protected $fillable = [
         'user_id',
         'educational_center_id',
+        'cycle_id',
         'course',
     ];
+
+    public function cycle()
+    {
+        return $this->belongsTo(Cycle::class);
+    }
 
     public function user()
     {
