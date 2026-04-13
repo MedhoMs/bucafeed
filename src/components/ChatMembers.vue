@@ -20,7 +20,7 @@ const { t } = useTranslations(); // Variable para llamar al archivo de traduccio
 
             <div class="flex h-0.5 w-full bg-white shrink-0"></div>
 
-            <p class="text-2xl font-bold self-start mt-5 mb-2 shrink-0">Alumnos</p>
+             <p class="text-2xl font-bold self-start mt-5 mb-2 shrink-0">Alumnos</p>
 
             <div class="flex flex-col mr-auto w-full flex-1 overflow-y-auto pb-4 pr-2">
                 <div v-for="n in 11" :key="n"

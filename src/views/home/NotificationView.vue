@@ -7,7 +7,7 @@
 
 <template>
     <NavBar></NavBar>
-    <main class="flex flex-col min-h-screen items-center">
+    <main class="flex flex-col min-h-screen items-center lg:pl-[300px]">
         <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4">
             <!-- Filtro de notificaciones -->
             <div id="notificationFilter" class="flex lg:justify-between justify-end gap-5 items-center lg:text-[35px] mt-4">

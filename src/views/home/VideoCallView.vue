@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row">
+  <div class="flex flex-row lg:pl-[300px]">
     <NavBar />
     <div class="video-call-view p-4 flex-1">
       <div class="mb-4 text-white">

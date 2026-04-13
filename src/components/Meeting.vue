@@ -1,3 +1,13 @@
+<script setup>
+    const props = defineProps({
+        id: Number,
+        name: String,
+        teacher: String,
+        schedule: String,
+        description: String
+    })
+</script>
+
 <template>
     <div class="
         w-[325px]
@@ -10,20 +20,18 @@
         border-[rgba(255,255,255,0.12)]
     ">
 
-        <p class="text-2xl font-bold">Nombre del meeting</p>
+        <p class="text-2xl font-bold">{{ props.name }}</p>
         <div class="flex mt-4 mb-4">
             <p class="font-bold mr-2">Profesor:</p>
-            <p>Juanra</p>
+            <p>{{ props.teacher }}</p>
         </div>
 
         <div class="flex mt-2 mb-4">
             <p class="font-bold mr-2">Horario:</p>
-            <p>00:00</p>
+            <p>{{ props.schedule }}</p>
         </div>
 
-        <p class="h-36 overflow-y-auto">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod. Lorem
-            ipsum dolor sit amet consectetur adipisicing elit. Nostrum, enim obcaecati debitis temporibus officia vitae
-            quam laudantium unde quo illum nisi accusantium in, eos praesentium dicta fuga nesciunt itaque quia.</p>
+        <p class="h-36 overflow-y-auto">{{ props.description }}</p>
             
         <button class="
             bg-[#0a2d4e]
