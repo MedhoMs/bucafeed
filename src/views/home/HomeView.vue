@@ -42,13 +42,13 @@
 </script>
 
 <template>
+    <NavBar></NavBar>
     <main class="flex min-h-screen justify-between">
-        <NavBar></NavBar>
-        <section class="text-white w-[1500px] mr-14 mb-4">
+        <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4">
             <SearchBar></SearchBar>
             <div id="mainBody" class="flex flex-col gap-4 justify-center items-center min-h-[92.9vh]">
                 <!-- Post 1 -->
-                <div class="post-card">
+                <div class="post-card lg:w-[1500px] w-[350px]">
                     <h2 class="post-title">TITULO DEL POST 1</h2>
                     <div class="post-footer">
                         <div class="responses-badge">
@@ -60,7 +60,7 @@
                 </div>
 
                 <!-- Post 2 -->
-                <div class="post-card">
+                <div class="post-card lg:w-[1500px] w-[350px]">
                     <h2 class="post-title">TITULO DEL POST 2</h2>
                     <div class="post-footer">
                         <div class="responses-badge">
@@ -72,7 +72,7 @@
                 </div>
 
                 <!-- Post 3 -->
-                <div class="post-card">
+                <div class="post-card lg:w-[1500px] w-[350px]">
                     <h2 class="post-title">TITULO DEL POST 3</h2>
                     <div class="post-footer">
                         <div class="responses-badge">
@@ -84,7 +84,7 @@
                 </div>
 
                 <!-- Post 4 -->
-                <div class="post-card">
+                <div class="post-card lg:w-[1500px] w-[350px]">
                     <h2 class="post-title">TITULO DEL POST 4</h2>
                     <div class="post-footer">
                         <div class="responses-badge">
@@ -95,7 +95,7 @@
                     </div>
                 </div>
 
-                <div class="post-card">
+                <div class="post-card lg:w-[1500px] w-[350px]">
                     <h2 class="post-title">TITULO DEL POST 4</h2>
                     <div class="post-footer">
                         <div class="responses-badge">
@@ -106,7 +106,7 @@
                     </div>
                 </div>
 
-                <div class="post-card">
+                <div class="post-card lg:w-[1500px] w-[350px]">
                     <h2 class="post-title">TITULO DEL POST 4</h2>
                     <div class="post-footer">
                         <div class="responses-badge">
@@ -117,7 +117,7 @@
                     </div>
                 </div>
 
-                <div class="post-card">
+                <div class="post-card lg:w-[1500px] w-[350px]">
                     <h2 class="post-title">TITULO DEL POST 4</h2>
                     <div class="post-footer">
                         <div class="responses-badge">
@@ -128,7 +128,7 @@
                     </div>
                 </div>
 
-                <div class="post-card">
+                <div class="post-card lg:w-[1500px] w-[350px]">
                     <h2 class="post-title">TITULO DEL POST 4</h2>
                     <div class="post-footer">
                         <div class="responses-badge">
@@ -139,7 +139,7 @@
                     </div>
                 </div>
 
-                <div class="post-card">
+                <div class="post-card lg:w-[1500px] w-[350px]">
                     <h2 class="post-title">TITULO DEL POST 4</h2>
                     <div class="post-footer">
                         <div class="responses-badge">
@@ -158,7 +158,6 @@
     .post-card {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
         border: 1px solid rgba(255, 255, 255, 0.12);
-        width: 1500px;
         border-radius: 20px;
         padding: 1.75rem;
         position: relative;
