@@ -51,7 +51,8 @@ abstract class TemplateController extends Controller
             return response(base64_decode($data[1]))->header('Content-Type', 'image/png');
         }
 
-        return response()->file(storage_path('app/public/' . $content));
+        $cleanPath = ltrim($content, '/');
+        return response()->file(storage_path('app/public/' . $cleanPath));
     }
 
     /**
@@ -176,8 +177,8 @@ abstract class TemplateController extends Controller
                 $path = 'uploads/' . strtolower(class_basename($this->model));
                 if ($field === 'profile_picture') $path = 'uploads/profiles';
                 
-                $file->move(public_path($path), $filename);
-                $data[$field] = '/' . $path . '/' . $filename;
+                $file->storeAs('public/' . $path, $filename);
+                $data[$field] = $path . '/' . $filename;
             }
         }
 
