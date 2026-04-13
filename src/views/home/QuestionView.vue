@@ -48,9 +48,9 @@
 </script>
 
 <template>
-    <main class="flex flex-row justify-between min-h-screen">
-        <NavBar></NavBar>
-        <section class="text-white w-[1580px] mr-4 mb-8">
+    <NavBar></NavBar>
+    <main class="flex min-h-screen justify-between lg:pl-[300px]">
+        <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4">
             <SearchBar></SearchBar>
             <div id="mainTrending" class="flex flex-col items-center mt-6 min-h-[90vh]">
                 

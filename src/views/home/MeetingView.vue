@@ -42,13 +42,13 @@
 </script>
 
 <template>
-    <main class="flex min-h-screen justify-between">
-        <NavBar></NavBar>
-        <section class="text-white w-full ml-20 py-10 pr-14 flex flex-col min-h-screen">
+    <NavBar></NavBar>
+    <main class="flex min-h-screen justify-between lg:pl-[300px]">
+        <section class="text-white lg:w-[1500px] w-[350px] mt-6 mx-auto lg:mr-14 mb-4 flex flex-col min-h-screen">
             <p class="text-[40px] font-bold shrink-0">Charlas Disponibles</p>
             <SearchBar :meetings="meetings" @update:filtered="filteredMeetings = $event" class="shrink-0" />
             
-            <div v-if="filteredMeetings.length > 0" class="grid grid-cols-4 gap-4 mt-10">
+            <div v-if="filteredMeetings.length > 0" class="grid grid-cols-4 gap-4">
                 <Meeting
                     v-for="meeting in filteredMeetings"
                     :key="meeting.id"

@@ -71,11 +71,9 @@ watch(() => route.params.id, (newId) => {
 </script>
 
 <template>
-    <main class="flex flex-row justify-between min-h-screen">
-        <NavBar />
-
-        <!-- Sección central: Perfil -->
-        <div class="w-[1580px] flex flex-col mr-4">
+    <NavBar></NavBar>
+    <main class="flex min-h-screen justify-between lg:pl-[300px]">
+        <div class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4 flex flex-col">
 
             <section class="bg-[#15202b80] text-white flex-1">
 
