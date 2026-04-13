@@ -5,9 +5,14 @@
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-blue-500/20">
                     {{ substr($center->name, 0, 1) }}
                 </div>
-                <h2 class="text-3xl font-extrabold tracking-tight">{{ $center->name }}</h2>
+                <h2 class="text-3xl font-extrabold tracking-tight">
+                    {{ $center->name }} 
+                    @if($center->category)
+                        <span class="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-1 rounded-md ml-2 border border-blue-500/30 align-middle uppercase tracking-widest">{{ $center->category }}</span>
+                    @endif
+                </h2>
             </div>
-            <p class="text-white/50 font-medium">Ficha detallada del centro educativo</p>
+            <p class="text-white/50 font-medium">Ficha detallada del centro educativo en {{ $center->location }}</p>
         </div>
         <div class="flex gap-2">
             <button class="btn-modal px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-bold transition-colors" data-url="{{ route('educational_centers.edit', $center->id) }}" data-title="Editar Centro" data-load="modal">Editar</button>

@@ -8,23 +8,31 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
 
-class Event extends Model
+class Event extends TemplateModel
 {
-    use HasFactory;
-
-    protected $appends = ['image_url'];
-
+    /**
+     * Campos asignables.
+     */
     protected $fillable = [
-        'educational_center_id',
         'title',
         'description',
-        'image',
         'location',
         'date',
         'start_time',
         'end_time',
-        'target_role'
+        'educational_center_id',
+        'target_role',
+        'image',
     ];
+
+    /**
+     * RELACIONES
+     */
+
+    /**
+     * Campos que se incluyen siempre en JSON
+     */
+    protected $appends = ['image_url', 'center_name'];
 
     public function educationalCenter()
     {
@@ -33,7 +41,18 @@ class Event extends Model
 
     public function participants()
     {
-        return $this->belongsToMany(User::class, 'event_participants');
+        return $this->belongsToMany(User::class, 'event_participants')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Nombre del centro para la API
+     */
+    protected function centerName(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->educationalCenter?->name ?? 'N/A'
+        );
     }
 
     /**
@@ -50,7 +69,6 @@ class Event extends Model
 
                 // For everything else (Base64 or internal /uploads paths), 
                 // use the streaming API route for consistency and performance.
-                // We add a timestamp as a query parameter to avoid browser caching issues after updates.
                 return route('api.event.image', ['id' => $this->id, 't' => $this->updated_at?->timestamp]);
             },
         );

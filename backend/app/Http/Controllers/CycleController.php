@@ -5,59 +5,41 @@ namespace App\Http\Controllers;
 use App\Models\Cycle;
 use Illuminate\Http\Request;
 
-class CycleController extends Controller
+class CycleController extends TemplateController
 {
-    public function index(Request $request)
+    protected $model = Cycle::class;
+    protected $viewPath = 'admin.global_cycles';
+
+    protected function extraFilters($query, Request $request)
     {
-        $query = Cycle::orderBy('name');
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%$search%")
-                  ->orWhere('level', 'like', "%$search%");
-            });
-        }
-
         if ($request->filled('level')) {
             $query->where('level', $request->level);
         }
-
-        $cycles = $query->paginate(10);
-        $levels = Cycle::whereNotNull('level')->pluck('level', 'level')->unique()->toArray();
-        
-        return view('admin.global_cycles.index', [
-            'cycles' => $cycles,
-            'levels' => $levels,
-            'total' => Cycle::count() // Necesario para el contador superior
-        ]);
+        return $query;
     }
 
-    public function store(Request $request)
+    protected function indexExtras(Request $request)
     {
-        $request->validate(['name' => 'required|string|unique:cycles,name']);
-        
-        Cycle::create([
-            'name' => $request->input('name', 'General'),
-            'area' => $request->input('area'),
-            'level' => $request->input('level'),
-        ]);
-
-        if ($request->ajax()) {
-            return $this->index($request);
-        }
-        return back();
+        return [
+            'levels' => Cycle::whereNotNull('level')->pluck('level', 'level')->unique()->toArray(),
+            'total' => Cycle::count()
+        ];
     }
 
-    public function destroy(Request $request, $id)
+    protected function getFormFields($cycle = null)
     {
-        $cycle = Cycle::findOrFail($id);
-        $cycle->delete();
+        return [
+            ['name' => 'name', 'label' => 'Nombre del Ciclo', 'placeholder' => 'Ej: 4º ESO', 'value' => old('name', $cycle->name ?? ''), 'required' => true],
+            ['name' => 'level', 'type' => 'select', 'label' => 'Nivel Académico', 'options' => \App\Models\EducationalCenter::$niveles_disponibles, 'selectedValue' => old('level', $cycle->level ?? ''), 'required' => true],
+            ['name' => 'area', 'label' => 'Área / Familia', 'placeholder' => 'Ej: Informática y Comunicaciones', 'value' => old('area', $cycle->area ?? '')]
+        ];
+    }
 
-        if ($request->ajax()) {
-            $cycles = Cycle::orderBy('name')->get();
-            return view('admin.global_cycles.index', compact('cycles'));
-        }
-        return back();
+    protected function rules($cycle = null)
+    {
+        return [
+            'name' => 'required|string|max:255|unique:cycles,name,' . ($cycle->id ?? 'NULL'),
+            'level' => 'required|string'
+        ];
     }
 }
