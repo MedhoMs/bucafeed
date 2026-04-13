@@ -39,15 +39,8 @@ if ! grep -q "APP_KEY=base64" .env; then
     php artisan key:generate --force
 fi
 
-# 3.5 Ejecutar migraciones (SIEMPRE en despliegue)
-# echo "Limpiando base de datos..."
-# php artisan db:wipe --force
-
-echo "Ejecutando migraciones..."
-php artisan migrate --force
-
-# echo "Ejecutando seeders..."
-# php artisan db:seed --force
+echo "Refrescando base de datos y ejecutando seeders (migrate:fresh --seed)..."
+php artisan migrate:fresh --seed --force
 
 # 4. Instalar API solo si no existe el archivo de rutas
 if [ ! -f "routes/api.php" ]; then
