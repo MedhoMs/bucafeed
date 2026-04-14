@@ -1,12 +1,11 @@
 @import 'tailwindcss';
 
 /*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
+  All global/reset styles go inside @layer base so that
+  Tailwind utilities (@layer utilities) can override them.
+  In CSS cascade layers, unlayered CSS beats ALL layers,
+  which is why putting * { margin:0 } outside a layer
+  was breaking every spacing utility (px-5, py-3, mb-5, etc.)
 */
 @layer base {
   *,
@@ -15,6 +14,27 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  #app {
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(
+      180deg,
+      #326465,
+      #1d2e3e
+    );
+  }
+
+  :root {
+    --btn-primary-bg: #0891b2;
+    --btn-primary-hover: #06b6d4;
+    --btn-primary-shadow: rgba(8, 145, 178, 0.2);
   }
 }
 
@@ -29,47 +49,5 @@
     box-shadow 0.2s ease;
   &:hover {
     background-color: var(--btn-primary-hover);
-  }
-}
-
-@layer utilities {
-  /* Tus estilos personalizados aquí */
-  * {
-    margin: 0;
-    padding: 0;
-  }
-
-  #app {
-    font-family: 'Montserrat', sans-serif;
-    min-height: 100vh;
-    background: -webkit-linear-gradient(
-      180deg,
-      #367fdd,
-      #255683,
-      #000000
-    ); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(
-      180deg,
-      #367fdd,
-      #255683,
-      #000000
-    ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-    background: -webkit-linear-gradient(
-      180deg,
-      #326465,
-      #1d2e3e
-    ); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(
-      180deg,
-      #326465,
-      #1d2e3e
-    ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  }
-
-  :root {
-    --btn-primary-bg: #0891b2; /* cyan-600 */
-    --btn-primary-hover: #06b6d4; /* cyan-500 */
-    --btn-primary-shadow: rgba(8, 145, 178, 0.2);
   }
 }
