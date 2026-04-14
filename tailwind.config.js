@@ -4,8 +4,5 @@ export default {
     "./src/**/*.{vue,js,ts}",
     "./backend/resources/views/**/*.blade.php"
   ],
-  theme: {
-    extend: {},
-  },
   plugins: [],
 }
