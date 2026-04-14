@@ -17,7 +17,7 @@
             <div>
                 <label class="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-2 px-1 text-left">Vincular del Registro Global</label>
                 <div class="flex gap-3">
-                    <select name="cycle_id" class="flex-1 bg-[#0a141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:border-blue-500/50 outline-none">
+                    <select name="cycle_id" class="flex-1 bg-[#0a141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:border-blue-500/50 outline-hidden">
                         <option value="">-- Seleccionar Ciclo Existente --</option>
                         @foreach($globalCycles as $gc)
                             @if(!$center->cycles->contains($gc->id))
@@ -45,7 +45,7 @@
                     type="text" 
                     name="new_cycle" 
                     placeholder="Escribe el nombre del ciclo si no está en la lista" 
-                    class="flex-1 bg-[#0a141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:border-blue-500/50 outline-none"
+                    class="flex-1 bg-[#0a141d] border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:border-blue-500/50 outline-hidden"
                 >
                 <button 
                     type="button" 

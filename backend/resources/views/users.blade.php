@@ -16,7 +16,7 @@
     <div class="max-w-7xl mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
             <div>
-                <h1 class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+                <h1 class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-emerald-400">
                     Usuarios en Base de Datos
                 </h1>
                 <p class="text-slate-400 mt-2">Gestión y visualización de usuarios registrados.</p>

@@ -108,9 +108,9 @@ watch(() => route.params.id, (newId) => {
 
                 <!-- Pestañas -->
                 <div class="pestanas flex justify-around border-t border-b border-[#2a4a5a] py-2.5 mt-2">
-                    <span class="cursor-pointer px-3 py-2 rounded transition-colors hover:bg-[#1e2936] text-[#8b98a5]">{{ t.profile.posts }}</span>
-                    <span class="cursor-pointer px-3 py-2 rounded transition-colors hover:bg-[#1e2936] text-[#8b98a5]">{{ t.profile.photos }}</span>
-                    <span class="cursor-pointer px-3 py-2 rounded transition-colors hover:bg-[#1e2936] text-[#8b98a5]">{{ t.profile.likes }}</span>
+                    <span class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-[#1e2936] text-[#8b98a5]">{{ t.profile.posts }}</span>
+                    <span class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-[#1e2936] text-[#8b98a5]">{{ t.profile.photos }}</span>
+                    <span class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-[#1e2936] text-[#8b98a5]">{{ t.profile.likes }}</span>
                 </div>
 
                 <!-- Contenido de publicaciones -->

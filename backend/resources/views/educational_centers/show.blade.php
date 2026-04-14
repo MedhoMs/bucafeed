@@ -2,7 +2,7 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-white/10 pb-6">
         <div>
             <div class="flex items-center gap-3 mb-1">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-blue-500/20">
+                <div class="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-blue-500/20">
                     {{ substr($center->name, 0, 1) }}
                 </div>
                 <h2 class="text-3xl font-extrabold tracking-tight">
@@ -91,7 +91,7 @@
 
         <!-- Columna Derecha: Estadísticas Rápidas -->
         <div class="space-y-6">
-             <div class="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-3xl p-6 shadow-xl shadow-blue-900/40 relative overflow-hidden">
+             <div class="bg-linear-to-br from-blue-600 to-cyan-600 rounded-3xl p-6 shadow-xl shadow-blue-900/40 relative overflow-hidden">
                 <div class="relative z-10">
                     <h4 class="text-white/80 text-xs font-bold uppercase tracking-widest mb-4">Acción Sugerida</h4>
                     <p class="text-lg font-bold text-white mb-6">Asigna alumnos a sus respectivos tutores.</p>

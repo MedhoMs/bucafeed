@@ -14,7 +14,7 @@
         h-[375px] 
         rounded-[20px] 
         p-5 relative 
-        bg-gradient-to-br 
+        bg-linear-to-br 
         from-[rgba(255,255,255,0.08)] to-[rgba(255,255,255,0.04)] 
         border 
         border-[rgba(255,255,255,0.12)]

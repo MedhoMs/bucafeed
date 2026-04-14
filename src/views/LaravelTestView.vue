@@ -41,12 +41,12 @@ onMounted(() => {
   <div class="p-8 max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold mb-6 text-gray-800">Prueba de Conexión Full-Stack</h1>
     
-    <div class="mb-6 bg-white p-4 rounded-lg border shadow-sm">
+    <div class="mb-6 bg-white p-4 rounded-lg border shadow-xs">
       <label class="block text-sm font-medium text-gray-700 mb-2">URL del API Backend:</label>
       <div class="flex gap-2">
-        <input v-model="apiUrl" type="text" class="flex-1 border rounded px-3 py-2 text-sm" />
+        <input v-model="apiUrl" type="text" class="flex-1 border rounded-sm px-3 py-2 text-sm" />
         <button @click="checkConnection" :disabled="status === 'loading'" 
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50">
+                class="bg-blue-600 text-white px-4 py-2 rounded-sm hover:bg-blue-700 disabled:opacity-50">
           {{ status === 'loading' ? 'Probando...' : 'Reintentar' }}
         </button>
       </div>
@@ -55,13 +55,13 @@ onMounted(() => {
       </p>
     </div>
 
-    <div v-if="status === 'error'" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6">
+    <div v-if="status === 'error'" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-sm mb-6">
       <p class="font-bold">Error de Red:</p>
       <p>{{ errorDetails }}</p>
       
-      <div class="mt-6 p-4 bg-red-100 rounded border border-red-200">
+      <div class="mt-6 p-4 bg-red-100 rounded-sm border border-red-200">
         <p class="font-bold text-red-800 mb-2">Comandos sugeridos para el Backend:</p>
-        <pre class="bg-black text-green-400 p-3 rounded text-xs overflow-x-auto">
+        <pre class="bg-black text-green-400 p-3 rounded-sm text-xs overflow-x-auto">
 # Instalar dependencias
 docker-compose exec backend composer install
 
@@ -77,12 +77,12 @@ docker-compose exec backend php artisan config:cache</pre>
     </div>
 
     <div v-if="status === 'success'" class="space-y-4">
-      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded shadow-sm">
+      <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-sm shadow-xs">
         <h2 class="font-semibold text-blue-800">Respuesta de Laravel:</h2>
         <p class="text-lg mt-1">{{ message }}</p>
       </div>
 
-      <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-sm">
+      <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-sm shadow-xs">
         <h2 class="font-semibold text-green-800">Estado de MySQL:</h2>
         <p class="text-lg mt-1">{{ dbStatus }}</p>
       </div>

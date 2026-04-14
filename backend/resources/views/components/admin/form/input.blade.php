@@ -19,10 +19,10 @@
         @if($required) <span class="text-red-500">*</span> @endif
     </label>
     <input {{ $disabled }} {{ $required ? 'required' : '' }} @if($type !== 'file') value="{{ $value }}" @endif type="{{ $type }}" name="{{ $name }}" 
-        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 [color-scheme:dark]
+        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 scheme-dark
         @if($type === 'file')
             file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:tracking-widest file:uppercase
-            file:bg-[var(--admin-accent-1-bg)] file:text-[var(--admin-accent-1)] hover:file:bg-[var(--admin-accent-1-border)] cursor-pointer text-white/50
+            file:bg-(--admin-accent-1-bg) file:text-(--admin-accent-1) hover:file:bg-(--admin-accent-1-border) cursor-pointer text-white/50
         @endif" 
         id="{{ $inputId }}" placeholder="{{ $placeholder }}">
     @error($name)

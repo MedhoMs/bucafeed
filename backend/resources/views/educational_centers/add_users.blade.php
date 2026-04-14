@@ -32,7 +32,7 @@
                 <div class="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scroll">
                     @forelse($availableStudents as $student)
                         <label class="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-black/20 hover:bg-white/5 cursor-pointer transition-colors">
-                            <input type="checkbox" name="students[]" value="{{ $student->id }}" class="w-4 h-4 rounded border-white/20 bg-black/50 text-green-500 focus:ring-green-500/50">
+                            <input type="checkbox" name="students[]" value="{{ $student->id }}" class="w-4 h-4 rounded-sm border-white/20 bg-black/50 text-green-500 focus:ring-green-500/50">
                             <div>
                                 <p class="text-sm font-medium text-white">{{ $student->name }} {{ $student->last_name }}</p>
                                 <p class="text-xs text-white/50">{{ $student->email }} {{ $student->education_level ? '('. $student->education_level .')' : '' }}</p>
@@ -56,7 +56,7 @@
                 <div class="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scroll">
                     @forelse($availableTeachers as $teacher)
                         <label class="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-black/20 hover:bg-white/5 cursor-pointer transition-colors">
-                            <input type="checkbox" name="teachers[]" value="{{ $teacher->id }}" class="w-4 h-4 rounded border-white/20 bg-black/50 text-purple-500 focus:ring-purple-500/50">
+                            <input type="checkbox" name="teachers[]" value="{{ $teacher->id }}" class="w-4 h-4 rounded-sm border-white/20 bg-black/50 text-purple-500 focus:ring-purple-500/50">
                             <div>
                                 <p class="text-sm font-medium text-white">{{ $teacher->name }} {{ $teacher->last_name }}</p>
                                 <p class="text-xs text-white/50">{{ $teacher->email }} {{ $teacher->education_level ? '('. $teacher->education_level .')' : '' }}</p>

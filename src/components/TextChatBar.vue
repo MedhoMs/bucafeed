@@ -22,7 +22,7 @@
                 v-model="message"
                 type="text" 
                 id="chatBar" 
-                class="ml-3 w-full outline-none text-base border-none bg-transparent flex-1 text-[#e7e9ea] placeholder-[#8b98a5] placeholder-font-normal" 
+                class="ml-3 w-full outline-hidden text-base border-none bg-transparent flex-1 text-[#e7e9ea] placeholder-[#8b98a5] placeholder-font-normal" 
                 :placeholder="t.nav.search || 'Escribir un mensaje'"
                 @keydown.enter="sendMessage"
             />

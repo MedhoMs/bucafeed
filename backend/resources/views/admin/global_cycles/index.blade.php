@@ -1,7 +1,7 @@
 <div class="p-6 text-white" id="global-cycles-container">
     <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
         <div>
-            <h2 class="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Registro Global de Ciclos</h2>
+            <h2 class="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400">Registro Global de Ciclos</h2>
             <p class="text-xs text-white/40 mt-1 uppercase tracking-widest font-bold">Base de datos de módulos compartidos</p>
         </div>
         <div class="px-4 py-1.5 bg-purple-500/10 text-purple-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-purple-500/20">
@@ -20,7 +20,7 @@
                 name="search" 
                 value="{{ request('search') }}"
                 placeholder="Buscar por nombre o nivel..." 
-                class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all border-dashed"
+                class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all border-dashed"
             >
         </form>
         @if(!empty($levels))
@@ -36,13 +36,13 @@
     <!-- Lista del Registro -->
     <div class="space-y-3 max-h-[350px] overflow-y-auto pr-2 custom-scroll">
         @forelse($cycles as $cycle)
-            <div class="group flex items-center justify-between p-4 bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/[0.07] rounded-2xl transition-all duration-300">
+            <div class="group flex items-center justify-between p-4 bg-white/3 border border-white/5 hover:border-white/20 hover:bg-white/[0.07] rounded-2xl transition-all duration-300">
                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 flex items-center justify-center border border-white/10 group-hover:border-blue-500/30 transition-all">
+                    <div class="w-10 h-10 rounded-xl bg-linear-to-br from-blue-500/10 to-purple-500/10 flex items-center justify-center border border-white/10 group-hover:border-blue-500/30 transition-all">
                         <span class="text-[10px] font-black text-white/60 group-hover:text-blue-400">{{ $cycle->level ?? '?' }}</span>
                     </div>
                     <div>
-                        <p class="font-bold text-sm tracking-wide text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-blue-400">{{ $cycle->name }}</p>
+                        <p class="font-bold text-sm tracking-wide text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-linear-to-r group-hover:from-white group-hover:to-blue-400">{{ $cycle->name }}</p>
                         @if($cycle->area)
                             <p class="text-[10px] text-white/30 font-medium italic mt-0.5">{{ $cycle->area }}</p>
                         @endif

@@ -22,7 +22,7 @@
                     @foreach($event->participants as $participant)
                         <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                                <div class="w-8 h-8 rounded-full bg-linear-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
                                     {{ substr($participant->name, 0, 1) }}
                                 </div>
                                 <div class="flex flex-col">

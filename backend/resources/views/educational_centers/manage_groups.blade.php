@@ -32,8 +32,8 @@
                     <label class="block text-sm font-medium text-white/70 mb-1">Alumnos del Centro</label>
                     <div id="students-checkbox-list" class="bg-[#1a1c23]/50 border border-white/5 rounded-xl p-3 max-h-[180px] overflow-y-auto custom-scroll space-y-2">
                         @foreach($center->students as $student)
-                            <label class="flex items-center gap-2 cursor-pointer hover:bg-white/5 p-1 rounded transition-colors student-checkbox-label">
-                                <input type="checkbox" name="students[]" value="{{ $student->id }}" class="rounded bg-white/10 border-white/20 text-indigo-500 student-checkbox">
+                            <label class="flex items-center gap-2 cursor-pointer hover:bg-white/5 p-1 rounded-sm transition-colors student-checkbox-label">
+                                <input type="checkbox" name="students[]" value="{{ $student->id }}" class="rounded-sm bg-white/10 border-white/20 text-indigo-500 student-checkbox">
                                 <span class="text-xs text-white/80">{{ $student->name }} {{ $student->last_name }}</span>
                             </label>
                         @endforeach
@@ -62,7 +62,7 @@
                                 <tr class="hover:bg-white/5 transition-colors tag-row" data-tag-id="{{ $tag->id }}">
                                     <td class="px-4 py-2 text-white font-medium">{{ $tag->name }}</td>
                                     <td class="px-4 py-2">
-                                        <select name="teachers[{{ $tag->id }}]" data-tag-id="{{ $tag->id }}" class="teacher-select w-full bg-white/5 border border-white/10 rounded-lg py-1 px-2 text-white/80 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 [color-scheme:dark]">
+                                        <select name="teachers[{{ $tag->id }}]" data-tag-id="{{ $tag->id }}" class="teacher-select w-full bg-white/5 border border-white/10 rounded-lg py-1 px-2 text-white/80 focus:outline-hidden focus:ring-1 focus:ring-indigo-500/50 scheme-dark">
                                             <option value="">-- No impartida --</option>
                                             @foreach($center->teachers as $teacher)
                                                 <option value="{{ $teacher->id }}">{{ $teacher->name }} {{ $teacher->last_name }}</option>
@@ -158,7 +158,7 @@
                             <span class="text-white/40 font-bold uppercase block">Asignaturas</span>
                             <div class="flex flex-wrap gap-1 mt-1">
                                 @foreach($group->subjectsWithTeachers as $subject)
-                                    <span class="px-1.5 py-0.5 bg-white/5 rounded text-white/60 border border-white/5">{{ $subject->name }}</span>
+                                    <span class="px-1.5 py-0.5 bg-white/5 rounded-sm text-white/60 border border-white/5">{{ $subject->name }}</span>
                                 @endforeach
                             </div>
                         </div>

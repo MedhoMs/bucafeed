@@ -56,7 +56,7 @@ const tendencias = [
           <img 
             :src="sugerencia.avatar" 
             :alt="sugerencia.nombre" 
-            class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+            class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs"
           >
         </div>
         

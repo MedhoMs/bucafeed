@@ -23,7 +23,7 @@
 <div class="flex items-center gap-3 {{ $class }}">
     {{-- Avatar Circle --}}
     <div 
-        class="{{ $size }} rounded-full bg-gradient-to-br from-indigo-500 to-cyan-600 flex items-center justify-center text-white font-bold shadow-md overflow-hidden btn-modal cursor-pointer hover:scale-110 active:scale-95 transition-transform border-2 border-white/20 shrink-0"
+        class="{{ $size }} rounded-full bg-linear-to-br from-indigo-500 to-cyan-600 flex items-center justify-center text-white font-bold shadow-md overflow-hidden btn-modal cursor-pointer hover:scale-110 active:scale-95 transition-transform border-2 border-white/20 shrink-0"
         data-url="{{ $profileUrl }}"
         data-title="Perfil de {{ $name }}"
         data-load="modal"

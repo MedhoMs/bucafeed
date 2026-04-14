@@ -68,7 +68,7 @@
                     </router-link>
 
                     <!-- Tarjeta de la Pregunta Principal -->
-                    <div class="post-card text-left bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 rounded-2xl p-7 relative mb-8">
+                    <div class="post-card text-left bg-linear-to-br from-white/5 to-white/2 border border-white/10 rounded-2xl p-7 relative mb-8">
                         <div class="flex gap-4 items-center mb-4 border-b border-white/5 pb-4">
                             <router-link :to="'/profile/' + (question.user_id || question.user?.id)" class="shrink-0 hover:scale-105 transition-transform">
                                 <img :src="getAvatar(question.user)" alt="icono" class="w-12 h-12 rounded-full border border-white/20 shadow-lg object-cover bg-[#15202b]" />
@@ -84,7 +84,7 @@
                         <p class="text-white/80 text-base leading-relaxed whitespace-pre-wrap">{{ question.content }}</p>
                         
                         <div class="mt-6 pt-4 border-t border-white/5 flex gap-2">
-                             <div v-for="tag in question.tags" :key="tag.id" class="px-3 py-1 rounded-full bg-[#179cf0]/10 text-[#179cf0] border border-[#179cf0]/20 text-xs font-bold shadow-sm">
+                             <div v-for="tag in question.tags" :key="tag.id" class="px-3 py-1 rounded-full bg-[#179cf0]/10 text-[#179cf0] border border-[#179cf0]/20 text-xs font-bold shadow-xs">
                                   {{ tag.name }}
                              </div>
                         </div>
@@ -103,7 +103,7 @@
                         
                         <div v-for="ans in question.answers" :key="ans.id" class="bg-black/40 border border-white/5 rounded-xl p-5 flex gap-4 items-start relative hover:bg-black/60 transition-colors">
                             <router-link :to="'/profile/' + (ans.user_id || ans.user?.id)" class="shrink-0 mt-1 hover:scale-105 transition-transform">
-                                <img :src="getAvatar(ans.user)" alt="icono" class="w-10 h-10 rounded-full border border-white/10 shadow object-cover bg-[#15202b]" />
+                                <img :src="getAvatar(ans.user)" alt="icono" class="w-10 h-10 rounded-full border border-white/10 shadow-sm object-cover bg-[#15202b]" />
                             </router-link>
                             <div class="flex-1 min-w-0">
                                 <div class="flex justify-between items-center mb-2">

@@ -20,7 +20,7 @@
                 name="search" 
                 value="{{ request('search') }}"
                 placeholder="{{ $searchPlaceholder }}" 
-                class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-hidden focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
             >
             @if(request('search'))
                 <a href="{{ url()->current() }}" class="absolute inset-y-0 right-0 pr-4 flex items-center text-white/20 hover:text-white transition-colors">
