@@ -21,7 +21,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     @foreach($students as $student)
                         <label class="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 cursor-pointer transition-all group">
-                            <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" class="rounded bg-white/10 border-white/20 text-indigo-500 focus:ring-0">
+                            <input type="checkbox" name="student_ids[]" value="{{ $student->id }}" class="rounded-sm bg-white/10 border-white/20 text-indigo-500 focus:ring-0">
                             <div class="flex flex-col">
                                 <span class="text-white font-bold text-sm">{{ $student->name }} {{ $student->last_name }}</span>
                                 <span class="text-white/30 text-[10px]">{{ $student->email }}</span>

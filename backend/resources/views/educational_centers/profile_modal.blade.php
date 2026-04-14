@@ -6,7 +6,7 @@
             <img src="{{ !empty($center->banner) ? $center->banner : asset('uploads/centers/default_banner.png') }}"
                 alt="banner"
                 class="w-full h-[240px] object-cover brightness-75" />
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#15202b]"></div>
+            <div class="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-[#15202b]"></div>
         </div>
         <img src="{{ !empty($center->icon) ? $center->icon : asset('logoTelamon.png') }}"
             alt="icono"

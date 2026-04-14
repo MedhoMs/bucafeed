@@ -11,7 +11,7 @@
 
     <div class="space-y-3 max-h-[450px] overflow-y-auto pr-2 custom-scroll">
         @forelse($users as $user)
-            <div class="group flex items-center justify-between p-4 bg-white/[0.03] border border-white/5 hover:border-white/20 hover:bg-white/[0.07] rounded-2xl transition-all duration-300">
+            <div class="group flex items-center justify-between p-4 bg-white/3 border border-white/5 hover:border-white/20 hover:bg-white/[0.07] rounded-2xl transition-all duration-300">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-white/30 transition-all overflow-hidden">
                         @if($user->profile_picture)

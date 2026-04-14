@@ -74,10 +74,10 @@
 
                 <label class="font-bold mt-[30px]" for="username-register-form" id="username-register-label">{{ t.login.email }}</label>
                 <span class="text-xs">{{ t.login.emailSpan }}</span>
-                <input type="text" class="outline-none border-0 border-b-[1px] border-black mb-[30px] p-0.5 text-[20px]" maxlength="50" id="username-register-form" name="username-register-form" :placeholder="t.login.placeholderEmail" required>
+                <input type="text" class="outline-hidden border-0 border-b border-black mb-[30px] p-0.5 text-[20px]" maxlength="50" id="username-register-form" name="username-register-form" :placeholder="t.login.placeholderEmail" required>
 
                 <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.login.password }}</label>
-                <input type="password" class="outline-none border-0 border-b-[1px] border-black mb-[30px] p-0.5 text-[20px]" maxlength="20" id="password-register-form" name="password-register-form" :placeholder="t.login.placeholderPassword" required>
+                <input type="password" class="outline-hidden border-0 border-b border-black mb-[30px] p-0.5 text-[20px]" maxlength="20" id="password-register-form" name="password-register-form" :placeholder="t.login.placeholderPassword" required>
 
                 <button id="loginButton" class="text-center">
                     <ButtonForm :value="t.login.submit"></ButtonForm>

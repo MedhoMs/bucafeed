@@ -312,10 +312,10 @@
                 <section id="allRolesForm" class="forms flex flex-col mb-32">
                     <label class="font-bold mt-[30px]" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
                     <span class=" text-xs">{{ t.register.emailSpan }}</span>
-                    <input type="text" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="email-register-form" name="email-register-form" :placeholder="t.register.placeholderEmail" required>
+                    <input type="text" class="allRolesInput outline-hidden border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="email-register-form" name="email-register-form" :placeholder="t.register.placeholderEmail" required>
                     <p hidden class="absolute top-[110px] left-[135px] font-semibold">Email inválido</p>
                     <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
-                    <input type="password" class="allRolesInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
+                    <input type="password" class="allRolesInput outline-hidden border-b border-black mb-[30px] p-[2px] text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
                     <p hidden class="absolute top-[195px] left-[110px] text-[15px] font-semibold">Al menos 8 carácteres</p>
                     <label class="font-bold" for="who-register-form" id="who-register-label">¿Quién eres?</label>
                     <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
@@ -328,13 +328,13 @@
 
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="student-name" id="studentName">Nombre</label>
-                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="name-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="name-register-form" :placeholder="t.register.placeholderEmail" required></input>
                     <p hidden class="absolute top-[90px] left-[30px] font-semibold">El nombre debe tener entre 5 y 12 letras</p>
                     <label class="font-bold" for="student-name" id="studentName">Apellidos</label>
-                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="surname-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="surname-register-form" :placeholder="t.register.placeholderEmail" required></input>
                     <p hidden class="absolute top-[180px] left-[100px] text-[15px] font-semibold">Deben haber 2 apellidos</p>
                     <label class="font-bold" for="student-name" id="studentName">DNI/NIE</label>
-                    <input type="text" class="studentTeacheEuInput outline-none border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="dni-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="dni-register-form" :placeholder="t.register.placeholderEmail" required></input>
                     <p hidden class="absolute top-[265px] left-[125px] text-[15px] font-semibold">DNI/NIE inválido</p>
                 </section>
 
@@ -354,7 +354,7 @@
 
                 <section id="validateEmailForm" class="forms hidden flex-col items-center mb-16">
                     <p id="validateEmailText" class="mb-5 text-center font-bold">Hemos enviado un código de verificación a tu correo</p>
-                    <input type="text" class="validateEmailInput outline-none border-b border-black mb-[30px] p-[2px] w-32 text-center text-xl" maxlength="6" autocomplete="off" id="code-register-form" name="code-register-form" required></input>
+                    <input type="text" class="validateEmailInput outline-hidden border-b border-black mb-[30px] p-[2px] w-32 text-center text-xl" maxlength="6" autocomplete="off" id="code-register-form" name="code-register-form" required></input>
                 </section>
 
                 <button id="registerButton" class="absolute bottom-[80px] right-12 text-center hidden">

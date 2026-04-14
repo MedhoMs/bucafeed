@@ -17,7 +17,7 @@
         @endphp
         
         <div 
-            class="{{ $imageSize }} {{ $shape }} bg-gradient-to-br {{ $gradient }} flex items-center justify-center text-white font-bold text-sm shadow-md overflow-hidden shrink-0 {{ $modalClasses }}"
+            class="{{ $imageSize }} {{ $shape }} bg-linear-to-br {{ $gradient }} flex items-center justify-center text-white font-bold text-sm shadow-md overflow-hidden shrink-0 {{ $modalClasses }}"
             @if($modalUrl)
                 data-url="{{ $modalUrl }}"
                 data-title="{{ $modalTitle }}"

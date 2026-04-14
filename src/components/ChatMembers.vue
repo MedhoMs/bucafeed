@@ -13,7 +13,7 @@ const { t } = useTranslations(); // Variable para llamar al archivo de traduccio
                 <p class="text-2xl font-bold self-start mb-2">Profesor</p>
                 <div class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer">
                     <img src="../assets/logo/logoTelamon.png" alt=""
-                        class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm mr-2 shrink-0" />
+                        class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
                     <p>Profesor</p>
                 </div>
             </div>
@@ -26,7 +26,7 @@ const { t } = useTranslations(); // Variable para llamar al archivo de traduccio
                 <div v-for="n in 11" :key="n"
                     class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer">
                     <img src="../assets/logo/logoTelamon.png" alt=""
-                        class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm mr-2 shrink-0" />
+                        class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
                     <p>Alumno</p>
                 </div>
             </div>

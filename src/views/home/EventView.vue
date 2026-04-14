@@ -25,7 +25,7 @@
     <NavBar></NavBar>
     <main class="flex min-h-screen justify-between lg:pl-[300px]">
         <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4 pt-8 pb-10">
-            <h1 class="text-[44px] font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40 tracking-tight leading-none mb-2">
+            <h1 class="text-[44px] font-extrabold bg-clip-text text-transparent bg-linear-to-r from-white to-white/40 tracking-tight leading-none mb-2">
                 Eventos Disponibles
             </h1>
             <SearchBar></SearchBar>

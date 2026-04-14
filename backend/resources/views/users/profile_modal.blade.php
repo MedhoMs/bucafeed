@@ -6,7 +6,7 @@
             <img src="{{ $user->banner ?? 'https://estaticos-cdn.prensaiberica.es/clip/3bffd319-f839-4e57-9ccb-b95ec474f104_source-aspect-ratio_default_0.jpg' }}"
                 alt="banner"
                 class="w-full h-[260px] object-cover brightness-75" />
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#15202b]"></div>
+            <div class="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-[#15202b]"></div>
         </div>
         <img src="{{ $user->profile_picture ?? asset('logoTelamon.png') }}"
             alt="icono"

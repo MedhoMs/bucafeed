@@ -1,11 +1,5 @@
-/*Esta hoja de estilos es global, principalmente afectará a todas las vistas, cada vista tendra su style scoped propio*/
-
-* {
-    margin: 0;
-    padding: 0;
-}
-
-#app {
-    font-family: "Montserrat", sans-serif;
-    min-height: 100vh;
-}
+/*
+  Estilos globales movidos a main.css dentro de @layer base.
+  Este archivo se mantiene vacío para no duplicar ni pisar
+  las utilidades de Tailwind.
+*/

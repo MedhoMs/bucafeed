@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="p-8 min-h-screen text-white bg-gradient-to-b from-[#1a3a3a] via-[#10202e] to-[#0a141d]">
+<div class="p-8 min-h-screen text-white bg-linear-to-b from-[#1a3a3a] via-[#10202e] to-[#0a141d]">
 
     {{-- Header --}}
     <div class="mb-10">
@@ -241,8 +241,8 @@
                 <div class="roles-banner h-full flex flex-wrap items-center justify-between gap-4 px-6 py-4 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden relative">
 
                     {{-- Fondo decorativo sutil --}}
-                    <div class="absolute inset-0 bg-gradient-to-r from-white/[0.04] via-white/[0.02] to-transparent pointer-events-none"></div>
-                    <div class="absolute right-0 top-0 h-full w-64 bg-gradient-to-l from-white/[0.03] to-transparent pointer-events-none"></div>
+                    <div class="absolute inset-0 bg-linear-to-r from-white/4 via-white/2 to-transparent pointer-events-none"></div>
+                    <div class="absolute right-0 top-0 h-full w-64 bg-linear-to-l from-white/3 to-transparent pointer-events-none"></div>
 
                     {{-- Icono + texto --}}
                     <div class="flex items-center gap-4 relative">
@@ -282,8 +282,8 @@
                 <div class="roles-banner h-full flex flex-wrap items-center justify-between gap-4 px-6 py-4 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 overflow-hidden relative">
 
                     {{-- Fondo decorativo sutil --}}
-                    <div class="absolute inset-0 bg-gradient-to-r from-red-500/[0.04] via-red-500/[0.02] to-transparent pointer-events-none"></div>
-                    <div class="absolute right-0 top-0 h-full w-64 bg-gradient-to-l from-red-500/[0.03] to-transparent pointer-events-none"></div>
+                    <div class="absolute inset-0 bg-linear-to-r from-red-500/4 via-red-500/2 to-transparent pointer-events-none"></div>
+                    <div class="absolute right-0 top-0 h-full w-64 bg-linear-to-l from-red-500/3 to-transparent pointer-events-none"></div>
 
                     {{-- Icono + texto --}}
                     <div class="flex items-center gap-4 relative">
