@@ -7,9 +7,11 @@ RUN npm ci
 
 COPY . .
 
-# Build arg for API URL (set via Railway env vars)
+# Build args for API URLs (set via Railway env vars)
 ARG VITE_API_URL
+ARG VITE_BACKEND_URL
 ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 
 RUN npm run build
 
