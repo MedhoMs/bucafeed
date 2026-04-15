@@ -9,7 +9,7 @@
 
 @php
     $selectedValues = is_array($selectedValue) ? $selectedValue : ($selectedValue ? [$selectedValue] : []);
-    
+
     // Si viene de redicción por error de validación (old)
     $oldValues = old($name);
     if ($oldValues !== null) {
@@ -22,12 +22,12 @@
         {{ $label }}
         @if($required) <span class="text-red-500">*</span> @endif
     </label>
-    
-    <div id="checkbox-container-{{ $name }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 p-4 bg-white/5 border border-white/10 rounded-2xl max-h-[200px] overflow-y-auto custom-scroll">
+
+    <div id="checkbox-container-{{ $name }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 p-4 bg-white/5 border border-white/10 rounded-2xl max-h-50 overflow-y-auto custom-scroll">
         @foreach($options as $val => $text)
             <label class="flex items-center gap-3 cursor-pointer group p-1 select-none">
                 <div class="relative flex items-center shrink-0">
-                    <input type="checkbox" name="{{ $name }}[]" value="{{ $val }}" 
+                    <input type="checkbox" name="{{ $name }}[]" value="{{ $val }}"
                         {{ in_array((string)$val, array_map('strval', $selectedValues)) ? 'checked' : '' }}
                         {{ $disabled }}
                         class="peer w-5 h-5 opacity-0 absolute cursor-pointer">

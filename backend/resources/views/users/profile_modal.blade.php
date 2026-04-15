@@ -5,12 +5,12 @@
         <div class="relative overflow-hidden rounded-t-xl">
             <img src="{{ $user->banner ?? 'https://estaticos-cdn.prensaiberica.es/clip/3bffd319-f839-4e57-9ccb-b95ec474f104_source-aspect-ratio_default_0.jpg' }}"
                 alt="banner"
-                class="w-full h-[260px] object-cover brightness-75" />
+                class="w-full h-65 object-cover brightness-75" />
             <div class="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-[#15202b]"></div>
         </div>
         <img src="{{ $user->profile_picture ?? asset('logoTelamon.png') }}"
             alt="icono"
-            class="absolute w-[130px] h-[130px] rounded-full border-4 border-[#15202b] bg-[#15202b] object-cover bottom-[-65px] left-8 shadow-xl ring-2 ring-sky-500/20"/>
+            class="absolute w-32.5 h-32.5 rounded-full border-4 border-[#15202b] bg-[#15202b] object-cover -bottom-16.25 left-8 shadow-xl ring-2 ring-sky-500/20"/>
     </div>
 
     <div class="px-8 pb-8">

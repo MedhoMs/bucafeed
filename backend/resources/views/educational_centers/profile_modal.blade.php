@@ -5,14 +5,14 @@
         <div class="relative overflow-hidden rounded-t-xl">
             <img src="{{ !empty($center->banner) ? $center->banner : asset('uploads/centers/default_banner.png') }}"
                 alt="banner"
-                class="w-full h-[240px] object-cover brightness-75" />
+                class="w-full h-60 object-cover brightness-75" />
             <div class="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-[#15202b]"></div>
         </div>
         <img src="{{ !empty($center->icon) ? $center->icon : asset('logoTelamon.png') }}"
             alt="icono"
-            class="absolute w-[130px] h-[130px] rounded-3xl border-4 border-[#15202b] bg-[#15202b] object-cover bottom-[-65px] left-8 shadow-xl ring-2 ring-emerald-500/20 shadow-emerald-500/10"/>
-        
-        <div class="absolute bottom-[-50px] right-8">
+            class="absolute w-32.5 h-32.5 rounded-3xl border-4 border-[#15202b] bg-[#15202b] object-cover -bottom-16.25 left-8 shadow-xl ring-2 ring-emerald-500/20 shadow-emerald-500/10"/>
+
+        <div class="absolute -bottom-12.5 right-8">
             <button
                 class="btn-modal flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 text-sm font-bold hover:bg-emerald-500/20 transition-all cursor-pointer border border-emerald-500/30 shadow-lg shadow-emerald-500/5 group"
                 data-url="{{ route('educational_centers.edit', $center->id) }}"
@@ -82,7 +82,7 @@
         </div>
 
         {{-- CONTENIDO TABS --}}
-        <div class="mt-6 tab-content-center min-h-[200px]" id="content-cycles">
+        <div class="mt-6 tab-content-center min-h-50" id="content-cycles">
             @if($center->cycles->count() > 0)
                 <div class="grid grid-cols-1 gap-2">
                     @foreach($center->cycles as $cycle)
@@ -96,7 +96,7 @@
                 </div>
             @else
                 <div class="bg-white/5 p-8 rounded-2xl border border-white/10 text-center">
-                    <p class="text-white/30 text-sm italic italic">Este centro no tiene ciclos formativos registrados.</p>
+                    <p class="text-white/30 text-sm italic">Este centro no tiene ciclos formativos registrados.</p>
                 </div>
             @endif
         </div>
@@ -116,7 +116,7 @@
                 </div>
             @else
                 <div class="bg-white/5 p-8 rounded-2xl border border-white/10 text-center">
-                    <p class="text-white/30 text-sm italic italic">No hay docentes vinculados a este centro.</p>
+                    <p class="text-white/30 text-sm italic">No hay docentes vinculados a este centro.</p>
                 </div>
             @endif
         </div>
@@ -129,14 +129,14 @@
                             <img src="{{ $student->profile_picture ?? asset('logoTelamon.png') }}" class="w-10 h-10 rounded-full object-cover">
                             <div class="flex flex-col">
                                 <span class="text-white text-xs font-semibold">{{ $student->name }}</span>
-                                <span class="text-white/40 text-[10px] truncate max-w-[120px]">{{ $student->email }}</span>
+                                <span class="text-white/40 text-[10px] truncate max-w-30">{{ $student->email }}</span>
                             </div>
                         </div>
                     @endforeach
                 </div>
             @else
                 <div class="bg-white/5 p-8 rounded-2xl border border-white/10 text-center">
-                    <p class="text-white/30 text-sm italic italic">No hay alumnos matriculados en este centro.</p>
+                    <p class="text-white/30 text-sm italic">No hay alumnos matriculados en este centro.</p>
                 </div>
             @endif
         </div>
