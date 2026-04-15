@@ -49,8 +49,8 @@
 
 <template>
     <NavBar></NavBar>
-    <main class="flex min-h-screen justify-between lg:pl-[300px]">
-        <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4">
+    <main class="flex min-h-screen justify-between lg:pl-75">
+        <section class="text-white lg:w-375 w-87.5 mx-auto lg:mr-14 mb-4">
             <SearchBar></SearchBar>
             <div id="mainTrending" class="flex flex-col items-center mt-6 min-h-[90vh]">
                 
@@ -60,7 +60,7 @@
                     La pregunta no existe o fue eliminada.
                 </div>
 
-                <div v-else class="w-full max-w-[1500px]">
+                <div v-else class="w-full max-w-375">
                     <!-- Botón Volver -->
                     <router-link to="/home" class="inline-flex items-center gap-2 mb-6 text-[#179cf0] hover:text-white transition-colors bg-[#179cf0]/10 hover:bg-[#179cf0]/20 px-4 py-2 rounded-full text-sm font-bold w-fit">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>

@@ -17,7 +17,7 @@
 
 <template>
     <div class="flex my-3 w-full">
-        <div class="flex flex-row items-center border border-white rounded-[20px] p-[15px] w-full">
+        <div class="flex items-center border border-white rounded-[20px] p-3.75 w-50 lg:w-full">
             <input 
                 v-model="message"
                 type="text" 

@@ -13,12 +13,12 @@
 
     <form action="{{ route('educational_centers.store_users', $center->id) }}" method="POST" id="addUsersForm" class="space-y-6">
         @csrf
-        
+
         {{-- Contenedor de errores --}}
         <div id="add-users-errors" class="hidden mb-4 bg-red-500/10 border border-red-500/20 rounded-lg p-4">
             <ul class="text-red-400 text-sm list-disc list-inside"></ul>
         </div>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Selector de Alumnos -->
             <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
@@ -28,8 +28,8 @@
                     </div>
                     <h3 class="text-lg font-bold text-white">Alumnos</h3>
                 </div>
-                
-                <div class="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scroll">
+
+                <div class="space-y-2 max-h-75 overflow-y-auto pr-2 custom-scroll">
                     @forelse($availableStudents as $student)
                         <label class="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-black/20 hover:bg-white/5 cursor-pointer transition-colors">
                             <input type="checkbox" name="students[]" value="{{ $student->id }}" class="w-4 h-4 rounded-sm border-white/20 bg-black/50 text-green-500 focus:ring-green-500/50">
@@ -52,8 +52,8 @@
                     </div>
                     <h3 class="text-lg font-bold text-white">Docentes</h3>
                 </div>
-                
-                <div class="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scroll">
+
+                <div class="space-y-2 max-h-75 overflow-y-auto pr-2 custom-scroll">
                     @forelse($availableTeachers as $teacher)
                         <label class="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-black/20 hover:bg-white/5 cursor-pointer transition-colors">
                             <input type="checkbox" name="teachers[]" value="{{ $teacher->id }}" class="w-4 h-4 rounded-sm border-white/20 bg-black/50 text-purple-500 focus:ring-purple-500/50">
@@ -80,10 +80,10 @@
     window.submitAddUsers = function(button) {
         const form = document.getElementById('addUsersForm');
         if (!form) return;
-        
+
         const formData = new FormData(form);
         const modalContent = document.getElementById('modal-content');
-        
+
         button.disabled = true;
         const originalText = button.innerHTML;
         button.innerHTML = 'Guardando...';
@@ -95,10 +95,10 @@
         })
         .then(response => response.text())
         .then(html => {
-            if (modalContent) { 
-                modalContent.innerHTML = html; 
-            } else { 
-                window.location.reload(); 
+            if (modalContent) {
+                modalContent.innerHTML = html;
+            } else {
+                window.location.reload();
             }
         })
         .catch(err => {

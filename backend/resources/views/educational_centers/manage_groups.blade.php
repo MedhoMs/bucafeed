@@ -2,7 +2,7 @@
     {{-- Formulario de Creación / Edición --}}
     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 relative overflow-hidden">
         <div id="form-edit-indicator" class="hidden absolute top-0 left-0 w-full h-1 bg-indigo-500 animate-pulse"></div>
-        
+
         <div class="flex items-center justify-between mb-4">
             <h3 id="form-title" class="text-white font-bold flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 2v2" /></svg>
@@ -12,25 +12,25 @@
                 Limpiar y Crear Nuevo
             </button>
         </div>
-        
+
         <form id="add-group-form" action="{{ route('educational_centers.store_group', $center->id) }}" method="POST" class="space-y-6">
             @csrf
             <input type="hidden" id="editing-group-id" value="">
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {{-- Nombre y Ciclo --}}
                 <div class="space-y-4">
                     <x-admin.form.input name="name" id="group-name-input" label="Nombre del Grupo/Nivel" placeholder="Ej: 1º ESO A, 2º DAW..." required />
-                    
+
                     <x-admin.form.select name="cycle_id" id="group-cycle-id" label="Ciclo Asociado (Opcional)" :options="$center->cycles->pluck('name', 'id')->toArray()" placeholder="Seleccionar ciclo si aplica..." />
-                    
+
                     <x-admin.form.select name="tutor_id" id="group-tutor-id" label="Tutor del Grupo" :options="$center->teachers->pluck('name', 'id')->toArray()" placeholder="Seleccionar tutor..." />
                 </div>
 
                 {{-- Selección de Alumnos --}}
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-white/70 mb-1">Alumnos del Centro</label>
-                    <div id="students-checkbox-list" class="bg-[#1a1c23]/50 border border-white/5 rounded-xl p-3 max-h-[180px] overflow-y-auto custom-scroll space-y-2">
+                    <div id="students-checkbox-list" class="bg-[#1a1c23]/50 border border-white/5 rounded-xl p-3 max-h-45 overflow-y-auto custom-scroll space-y-2">
                         @foreach($center->students as $student)
                             <label class="flex items-center gap-2 cursor-pointer hover:bg-white/5 p-1 rounded-sm transition-colors student-checkbox-label">
                                 <input type="checkbox" name="students[]" value="{{ $student->id }}" class="rounded-sm bg-white/10 border-white/20 text-indigo-500 student-checkbox">
@@ -77,7 +77,7 @@
                         (function(){
                             const cycleMap = @json($cycleTagsMap ?? []);
                             const select = document.getElementById('group-cycle-id');
-                            
+
                             function updateSubjects() {
                                 if(!select) return;
                                 const cid = select.value;
@@ -97,7 +97,7 @@
                                     }
                                 });
                             }
-                            
+
                             if(select) {
                                 select.addEventListener('change', updateSubjects);
                                 updateSubjects(); // Ejecutar al inicio para ocultar si no hay ciclo seleccionado por defecto
@@ -121,7 +121,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /><path d="M12 7v5l2 2" /></svg>
             Grupos Configurados ({{ $center->groups->count() }})
         </h3>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @foreach($center->groups as $group)
                 <div class="p-4 bg-white/5 border border-white/10 rounded-2xl relative group hover:border-indigo-500/30 transition-all">
@@ -184,7 +184,7 @@
             submitBtn.innerText = 'Crear Grupo e Iniciar Nivel';
             resetBtn.classList.add('hidden');
             indicator.classList.add('hidden');
-            
+
             // Limpiar selección de alumnos
             document.querySelectorAll('.student-checkbox').forEach(cb => cb.checked = false);
             // Limpiar selección de profesores
@@ -203,7 +203,7 @@
             fetch(form.action, {
                 method: 'POST',
                 body: formData,
-                headers: { 
+                headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'
                 }
@@ -230,11 +230,11 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                
+
                 const errorContainer = document.getElementById('group-form-errors');
                 const errorList = errorContainer.querySelector('ul');
                 errorList.innerHTML = '';
-                
+
                 let errors = [];
                 if (error.errors) {
                     errors = Object.values(error.errors).flat();
@@ -243,16 +243,16 @@
                 } else {
                     errors = ['Error desconocido al procesar la solicitud.'];
                 }
-                
+
                 errors.forEach(msg => {
                     const li = document.createElement('li');
                     li.innerText = msg;
                     errorList.appendChild(li);
                 });
-                
+
                 errorContainer.classList.remove('hidden');
                 errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                
+
                 button.disabled = false;
                 button.innerText = 'Crear Grupo e Iniciar Nivel';
             });
@@ -274,7 +274,7 @@
             .then(response => response.json())
             .then(group => {
                 resetGroupForm();
-                
+
                 form.action = `{{ url("admin/educational-centers") }}/{{ $center->id }}/update-group/${groupId}`;
                 editingId.value = group.id;
                 formTitle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg> Editando Grupo: ${group.name}`;
@@ -317,7 +317,7 @@
             // Sin confirmación por petición del usuario
             const container = document.getElementById('modal-body');
             button.disabled = true;
-            
+
             const formData = new FormData();
             formData.append('_token', '{{ csrf_token() }}');
 
