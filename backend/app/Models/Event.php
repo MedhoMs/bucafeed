@@ -23,6 +23,13 @@ class Event extends TemplateModel
         'educational_center_id',
         'target_role',
         'image',
+        'is_kahoot',
+        'kahoot_questions',
+    ];
+
+    protected $casts = [
+        'is_kahoot'        => 'boolean',
+        'kahoot_questions' => 'array',
     ];
 
     /**

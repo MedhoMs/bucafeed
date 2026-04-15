@@ -8,9 +8,25 @@
     deleteText="Eliminar evento"
 >
 
-        <x-admin.form-template :disabled="$disabled" :fields="$fields" />
+        {{-- ── MODE SELECTOR ── --}}
+        @if($oper !== 'destroy' && $oper !== 'show')
+        <div class="mb-8 p-1 flex bg-white/5 border border-white/10 rounded-2xl w-fit">
+            <button type="button" id="toggle-normal-btn" class="px-6 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-white/10 text-white shadow-sm">
+                Evento Estándar
+            </button>
+            <button type="button" id="toggle-kahoot-btn" class="px-6 py-2 rounded-xl text-sm font-semibold transition-all duration-200 text-white/40 hover:text-white/70">
+                Simulacro Kahoot
+            </button>
+        </div>
+        @endif
 
-        <p class="text-white/40 text-xs mt-1 mb-6">Nota: Si dejas el campo "Dirigido A" vacío, cualquier usuario podrá inscribirse.</p>
+        <div id="normal-event-section">
+            <x-admin.form-template :disabled="$disabled" :fields="$fields" />
+            <p class="text-white/40 text-xs mt-1 mb-6">Nota: Si dejas el campo "Dirigido A" vacío, cualquier usuario podrá inscribirse.</p>
+        </div>
+
+        {{-- Kahoot builder partial (hidden by default, toggled by JS) --}}
+        @include('users_events._kahoot_builder')
 
         {{-- List of Participants View (Only Shows if Editing/Showing) --}}
         @if(isset($event->id) && $oper != 'create' && $oper != 'destroy')
@@ -46,3 +62,4 @@
         @endif
 
 </x-admin.crud-form>
+
