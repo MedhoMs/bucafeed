@@ -23,13 +23,13 @@
 
 <template>
     <NavBar></NavBar>
-    <main class="flex min-h-screen justify-between lg:pl-[300px]">
-        <section class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4 pt-8 pb-10">
-            <h1 class="text-[44px] font-extrabold bg-clip-text text-transparent bg-linear-to-r from-white to-white/40 tracking-tight leading-none mb-2">
+    <main class="flex min-h-screen justify-between lg:pl-75">
+        <section class="text-white lg:w-375 w-87.5 mx-auto lg:mr-14 mb-4">
+            <SearchBar></SearchBar>
+            <h1 class="text-2xl lg:text-4xl text-center pt-5 font-extrabold bg-clip-text tracking-tight leading-none mb-2">
                 Eventos Disponibles
             </h1>
-            <SearchBar></SearchBar>
-            <div id="mainBody" class="min-h-[92.9vh] mt-12">
+            <div id="mainBody" class="grid grid-cols-1 lg:grid-cols-4 gap-4 justify-items-center min-h-[92.9vh] mt-12">
                 <!-- Eventos dinámicos -->
                 <div v-for="event in events" :key="event.id" class="event-card group cursor-pointer hover:border-white/20 transition-all duration-300">
                     <img :src="event.image_url" alt="Imagen del evento" class="group-hover:scale-105 transition-transform duration-500" loading="lazy">
@@ -65,11 +65,6 @@
 </template>
 
 <style scoped>
-    #mainBody {
-        display: grid;
-        grid-template-columns: auto auto auto auto;
-        gap: 40px;
-    }
 
     .event-card {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);

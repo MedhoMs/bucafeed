@@ -43,12 +43,12 @@
 
 <template>
     <NavBar></NavBar>
-    <main class="flex min-h-screen justify-between lg:pl-[300px]">
-        <section class="text-white lg:w-[1500px] w-[350px] mt-6 mx-auto lg:mr-14 mb-4 flex flex-col min-h-screen">
-            <p class="text-[40px] font-bold shrink-0">Charlas Disponibles</p>
+    <main class="flex min-h-screen justify-between lg:pl-75">
+        <section class="text-white lg:w-375 w-87.5 mx-auto lg:mr-14 mb-4">
             <SearchBar :meetings="meetings" @update:filtered="filteredMeetings = $event" class="shrink-0" />
+            <p class="text-2xl text-center pt-5 pb-7 lg:text-4xl font-bold shrink-0">Charlas Disponibles</p>
             
-            <div v-if="filteredMeetings.length > 0" class="grid grid-cols-4 gap-4">
+            <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 lg:grid-cols-4 gap-4 justify-items-center">
                 <Meeting
                     v-for="meeting in filteredMeetings"
                     :key="meeting.id"

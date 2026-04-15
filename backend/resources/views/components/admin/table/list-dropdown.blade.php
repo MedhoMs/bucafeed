@@ -19,7 +19,7 @@
 @endphp
 
 <div class="relative inline-block text-left dropdown-container">
-    <button 
+    <button
         onclick="toggleDropdownList('{{ $dropdownId }}', event)"
         type="button"
         class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold transition-all shadow-xs hover:scale-105 active:scale-95 {{ $activeColor }}"
@@ -30,7 +30,7 @@
         <span class="min-w-[1ch]">{{ $count }}</span>
     </button>
 
-    <div 
+    <div
         id="{{ $dropdownId }}"
         class="hidden absolute z-100 mt-2 w-56 origin-top-right rounded-xl bg-[#132a2a] border border-white/10 shadow-2xl shadow-black/80 ring-1 ring-black ring-opacity-5 focus:outline-hidden right-0"
     >
@@ -38,7 +38,7 @@
             <div class="px-3 py-2 text-[10px] font-bold text-white/40 uppercase tracking-widest border-b border-white/5 mb-1">
                 {{ $label }}
             </div>
-            <div class="max-h-[200px] overflow-y-auto custom-scroll px-1">
+            <div class="max-h-50 overflow-y-auto custom-scroll px-1">
                 @forelse($items as $item)
                     <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 transition-colors group text-left">
                         <div class="w-1.5 h-1.5 rounded-full {{ str_replace('text-', 'bg-', explode(' ', $activeColor)[0]) }} shrink-0"></div>
@@ -65,14 +65,14 @@
         event.stopPropagation();
         const dropdown = document.getElementById(id);
         const arrow = document.querySelector('.dropdown-arrow-' + id);
-        
+
         // Close all other dropdowns
         document.querySelectorAll('[id^="dropdown-"]').forEach(el => {
             if (el.id !== id) el.classList.add('hidden');
         });
 
         const isHidden = dropdown.classList.contains('hidden');
-        
+
         if (isHidden) {
             dropdown.classList.remove('hidden');
             if (arrow) arrow.style.transform = 'rotate(180deg)';

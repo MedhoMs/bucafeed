@@ -10,8 +10,8 @@
 
 <template>
     <div class="
-        w-[325px]
-        h-[375px] 
+        w-81.25
+        h-93.75 
         rounded-[20px] 
         p-5 relative 
         bg-linear-to-br 
@@ -40,7 +40,7 @@
             bottom-5 
             right-5 
             rounded-[20px] 
-            w-[100px] 
+            w-25 
             text-base 
             hover:bg-[#0a1e35] 
             hover:cursor-pointer 

@@ -300,23 +300,23 @@
             <p class="font-bold text-white [text-shadow:-1px_1px_1px_black]">Faltan datos o hay datos erroneos</p>
         </span>
 
-        <h1 class="text-6xl mb-[70px] text-white [text-shadow:-3px_3px_1px_black]">{{ t.register.title }}</h1>
-        <div class="flex justify-center items-center mb-[150px]" id="form-container">
-            <div class="flex flex-col justify-center items-center h-[400px] w-[400px] p-[10px] text-white rounded-bl-xl rounded-tl-xl" id="side-panel">
-                <p class="text-center text-[29px] font-bold mb-[30px] [text-shadow:-2px_2px_1px_black]" id="welcome">{{ t.register.welcome }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span></p>
-                <img class="w-[90px] h-[100px]" src="/src/assets/logo/logoTelamon.png" alt="">
-                <p class="text-center text-[20px] font-bold mt-[30px] [text-shadow:-2px_2px_1px_black]" id="eslogan">{{ t.register.eslogan }}{{ t.nav.website }}</p>
+        <h1 class="text-6xl mb-17.5 text-white [text-shadow:-3px_3px_1px_black]">{{ t.register.title }}</h1>
+        <div class="flex justify-center items-center mb-37.5" id="form-container">
+            <div class="flex flex-col justify-center items-center h-100 w-100 p-2.5 text-white rounded-bl-xl rounded-tl-xl" id="side-panel">
+                <p class="text-center text-[29px] font-bold mb-7.5 [text-shadow:-2px_2px_1px_black]" id="welcome">{{ t.register.welcome }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span></p>
+                <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
+                <p class="text-center text-[20px] font-bold mt-7.5 [text-shadow:-2px_2px_1px_black]" id="eslogan">{{ t.register.eslogan }}{{ t.nav.website }}</p>
             </div>
-            <form id="registerForm" class="relative flex flex-col justify-center h-[400px] w-[400px] p-[10px] pl-[20px] pr-[20px] bg-white rounded-br-xl rounded-tr-xl" method="post">
+            <form id="registerForm" class="relative flex flex-col justify-center h-100 w-100 p-2.5 pl-5 pr-5 bg-white rounded-br-xl rounded-tr-xl" method="post">
                 
                 <section id="allRolesForm" class="forms flex flex-col mb-32">
-                    <label class="font-bold mt-[30px]" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
+                    <label class="font-bold mt-7.5" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
                     <span class=" text-xs">{{ t.register.emailSpan }}</span>
-                    <input type="text" class="allRolesInput outline-hidden border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="email-register-form" name="email-register-form" :placeholder="t.register.placeholderEmail" required>
-                    <p hidden class="absolute top-[110px] left-[135px] font-semibold">Email inválido</p>
+                    <input type="text" class="allRolesInput outline-hidden border-b border-black mb-7.5 p-0.5 text-xl" maxlength="50" autocomplete="off" id="email-register-form" name="email-register-form" :placeholder="t.register.placeholderEmail" required>
+                    <p hidden class="absolute top-27.5 left-33.75 font-semibold">Email inválido</p>
                     <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
-                    <input type="password" class="allRolesInput outline-hidden border-b border-black mb-[30px] p-[2px] text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
-                    <p hidden class="absolute top-[195px] left-[110px] text-[15px] font-semibold">Al menos 8 carácteres</p>
+                    <input type="password" class="allRolesInput outline-hidden border-b border-black mb-7.5 p-0.5 text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
+                    <p hidden class="absolute top-48.75 left-27.5 text-[15px] font-semibold">Al menos 8 carácteres</p>
                     <label class="font-bold" for="who-register-form" id="who-register-label">¿Quién eres?</label>
                     <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
                         <option value="EI">Institución Educativa</option>
@@ -328,14 +328,14 @@
 
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="student-name" id="studentName">Nombre</label>
-                    <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="name-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <p hidden class="absolute top-[90px] left-[30px] font-semibold">El nombre debe tener entre 5 y 12 letras</p>
+                    <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="name-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <p hidden class="absolute top-22.5 left-7.5 font-semibold">El nombre debe tener entre 5 y 12 letras</p>
                     <label class="font-bold" for="student-name" id="studentName">Apellidos</label>
-                    <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="surname-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <p hidden class="absolute top-[180px] left-[100px] text-[15px] font-semibold">Deben haber 2 apellidos</p>
+                    <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="surname-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <p hidden class="absolute top-45 left-25 text-[15px] font-semibold">Deben haber 2 apellidos</p>
                     <label class="font-bold" for="student-name" id="studentName">DNI/NIE</label>
-                    <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-[30px] p-[2px] text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="dni-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <p hidden class="absolute top-[265px] left-[125px] text-[15px] font-semibold">DNI/NIE inválido</p>
+                    <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="dni-register-form" :placeholder="t.register.placeholderEmail" required></input>
+                    <p hidden class="absolute top-66.25 left-31.25 text-[15px] font-semibold">DNI/NIE inválido</p>
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
@@ -354,16 +354,16 @@
 
                 <section id="validateEmailForm" class="forms hidden flex-col items-center mb-16">
                     <p id="validateEmailText" class="mb-5 text-center font-bold">Hemos enviado un código de verificación a tu correo</p>
-                    <input type="text" class="validateEmailInput outline-hidden border-b border-black mb-[30px] p-[2px] w-32 text-center text-xl" maxlength="6" autocomplete="off" id="code-register-form" name="code-register-form" required></input>
+                    <input type="text" class="validateEmailInput outline-hidden border-b border-black mb-7.5 p-0.5 w-32 text-center text-xl" maxlength="6" autocomplete="off" id="code-register-form" name="code-register-form" required></input>
                 </section>
 
-                <button id="registerButton" class="absolute bottom-[80px] right-12 text-center hidden">
+                <button id="registerButton" class="absolute bottom-20 right-12 text-center hidden">
                     <ButtonForm :value="t.register.submit"></ButtonForm>
                 </button>
 
-                <ButtonForm id="nextButton" value="Siguiente" class="absolute bottom-[60px] right-[50px] border rounded-lg"></ButtonForm>
+                <ButtonForm id="nextButton" value="Siguiente" class="absolute bottom-15 right-12.5 border rounded-lg"></ButtonForm>
 
-                <RouterLink to="/login" class="absolute bottom-[20px] right-16 flex justify-center items-center text-[15px] gap-1 text-[#4a4a4a] font-bold transition-all duration-200 ease-in-out hover:brightness-200" id="redirect-login">{{ t.register.haveAccount }}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></RouterLink>
+                <RouterLink to="/login" class="absolute bottom-5 right-16 flex justify-center items-center text-[15px] gap-1 text-[#4a4a4a] font-bold transition-all duration-200 ease-in-out hover:brightness-200" id="redirect-login">{{ t.register.haveAccount }}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></RouterLink>
 
             </form>
             

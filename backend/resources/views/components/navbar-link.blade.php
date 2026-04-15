@@ -1,12 +1,12 @@
 @props([
-    'title', 
-    'to', 
-    'backend' => false, 
+    'title',
+    'to',
+    'backend' => false,
     'dbStatus' => null
 ])
 
 @if($backend)
-    <a href="{{ url($to) }}" {{ $attributes }} class="relative flex items-center gap-[10px] mb-5 rounded-xl text-[17px] font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#406071] w-full">
+    <a href="{{ url($to) }}" {{ $attributes }} class="relative flex items-center gap-2.5 mb-5 rounded-xl text-[17px] font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#406071] w-full">
         {{ $slot }}
         <span class="flex-1">{{ $title }}</span>
 
@@ -19,7 +19,7 @@
         @endif
     </a>
 @else
-    <a href="{{ url($to) }}" {{ $attributes }} class="relative flex items-center gap-[10px] mb-5 rounded-xl text-[17px] font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#406071] w-full">
+    <a href="{{ url($to) }}" {{ $attributes }} class="relative flex items-center gap-2.5 mb-5 rounded-xl text-[17px] font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#406071] w-full">
         {{ $slot }}
         <span class="flex-1">{{ $title }}</span>
     </a>

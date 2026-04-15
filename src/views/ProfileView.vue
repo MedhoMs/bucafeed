@@ -72,16 +72,16 @@ watch(() => route.params.id, (newId) => {
 
 <template>
     <NavBar></NavBar>
-    <main class="flex min-h-screen justify-between lg:pl-[300px]">
-        <div class="text-white lg:w-[1500px] w-[350px] mx-auto lg:mr-14 mb-4 flex flex-col">
+    <main class="flex min-h-screen justify-between lg:pl-75">
+        <div class="text-white lg:w-375 w-87.5 mx-auto lg:mr-14 mb-4 flex flex-col">
 
             <section class="bg-[#15202b80] text-white flex-1">
 
                 <div class="relative">
                     <div class="banner">
-                        <img :src="profileData.bannerUrl" alt="banner" class="w-full h-[300px] object-cover" />
+                        <img :src="profileData.bannerUrl" alt="banner" class="w-full h-75 object-cover" />
                     </div>
-                    <img :src="profileData.iconoUrl" alt="icono" class="icono absolute w-[100px] h-[100px] rounded-full border-4 border-[#15202b] bg-[#15202b] object-cover bottom-[-50px] left-5 shadow-xl"/>
+                    <img :src="profileData.iconoUrl" alt="icono" class="icono absolute w-25 h-25 rounded-full border-4 border-[#15202b] bg-[#15202b] object-cover -bottom-12.5 left-5 shadow-xl"/>
                 </div>
 
                 <!-- Botón de editar perfil -->

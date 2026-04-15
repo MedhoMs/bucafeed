@@ -73,10 +73,10 @@
         leave-active-class="transition-transform duration-300 ease-in"
         leave-from-class="translate-x-0"
         leave-to-class="-translate-x-full">
-        <nav v-if="menu || true" v-show="menu || isDesktop" class="fixed top-0 left-0 flex flex-col w-[300px] h-screen z-50 px-5 bg-[linear-gradient(180deg,#1f5252_0%,#0f2828_100%)] shadow-[5px_0px_20px_rgba(0,0,0,0.6)]">
+        <nav v-if="menu || true" v-show="menu || isDesktop" class="fixed top-0 left-0 flex flex-col w-75 h-screen z-50 px-5 bg-[linear-gradient(180deg,#1f5252_0%,#0f2828_100%)] shadow-[5px_0px_20px_rgba(0,0,0,0.6)]">
  
             <div class="flex flex-row items-center gap-3 mb-4 mt-4">
-                <img class="w-[65px] h-[70px]" src="../../assets/logo/logoTelamon.png" alt="Logo">
+                <img class="w-16.25 h-17.5" src="../../assets/logo/logoTelamon.png" alt="Logo">
                 <h1 class="font-bold text-[20px] text-white">
                     {{ t.nav.title }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span>
                 </h1>

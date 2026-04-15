@@ -9,7 +9,7 @@
         </div>
     </div>
 
-    <div class="space-y-3 max-h-[450px] overflow-y-auto pr-2 custom-scroll">
+    <div class="space-y-3 max-h-112.5 overflow-y-auto pr-2 custom-scroll">
         @forelse($users as $user)
             <div class="group flex items-center justify-between p-4 bg-white/3 border border-white/5 hover:border-white/20 hover:bg-white/[0.07] rounded-2xl transition-all duration-300">
                 <div class="flex items-center gap-4">
@@ -25,8 +25,8 @@
                         <p class="text-[10px] text-white/30 font-medium mt-0.5">{{ $user->email }}</p>
                     </div>
                 </div>
-                <a 
-                    href="#" 
+                <a
+                    href="#"
                     data-url="{{ route('user.show', $user->id) }}"
                     data-load="modal"
                     data-title="Perfil de Usuario"

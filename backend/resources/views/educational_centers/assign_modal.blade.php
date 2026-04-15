@@ -12,7 +12,7 @@
             <ul class="text-red-400 text-sm list-disc list-inside"></ul>
         </div>
 
-        <div class="bg-black/20 border border-white/5 rounded-2xl p-4 max-h-[400px] overflow-y-auto custom-scroll">
+        <div class="bg-black/20 border border-white/5 rounded-2xl p-4 max-h-100 overflow-y-auto custom-scroll">
             @if($students->isEmpty())
                 <div class="py-12 text-center">
                     <p class="text-white/20 italic">No hay alumnos disponibles sin centro asignado.</p>
@@ -55,7 +55,7 @@ window.submitAssignForm = function(button) {
     fetch(form.action, {
         method: 'POST',
         body: formData,
-        headers: { 
+        headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json'
         }

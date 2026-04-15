@@ -15,26 +15,26 @@
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-blue-400 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
             </div>
-            <input 
-                type="text" 
-                name="search" 
+            <input
+                type="text"
+                name="search"
                 value="{{ request('search') }}"
-                placeholder="Buscar por nombre o nivel..." 
+                placeholder="Buscar por nombre o nivel..."
                 class="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all border-dashed"
             >
         </form>
         @if(!empty($levels))
-            <x-admin.filter-dropdown 
-                label="Nivel" 
-                name="level" 
-                :options="$levels" 
-                :selected="request('level')" 
+            <x-admin.filter-dropdown
+                label="Nivel"
+                name="level"
+                :options="$levels"
+                :selected="request('level')"
             />
         @endif
     </div>
 
     <!-- Lista del Registro -->
-    <div class="space-y-3 max-h-[350px] overflow-y-auto pr-2 custom-scroll">
+    <div class="space-y-3 max-h-87.5 overflow-y-auto pr-2 custom-scroll">
         @forelse($cycles as $cycle)
             <div class="group flex items-center justify-between p-4 bg-white/3 border border-white/5 hover:border-white/20 hover:bg-white/[0.07] rounded-2xl transition-all duration-300">
                 <div class="flex items-center gap-4">
@@ -48,7 +48,7 @@
                         @endif
                     </div>
                 </div>
-                <button 
+                <button
                     onclick="removeGlobalCycle('{{ $cycle->id }}', this)"
                     class="p-2.5 text-white/10 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
                     title="Eliminar del Registro"
@@ -97,7 +97,7 @@
     window.removeGlobalCycle = function(id, button) {
         const container = document.getElementById('modal-body');
         if (!confirm('¿Seguro que deseas eliminar este ciclo del registro GLOBAL? Esto NO afectará a los centros que ya lo tengan asignado pero ya no podrán seleccionarlo nuevos centros.')) return;
-        
+
         button.disabled = true;
         const formData = new FormData();
         formData.append('_token', '{{ csrf_token() }}');
