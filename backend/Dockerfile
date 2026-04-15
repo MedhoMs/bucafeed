@@ -26,6 +26,10 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
+
 # Set working directory
 WORKDIR /var/www
 
@@ -39,8 +43,9 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Remove default Nginx site
 RUN rm -f /etc/nginx/sites-enabled/default
 
-# Install composer dependencies
+# Install composer and npm dependencies, then build assets
 RUN composer install --no-interaction --optimize-autoloader --no-dev
+RUN npm install && npm run build
 
 # Make entrypoint executable
 RUN chmod +x /var/www/entrypoint.sh

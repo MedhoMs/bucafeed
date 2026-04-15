@@ -28,7 +28,7 @@
             <link rel="stylesheet" href="http://localhost:5173/src/styles/main.css">
         @else
             <!-- Modo Producción: Carga los assets compilados -->
-            @vite(['resources/css/app.css', 'resources/js/app.js'], 'frontend')
+            @vite(['resources/css/app.css', 'resources/js/app.js'])
         @endif
     </head>
     <body class="hold-transition sidebar-mini">
