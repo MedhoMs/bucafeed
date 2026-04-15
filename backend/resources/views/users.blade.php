@@ -9,7 +9,7 @@
         <script type="module" src="http://localhost:5173/@@vite/client"></script>
         <link rel="stylesheet" href="http://localhost:5173/backend/resources/css/app.css">
     @else
-        @vite(['backend/resources/css/app.css'], 'frontend')
+        @vite(['backend/resources/css/app.css'])
     @endif
 </head>
 <body class="bg-slate-900 text-white font-sans p-8">
