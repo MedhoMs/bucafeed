@@ -11,6 +11,7 @@ use App\Http\Controllers\EducationalCenterController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\KahootController;
 
 // Importante: No hace falta el prefijo /api aquí, Laravel lo añade automáticamente
 Route::get('/test-connection', function () {
@@ -32,6 +33,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/events', [EventController::class, 'apiIndex']);
 Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name('api.event.image');
+Route::post('/events/generate-kahoot', [KahootController::class, 'generateQuestions']);
 Route::get('/educational-centers', [EducationalCenterController::class, 'apiIndex']);
 
 // Usuarios (para poder ver perfiles públicos desde Vue)
