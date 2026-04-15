@@ -39,6 +39,8 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Remove default Nginx site
 RUN rm -f /etc/nginx/sites-enabled/default
 
+# Install composer dependencies
+RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 # Make entrypoint executable
 RUN chmod +x /var/www/entrypoint.sh
@@ -46,6 +48,6 @@ RUN chmod +x /var/www/entrypoint.sh
 # Set entrypoint
 ENTRYPOINT ["/var/www/entrypoint.sh"]
 
-# Expose port 9000 and start php-fpm server
-EXPOSE 9000
+# Expose port 8080 (Railway uses PORT env var, default 8080)
+EXPOSE 8080
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

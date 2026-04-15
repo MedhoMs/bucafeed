@@ -34,6 +34,7 @@
     const isDesktop = ref(window.innerWidth >= 1024)
  
     onMounted(() => {
+        checkDbConnection()
         const handleResize = () => {
             isDesktop.value = window.innerWidth >= 1024
             if (isDesktop.value) menu.value = false
