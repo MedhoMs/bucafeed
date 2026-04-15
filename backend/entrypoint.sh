@@ -56,6 +56,9 @@ fi
 php artisan config:clear
 php artisan route:clear
 
+# 8. Run migrations (--force needed for production)
+php artisan migrate --force
+
 # Iniciar Supervisor (que gestiona PHP y Nginx)
 echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."
 exec "$@"
