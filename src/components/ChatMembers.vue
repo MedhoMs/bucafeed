@@ -1,7 +1,13 @@
 <script setup>
-import { useTranslations } from "../composables/useTranslations";
-const { t } = useTranslations(); // Variable para llamar al archivo de traduccion
+    import { useTranslations } from "../composables/useTranslations";
+    import { useRoute } from 'vue-router';
+    import { computed } from 'vue';
+    const { t } = useTranslations(); // Variable para llamar al archivo de traduccion  
+    const route = useRoute();
+    const meetingId = computed(() => route.params.id);
+    const meetingTeacher = computed(() => route.params.teacher);
 </script>
+
 
 <template>
     <aside class="flex justify-end w-40 lg:w-1/5 h-screen shrink-0">
@@ -14,7 +20,7 @@ const { t } = useTranslations(); // Variable para llamar al archivo de traduccio
                 <div class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer">
                     <img src="../assets/logo/logoTelamon.png" alt=""
                         class="hidden lg:block w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
-                    <p class="text-base lg:text-xl">Profesor</p>
+                    <p class="text-base lg:text-xl">{{ meetingId ? meetingTeacher : 'Profesor' }}</p>
                 </div>
             </div>
 

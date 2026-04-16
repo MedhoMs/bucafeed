@@ -67,6 +67,11 @@ const router = createRouter({
         },
         {
         path: '/meetingchat',
+        name: 'meetingchat-general',
+        component: MeetingChatView
+        },
+        {
+        path: '/meetingchat/:id/:name/:teacher',
         name: 'meetingchat',
         component: MeetingChatView
         },

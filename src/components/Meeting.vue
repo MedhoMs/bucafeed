@@ -1,4 +1,5 @@
 <script setup>
+
     const props = defineProps({
         id: Number,
         name: String,
@@ -6,6 +7,7 @@
         schedule: String,
         description: String
     })
+
 </script>
 
 <template>
@@ -33,7 +35,9 @@
 
         <p class="h-36 overflow-y-auto">{{ props.description }}</p>
             
-        <button class="
+        <router-link 
+            :to="{ name: 'meetingchat', params: { id: props.id, name: props.name, teacher: props.teacher } }"
+            class="
             bg-[#0a2d4e]
             p-2 
             absolute 
@@ -42,12 +46,13 @@
             rounded-[20px] 
             w-25 
             text-base 
+            text-center
             hover:bg-[#0a1e35] 
             hover:cursor-pointer 
             transition-colors 
             duration-200
         ">
             Entrar
-        </button>
+        </router-link>
     </div>
 </template>
