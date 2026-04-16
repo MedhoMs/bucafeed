@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\UserController;
@@ -12,6 +13,34 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\KahootController;
+
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+    ]);
+});
+
+Route::get('/ready', function () {
+    try {
+        DB::select('SELECT 1');
+
+        if (!Schema::hasTable('migrations')) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'The migrations table was not found.',
+            ], 500);
+        }
+
+        return response()->json([
+            'status' => 'ready',
+        ]);
+    } catch (\Throwable $exception) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $exception->getMessage(),
+        ], 500);
+    }
+});
 
 // Importante: No hace falta el prefijo /api aquí, Laravel lo añade automáticamente
 Route::get('/test-connection', function () {
