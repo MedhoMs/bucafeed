@@ -7,12 +7,6 @@
 
 Closes #
 
-## Cambios principales
-
-- 
-- 
-- 
-
 ## Comprobaciones realizadas
 
 - [ ] CI en verde
