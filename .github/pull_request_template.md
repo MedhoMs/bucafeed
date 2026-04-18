@@ -1,7 +1,7 @@
 
 ## Resumen
 
-Explica brevemente qué cambia este PR y por qué.
+<!--Explica brevemente qué cambia este PR y por qué.-->
 
 ## Issue relacionada
 
@@ -24,13 +24,13 @@ Closes #
 
 ## Capturas de pantalla
 
-Adjunta capturas si hay cambios visuales.
+<!--Adjunta capturas si hay cambios visuales.-->
 
 ## Evidencias de validación
 
-Adjunta capturas de CI, Railway, tests o validaciones manuales si aplica.
+<!--Adjunta capturas de CI, Railway, tests o validaciones manuales si aplica.-->
 
 ## Lighthouse
 
-Incluye resultados solo si este PR afecta al rendimiento, accesibilidad o SEO.
+<!--Incluye resultados solo si este PR afecta al rendimiento, accesibilidad o SEO.-->
 
