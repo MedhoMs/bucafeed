@@ -6,9 +6,9 @@
     <div class="flex items-center gap-2">
         <span class="text-white font-bold text-lg">Telamo<span class="text-[#a0c4d4]">Net</span></span>
         @if(app()->environment('local'))
-            <img class="w-8 h-8" src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="Logo">
+            <img class="w-8 h-8" src="{{ asset('logoTelamon.png') }}" alt="Logo">
         @else
-            <img class="w-8 h-8" src="{{ asset('assets/logo/logoTelamon.png') }}" alt="Logo">
+            <img class="w-8 h-8" src="{{ asset('logoTelamon.png') }}" alt="Logo">
         @endif
     </div>
 </div>
@@ -19,9 +19,9 @@
 <nav class="fixed lg:sticky top-0 inset-y-0 left-0 w-75 h-screen bg-linear-to-b from-[#142b2b] to-[#0a141d] shadow-[-5px_0px_20px_rgba(0,0,0,0.6)] z-60 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-out flex flex-col pl-5 pr-5 overflow-y-auto overflow-x-hidden" id="principalNav">
     <div class="hidden lg:flex flex-row items-center gap-3 mb-4 mt-4">
         @if(app()->environment('local'))
-            <img class="w-16.25 h-17.5" src="http://localhost:5173/src/assets/logo/logoTelamon.png" alt="Logo">
+            <img class="w-16.25 h-17.5" src="{{ asset('logoTelamon.png') }}" alt="Logo">
         @else
-            <img class="w-16.25 h-17.5" src="{{ asset('assets/logo/logoTelamon.png') }}" alt="Logo">
+            <img class="w-16.25 h-17.5" src="{{ asset('logoTelamon.png') }}" alt="Logo">
         @endif
         <h1 class="font-bold text-[20px] text-white tracking-wide">Telamo<span class="text-[#a0c4d4]">Net</span></h1>
     </div>

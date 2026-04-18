@@ -16,8 +16,8 @@
     
     // Fallback logo style from users section
     $fallbackUrl = app()->environment('local') 
-        ? 'http://localhost:5173/src/assets/logo/logoTelamon.png' 
-        : asset('assets/logo/logoTelamon.png');
+        ? asset('logoTelamon.png') 
+        : asset('logoTelamon.png');
 @endphp
 
 <div class="flex items-center gap-3 {{ $class }}">

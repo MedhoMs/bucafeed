@@ -6,11 +6,6 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <title>Panel Adminstrador</title>
 
-        @if(app()->environment('local'))
-            <link rel="icon" type="image/png" href="http://localhost:5173/src/assets/logo/logoTelamon.png">
-        @else
-            <link rel="icon" type="image/png" href="{{ asset('assets/logo/logoTelamon.png') }}">
-        @endif
         
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
