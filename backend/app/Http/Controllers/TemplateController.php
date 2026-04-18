@@ -84,16 +84,16 @@ abstract class TemplateController extends Controller
 
         // Nombres automáticos unificados 
         $baseName = class_basename($this->model);
-        $pluralName = Str::snake(Str::plural($baseName));
+        $pluralName = Str::camel(Str::plural($baseName));
         
         $data = [
             'models' => $items,
             $pluralName => $items,
         ];
 
-        // Atajos para compatibilidad con vistas actuales
+        // Atajos para compatibilidad con nombres irregulares
         if ($baseName === 'EducationalCenter') $data['centers'] = $items;
-        if ($baseName === 'Event') $data['events'] = $items;
+        if ($baseName === 'Rol') $data['roles'] = $items;
 
         return view($this->viewPath . '.index', array_merge($data, $this->indexExtras($request)));
     }
@@ -122,19 +122,19 @@ abstract class TemplateController extends Controller
     protected function renderForm($model, $oper, $disabled = '', $success = '')
     {
         $baseName = class_basename($this->model);
+        $singularName = Str::camel($baseName);
+
         $data = [
             'model' => $model,
-            strtolower($baseName) => $model,
+            $singularName => $model,
             'fields' => $this->getFormFields($model),
             'oper' => $oper,
             'disabled' => $disabled,
             'datos' => ['exito' => $success ?: session('success', '')]
         ];
-
-        // Atajos automáticos y específicos para compatibilidad
-        $data[Str::snake($baseName)] = $model;
         
         if ($baseName === 'EducationalCenter') $data['center'] = $model;
+        if ($baseName === 'Rol') $data['role'] = $model;
 
         return view($this->viewPath . '.create', $data);
     }
