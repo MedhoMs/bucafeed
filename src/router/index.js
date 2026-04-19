@@ -11,6 +11,7 @@ import MeetingView from "../views/home/MeetingView.vue";
 import MeetingChatView from "../views/home/MeetingChatView.vue";
 import LaravelTestView from "../views/LaravelTestView.vue";
 import VideoCallView from "../views/home/VideoCallView.vue";
+import { user } from "@/stores/auth";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,11 +68,6 @@ const router = createRouter({
         },
         {
         path: '/meetingchat',
-        name: 'meetingchat-general',
-        component: MeetingChatView
-        },
-        {
-        path: '/meetingchat/:id/:name/:teacher/:group?',
         name: 'meetingchat',
         component: MeetingChatView
         },
@@ -82,5 +78,22 @@ const router = createRouter({
         }
     ]
 })
+
+// Navigation Guard
+router.beforeEach((to, from, next) => {
+    const publicPages = ['/login', '/'];
+    const authRequired = !publicPages.includes(to.path);
+    const loggedIn = user.value;
+
+    if (authRequired && !loggedIn) {
+        return next('/');
+    }
+
+    if (loggedIn && publicPages.includes(to.path)) {
+        return next('/home');
+    }
+
+    next();
+});
 
 export default router

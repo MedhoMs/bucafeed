@@ -104,6 +104,9 @@ class AuthController extends Controller
             'institution_name' => $validated['institution_name'] ?? null,
         ]);
 
+        // Generar token
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         //Limpio la cache una vez creado el usuario
         Cache::forget('verification_code_'   . $request->email);
         Cache::forget('verification_payload_' . $request->email);
@@ -112,6 +115,8 @@ class AuthController extends Controller
             'status'  => 'success',
             'message' => 'Usuario registrado correctamente',
             'user'    => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
         ], 201);
     }
 
@@ -136,10 +141,15 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // Generar token
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'status'  => 'success',
             'message' => 'Login correcto',
             'user'    => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
         ]);
     }
 }
