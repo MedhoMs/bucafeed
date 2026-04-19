@@ -1,15 +1,25 @@
 <script setup>
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import NavBar from '../../components/NavBar/NavBar.vue';
     import MeetingChatBar from '../../components/MeetingChatBar.vue';
     import ChatMembers from '../../components/ChatMembers.vue';
-    
     import { useTranslations } from '../../composables/useTranslations'
+    import { user as authUser } from '../../stores/auth';
+    
     const { t } = useTranslations() // Variable para llamar al archivo de traduccion
-
     const route = useRoute();
+    const router = useRouter();
+
     const meetingId = route.params.id;
-    const meetingName = route.params.name;
+    const meetingGroup = route.params.group;
+
+    // Solo estudiantes del mismo centro pueden entrar
+    if (authUser.value && authUser.value.role === 'Student' && meetingGroup && authUser.value.institution_name !== meetingGroup) {
+        // Redirigir si intento forzar la URL
+        router.push({ name: 'meeting' });
+    }
+
+    const meetingName = route.params.name ? (route.params.group ? `${route.params.name} - ${route.params.group}` : route.params.name) : 'Chat de Reunión';
 </script>
 
 <template>

@@ -77,10 +77,14 @@ class UserController extends TemplateController
             ['name' => 'email', 'type' => 'email', 'label' => 'Email', 'placeholder' => 'juan@ejemplo.com', 'value' => old('email', $user->email ?? ''), 'required' => true],
         ];
 
-        // Añadir contraseña solo en creación
-        if (!$user) {
-            $fields[] = ['name' => 'password', 'type' => 'password', 'label' => 'Contraseña', 'placeholder' => 'Mínimo 8 caracteres', 'required' => true];
-        }
+        $isEdit = $user && $user->exists;
+        $fields[] = [
+            'name' => 'password', 
+            'type' => 'password', 
+            'label' => 'Contraseña', 
+            'placeholder' => $isEdit ? 'Dejar en blanco para no cambiar' : 'Mínimo 8 caracteres', 
+            'required' => !$isEdit
+        ];
 
         $fields = array_merge($fields, [
             ['name' => 'dni', 'label' => 'DNI/NIE', 'placeholder' => '12345678A', 'value' => old('dni', $user->dni ?? ''), 'required' => true],
@@ -100,7 +104,7 @@ class UserController extends TemplateController
             'name'      => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email'     => 'required|string|email|max:255|unique:users,email,' . ($user->id ?? 'NULL'),
-            'password'  => ($user ? 'nullable' : 'required') . '|string|min:8',
+            'password'  => ($user && $user->exists ? 'nullable' : 'required') . '|string|min:8',
             'dni'       => 'required|string|max:20|unique:users,dni,' . ($user->id ?? 'NULL'),
             'role'      => 'required|string',
         ];
@@ -130,7 +134,7 @@ class UserController extends TemplateController
             }
         }
 
-        $request->merge($data);
+        $request->replace($data);
         return parent::save($request, $user);
     }
 
@@ -141,5 +145,24 @@ class UserController extends TemplateController
     {
         $user = User::with('educationalCenter')->findOrFail($id);
         return view('users.profile_modal', compact('user'));
+    }
+
+    /**
+     * API: Obtener alumnos de un centro (para chats y charlas)
+     */
+    public function apiStudentsByCenter(Request $request)
+    {
+        $centerName = $request->query('center_name');
+        
+        if (!$centerName) {
+            return response()->json([]);
+        }
+
+        $students = User::where('institution_name', $centerName)
+            ->where('role', 'Student')
+            ->limit(20)
+            ->get(['id', 'name', 'last_name', 'profile_picture']);
+
+        return response()->json($students);
     }
 }

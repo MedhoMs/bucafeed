@@ -13,6 +13,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\KahootController;
+use App\Http\Controllers\MeetingController;
 
 Route::get('/health', function () {
     return response()->json([
@@ -65,8 +66,12 @@ Route::get('/events', [EventController::class, 'apiIndex']);
 Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name('api.event.image');
 Route::post('/events/generate-kahoot', [KahootController::class, 'generateQuestions']);
 Route::get('/educational-centers', [EducationalCenterController::class, 'apiIndex']);
+Route::get('/meetings', [MeetingController::class, 'apiIndex']);
+Route::post('/meetings', [MeetingController::class, 'apiStore']);
+Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);
 
 // Usuarios (para poder ver perfiles públicos desde Vue)
+Route::get('/users/by-center', [UserController::class, 'apiStudentsByCenter']);
 Route::get('/users/{user}', function (User $user) {
     return response()->json($user);
 });

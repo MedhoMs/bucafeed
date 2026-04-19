@@ -74,7 +74,7 @@
                         $cycleName = $user->student?->cycle ? $user->student->cycle->name : ($user->groupsAsStudent->first()?->cycle?->name ?? 'N/A');
                         $course = $user->student?->course ? $user->student->course . 'º ' : '';
                         $display = ($levelLabel ? $levelLabel . ' <span class="text-white/20 mx-1">•</span> ' : '') . $course . $cycleName;
-                        return '<div class="flex flex-col"><span class="text-[10px] text-white/30 uppercase font-black tracking-widest">Cursando</span><span class="text-xs text-blue-400 font-bold">'.($cycleName !== 'N/A' ? $display : '-').'</span></div>';
+                        return '<div class="flex flex-col"><span class="text-[10px] text-white/30 uppercase font-black tracking-widest">Cursando</span><span class="text-xs text-blue-400 font-bold overflow-x-auto w-35 cycle-name-scroll">'.($cycleName !== 'N/A' ? $display : '-').'</span></div>';
                     } elseif ($user->role === 'Teacher') {
                         $subjects = $user->groupsAsTeacher?->flatMap(fn($g) => $g->subjectsWithTeachers)?->pluck('name')?->unique();
                         $list = $subjects?->take(2)?->implode(', ');
@@ -91,3 +91,16 @@
     </x-slot:tbody>
 </x-admin.crud-index>
 @endsection
+
+<style>
+    .cycle-name-scroll::-webkit-scrollbar {
+        height: 3px;
+    }
+    .cycle-name-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .cycle-name-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 9999px;
+    }
+</style>
