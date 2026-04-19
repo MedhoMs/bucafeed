@@ -4,10 +4,10 @@
     import ButtonForm from '@/components/buttons/ButtonForm.vue';
     import { useTranslations } from '@/composables/useTranslations'
     import { useRouter } from 'vue-router';
-    import axios from 'axios';
     const { t } = useTranslations()
     const router = useRouter();
     import { onMounted, ref } from 'vue';
+    import { login } from '@/stores/auth';
 
     onMounted(() => {
         const registerForm = document.getElementById('registerForm');
@@ -30,8 +30,8 @@
         let errorText;
 
         const patterns = {
-            "name-register-form": /^[A-ZaÉÍouÑ][a-zaéíouñ]{5,12}$/,
-            "surname-register-form": /^[A-ZaÉÍouÑ][a-zaéíouñ]{2,20}\s[A-ZaÉÍouÑ][a-zaéíouñ]{2,20}$/,
+            "name-register-form": /^[A-ZÁÉÍÓÚÑ][a-záéíóúüñ]{1,12}$/,
+            "surname-register-form": /^[A-ZÁÉÍÓÚÑ][a-záéíóúüñ]{2,20}\s[A-ZÁÉÍÓÚÑ][a-záéíóúüñ]{2,20}$/,
             "dni-register-form": /^(\d{8}[A-Z]|[XYZ]\d{7}[A-Z])$/,
             "email-register-form": /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
             "password-register-form": /^[A-Za-z0-9]{8,}$/
@@ -135,6 +135,27 @@
 
         //Envio el payload completo + el codigo a /api/register
         async function validateForm() {
+            // Validar que el código no esté vacío y tenga 6 dígitos
+            if (!codeInput.value || codeInput.value.trim() === '') {
+                let formErrWarning = document.getElementById('formErrWarning');
+                formErrWarning.textContent = 'Por favor, ingresa el código de verificación';
+                formErrWarning.classList.toggle('opacity-100');
+                setTimeout(() => {
+                    formErrWarning.classList.toggle('opacity-100');
+                }, 3000);
+                return;
+            }
+
+            if (!/^\d{6}$/.test(codeInput.value)) {
+                let formErrWarning = document.getElementById('formErrWarning');
+                formErrWarning.textContent = 'El código debe contener exactamente 6 dígitos';
+                formErrWarning.classList.toggle('opacity-100');
+                setTimeout(() => {
+                    formErrWarning.classList.toggle('opacity-100');
+                }, 3000);
+                return;
+            }
+
             const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
             const allRolesValueList = {
@@ -175,11 +196,27 @@
                 });
                 const data = await response.json();
                 if (data.status === 'success') {
+                    if (data.user && data.access_token) {
+                        login(data.user, data.access_token);
+                    }
                     router.push('/home');
+                } else {
+                    let formErrWarning = document.getElementById('formErrWarning');
+                    formErrWarning.textContent = data.message || 'Código de verificación incorrecto o expirado';
+                    formErrWarning.classList.toggle('opacity-100');
+                    setTimeout(() => {
+                        formErrWarning.classList.toggle('opacity-100');
+                    }, 3000);
                 }
                 console.log(data);
             } catch (error) {
                 console.error(error);
+                let formErrWarning = document.getElementById('formErrWarning');
+                formErrWarning.textContent = 'Error al procesar el registro. Intenta de nuevo.';
+                formErrWarning.classList.toggle('opacity-100');
+                setTimeout(() => {
+                    formErrWarning.classList.toggle('opacity-100');
+                }, 3000);
             }
         }
 
@@ -329,7 +366,7 @@
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="student-name" id="studentName">Nombre</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="name-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <p hidden class="absolute top-22.5 left-7.5 font-semibold">El nombre debe tener entre 5 y 12 letras</p>
+                    <p hidden class="absolute top-22.5 left-7.5 font-semibold">El nombre debe tener entre 2 y 12 letras</p>
                     <label class="font-bold" for="student-name" id="studentName">Apellidos</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="surname-register-form" :placeholder="t.register.placeholderEmail" required></input>
                     <p hidden class="absolute top-45 left-25 text-[15px] font-semibold">Deben haber 2 apellidos</p>

@@ -44,8 +44,8 @@
 
                 if (data.status === 'success') {
                     // Guardar los datos del usuario en el estado
-                    if (data.user) {
-                        login(data.user);
+                    if (data.user && data.access_token) {
+                        login(data.user, data.access_token);
                     }
                     router.push('/home');
                 } else {
