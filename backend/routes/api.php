@@ -58,6 +58,7 @@ Route::get('/test-connection', function () {
     ]);
 });
 
+Route::post('/send-code', [AuthController::class, 'sendVerificationCode']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/events', [EventController::class, 'apiIndex']);

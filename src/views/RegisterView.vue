@@ -4,10 +4,10 @@
     import ButtonForm from '@/components/buttons/ButtonForm.vue';
     import { useTranslations } from '@/composables/useTranslations'
     import { useRouter } from 'vue-router';
-    import axios from 'axios';
     const { t } = useTranslations()
     const router = useRouter();
     import { onMounted, ref } from 'vue';
+    import { login } from '@/stores/auth';
 
     onMounted(() => {
         const registerForm = document.getElementById('registerForm');
@@ -175,6 +175,9 @@
                 });
                 const data = await response.json();
                 if (data.status === 'success') {
+                    if (data.user && data.access_token) {
+                        login(data.user, data.access_token);
+                    }
                     router.push('/home');
                 }
                 console.log(data);

@@ -3,9 +3,21 @@
     import NavBarLinks from './NavBarLinks.vue'
     import { onMounted, ref } from 'vue'
     import { useTranslations } from '@/composables/useTranslations'
+    import defaultLogo from '@/assets/logo/logoTelamon.png'
+
+    const getImageUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        const base = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, '') : 'http://localhost:8000';
+        return `${base}${path.startsWith('/') ? '' : '/'}${path}`;
+    }
+
     const { t } = useTranslations() //Variable para llamar al archivo de traduccion
 
-    import { user } from '@/stores/auth' //Import que contiene toda la info del usuario logueado
+    import { user, logout } from '@/stores/auth' //Import que contiene toda la info del usuario logueado
+    import { useRouter } from 'vue-router'
+
+    const router = useRouter()
 
     const dbStatus = ref('loading') // loading, connected, error
 
@@ -48,6 +60,11 @@
  
     function closeMenu() {
         menu.value = false
+    }
+
+    const handleLogout = () => {
+        logout()
+        router.push('/login')
     }
 </script>
  
@@ -141,7 +158,7 @@
                 <router-link
                     class="relative flex items-center gap-2.5 mb-5 mr-4 mt-auto rounded-xl text-[17px] font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#406071] hover:cursor-pointer active:bg-[#406071] active:font-bold"
                     id="profile" to="/profile">
-                    <img src="@/assets/logo/logoTelamon.png" alt="" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs">
+                    <img :src="getImageUrl(user?.profile_picture) || defaultLogo" alt="" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs">
                     <p>{{ user ? user.name : 'Usuario' }}</p>
                     <svg id="dots" @click.stop.prevent="toggleDotsPopup" class="absolute right-4 w-6 h-6 z-10 rounded-xl hover:bg-[#447c9a] transition-colors duration-200 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
                 </router-link>
@@ -154,21 +171,25 @@
                     leave-from-class="opacity-100 translate-y-0"
                     leave-to-class="opacity-0 translate-y-2">
                     <div v-if="showPopup" @click.stop="showPopup = false" class="absolute right-10 bottom-24 bg-[#1d2b38] rounded-xl shadow-lg">
+                        <router-link class="flex gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#406071] active:font-semibold" :to="'/profile/' + user?.id">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 8v-1a6 6 0 0 1 12 0v1" /><path d="M12 10a4 4 0 1 1 0 -8a4 4 0 0 1 0 8z" /></svg>
+                            {{ t.nav.profile }}
+                        </router-link>
                         <router-link class="flex gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#406071] active:font-semibold" to="/">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
                             {{ t.nav.addAccount }}
                         </router-link>
-                        <router-link class="flex gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#ef4444] active:font-semibold" to="/login">
+                        <div @click="handleLogout" class="flex cursor-pointer gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#ef4444] active:font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" /><path d="M15 12h-12l3 -3" /><path d="M6 15l-3 -3" /></svg>
                             {{ t.nav.logout }}
-                        </router-link>
+                        </div>
                     </div>
                 </Transition>
             </section>
         </nav>
     </Transition>
 </template>
-
+ 
 <style scoped>
 
 </style>

@@ -2,10 +2,17 @@
 import NavBar from '@/components/NavBar/NavBar.vue';
 import ButtonTemplate from '@/components/buttons/ButtonTemplate.vue';
 import { useTranslations } from '@/composables/useTranslations'
-import { user as authUser } from '@/stores/auth'
+import { user as authUser, token as authToken, login } from '@/stores/auth'
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import defaultLogo from '../assets/logo/logoTelamon.png';
+
+const getImageUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    const base = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, '') : 'http://localhost:8000';
+    return `${base}${path.startsWith('/') ? '' : '/'}${path}`;
+}
 
 const { t } = useTranslations()
 const route = useRoute()
@@ -30,14 +37,20 @@ const loadProfile = async (id) => {
         const response = await fetch(`${apiBase}/users/${id}`);
         if (response.ok) {
             const data = await response.json();
+
+            // Si es el perfil del usuario logueado, actualizamos el store global 
+            if (authUser.value && authUser.value.id === data.id) {
+                login(data, authToken.value);
+            }
+
             profileData.value = {
                 name: data.name + (data.last_name ? ' ' + data.last_name : ''),
                 email: data.email,
                 role: data.role,
                 seguidores: '12',
                 siguiendo: '5',
-                bannerUrl: data.banner_picture ? imgBase + data.banner_picture : 'https://estaticos-cdn.prensaiberica.es/clip/3bffd319-f839-4e57-9ccb-b95ec474f104_source-aspect-ratio_default_0.jpg',
-                iconoUrl: data.profile_picture ? imgBase + data.profile_picture : defaultLogo,
+                bannerUrl: getImageUrl(data.banner) || 'https://estaticos-cdn.prensaiberica.es/clip/3bffd319-f839-4e57-9ccb-b95ec474f104_source-aspect-ratio_default_0.jpg',
+                iconoUrl: getImageUrl(data.profile_picture) || defaultLogo,
                 isOwner: authUser.value && authUser.value.id === data.id
             };
         }
@@ -50,24 +63,15 @@ onMounted(() => {
     if (route.params.id) {
         loadProfile(route.params.id);
     } else if (authUser.value) {
-        const imgBase = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api$/, '') : 'http://localhost:8000';
-        profileData.value = {
-            name: authUser.value.name,
-            email: authUser.value.email,
-            role: authUser.value.role,
-            seguidores: '1M',
-            siguiendo: '3',
-            bannerUrl: authUser.value.banner_picture ? imgBase + authUser.value.banner_picture : 'https://estaticos-cdn.prensaiberica.es/clip/3bffd319-f839-4e57-9ccb-b95ec474f104_source-aspect-ratio_default_0.jpg',
-            iconoUrl: authUser.value.profile_picture ? imgBase + authUser.value.profile_picture : defaultLogo,
-            isOwner: true
-        }
+        // Forzamos la carga desde la API para tener los datos frescos de la BD
+        loadProfile(authUser.value.id);
     }
 })
 
-// Por si se navega de un perfil a otro sin recargar
 watch(() => route.params.id, (newId) => {
     if (newId) loadProfile(newId);
 })
+
 </script>
 
 <template>
