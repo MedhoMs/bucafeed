@@ -26,8 +26,13 @@ Route::get('/test-email', function () {
             $message->to('telamonetofficial@gmail.com')
                     ->subject('Test de Correo - TelamoNet');
         });
-        return response()->json(['message' => '¡Correo enviado correctamente!']);
+        return response()->json([
+            'message' => '¡Correo enviado correctamente!',
+            'mailer_usado' => config('mail.default'),
+            'env_mailer' => env('MAIL_MAILER')
+        ]);
     } catch (\Exception $e) {
+
         return response()->json([
             'error' => $e->getMessage(),
             'trace' => 'Verifica tus variables de MAIL en Railway'
