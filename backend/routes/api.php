@@ -20,6 +20,22 @@ Route::get('/health', function () {
     ]);
 });
 
+Route::get('/test-email', function () {
+    try {
+        \Illuminate\Support\Facades\Mail::raw('Prueba de conexión SMTP desde Railway', function ($message) {
+            $message->to('telamonetofficial@gmail.com')
+                    ->subject('Test de Correo - TelamoNet');
+        });
+        return response()->json(['message' => '¡Correo enviado correctamente!']);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'trace' => 'Verifica tus variables de MAIL en Railway'
+        ], 500);
+    }
+});
+
+
 Route::get('/ready', function () {
     try {
         DB::select('SELECT 1');
