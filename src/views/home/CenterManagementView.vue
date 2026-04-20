@@ -7,7 +7,7 @@ import CenterTabs from '@/components/center/tabs/CenterTabs.vue'
 import GroupsTab from '@/components/center/tabs/GroupsTab.vue'
 import PeopleTab from '@/components/center/tabs/PeopleTab.vue'
 import CyclesTab from '@/components/center/tabs/CyclesTab.vue'
-import CenterModalHub from '@/components/center/modals/CenterModalHub.vue'
+import CenterManagerCore from '@/components/center/modals/CenterManagerCore.vue'
 
 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 const headers = computed(() => ({
@@ -126,6 +126,6 @@ const getTeacherName = (id) => {
             />
             
         </template>
-        <CenterModalHub :activeModal="activeModal" :group="selectedGroup" :teachers="teachers" :students="students" :cycles="cycles" :apiBase="apiBase" :headers="headers" @close="activeModal = null" @refresh="loadAll" @toast="showToast" />
+        <CenterManagerCore :activeModal="activeModal" :group="selectedGroup" :teachers="teachers" :students="students" :cycles="cycles" :apiBase="apiBase" :headers="headers" @close="activeModal = null" @refresh="loadAll" @toast="showToast" />
     </ManagementLayout>
 </template>
