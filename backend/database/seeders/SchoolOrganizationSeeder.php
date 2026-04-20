@@ -196,6 +196,7 @@ class SchoolOrganizationSeeder extends Seeder
             ['name' => 'IES en Altavista', 'type' => 'SE', 'category' => 'IES', 'location' => 'Arrecife', 'cycles' => array_merge($esoCycles, $bachCycles)],
             ['name' => 'CIFP Zonzamas', 'type' => 'HE', 'category' => 'CIFP', 'location' => 'Arrecife', 'cycles' => array_values($fpCycles)],
             ['name' => 'Miyagi Do Karate', 'type' => 'SE', 'category' => 'IES', 'location' => 'Okinawa', 'cycles' => $karateCycles],
+            ['name' => 'TelamoNet', 'type' => 'TM', 'category' => 'CIFP', 'location' => 'Lanzarote', 'cycles' => array_merge($esoCycles, $bachCycles, array_values($fpCycles))],
         ];
 
         $centersMap = [];

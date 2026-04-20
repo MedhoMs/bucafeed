@@ -11,7 +11,16 @@ use App\Http\Controllers\CycleController;
 use App\Http\Controllers\QuestionController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->away(env('APP_FRONTEND_URL', 'http://localhost:5173'));
+});
+
+Route::get('/whoami', function () {
+    return response()->json([
+        'check' => auth()->check(),
+        'id' => auth()->user()?->id,
+        'email' => auth()->user()?->email,
+        'role' => auth()->user()?->role,
+    ]);
 });
 
 Route::get('/prueba', function () {
@@ -20,8 +29,7 @@ Route::get('/prueba', function () {
 
 
 
-Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-Route::get('/admin/users', [AdminController::class, 'users']);
+
 
 // Array de rutas CRUD
 $adminRoutes = [
@@ -144,15 +152,20 @@ $adminRoutes = [
     ],
 ];
 
-// Mapeo automático de rutas
-foreach ($adminRoutes as $group) {
-    Route::prefix($group['prefix'])
-        ->name($group['name'])
-        ->controller($group['controller'])
-        ->group(function () use ($group) {
-            foreach ($group['routes'] as $route) {
-                $method = $route[0]; // get o post
-                Route::$method($route[1], $route[2])->name($route[3]);
-            }
-        });
-}
+Route::middleware(['admin'])->group(function () use ($adminRoutes) {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/admin/users', [AdminController::class, 'users']);
+
+    // Mapeo automático de rutas
+    foreach ($adminRoutes as $group) {
+        Route::prefix($group['prefix'])
+            ->name($group['name'])
+            ->controller($group['controller'])
+            ->group(function () use ($group) {
+                foreach ($group['routes'] as $route) {
+                    $method = $route[0]; // get o post
+                    Route::$method($route[1], $route[2])->name($route[3]);
+                }
+            });
+    }
+});

@@ -27,3 +27,4 @@ zz-docker.conf
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/backend/.env

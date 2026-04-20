@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -82,7 +84,7 @@ class AuthController extends Controller
         }
 
         //Valido usando el payload de la cache (no el de la request actual)
-        $validator = \Illuminate\Support\Facades\Validator::make($cachedPayload, $rules);
+        $validator = Validator::make($cachedPayload, $rules);
 
         if ($validator->fails()) {
             return response()->json([
@@ -140,8 +142,9 @@ class AuthController extends Controller
                 'message' => 'El email o la contraseña son incorrectos',
             ], 401);
         }
+        Auth::login($user);
 
-        // Generar token
+        // Generar token para el frontend (Vue)
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

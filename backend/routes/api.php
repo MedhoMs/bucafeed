@@ -76,3 +76,21 @@ Route::apiResource('questions', QuestionController::class);
 Route::apiResource('answers', AnswerController::class);
 Route::apiResource('tags', TagController::class);
 Route::post('answers/{answer}/useful', [AnswerController::class, 'markAsUseful']);
+
+// ── Panel de Gestión de Centro (para usuarios EI) ──
+Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
+    Route::get('/', [EducationalCenterController::class, 'apiShowMyCenter']);
+    Route::get('/groups', [EducationalCenterController::class, 'apiGroups']);
+    Route::post('/groups', [EducationalCenterController::class, 'apiStoreGroup']);
+    Route::put('/groups/{group}', [EducationalCenterController::class, 'apiUpdateGroup']);
+    Route::delete('/groups/{group}', [EducationalCenterController::class, 'apiDeleteGroup']);
+    Route::post('/groups/{group}/students', [EducationalCenterController::class, 'apiAssignStudents']);
+    Route::delete('/groups/{group}/students/{user}', [EducationalCenterController::class, 'apiRemoveStudent']);
+    Route::put('/groups/{group}/tutor', [EducationalCenterController::class, 'apiAssignTutor']);
+    Route::post('/groups/{group}/subjects', [EducationalCenterController::class, 'apiAssignSubjectTeacher']);
+    Route::delete('/groups/{group}/subjects/{tag}', [EducationalCenterController::class, 'apiRemoveSubjectTeacher']);
+    Route::get('/teachers', [EducationalCenterController::class, 'apiTeachers']);
+    Route::get('/students', [EducationalCenterController::class, 'apiStudents']);
+    Route::get('/admins', [EducationalCenterController::class, 'apiAdmins']);
+    Route::get('/cycles', [EducationalCenterController::class, 'apiCycles']);
+});
