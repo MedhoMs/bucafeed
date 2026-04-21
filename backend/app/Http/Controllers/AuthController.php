@@ -20,26 +20,36 @@ class AuthController extends Controller
      */
     public function sendVerificationCode(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
+        try {
+            $request->validate([
+                'email' => 'required|email',
+            ]);
 
-        //Codigo aleatorio de 6 digitos
-        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            //Codigo aleatorio de 6 digitos
+            $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        //Guardo el codigo y el payload completo en cache durante 10 minutos
-        //La clave se basa en el email para poder recuperarlo luego
-        Cache::put('verification_code_' . $request->email, $code, now()->addMinutes(10));
-        Cache::put('verification_payload_' . $request->email, $request->all(), now()->addMinutes(10));
+            //Guardo el codigo y el payload completo en cache durante 10 minutos
+            //La clave se basa en el email para poder recuperarlo luego
+            Cache::put('verification_code_' . $request->email, $code, now()->addMinutes(10));
+            Cache::put('verification_payload_' . $request->email, $request->all(), now()->addMinutes(10));
 
-        // Enviar el email
-        Mail::to($request->email)->send(new VerificationCodeMail($code));
+            // Enviar el email
+            Mail::to($request->email)->send(new VerificationCodeMail($code));
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Código de verificación enviado',
-        ]);
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Código de verificación enviado',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al enviar el correo: ' . $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ], 500);
+        }
     }
+
 
     /**
      * Verifica el codigo introducido por el usuario y, si es correcto,

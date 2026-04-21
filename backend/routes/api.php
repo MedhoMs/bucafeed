@@ -20,6 +20,42 @@ Route::get('/health', function () {
     ]);
 });
 
+Route::get('/test-email', function () {
+    // Diagnóstico: mostrar la config de mail que Laravel está usando realmente
+    $mailConfig = [
+        'default_mailer' => config('mail.default'),
+        'smtp_host' => config('mail.mailers.smtp.host'),
+        'smtp_port' => config('mail.mailers.smtp.port'),
+        'smtp_encryption' => config('mail.mailers.smtp.encryption'),
+        'smtp_username' => config('mail.mailers.smtp.username'),
+        'smtp_password' => config('mail.mailers.smtp.password') ? '***SET(' . strlen(config('mail.mailers.smtp.password')) . ' chars)***' : '***NOT SET***',
+        'from_address' => config('mail.from.address'),
+        'from_name' => config('mail.from.name'),
+        'env_MAIL_MAILER' => env('MAIL_MAILER'),
+        'env_MAIL_HOST' => env('MAIL_HOST'),
+        'env_MAIL_PORT' => env('MAIL_PORT'),
+        'env_MAIL_ENCRYPTION' => env('MAIL_ENCRYPTION'),
+    ];
+
+    try {
+        \Illuminate\Support\Facades\Mail::raw('Prueba de conexión SMTP desde Railway', function ($message) {
+            $message->to('telamonetofficial@gmail.com')
+                    ->subject('Test de Correo - TelamoNet');
+        });
+        return response()->json([
+            'message' => '¡Correo enviado correctamente!',
+            'config_usada' => $mailConfig,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'config_usada' => $mailConfig,
+            'trace' => 'Verifica tus variables de MAIL en Railway'
+        ], 500);
+    }
+});
+
+
 Route::get('/ready', function () {
     try {
         DB::select('SELECT 1');
