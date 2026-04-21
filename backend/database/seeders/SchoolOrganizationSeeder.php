@@ -186,6 +186,25 @@ class SchoolOrganizationSeeder extends Seeder
             $karateCycles[] = $cycle;
         }
 
+        // 2.6 CREACIÓN DE GRADOS UNIVERSITARIOS
+        echo "🎓 Creando Grados Universitarios...\n";
+        $uniSpecs = [
+            'Ingeniería Informática' => ['Sistemas Operativos', 'Inteligencia Artificial', 'Ingeniería del Software', 'Criptografía', 'Arquitectura de Computadores'],
+            'Derecho' => ['Derecho Civil', 'Derecho Penal', 'Derecho Administrativo', 'Filosofía del Derecho', 'Derecho Romano'],
+            'ADE' => ['Macroeconomía', 'Contabilidad Financiera', 'Marketing', 'Estadística', 'Dirección Estratégica']
+        ];
+
+        $uniCycles = [];
+        foreach ($uniSpecs as $name => $modules) {
+            $cycle = Cycle::updateOrCreate(['name' => "Grado en $name"], ['area' => 'Universidad', 'level' => 'Grado']);
+            $tagIds = [];
+            foreach ($modules as $m) {
+                $tagIds[] = Tag::updateOrCreate(['name' => $m])->id;
+            }
+            $cycle->tags()->sync($tagIds);
+            $uniCycles[] = $cycle;
+        }
+
         // 3. CENTROS EDUCATIVOS
         echo "🏫 Configurando Centros y Administradores...\n";
         
@@ -195,6 +214,7 @@ class SchoolOrganizationSeeder extends Seeder
             ['name' => 'IES Salinas', 'type' => 'SE', 'category' => 'IES', 'location' => 'Arrecife', 'cycles' => array_merge($esoCycles, $bachCycles)],
             ['name' => 'IES en Altavista', 'type' => 'SE', 'category' => 'IES', 'location' => 'Arrecife', 'cycles' => array_merge($esoCycles, $bachCycles)],
             ['name' => 'CIFP Zonzamas', 'type' => 'HE', 'category' => 'CIFP', 'location' => 'Arrecife', 'cycles' => array_values($fpCycles)],
+            ['name' => 'ULPGC Lanzarote', 'type' => 'HE', 'category' => 'Universidad', 'location' => 'Tahíche', 'cycles' => $uniCycles],
             ['name' => 'Miyagi Do Karate', 'type' => 'SE', 'category' => 'IES', 'location' => 'Okinawa', 'cycles' => $karateCycles],
             ['name' => 'TelamoNet', 'type' => 'TM', 'category' => 'CIFP', 'location' => 'Lanzarote', 'cycles' => array_merge($esoCycles, $bachCycles, array_values($fpCycles))],
         ];
@@ -205,7 +225,7 @@ class SchoolOrganizationSeeder extends Seeder
             // Admin del Centro
             $adminCenter = User::updateOrCreate(['email' => "admin." . strtolower(str_replace(' ', '', $data['name'])) . "@telamonet.es"], [
                 'name' => 'Admin', 'last_name' => $data['name'], 'password' => Hash::make('12345678'),
-                'role' => 'EI', 'dni' => '0000000' . $idx . 'Z', 'institution_name' => $data['name'],
+                'role' => 'EI', 'dni' => strtoupper(substr(md5($data['name']), 0, 8)) . 'X', 'institution_name' => $data['name'],
                 'education_level' => 'Centro Educativo'
             ]);
 

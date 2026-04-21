@@ -8,11 +8,22 @@ const props = defineProps({
     teachers: { type: Array, default: () => [] },
     students: { type: Array, default: () => [] },
     cycles: { type: Array, default: () => [] },
+    center: { type: Object, default: () => ({ type: 'HE' }) },
     apiBase: { type: String, required: true },
     headers: { type: Object, required: true }
 })
 
 const emit = defineEmits(['close', 'refresh', 'toast'])
+
+
+const labels = computed(() => {
+    const isSchool = props.center?.type === 'PE'
+    const isUni = props.center?.type === 'HE' && (props.center?.category?.toLowerCase() === 'university' || props.center?.category?.toLowerCase() === 'universidad')
+    
+    if (isSchool) return { cycle: 'Curso / Etapa', subject: 'Asignatura / Área' }
+    if (isUni) return { cycle: 'Grado / Carrera', subject: 'Asignatura / Crédito' }
+    return { cycle: 'Ciclo Formativo', subject: 'Asignatura / Módulo' }
+})
 
 // Estado único para todos los formularios
 const form = ref({
@@ -34,8 +45,8 @@ const MODAL_MAP = computed(() => ({
         msg: 'Grupo creado',
         url: '/my-center/groups',
         fields: [
-            { id: 'name', type: 'text', label: 'Nombre Identificativo', placeholder: 'Ej: 1º DAW A' },
-            { id: 'cycle_id', type: 'select', label: 'Ciclo Formativo', options: props.cycles }
+            { id: 'name', type: 'text', label: 'Nombre Identificativo', placeholder: 'Ej: 1º DAW A o 2º Primaria B' },
+            { id: 'cycle_id', type: 'select', label: labels.value.cycle, options: props.cycles }
         ]
     },
     tutor: {
@@ -60,7 +71,7 @@ const MODAL_MAP = computed(() => ({
         msg: 'Docencia asignada',
         url: `/my-center/groups/${props.group?.id}/subjects`,
         fields: [
-            { id: 'tag_id', type: 'select-grouped', label: 'Asignatura / Módulo', groups: props.cycles },
+            { id: 'tag_id', type: 'select-grouped', label: labels.value.subject, groups: props.cycles },
             { id: 'user_id', type: 'select', label: 'Personal Docente', options: props.teachers.map(t => ({ id: t.id, name: `${t.name} ${t.last_name}` })) }
         ]
     }

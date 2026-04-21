@@ -100,7 +100,7 @@ const getTeacherName = (id) => {
                 </div>
             </ManagementCard>
 
-            <CenterTabs v-model="activeTab" />
+            <CenterTabs v-model="activeTab" :center="center" />
 
             <!-- Dinamic Tab Content -->
             <GroupsTab 
@@ -123,9 +123,22 @@ const getTeacherName = (id) => {
             <CyclesTab 
                 v-else-if="activeTab === 'cycles'" 
                 :cycles="cycles" 
+                :center="center"
             />
             
         </template>
-        <CenterManagerCore :activeModal="activeModal" :group="selectedGroup" :teachers="teachers" :students="students" :cycles="cycles" :apiBase="apiBase" :headers="headers" @close="activeModal = null" @refresh="loadAll" @toast="showToast" />
+        <CenterManagerCore 
+            :activeModal="activeModal" 
+            :group="selectedGroup" 
+            :teachers="teachers" 
+            :students="students" 
+            :cycles="cycles" 
+            :center="center"
+            :apiBase="apiBase" 
+            :headers="headers" 
+            @close="activeModal = null" 
+            @refresh="loadAll" 
+            @toast="showToast" 
+        />
     </ManagementLayout>
 </template>
