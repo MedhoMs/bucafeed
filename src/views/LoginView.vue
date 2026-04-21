@@ -30,6 +30,7 @@
                 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
                 const response = await fetch(`${apiBase}/login`, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',

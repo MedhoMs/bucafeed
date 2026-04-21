@@ -53,6 +53,11 @@ class EducationalCenter extends TemplateModel
         return $this->hasMany(User::class)->where('role', 'Student');
     }
 
+    public function admins()
+    {
+        return $this->hasMany(User::class)->whereIn('role', ['EI', 'Admin']);
+    }
+
     public function groups()
     {
         return $this->hasMany(Group::class);
