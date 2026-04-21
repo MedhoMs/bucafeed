@@ -10,6 +10,8 @@ return [
         'http://127.0.0.1:5173',
         'https://telamonet.up.railway.app',
         'https://telamonet-api.up.railway.app',
+        'https://telamonet.com',
+        'https://www.telamonet.com',
     ],
 
     'allowed_origins_patterns' => [],
