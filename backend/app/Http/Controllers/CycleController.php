@@ -9,6 +9,7 @@ class CycleController extends TemplateController
 {
     protected $model = Cycle::class;
     protected $viewPath = 'admin.global_cycles';
+    protected $with = ['tags'];
 
     protected function extraFilters($query, Request $request)
     {
@@ -42,4 +43,5 @@ class CycleController extends TemplateController
             'level' => 'required|string'
         ];
     }
+
 }

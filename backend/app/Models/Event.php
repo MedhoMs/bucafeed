@@ -39,7 +39,7 @@ class Event extends TemplateModel
     /**
      * Campos que se incluyen siempre en JSON
      */
-    protected $appends = ['image_url', 'center_name'];
+    protected $appends = ['image_url', 'center_name', 'participants_count'];
 
     public function educationalCenter()
     {
@@ -74,10 +74,23 @@ class Event extends TemplateModel
                 // If it's a full URL (external), return it directly
                 if (str_starts_with($this->image, 'http')) return $this->image;
 
-                // For everything else (Base64 or internal /uploads paths), 
-                // use the streaming API route for consistency and performance.
+                // Si está en public/ (empieza por /uploads)
+                if (str_starts_with($this->image, '/uploads') || str_starts_with($this->image, 'uploads')) {
+                    return asset($this->image);
+                }
+
+                // For Base64 or old paths
                 return route('api.event.image', ['id' => $this->id, 't' => $this->updated_at?->timestamp]);
             },
+        );
+    }
+    /**
+     * Conteo de participantes para la API
+     */
+    protected function participantsCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->participants()->count()
         );
     }
 }

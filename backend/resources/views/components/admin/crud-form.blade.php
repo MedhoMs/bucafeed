@@ -39,8 +39,9 @@
         {{ $slot }}
 
         <div class="flex items-center justify-end gap-3 mt-8">
-            @if (!$disabled || $oper == 'edit')
-                <button type="submit" class="btn-primary px-6 py-2 rounded-xl font-semibold transition-all duration-200">
+            @if (($oper != 'destroy' && $oper != 'show') && (!$disabled || $oper == 'edit'))
+                <button type="submit" class="w-full md:w-auto bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg shadow-cyan-900/20 active:scale-95 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                     {{ ($oper == 'edit') ? $editText : $saveText }}
                 </button>
             @endif
@@ -54,7 +55,8 @@
     </form>
 
     @if($showCancel)
-        <button type="button" class="mt-4 px-4 py-2 rounded-xl bg-slate-700/50 hover:bg-slate-700 text-white transition-all duration-200" data-bs-dismiss="modal" onclick="document.getElementById('default-modal').classList.add('hidden')">
+        <button type="button" class="mt-6 px-8 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10 transition-all duration-300 text-sm font-bold uppercase tracking-widest flex items-center gap-2" data-bs-dismiss="modal" onclick="document.getElementById('default-modal').classList.add('hidden')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
             {{ $cancelText }}
         </button>
     @endif

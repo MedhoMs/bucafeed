@@ -3,17 +3,17 @@ defineProps({
     tabs: { type: Array, required: true }, // Array de { id: string, label: string, icon?: string }
     modelValue: { type: String, required: true }
 })
-defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue'])
 </script>
 
 <template>
-    <div class="flex gap-1 mb-8 bg-black/20 backdrop-blur-sm p-1 rounded-xl border border-white/5">
+    <div class="flex gap-1 mb-8 bg-black/20 p-1 rounded-xl border border-white/5 overflow-x-auto no-scrollbar">
         <button 
             v-for="tab in tabs" 
             :key="tab.id" 
-            @click="$emit('update:modelValue', tab.id)"
+            @click="emit('update:modelValue', tab.id)"
             :class="[
-                'flex-1 flex items-center justify-center gap-2 py-3 px-3 text-xs font-black rounded-[10px] transition-all cursor-pointer uppercase tracking-tight',
+                'flex-1 flex items-center justify-center gap-2 py-3 px-6 text-xs font-black rounded-[10px] transition-all cursor-pointer uppercase tracking-tight whitespace-nowrap shrink-0',
                 modelValue === tab.id 
                     ? 'bg-[#406071] text-white border border-white/10 shadow-lg' 
                     : 'text-white/30 hover:text-white hover:bg-white/5'

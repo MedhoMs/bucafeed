@@ -31,7 +31,7 @@ class EducationalCenter extends TemplateModel
         'UR' => 'Universidad',
         'TM' => 'Administrador',
         'US' => 'Usuario Externo',
-        'EI' => 'Centro Educativo'
+        'EI' => 'Institución Educativa'
     ];
 
     /**

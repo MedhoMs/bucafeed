@@ -6,7 +6,7 @@
 ])
 
 @php
-    $isExternal = str_starts_with($to, 'http://') || str_starts_with($to, 'https://') || $to === '#';
+    $isExternal = str_starts_with($to, 'http') || str_contains($to, '://') || $to === '#';
     $finalUrl = $isExternal ? $to : url($to);
 @endphp
 
