@@ -49,7 +49,7 @@ const filteredEvents = computed(() => {
         </div>
 
         <!-- Lista de Eventos usando la Plantilla Unificada -->
-        <div v-if="filteredEvents.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10">
+        <div v-if="filteredEvents.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-10">
             <EventCard 
                 v-for="event in filteredEvents" 
                 :key="event.id" 
