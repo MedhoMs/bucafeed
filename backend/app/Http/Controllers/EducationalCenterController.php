@@ -8,6 +8,8 @@ use App\Models\Cycle;
 use App\Models\Group;
 use App\Models\Rol;
 use App\Models\Tag;
+use App\Models\Event;
+
 
 use Illuminate\Http\Request;
 
@@ -15,8 +17,34 @@ class EducationalCenterController extends TemplateController
 {
     protected $model = EducationalCenter::class;
     protected $viewPath = 'educational_centers';
-    protected $with = ['adminUser', 'students', 'teachers', 'cycles'];
+    protected $with = ['adminUser', 'students', 'teachers', 'cycles.tags'];
     protected $withCount = ['students', 'teachers'];
+
+    public function destroy(Request $request, $id)
+    {
+        $center = EducationalCenter::findOrFail($id);
+
+        if ($request->isMethod('get')) {
+            return $this->renderForm($center, 'destroy');
+        }
+
+        // 1. Desasignar usuarios (poner a null su educational_center_id)
+        User::where('educational_center_id', $id)->update([
+            'educational_center_id' => null,
+            'institution_name' => null
+        ]);
+
+        Group::where('educational_center_id', $id)->delete();
+        Event::where('educational_center_id', $id)->delete();
+        $center->cycles()->detach();
+
+        $center->delete();
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Centro eliminado correctamente.']);
+        }
+        return redirect()->route('educational_centers.index')->with('success', 'Centro eliminado correctamente.');
+    }
 
     protected function extraFilters($query, Request $request)
     {
@@ -38,13 +66,16 @@ class EducationalCenterController extends TemplateController
             $types[$t] = EducationalCenter::$niveles_disponibles[$t] ?? $t;
         }
 
-        $niveles = EducationalCenter::$niveles_disponibles;
-        
         return [
+            'roles_disponibles' => [
+                'Admin' => 'Administrador',
+                'EI' => 'Institución Educativa',
+                'Teacher' => 'Profesor',
+                'Student' => 'Alumno'
+            ],
+            'niveles_disponibles' => EducationalCenter::$niveles_disponibles,
             'locations' => $locations,
             'types' => $types,
-            'roles_disponibles' => Rol::pluck('name', 'code')->toArray(),
-            'niveles_disponibles' => $niveles,
             'ciclos_disponibles' => Cycle::orderBy('name')->pluck('name', 'id')->toArray()
         ];
     }
@@ -334,8 +365,8 @@ class EducationalCenterController extends TemplateController
         
         $group = $center->groups()->create([
             'name' => $validated['name'],
-            'cycle_id' => $validated['cycle_id'],
-            'tutor_id' => $validated['tutor_id'],
+            'cycle_id' => $validated['cycle_id'] ?? null,
+            'tutor_id' => $validated['tutor_id'] ?? null,
         ]);
 
         return response()->json($group, 201);
@@ -352,7 +383,11 @@ class EducationalCenterController extends TemplateController
             'tutor_id' => 'nullable|exists:users,id',
         ]);
 
-        $group->update($validated);
+        $group->update([
+            'name' => $validated['name'],
+            'cycle_id' => $validated['cycle_id'] ?? null,
+            'tutor_id' => $validated['tutor_id'] ?? null,
+        ]);
         return response()->json($group);
     }
 
@@ -393,11 +428,86 @@ class EducationalCenterController extends TemplateController
         $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
         
         $validated = $request->validate([
-            'tutor_id' => 'nullable|exists:users,id'
+            'user_id' => 'nullable|exists:users,id'
         ]);
         
-        $group->update(['tutor_id' => $validated['tutor_id']]);
+        $group->update(['tutor_id' => $validated['user_id'] ?? null]);
         return response()->json(['message' => 'Tutor asignado']);
+    }
+
+    public function apiSearchUsers(Request $request)
+    {
+        $search = $request->query('q');
+        $role = $request->query('role'); // Student or Teacher
+
+        $query = User::whereNull('educational_center_id');
+
+        if ($role) {
+            $query->where('role', $role);
+        }
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%");
+            });
+        }
+
+        return response()->json($query->limit(20)->get());
+    }
+
+    public function apiEnrollUsers(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $validated = $request->validate([
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id'
+        ]);
+
+        $center = EducationalCenter::findOrFail($user->educational_center_id);
+
+        User::whereIn('id', $validated['user_ids'])->update([
+            'educational_center_id' => $center->id,
+            'institution_name' => $center->name
+        ]);
+
+        return response()->json(['message' => 'Usuarios matriculados correctamente']);
+    }
+
+    public function apiEnrollCycles(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $validated = $request->validate([
+            'cycle_ids' => 'required|array',
+            'cycle_ids.*' => 'exists:cycles,id'
+        ]);
+
+        $center = EducationalCenter::findOrFail($user->educational_center_id);
+        $center->cycles()->syncWithoutDetaching($validated['cycle_ids']);
+
+        return response()->json(['message' => 'Ciclos vinculados correctamente']);
+    }
+
+    public function apiRemoveCycle(Request $request, $cycleId)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $center = EducationalCenter::findOrFail($user->educational_center_id);
+        $center->cycles()->detach($cycleId);
+
+        return response()->json(['message' => 'Ciclo desvinculado']);
     }
 
     public function apiAssignSubjectTeacher(Request $request, $groupId)
@@ -407,11 +517,11 @@ class EducationalCenterController extends TemplateController
         
         $validated = $request->validate([
             'tag_id' => 'required|exists:tags,id',
-            'teacher_id' => 'required|exists:users,id'
+            'user_id' => 'required|exists:users,id'
         ]);
         
         $group->subjectsWithTeachers()->detach($validated['tag_id']);
-        $group->subjectsWithTeachers()->attach($validated['tag_id'], ['user_id' => $validated['teacher_id']]);
+        $group->subjectsWithTeachers()->attach($validated['tag_id'], ['user_id' => $validated['user_id']]);
         
         return response()->json(['message' => 'Materia y profesor asignados']);
     }
@@ -468,5 +578,117 @@ class EducationalCenterController extends TemplateController
         }
         $center = EducationalCenter::with('cycles.tags')->find($user->educational_center_id);
         return response()->json($center ? $center->cycles : []);
+    }
+
+    public function apiEvents(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json([], 403);
+        }
+        // Devolvemos los eventos organizados por este centro
+        $events = Event::where('educational_center_id', $user->educational_center_id)
+                       ->orderBy('date', 'desc')
+                       ->get();
+        return response()->json($events);
+    }
+
+    public function apiStoreEvent(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $validated = $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'required|string',
+            'location'    => 'nullable|string|max:255',
+            'date'        => 'required|date',
+            'start_time'  => 'required',
+            'end_time'    => 'required',
+            'target_role' => 'nullable|string',
+            'image'       => 'nullable', 
+        ]);
+
+        $validated['educational_center_id'] = $user->educational_center_id;
+
+        // Procesar imagen (Archivo o Base64)
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $imageName = time() . '_image_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $path = 'uploads/events';
+            $file->move(public_path($path), $imageName);
+            $validated['image'] = '/' . $path . '/' . $imageName;
+        } elseif ($request->filled('image') && str_starts_with($request->image, 'data:image')) {
+            try {
+                $base64Image = $request->image;
+                $format = str_contains($base64Image, 'image/jpeg') ? 'jpg' : 'png';
+                $image = str_replace(['data:image/jpeg;base64,', 'data:image/png;base64,', 'data:image/jpg;base64,', ' '], ['', '', '', '+'], $base64Image);
+                $imageName = time() . '_image_' . rand(100, 999) . '.' . $format;
+                $path = 'uploads/events';
+                $fullPath = public_path($path);
+                if (!file_exists($fullPath)) mkdir($fullPath, 0777, true);
+                \File::put($fullPath . '/' . $imageName, base64_decode($image));
+                $validated['image'] = '/' . $path . '/' . $imageName;
+            } catch (\Exception $e) { \Log::error("Error Base64: " . $e->getMessage()); }
+        }
+
+        $event = Event::create($validated);
+
+        return response()->json($event, 201);
+    }
+
+    public function apiUpdateEvent(Request $request, $eventId)
+    {
+        $user = $request->user();
+        $event = Event::where('educational_center_id', $user->educational_center_id)->findOrFail($eventId);
+
+        $validated = $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'required|string',
+            'location'    => 'nullable|string|max:255',
+            'date'        => 'required|date',
+            'start_time'  => 'required',
+            'end_time'    => 'required',
+            'target_role' => 'nullable|string',
+            'image'       => 'nullable', 
+        ]);
+
+        // Procesar imagen (Archivo o Base64)
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $imageName = time() . '_image_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $path = 'uploads/events';
+            $file->move(public_path($path), $imageName);
+            $validated['image'] = '/' . $path . '/' . $imageName;
+        } elseif ($request->filled('image') && str_starts_with($request->image, 'data:image')) {
+            try {
+                $base64Image = $request->image;
+                $format = str_contains($base64Image, 'image/jpeg') ? 'jpg' : 'png';
+                $image = str_replace(['data:image/jpeg;base64,', 'data:image/png;base64,', 'data:image/jpg;base64,', ' '], ['', '', '', '+'], $base64Image);
+                $imageName = time() . '_image_' . rand(100, 999) . '.' . $format;
+                $path = 'uploads/events';
+                $fullPath = public_path($path);
+                if (!file_exists($fullPath)) mkdir($fullPath, 0777, true);
+                \File::put($fullPath . '/' . $imageName, base64_decode($image));
+                $validated['image'] = '/' . $path . '/' . $imageName;
+            } catch (\Exception $e) { \Log::error("Error Base64: " . $e->getMessage()); }
+        } elseif (!$request->filled('image')) {
+            // Si no se envía una nueva imagen, mantenemos la que tiene
+            unset($validated['image']);
+        }
+
+        $event->update($validated);
+
+        return response()->json($event);
+    }
+
+    public function apiDeleteEvent(Request $request, $eventId)
+    {
+        $user = $request->user();
+        $event = Event::where('educational_center_id', $user->educational_center_id)->findOrFail($eventId);
+        $event->delete();
+        return response()->json(['message' => 'Evento eliminado']);
     }
 }

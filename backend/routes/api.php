@@ -2,9 +2,11 @@
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Cycle;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\UserController;
@@ -14,6 +16,7 @@ use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\KahootController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\CycleController;
 
 Route::get('/health', function () {
     return response()->json([
@@ -39,7 +42,7 @@ Route::get('/test-email', function () {
     ];
 
     try {
-        \Illuminate\Support\Facades\Mail::raw('Prueba de conexión SMTP desde Railway', function ($message) {
+        Mail::raw('Prueba de conexión SMTP desde Railway', function ($message) {
             $message->to('telamonetofficial@gmail.com')
                     ->subject('Test de Correo - TelamoNet');
         });
@@ -91,20 +94,31 @@ Route::get('/test-connection', function () {
     return response()->json([
         'message' => '¡Hola desde Laravel!',
         'database' => $dbStatus,
-        'status' => 'success'
+        'status' => 'success',
+        'cycles_count' => Cycle::count()
     ]);
+});
+
+Route::get('/test-cycles', function() {
+    try {
+        return Cycle::with('tags')->get();
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
 });
 
 Route::post('/send-code', [AuthController::class, 'sendVerificationCode']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/events', [EventController::class, 'apiIndex']);
+Route::post('/events/{id}/join', [EventController::class, 'apiJoin'])->middleware('auth:sanctum');
 Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name('api.event.image');
 Route::post('/events/generate-kahoot', [KahootController::class, 'generateQuestions']);
 Route::get('/educational-centers', [EducationalCenterController::class, 'apiIndex']);
 Route::get('/meetings', [MeetingController::class, 'apiIndex']);
 Route::post('/meetings', [MeetingController::class, 'apiStore']);
 Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);
+Route::get('/all-cycles', [CycleController::class, 'apiIndex']);
 
 // Usuarios (para poder ver perfiles públicos desde Vue)
 Route::get('/users/by-center', [UserController::class, 'apiStudentsByCenter']);
@@ -134,4 +148,18 @@ Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
     Route::get('/students', [EducationalCenterController::class, 'apiStudents']);
     Route::get('/admins', [EducationalCenterController::class, 'apiAdmins']);
     Route::get('/cycles', [EducationalCenterController::class, 'apiCycles']);
+    
+    // Gestión de Eventos del Centro
+    Route::get('/events', [EducationalCenterController::class, 'apiEvents']);
+    Route::post('/events', [EducationalCenterController::class, 'apiStoreEvent']);
+    Route::put('/events/{event}', [EducationalCenterController::class, 'apiUpdateEvent']);
+    Route::delete('/events/{event}', [EducationalCenterController::class, 'apiDeleteEvent']);
+
+    // Gestión de Usuarios Globales (Matriculación)
+    Route::get('/search-users', [EducationalCenterController::class, 'apiSearchUsers']);
+    Route::post('/enroll-users', [EducationalCenterController::class, 'apiEnrollUsers']);
+
+    // Gestión de Ciclos del Centro
+    Route::post('/enroll-cycles', [EducationalCenterController::class, 'apiEnrollCycles']);
+    Route::delete('/cycles/{cycle}', [EducationalCenterController::class, 'apiRemoveCycle']);
 });

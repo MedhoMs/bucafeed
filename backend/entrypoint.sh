@@ -25,7 +25,8 @@ mkdir -p bootstrap/cache
 
 # Ajustar permisos si es necesario
 chmod -R 775 storage bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+chmod -R 777 database
+chown -R www-data:www-data storage bootstrap/cache database 2>/dev/null || true
 
 # Asegurar enlace simbólico de storage
 if [ ! -L "public/storage" ]; then

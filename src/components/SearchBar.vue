@@ -30,22 +30,17 @@ watch(filteredMeetings, (newValue) => {
 
 
 <template>
-    <div class="flex justify-end my-3">
-        <div
-            class="group flex bg-[#2a4a5a] rounded-[20px] px-4 py-3 lg:w-375 w-75 items-center hover:bg-[#334d5e] focus-within:bg-[#334d5e] focus-within:outline focus-within:outline-[#1da1f2]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="shrink-0 text-[#8b98a5]">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                <path d="M21 21l-6 -6" />
-            </svg>
-            <input 
-                type="text" 
-                v-model="search"
-                :placeholder="t.nav.search || 'Buscar'"
-                class="ml-3 w-full flex-1 outline-none border-none bg-transparent text-base text-[#e7e9ea] placeholder-[#8b98a5]"
-            >
-        </div>
+    <div class="group flex items-center bg-white/5 border border-white/10 rounded-[22px] px-5 py-3.5 transition-all focus-within:bg-white/10 focus-within:border-cyan-500/50 focus-within:ring-1 focus-within:ring-cyan-500/20">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-white/20 group-focus-within:text-cyan-400 transition-colors">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <circle cx="10" cy="10" r="7" />
+            <path d="M21 21l-6 -6" />
+        </svg>
+        <input 
+            v-model="search"
+            type="text" 
+            :placeholder="t.nav.search || 'Buscar contenido...'" 
+            class="ml-4 w-full flex-1 outline-none border-none bg-transparent text-sm font-bold text-white placeholder:text-white/20 tracking-tight"
+        >
     </div>
 </template>

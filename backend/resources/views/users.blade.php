@@ -39,7 +39,7 @@
                             {{ strtoupper(substr($user->name ?? $user->email, 0, 1)) }}
                         </div>
                         <span class="px-3 py-1 bg-slate-700 rounded-full text-xs font-bold uppercase tracking-wider text-slate-300 border border-slate-600">
-                            {{ $user->role }}
+                            {{ $user->role_name }}
                         </span>
                     </div>
 

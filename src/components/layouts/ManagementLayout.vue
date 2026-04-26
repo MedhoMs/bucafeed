@@ -13,9 +13,9 @@ defineProps({
 <template>
     <NavBar />
     <main class="flex min-h-screen lg:pl-75">
-        <section class="text-white w-full max-w-5xl mx-auto px-4 py-6">
+        <section class="text-white w-full max-w-screen-2xl mx-auto px-6 py-10 lg:px-14">
 
-            <div v-if="toast.show" :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-xl shadow-2xl font-semibold text-sm', toast.type === 'error' ? 'bg-red-500/90 text-white' : 'bg-emerald-500/90 text-white']">
+            <div v-if="toast.show" :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-xl shadow-2xl font-semibold text-sm', toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white']">
                 {{ toast.msg }}
             </div>
 
