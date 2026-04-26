@@ -5,6 +5,7 @@ import { sidebar } from './sidebar';
 import { profile } from './profile';
 import { post } from './post';
 import { videoCall } from './videoCall';
+import { validation } from './validation';
 
 export const es = {
     nav,
@@ -13,5 +14,6 @@ export const es = {
     sidebar,
     profile,
     post,
-    videoCall
+    videoCall,
+    validation
 };

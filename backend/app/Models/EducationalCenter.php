@@ -31,7 +31,7 @@ class EducationalCenter extends TemplateModel
         'UR' => 'Universidad',
         'TM' => 'Administrador',
         'US' => 'Usuario Externo',
-        'EI' => 'Centro Educativo'
+        'EI' => 'Institución Educativa'
     ];
 
     /**
@@ -51,6 +51,11 @@ class EducationalCenter extends TemplateModel
     public function students()
     {
         return $this->hasMany(User::class)->where('role', 'Student');
+    }
+
+    public function admins()
+    {
+        return $this->hasMany(User::class)->whereIn('role', ['EI', 'Admin']);
     }
 
     public function groups()

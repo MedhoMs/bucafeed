@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\AdminMiddleware;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,8 +14,24 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->trustProxies(at: '*');
+        $middleware->statefulApi();
+        $middleware->validateCsrfTokens(except: [
+            'api/*'
+        ]);
+        $middleware->alias([
+            'admin' => AdminMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (NotFoundHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json(['error' => 'Ruta no encontrada'], 404);
+            }
+            $frontendUrl = env('APP_FRONTEND_URL', 'http://localhost:5173');
+            if (!str_starts_with($frontendUrl, 'http')) {
+                $frontendUrl = 'https://' . $frontendUrl;
+            }
+            return redirect()->away(rtrim($frontendUrl, '/') . '/home');
+        });
     })->create();

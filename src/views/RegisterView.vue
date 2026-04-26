@@ -188,6 +188,7 @@
             try {
                 const response = await fetch(`${apiBase}/register`, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
@@ -380,7 +381,7 @@
                     <select id="educationLevelSelect" class="EIInput border-b border-black pb-1">
                         <option value="PE">Educación Primaria</option>
                         <option value="SE">Educación Secundaria</option>
-                        <option value="College">Universidad</option>
+                        <option value="UR">Universidad</option>
                         <option value="FP">Formación Profesional</option>
                     </select>
                     <label class="mt-8 font-bold">¿Cuál es su Institución Educativa?</label>
