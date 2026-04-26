@@ -104,10 +104,14 @@ const getTeacherName = (id) => {
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                    <div v-for="(v, l, i) in {[center.students_count]:'Alumnos', [center.teachers_count]:'Profesores', [center.groups_count]:'Grupos'}" :key="l" 
+                    <div v-for="stat in [
+                        { label: 'Grupos', value: center.groups_count },
+                        { label: 'Profesores', value: center.teachers_count },
+                        { label: 'Alumnos', value: center.students_count },
+                    ]" :key="stat.label" 
                          class="flex flex-col items-center border-b sm:border-b-0 sm:border-r border-white/5 last:border-0 pb-4 sm:pb-0">
-                        <span class="text-2xl sm:text-3xl font-black text-white/90">{{ v || 0 }}</span>
-                        <span class="text-[10px] text-white/30 uppercase tracking-[0.2em] font-black mt-1 sm:mt-2">{{ l }}</span>
+                        <span class="text-2xl sm:text-3xl font-black text-white/90">{{ stat.label }}</span>
+                        <span class="text-[20px] text-white/30 uppercase tracking-[0.2em] font-black mt-1 sm:mt-2">{{ stat.value || 0 }}</span>
                     </div>
                 </div>
             </ManagementCard>

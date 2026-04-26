@@ -94,11 +94,11 @@ const MODAL_MAP = computed(() => ({
         url: '/my-center/events',
         fields: [
             { id: 'title', type: 'text', label: 'Título del Evento', placeholder: 'Ej: Jornada Deportiva', required: true },
-            { id: 'description', type: 'textarea', label: 'Descripción', placeholder: '¿De qué trata el evento?', required: true },
-            { id: 'date', type: 'date', label: 'Fecha', required: true },
+            { id: 'description', type: 'textarea', label: 'Descripción', placeholder: '¿De qué trata el evento?', required: true , full: true},
+            { id: 'location', type: 'text', label: 'Ubicación específica', placeholder: 'Ej: Pabellón Sur', full: false},
+            { id: 'date', type: 'date', label: 'Fecha', required: true , full: false},
             { id: 'start_time', type: 'time', label: 'Hora Inicio', required: true, full: false },
             { id: 'end_time', type: 'time', label: 'Hora Fin', required: true, full: false },
-            { id: 'location', type: 'text', label: 'Ubicación específica', placeholder: 'Ej: Pabellón Sur' },
             { id: 'image', type: 'file', label: 'Imagen de portada', aspect: 'video' }
         ]
     },
