@@ -1,7 +1,40 @@
 <script setup>
-import { useTranslations } from "../composables/useTranslations";
-const { t } = useTranslations(); // Variable para llamar al archivo de traduccion
+    import { useTranslations } from "../composables/useTranslations";
+    import { useRoute } from 'vue-router';
+    import { ref, computed, onMounted } from 'vue';
+    import { user as authUser } from '../stores/auth';
+    import defaultLogo from '../assets/logo/logoTelamon.png';
+
+    const { t } = useTranslations(); 
+    const route = useRoute();
+    const students = ref([]);
+
+    const meetingId = computed(() => route.params.id);
+    const meetingTeacher = computed(() => route.params.teacher);
+    const groupName = computed(() => route.params.group);
+
+    const getProfilePicture = (path) => {
+        if (!path) return defaultLogo;
+        if (path.startsWith('http')) return path;
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+        return apiBase.replace('/api', '') + '/storage/' + path;
+    };
+
+    onMounted(async () => {
+        if (groupName.value) {
+            try {
+                const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${apiBase}/users/by-center?center_name=${encodeURIComponent(groupName.value)}`);
+                if (response.ok) {
+                    students.value = await response.json();
+                }
+            } catch (error) {
+                console.error('Error fetching students:', error);
+            }
+        }
+    });
 </script>
+
 
 <template>
     <aside class="flex justify-end w-40 lg:w-1/5 h-screen shrink-0">
@@ -14,7 +47,7 @@ const { t } = useTranslations(); // Variable para llamar al archivo de traduccio
                 <div class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer">
                     <img src="../assets/logo/logoTelamon.png" alt=""
                         class="hidden lg:block w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
-                    <p class="text-base lg:text-xl">Profesor</p>
+                    <p class="text-base lg:text-xl">{{ meetingId ? meetingTeacher : 'Profesor' }}</p>
                 </div>
             </div>
 
@@ -23,12 +56,22 @@ const { t } = useTranslations(); // Variable para llamar al archivo de traduccio
             <p class="text-lg lg:text-2xl font-bold self-start mt-5 mb-2 shrink-0">Alumnos</p>
 
             <div class="flex flex-col mr-auto w-full flex-1 overflow-y-auto pb-4 pr-2">
-                <div v-for="n in 11" :key="n"
-                    class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer">
-                    <img src="../assets/logo/logoTelamon.png" alt=""
+                <!-- Estudiante Logueado (Yo) -->
+                <div v-if="authUser && authUser.role === 'Student'" class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer">
+                    <img :src="getProfilePicture(authUser.profile_picture)" alt=""
                         class="hidden lg:block w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
-                    <p class="text-base lg:text-xl">Alumno</p>
+                    <p class="text-base lg:text-xl">{{ authUser.name }} (Tú)</p>
                 </div>
+
+                <!-- Otros Estudiantes del Centro -->
+                <div v-for="student in students.filter(s => s.id !== authUser?.id)" :key="student.id"
+                    class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer">
+                    <img :src="getProfilePicture(student.profile_picture)" alt=""
+                        class="hidden lg:block w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
+                    <p class="text-base lg:text-xl">{{ student.name }} {{ student.last_name }}</p>
+                </div>
+
+                <p v-if="students.length === 0 && !authUser" class="text-sm text-white/40 italic">No hay otros alumnos</p>
             </div>
 
         </div>

@@ -1,30 +1,30 @@
 <script setup>
-    import { ref, computed, watch } from 'vue'
-    import { useTranslations } from '@/composables/useTranslations'
-    const { t } = useTranslations()
+import { ref, computed, watch } from 'vue'
+import { useTranslations } from '@/composables/useTranslations'
+const { t } = useTranslations()
 
-    const search = ref('')
+const search = ref('')
 
-    const props = defineProps({
-        meetings: {
-            type: Array,
-            default: () => []
-        }
-    })
+const props = defineProps({
+    meetings: {
+        type: Array,
+        default: () => []
+    }
+})
 
-    const emit = defineEmits(['update:filtered'])
+const emit = defineEmits(['update:filtered'])
 
-    const filteredMeetings = computed(() => {
-        if (!search.value.trim()) return props.meetings
-        return props.meetings.filter(m => 
-            m.name.toLowerCase().includes(search.value.toLowerCase())
-        )
-    })
+const filteredMeetings = computed(() => {
+    if (!search.value.trim()) return props.meetings
+    return props.meetings.filter(m =>
+        m.name.toLowerCase().includes(search.value.toLowerCase())
+    )
+})
 
-    // Emit whenever filteredMeetings changes
-    watch(filteredMeetings, (newValue) => {
-        emit('update:filtered', newValue)
-    }, { immediate: true })
+// Emit whenever filteredMeetings changes
+watch(filteredMeetings, (newValue) => {
+    emit('update:filtered', newValue)
+}, { immediate: true })
 </script>
 
 
