@@ -208,7 +208,17 @@ class EducationalCenterController extends TemplateController
     public function addUsers($id)
     {
         $center = EducationalCenter::findOrFail($id);
-        return view('educational_centers.add_users_modal', compact('center'));
+        $availableStudents = User::where('role', 'Student')
+            ->where(function($q) use ($id) {
+                $q->whereNull('educational_center_id')->orWhere('educational_center_id', '!=', $id);
+            })->orderBy('name')->get();
+            
+        $availableTeachers = User::where('role', 'Teacher')
+            ->where(function($q) use ($id) {
+                $q->whereNull('educational_center_id')->orWhere('educational_center_id', '!=', $id);
+            })->orderBy('name')->get();
+
+        return view('educational_centers.add_users', compact('center', 'availableStudents', 'availableTeachers'));
     }
 
     public function deleteGroup($id, $groupId)
@@ -263,11 +273,200 @@ class EducationalCenterController extends TemplateController
     public function storeUsers(Request $request, $id)
     {
         $center = EducationalCenter::findOrFail($id);
+
+        if ($request->has('students')) {
+            User::whereIn('id', $request->students)->update([
+                'educational_center_id' => $center->id,
+                'institution_name' => $center->name,
+            ]);
+        }
+
+        if ($request->has('teachers')) {
+            User::whereIn('id', $request->teachers)->update([
+                'educational_center_id' => $center->id,
+                'institution_name' => $center->name,
+            ]);
+        }
+
+        if ($request->ajax()) {
+            return "<div class='p-6 text-center text-green-400 font-bold'>Usuarios asignados correctamente al centro. <br><br> Ya puedes cerrar esta ventana.</div>";
+        }
+
+        return back()->with('success', 'Usuarios matriculados correctamente.');
+    }
+
+
+    public function apiShowMyCenter(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json(['message' => 'No tienes un centro asignado'], 403);
+        }
+        $center = EducationalCenter::withCount(['students', 'teachers', 'groups'])->find($user->educational_center_id);
+        return response()->json($center);
+    }
+
+    public function apiGroups(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json([], 403);
+        }
+        $groups = Group::with(['cycle', 'tutor', 'students', 'subjectsWithTeachers'])
+                        ->where('educational_center_id', $user->educational_center_id)
+                        ->get();
+        return response()->json($groups);
+    }
+
+    public function apiStoreGroup(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
         $validated = $request->validate([
-            'users_data' => 'required|string',
-            'role' => 'required|in:Student,Teacher'
+            'name' => 'required|string|max:255',
+            'cycle_id' => 'nullable|exists:cycles,id',
+            'tutor_id' => 'nullable|exists:users,id',
+        ]);
+        
+        $center = EducationalCenter::findOrFail($user->educational_center_id);
+        
+        $group = $center->groups()->create([
+            'name' => $validated['name'],
+            'cycle_id' => $validated['cycle_id'],
+            'tutor_id' => $validated['tutor_id'],
         ]);
 
-        return $request->ajax() ? $this->listUsersModal($id, $validated['role']) : back();
+        return response()->json($group, 201);
+    }
+
+    public function apiUpdateGroup(Request $request, $groupId)
+    {
+        $user = $request->user();
+        $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'cycle_id' => 'nullable|exists:cycles,id',
+            'tutor_id' => 'nullable|exists:users,id',
+        ]);
+
+        $group->update($validated);
+        return response()->json($group);
+    }
+
+    public function apiDeleteGroup(Request $request, $groupId)
+    {
+        $user = $request->user();
+        $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
+        $group->delete();
+        return response()->json(['message' => 'Grupo eliminado']);
+    }
+
+    public function apiAssignStudents(Request $request, $groupId)
+    {
+        $user = $request->user();
+        $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
+        
+        $validated = $request->validate([
+            'student_ids' => 'required|array',
+            'student_ids.*' => 'exists:users,id'
+        ]);
+        
+        // Use syncWithoutDetaching to add them without removing existing
+        $group->students()->syncWithoutDetaching($validated['student_ids']);
+        return response()->json(['message' => 'Alumnos asignados']);
+    }
+
+    public function apiRemoveStudent(Request $request, $groupId, $studentId)
+    {
+        $user = $request->user();
+        $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
+        $group->students()->detach($studentId);
+        return response()->json(['message' => 'Alumno removido']);
+    }
+
+    public function apiAssignTutor(Request $request, $groupId)
+    {
+        $user = $request->user();
+        $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
+        
+        $validated = $request->validate([
+            'tutor_id' => 'nullable|exists:users,id'
+        ]);
+        
+        $group->update(['tutor_id' => $validated['tutor_id']]);
+        return response()->json(['message' => 'Tutor asignado']);
+    }
+
+    public function apiAssignSubjectTeacher(Request $request, $groupId)
+    {
+        $user = $request->user();
+        $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
+        
+        $validated = $request->validate([
+            'tag_id' => 'required|exists:tags,id',
+            'teacher_id' => 'required|exists:users,id'
+        ]);
+        
+        $group->subjectsWithTeachers()->detach($validated['tag_id']);
+        $group->subjectsWithTeachers()->attach($validated['tag_id'], ['user_id' => $validated['teacher_id']]);
+        
+        return response()->json(['message' => 'Materia y profesor asignados']);
+    }
+
+    public function apiRemoveSubjectTeacher(Request $request, $groupId, $tagId)
+    {
+        $user = $request->user();
+        $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
+        $group->subjectsWithTeachers()->detach($tagId);
+        return response()->json(['message' => 'Materia removida']);
+    }
+
+    public function apiTeachers(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json([]);
+        }
+        $teachers = User::where('educational_center_id', $user->educational_center_id)
+                        ->where('role', 'Teacher')
+                        ->get();
+        return response()->json($teachers);
+    }
+
+    public function apiAdmins(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json([]);
+        }
+        $admins = User::where('educational_center_id', $user->educational_center_id)
+                        ->whereIn('role', ['EI', 'Admin'])
+                        ->get();
+        return response()->json($admins);
+    }
+
+    public function apiStudents(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json([]);
+        }
+        $students = User::where('educational_center_id', $user->educational_center_id)
+                        ->where('role', 'Student')
+                        ->get();
+        return response()->json($students);
+    }
+
+    public function apiCycles(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json([]);
+        }
+        $center = EducationalCenter::with('cycles.tags')->find($user->educational_center_id);
+        return response()->json($center ? $center->cycles : []);
     }
 }

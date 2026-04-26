@@ -21,6 +21,42 @@ Route::get('/health', function () {
     ]);
 });
 
+Route::get('/test-email', function () {
+    // Diagnóstico: mostrar la config de mail que Laravel está usando realmente
+    $mailConfig = [
+        'default_mailer' => config('mail.default'),
+        'smtp_host' => config('mail.mailers.smtp.host'),
+        'smtp_port' => config('mail.mailers.smtp.port'),
+        'smtp_encryption' => config('mail.mailers.smtp.encryption'),
+        'smtp_username' => config('mail.mailers.smtp.username'),
+        'smtp_password' => config('mail.mailers.smtp.password') ? '***SET(' . strlen(config('mail.mailers.smtp.password')) . ' chars)***' : '***NOT SET***',
+        'from_address' => config('mail.from.address'),
+        'from_name' => config('mail.from.name'),
+        'env_MAIL_MAILER' => env('MAIL_MAILER'),
+        'env_MAIL_HOST' => env('MAIL_HOST'),
+        'env_MAIL_PORT' => env('MAIL_PORT'),
+        'env_MAIL_ENCRYPTION' => env('MAIL_ENCRYPTION'),
+    ];
+
+    try {
+        \Illuminate\Support\Facades\Mail::raw('Prueba de conexión SMTP desde Railway', function ($message) {
+            $message->to('telamonetofficial@gmail.com')
+                    ->subject('Test de Correo - TelamoNet');
+        });
+        return response()->json([
+            'message' => '¡Correo enviado correctamente!',
+            'config_usada' => $mailConfig,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'config_usada' => $mailConfig,
+            'trace' => 'Verifica tus variables de MAIL en Railway'
+        ], 500);
+    }
+});
+
+
 Route::get('/ready', function () {
     try {
         DB::select('SELECT 1');
@@ -81,3 +117,21 @@ Route::apiResource('questions', QuestionController::class);
 Route::apiResource('answers', AnswerController::class);
 Route::apiResource('tags', TagController::class);
 Route::post('answers/{answer}/useful', [AnswerController::class, 'markAsUseful']);
+
+// ── Panel de Gestión de Centro (para usuarios EI) ──
+Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
+    Route::get('/', [EducationalCenterController::class, 'apiShowMyCenter']);
+    Route::get('/groups', [EducationalCenterController::class, 'apiGroups']);
+    Route::post('/groups', [EducationalCenterController::class, 'apiStoreGroup']);
+    Route::put('/groups/{group}', [EducationalCenterController::class, 'apiUpdateGroup']);
+    Route::delete('/groups/{group}', [EducationalCenterController::class, 'apiDeleteGroup']);
+    Route::post('/groups/{group}/students', [EducationalCenterController::class, 'apiAssignStudents']);
+    Route::delete('/groups/{group}/students/{user}', [EducationalCenterController::class, 'apiRemoveStudent']);
+    Route::put('/groups/{group}/tutor', [EducationalCenterController::class, 'apiAssignTutor']);
+    Route::post('/groups/{group}/subjects', [EducationalCenterController::class, 'apiAssignSubjectTeacher']);
+    Route::delete('/groups/{group}/subjects/{tag}', [EducationalCenterController::class, 'apiRemoveSubjectTeacher']);
+    Route::get('/teachers', [EducationalCenterController::class, 'apiTeachers']);
+    Route::get('/students', [EducationalCenterController::class, 'apiStudents']);
+    Route::get('/admins', [EducationalCenterController::class, 'apiAdmins']);
+    Route::get('/cycles', [EducationalCenterController::class, 'apiCycles']);
+});

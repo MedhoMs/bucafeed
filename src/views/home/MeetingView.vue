@@ -165,18 +165,19 @@ const deleteMeeting = async (id) => {
     <NavBar></NavBar>
     <main class="flex min-h-screen justify-between lg:pl-75">
         <section class="flex flex-col text-white lg:w-375 w-87.5 mx-auto lg:mr-14 mb-4">
-            <div class="mt-4">
-                <SearchBar :meetings="availableMeetings" @update:filtered="filteredMeetings = $event" class="w-full lg:w-auto" />
+            <div class="flex justify-between mt-4">
+                <SearchBar :meetings="availableMeetings" @update:filtered="filteredMeetings = $event" class="w-315"/>
+            
+                <!-- Botón al estilo admin para crear -->
+                <button 
+                    v-if="canCreateMeeting"
+                    @click="openModal"
+                    class="self-center bg-gradient-to-r from-[#326465] to-[#1d2e3e] hover:brightness-125 transition-all px-6 py-2 rounded-xl border border-white/10 shadow-lg font-bold text-sm lg:text-base flex items-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                    Nueva Charla
+                </button>
             </div>
-            <!-- Botón al estilo admin para crear -->
-            <button 
-                v-if="canCreateMeeting"
-                @click="openModal"
-                class="self-end bg-gradient-to-r from-[#326465] to-[#1d2e3e] hover:brightness-125 transition-all px-6 py-2 rounded-xl border border-white/10 shadow-lg font-bold text-sm lg:text-base flex items-center gap-2"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
-                Nueva Charla
-            </button>
             
             <p class="text-2xl text-center pt-5 pb-7 lg:text-4xl font-bold shrink-0">Charlas Disponibles</p>
 

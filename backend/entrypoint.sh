@@ -1,8 +1,18 @@
 #!/bin/bash
 
-# 1. Asegurar archivo .env
-if [ ! -f ".env" ]; then
-    cp .env.example .env
+# 1. Gestión de .env
+# En producción (Railway), las env vars vienen del sistema. Un archivo .env sobreescribiría esas vars.
+# En desarrollo, creamos .env desde .env.example si no existe.
+if [ "$APP_ENV" = "production" ]; then
+    # Eliminar .env si existe para que Laravel use las env vars del sistema de Railway
+    if [ -f ".env" ]; then
+        echo "Producción detectada: eliminando .env para usar variables de Railway..."
+        rm .env
+    fi
+else
+    if [ ! -f ".env" ]; then
+        cp .env.example .env
+    fi
 fi
 
 # 1.5. Asegurar directorios de storage y cache con permisos correctos
@@ -29,8 +39,8 @@ if [ ! -f "vendor/autoload.php" ]; then
     composer install --no-interaction --optimize-autoloader
 fi
 
-# 3. Generar clave si no existe
-if ! grep -q "APP_KEY=base64" .env; then
+# 3. Generar clave si no existe (solo en desarrollo con archivo .env)
+if [ -f ".env" ] && ! grep -q "APP_KEY=base64" .env; then
     php artisan key:generate --force
 fi
 
@@ -52,9 +62,16 @@ if [ ! -d "public/build" ]; then
     npm run build
 fi
 
-# 7. Limpiar caches para desarrollo (rápido y evita errores)
+# 7. Limpiar y recachear configuración (asegura que Railway env vars se aplican)
 php artisan config:clear
 php artisan route:clear
+
+# En producción, recachear para rendimiento y para que las env vars se apliquen correctamente
+if [ "$APP_ENV" = "production" ]; then
+    echo "Cacheando configuración para producción..."
+    php artisan config:cache
+    php artisan route:cache
+fi
 
 # 8. Run migrations (--force needed for production)
 php artisan migrate --force
