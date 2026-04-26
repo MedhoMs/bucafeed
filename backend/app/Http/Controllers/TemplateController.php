@@ -129,7 +129,7 @@ abstract class TemplateController extends Controller
             $singularName => $model,
             'fields' => $this->getFormFields($model),
             'oper' => $oper,
-            'disabled' => $disabled,
+            'disabled' => ($oper === 'show' || $oper === 'destroy') ? 'disabled' : $disabled,
             'datos' => ['exito' => $success ?: session('success', '')]
         ];
         
@@ -167,17 +167,29 @@ abstract class TemplateController extends Controller
 
         $data = $request->all();
         
-        // Manejo automático de archivos
+        // Manejo automático de archivos (Mejorado)
         $fileFields = ['image', 'icon', 'banner', 'profile_picture'];
         foreach($fileFields as $field) {
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
                 $filename = time() . '_' . $field . '_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
-                $path = 'uploads/' . strtolower(class_basename($this->model));
-                if ($field === 'profile_picture') $path = 'uploads/profiles';
                 
-                $file->move(public_path($path), $filename);
-                $data[$field] = '/' . $path . '/' . $filename;
+                // Determinar carpeta basada en el modelo (Estandarizado)
+                $modelName = class_basename($this->model);
+                $folder = Str::snake(Str::plural($modelName));
+                
+                if ($field === 'profile_picture') $folder = 'profiles';
+                
+                $path = 'uploads/' . $folder;
+                $fullPath = public_path($path);
+                
+                if (!file_exists($fullPath)) {
+                    @mkdir($fullPath, 0777, true);
+                }
+                
+                if ($file->move($fullPath, $filename)) {
+                    $data[$field] = '/' . $path . '/' . $filename;
+                }
             }
         }
 
@@ -191,18 +203,28 @@ abstract class TemplateController extends Controller
             return $this->renderForm($model, $isEdit ? 'edit' : 'create', '', 'Operación completada con éxito.');
         }
 
+        if ($request->expectsJson()) {
+            return $model;
+        }
+
+        session()->flash('saved_model_id', $model->id);
         return redirect()->route($this->viewPath . '.index')->with('success', 'Guardado correctamente.');
     }
 
     public function destroy(Request $request, $id)
     {
         $model = $this->model::findOrFail($id);
+
+        if ($request->isMethod('get')) {
+            return $this->renderForm($model, 'destroy');
+        }
+
         $model->delete();
 
         if ($request->ajax()) {
-            return response()->json(['success' => true]);
+            return response()->json(['success' => true, 'message' => 'Eliminado correctamente']);
         }
-        return redirect()->route($this->viewPath . '.index');
+        return redirect()->route($this->viewPath . '.index')->with('success', 'Eliminado correctamente.');
     }
 
     // Métodos a desarrollar por el controlador hijo

@@ -13,6 +13,29 @@ class QuestionController extends TemplateController
     protected $viewPath = 'questions';
     protected $with = ['user', 'tags', 'answers.user'];
 
+    public function destroy(Request $request, $id)
+    {
+        $question = Question::findOrFail($id);
+        
+        if ($request->isMethod('get')) {
+            return $this->renderForm($question, 'destroy');
+        }
+
+        // 1. Eliminar respuestas vinculadas
+        $question->answers()->delete();
+        
+        // 2. Desvincular etiquetas
+        $question->tags()->detach();
+        
+        // 3. Eliminar la pregunta
+        $question->delete();
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Pregunta eliminada correctamente.']);
+        }
+        return redirect()->route('question.index')->with('success', 'Pregunta eliminada correctamente.');
+    }
+
     protected function extraFilters($query, Request $request)
     {
         if ($request->filled('tag')) {
@@ -78,12 +101,10 @@ class QuestionController extends TemplateController
     {
         $response = parent::save($request, $question);
         
-        // Si el guardado fue exitoso (podemos detectarlo si no hay redirección con errores)
-        // Pero en BaseAdminController@save devolvemos una vista o redirección. 
-        // Para simplificar, buscaremos el objeto recién creado si no existe $question.
+        $savedId = session('saved_model_id');
+        $obj = $question ?? ($savedId ? Question::find($savedId) : Question::latest()->first());
         
-        $obj = $question ?? Question::latest()->first(); 
-        if ($request->has('tags')) {
+        if ($obj && $request->has('tags')) {
             $obj->tags()->sync($request->input('tags'));
         }
 

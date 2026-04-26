@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->trustProxies(at: '*');
         $middleware->statefulApi();
         $middleware->validateCsrfTokens(except: [
             'api/*'
@@ -27,6 +28,10 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return response()->json(['error' => 'Ruta no encontrada'], 404);
             }
-            return redirect()->away(env('APP_FRONTEND_URL', 'http://localhost:5173'));
+            $frontendUrl = env('APP_FRONTEND_URL', 'http://localhost:5173');
+            if (!str_starts_with($frontendUrl, 'http')) {
+                $frontendUrl = 'https://' . $frontendUrl;
+            }
+            return redirect()->away(rtrim($frontendUrl, '/') . '/home');
         });
     })->create();

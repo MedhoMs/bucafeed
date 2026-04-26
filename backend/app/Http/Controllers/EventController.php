@@ -13,6 +13,7 @@ class EventController extends TemplateController
     protected $model = Event::class;
     protected $viewPath = 'users_events';
     protected $with = ['educationalCenter'];
+    protected $withCount = ['participants'];
 
     protected function extraFilters($query, Request $request)
     {
@@ -117,5 +118,27 @@ class EventController extends TemplateController
     {
         $event = Event::findOrFail($id);
         return $this->streamFile($event->image);
+    }
+
+    /**
+     * UNIRSE A EVENTO (API)
+     */
+    public function apiJoin(Request $request, $id)
+    {
+        $user = $request->user();
+        if (!$user) return response()->json(['message' => 'No autenticado'], 401);
+
+        $event = Event::findOrFail($id);
+        
+        // El usuario se une o se sale (toggle)
+        $event->participants()->toggle($user->id);
+        
+        $joined = $event->participants()->where('user_id', $user->id)->exists();
+        
+        return response()->json([
+            'joined' => $joined,
+            'count' => $event->participants()->count(),
+            'message' => $joined ? 'Te has unido al evento' : 'Has abandonado el evento'
+        ]);
     }
 }

@@ -28,6 +28,19 @@ class User extends Authenticatable
         'description',
     ];
 
+    protected $appends = ['role_name'];
+
+    public function getRoleNameAttribute()
+    {
+        $roles = [
+            'Admin' => 'Administrador',
+            'EI' => 'Institución Educativa',
+            'Teacher' => 'Profesor',
+            'Student' => 'Alumno'
+        ];
+        return $roles[$this->role] ?? $this->role;
+    }
+
     protected $hidden = [
         'password',
         'remember_token',

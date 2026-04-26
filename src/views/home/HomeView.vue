@@ -60,10 +60,14 @@
 
 <template>
     <NavBar></NavBar>
-    <main class="flex min-h-screen justify-between lg:pl-75">
-        <section class="text-white lg:w-375 w-87.5 mx-auto lg:mr-14 mb-4">
-            <SearchBar></SearchBar>
-            <div id="mainBody" class="flex flex-col gap-4 justify-center items-center min-h-[92.9vh]">
+    <main class="flex min-h-screen lg:pl-75">
+        <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
+            <!-- Header con Buscador -->
+            <div class="mt-8 md:mt-12 mb-8 md:mb-12 max-w-3xl">
+                <SearchBar></SearchBar>
+            </div>
+
+            <div id="mainBody" class="flex flex-col gap-6 w-full">
                 <div v-if="!questions || questions.length === 0" class="text-white/40 italic py-10">Cargando preguntas del servidor...</div>
 
                 <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">
@@ -75,7 +79,7 @@
                             <router-link :to="'/profile/' + q.user_id" class="text-sm font-bold text-white hover:text-emerald-400 transition-colors">
                                 {{ q.user?.name ?? 'Usuario' }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
                             </router-link>
-                            <span class="text-[10px] text-white/40 uppercase tracking-widest">{{ q.user?.role ?? 'Student' }}</span>
+                            <span class="text-[10px] text-white/40 uppercase tracking-widest">{{ q.user?.role_name || q.user?.role || 'Estudiante' }}</span>
                         </div>
                     </div>
                     <h2 class="post-title">{{ q.title }}</h2>

@@ -52,7 +52,7 @@
             </div>
             <div class="flex flex-col gap-1.5">
                 <span class="text-white/40 uppercase text-[11px] font-bold tracking-wider">Rol</span>
-                <span class="text-purple-300 font-medium">{{ $user->role }}</span>
+                <span class="text-purple-300 font-medium">{{ $user->role_name }}</span>
             </div>
             <div class="flex flex-col gap-1.5">
                 <span class="text-white/40 uppercase text-[11px] font-bold tracking-wider">Reputación</span>

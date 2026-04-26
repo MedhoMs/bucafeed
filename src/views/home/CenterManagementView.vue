@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useTranslations } from '@/composables/useTranslations'
+const { t } = useTranslations()
 import { token } from '@/stores/auth'
 import ManagementLayout from '@/components/layouts/ManagementLayout.vue'
 import ManagementCard from '@/components/layouts/ManagementCard.vue'
@@ -7,6 +9,7 @@ import CenterTabs from '@/components/center/tabs/CenterTabs.vue'
 import GroupsTab from '@/components/center/tabs/GroupsTab.vue'
 import PeopleTab from '@/components/center/tabs/PeopleTab.vue'
 import CyclesTab from '@/components/center/tabs/CyclesTab.vue'
+import EventsTab from '@/components/center/tabs/EventsTab.vue'
 import CenterManagerCore from '@/components/center/modals/CenterManagerCore.vue'
 
 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
@@ -23,6 +26,7 @@ const teachers = ref([])
 const students = ref([])
 const admins = ref([])
 const cycles = ref([])
+const events = ref([])
 const loading = ref(true)
 const activeTab = ref('overview')
 const toast = ref({ show: false, msg: '', type: 'success' })
@@ -30,36 +34,44 @@ const toast = ref({ show: false, msg: '', type: 'success' })
 // UI State
 const activeModal = ref(null)
 const selectedGroup = ref(null)
+const selectedEvent = ref(null)
 const expandedGroup = ref(null)
 const confirmingDelete = ref(null)
 
 const showToast = ({ msg, type = 'success' }) => {
-    toast.value = { show: true, msg, type }
+    // Intentar traducir si el mensaje parece una clave de i18n
+    const translated = msg.split('.').reduce((obj, key) => obj?.[key], t.value) || msg;
+    toast.value = { show: true, msg: translated, type }
     setTimeout(() => toast.value.show = false, 3000)
 }
 
-const openModal = (type, group = null) =>{
-    selectedGroup.value = group;
+const openModal = (type, item = null) =>{
+    if (type.includes('event')) {
+        selectedEvent.value = item;
+    } else {
+        selectedGroup.value = item;
+    }
     activeModal.value = type; 
 }
 
 async function loadAll() {
     loading.value = true
     try {
-        const fetchs = ['my-center', 'my-center/groups', 'my-center/teachers', 'my-center/students', 'my-center/admins', 'my-center/cycles']
+        const fetchs = ['my-center', 'my-center/groups', 'my-center/teachers', 'my-center/students', 'my-center/admins', 'my-center/cycles', 'my-center/events']
         const results = await Promise.all(fetchs.map(p => fetch(`${apiBase}/${p}`, { headers: headers.value }).then(r => r.json())));
-        [center.value, groups.value, teachers.value, students.value, admins.value, cycles.value] = results;
+        [center.value, groups.value, teachers.value, students.value, admins.value, cycles.value, events.value] = results;
     } catch (e) { showToast({ msg: 'Error de servidor', type: 'error' }) }
     loading.value = false
 }
 
 onMounted(loadAll)
 
-async function deleteItem(type, group, itemId = null) {
+async function deleteItem(type, item, itemId = null) {
     const config = {
-        group:   { url: `/groups/${group.id}`, msg: 'Eliminado', clean: () => confirmingDelete.value = null },
-        student: { url: `/groups/${group.id}/students/${itemId}`, msg: 'Quitado' },
-        subject: { url: `/groups/${group.id}/subjects/${itemId}`, msg: 'Quitado' }
+        group:   { url: `/groups/${item.id}`, msg: 'Eliminado', clean: () => confirmingDelete.value = null },
+        student: { url: `/groups/${item.id}/students/${itemId}`, msg: 'Quitado' },
+        subject: { url: `/groups/${item.id}/subjects/${itemId}`, msg: 'Quitado' },
+        event:   { url: `/events/${item.id}`, msg: 'Evento eliminado' }
     }[type]
     try {
         const res = await fetch(`${apiBase}/my-center${config.url}`, { method: 'DELETE', headers: headers.value })
@@ -91,11 +103,15 @@ const getTeacherName = (id) => {
                         <p class="text-white/40 text-sm font-bold uppercase tracking-wider">{{ center.location }}</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-3 gap-6">
-                    <div v-for="(v, l, i) in {[center.students_count]:'Alumnos', [center.teachers_count]:'Profesores', [center.groups_count]:'Grupos'}" :key="l" 
-                         class="flex flex-col items-center border-r border-white/5 last:border-0">
-                        <span class="text-3xl font-black text-white/90">{{ v || 0 }}</span>
-                        <span class="text-[10px] text-white/30 uppercase tracking-[0.2em] font-black mt-2">{{ l }}</span>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                    <div v-for="stat in [
+                        { label: 'Grupos', value: center.groups_count },
+                        { label: 'Profesores', value: center.teachers_count },
+                        { label: 'Alumnos', value: center.students_count },
+                    ]" :key="stat.label" 
+                         class="flex flex-col items-center border-b sm:border-b-0 sm:border-r border-white/5 last:border-0 pb-4 sm:pb-0">
+                        <span class="text-2xl sm:text-3xl font-black text-white/90">{{ stat.label }}</span>
+                        <span class="text-[20px] text-white/30 uppercase tracking-[0.2em] font-black mt-1 sm:mt-2">{{ stat.value || 0 }}</span>
                     </div>
                 </div>
             </ManagementCard>
@@ -118,18 +134,28 @@ const getTeacherName = (id) => {
                 :admins="admins" 
                 :teachers="teachers" 
                 :students="students" 
+                @openModal="openModal"
             />
 
             <CyclesTab 
                 v-else-if="activeTab === 'cycles'" 
                 :cycles="cycles" 
                 :center="center"
+                @openModal="openModal"
+            />
+
+            <EventsTab 
+                v-else-if="activeTab === 'events'" 
+                :events="events"
+                @openModal="openModal"
+                @deleteItem="deleteItem"
             />
             
         </template>
         <CenterManagerCore 
             :activeModal="activeModal" 
             :group="selectedGroup" 
+            :event="selectedEvent"
             :teachers="teachers" 
             :students="students" 
             :cycles="cycles" 
