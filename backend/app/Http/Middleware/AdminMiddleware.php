@@ -26,6 +26,12 @@ class AdminMiddleware
 
         // Si intenta entrar desde el navegador, lo expulsamos al frontend.
         $frontendUrl = env('APP_FRONTEND_URL', 'http://localhost:5173');
+        
+        // Asegurar que la URL es absoluta para evitar bucles en producción
+        if (!preg_match('~^(?:f|ht)tps?://~i', $frontendUrl)) {
+            $frontendUrl = 'https://' . ltrim($frontendUrl, '/');
+        }
+
         return redirect()->away($frontendUrl);
     }
 }
