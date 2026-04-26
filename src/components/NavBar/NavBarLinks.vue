@@ -16,9 +16,14 @@
 
     const navigate = () => {
         if (props.backend) {
-            const backendBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
-            const cleanBase = backendBase.replace(/\/$/, '').replace(/\/frontend$/, '')
-            window.location.href = `${cleanBase}/${props.to.replace(/^\//, '')}`
+            const backendBase = import.meta.env.VITE_BACKEND_URL || 
+                               import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 
+                               'http://localhost:8000'
+            
+            const cleanBase = backendBase.replace(/\/$/, '')
+            const targetUrl = `${cleanBase}/${props.to.replace(/^\//, '')}`
+            
+            window.location.href = targetUrl
         }
     }
 </script>
