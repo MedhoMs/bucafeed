@@ -4,14 +4,12 @@
     import SearchBar from '../../components/SearchBar.vue';
     import CenterManagerCore from '../../components/center/modals/CenterManagerCore.vue'
     import EventCard from '../../components/events/EventCard.vue'
-    
+
     import { useTranslations } from '../../composables/useTranslations'
     const { t } = useTranslations()
 
     // Importamos directamente las variables reactivas del auth.js
     import { user as authUser, token as authToken } from '@/stores/auth'
-
-    import PrimaryButton from '../../components/common/PrimaryButton.vue';
 
     const events = ref([]);
     const loading = ref(false)
@@ -89,12 +87,11 @@
                 </div>
                 
                 <!-- Botón Estilo Premium '+ NUEVO EVENTO' -->
-                <PrimaryButton 
-                    v-if="canCreate" 
-                    text="Nuevo Evento" 
-                    icon="plus"
-                    @click="activeModal = 'event'" 
-                />
+                <button v-if="canCreate" @click="activeModal = 'event'" 
+                    class="w-full md:w-auto bg-[#406071] hover:bg-[#507a8f] text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all active:scale-95 shadow-xl shadow-cyan-900/10 flex items-center justify-center gap-3 group border border-white/5 shrink-0">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Nuevo Evento</span>
+                </button>
             </div>
 
             <div id="mainBody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center pb-20">
