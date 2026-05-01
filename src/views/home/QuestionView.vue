@@ -4,7 +4,8 @@
     import SideBar from '../../components/SideBar.vue';
     import { ref, onMounted, watch } from 'vue';
     import { useRoute } from 'vue-router';
-    
+    import { user } from '@/stores/auth';
+
     import { useTranslations } from '../../composables/useTranslations'
     const { t } = useTranslations()
 
@@ -14,9 +15,12 @@
         return user?.profile_picture ? baseSrc + user.profile_picture : defaultAvatar;
     };
 
+    
     const route = useRoute();
     const question = ref(null);
     const loading = ref(true);
+    const submitting = ref(false);
+    const newAnswer = ref("");
 
     const loadQuestion = async (id) => {
         loading.value = true;
@@ -31,6 +35,37 @@
             console.error("Error cargando pregunta", e);
         } finally {
             loading.value = false;
+        }
+    };
+
+    const submitAnswer = async () => {
+        if (!newAnswer.value.trim() || submitting.value) return;
+        
+        submitting.value = true;
+        try {
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+            const response = await fetch(`${apiBase}/answers`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Asumiendo que guardas el token
+                },
+                body: JSON.stringify({
+                    question_id: question.value.id,
+                    user_id: user.value?.id,
+                    content: newAnswer.value
+                })
+            });
+
+            if (response.ok) {
+                newAnswer.value = "";
+                await loadQuestion(route.params.id); // Recargar para ver la nueva respuesta
+            }
+        } catch (e) {
+            console.error("Error al enviar respuesta", e);
+        } finally {
+            submitting.value = false;
         }
     };
 
@@ -62,9 +97,9 @@
 
                 <div v-else class="w-full max-w-375">
                     <!-- Botón Volver -->
-                    <router-link to="/home" class="inline-flex items-center gap-2 mb-6 text-[#179cf0] hover:text-white transition-colors bg-[#179cf0]/10 hover:bg-[#179cf0]/20 px-4 py-2 rounded-full text-sm font-bold w-fit">
+                    <router-link to="/foro" class="inline-flex items-center gap-2 mb-6 text-[#179cf0] hover:text-white transition-colors bg-[#179cf0]/10 hover:bg-[#179cf0]/20 px-4 py-2 rounded-full text-sm font-bold w-fit">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
-                        Volver al inicio
+                        Volver al foro
                     </router-link>
 
                     <!-- Tarjeta de la Pregunta Principal -->
@@ -83,12 +118,38 @@
                         <h1 class="text-2xl font-black text-white mb-4">{{ question.title }}</h1>
                         <p class="text-white/80 text-base leading-relaxed whitespace-pre-wrap">{{ question.content }}</p>
                         
-                        <div class="mt-6 pt-4 border-t border-white/5 flex gap-2">
-                             <div v-for="tag in question.tags" :key="tag.id" class="px-3 py-1 rounded-full bg-[#179cf0]/10 text-[#179cf0] border border-[#179cf0]/20 text-xs font-bold shadow-xs">
+                        <div v-if="question.tags && question.tags.length" class="mt-6 pt-4 border-t border-white/5 flex flex-wrap gap-2">
+                             <div v-for="tag in question.tags" :key="tag.id" class="px-3 py-1 rounded-full bg-[#179cf0]/10 text-[#179cf0] border border-[#179cf0]/20 text-[10px] font-bold shadow-xs">
                                   {{ tag.name }}
                              </div>
                         </div>
                     </div>
+                    <!-- Formulario de Respuesta -->
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-6 mb-12 shadow-inner">
+                        <div class="flex gap-4 items-start mb-4">
+                            <img :src="getAvatar(user)" class="w-10 h-10 rounded-full border border-white/20 object-cover shrink-0" alt="me">
+                            <div class="flex-1">
+                                <textarea 
+                                    v-model="newAnswer"
+                                    placeholder="Escribe tu respuesta aquí..." 
+                                    class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#179cf0] transition-colors min-h-[120px] resize-none text-sm"
+                                ></textarea>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button 
+                                @click="submitAnswer"
+                                :disabled="!newAnswer.trim() || submitting"
+                                class="bg-[#179cf0] hover:bg-emerald-500 disabled:opacity-50 disabled:hover:bg-[#179cf0] text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg active:scale-95"
+                            >
+                                <span v-if="submitting">Enviando...</span>
+                                <template v-else>
+                                    Responder
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                                </template>
+                            </button>
+                        </div>
+                     </div>
 
                     <!-- Sección de Respuestas -->
                     <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2 px-2">
