@@ -164,6 +164,12 @@ abstract class TemplateController extends Controller
         $validator = Validator::make($request->all(), $this->rules($model));
 
         if ($validator->fails()) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Los datos proporcionados no son válidos.',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
             if ($request->ajax()) {
                 return $this->renderForm($model ?? new $this->model, $isEdit ? 'edit' : 'create')->withErrors($validator);
             }

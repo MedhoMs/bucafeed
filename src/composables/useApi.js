@@ -21,8 +21,6 @@ export function useApi() {
 
         const baseUrl = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase;
         const url = `${baseUrl}/${endpoint}`;
-        
-        console.log(`[useApi] Requesting: ${options.method || 'GET'} ${url}`);
 
         try {
             const response = await fetch(url, {
@@ -45,6 +43,10 @@ export function useApi() {
             }
 
             if (!response.ok) {
+                if (response.status === 422 && data.errors) {
+                    const firstError = Object.values(data.errors)[0][0];
+                    throw new Error(firstError || data.message || 'Error de validación');
+                }
                 const errorMessage = (data && data.message) || `Error ${response.status}: ${response.statusText}`;
                 throw new Error(errorMessage);
             }
@@ -52,7 +54,6 @@ export function useApi() {
             return data || {};
         } catch (err) {
             error.value = err.message;
-            console.error(`API Request Error [${options.method || 'GET'} ${endpoint}]:`, err);
             throw err;
         } finally {
             loading.value = false;

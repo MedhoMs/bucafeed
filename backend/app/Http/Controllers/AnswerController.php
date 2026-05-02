@@ -22,8 +22,10 @@ class AnswerController extends TemplateController
     protected function rules($answer = null)
     {
         return [
-            'content' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
+            'question_id' => 'required|exists:questions,id',
+            'user_id' => 'required|exists:users,id',
+            'content' => 'required_without:image|string|nullable',
+            'image' => 'nullable|image|max:4096',
         ];
     }
 
