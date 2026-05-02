@@ -4,6 +4,7 @@
     import SearchBar from '../../components/SearchBar.vue';
     import CenterManagerCore from '../../components/center/modals/CenterManagerCore.vue'
     import EventCard from '../../components/events/EventCard.vue'
+    import PageHeader from '@/components/common/PageHeader.vue';
 
     import { useTranslations } from '../../composables/useTranslations'
     const { t } = useTranslations()
@@ -11,6 +12,7 @@
     // Importamos directamente las variables reactivas del auth.js
     import { user as authUser, token as authToken } from '@/stores/auth'
 
+    const rawEvents = ref([]);
     const events = ref([]);
     const loading = ref(false)
     const activeModal = ref(null)
@@ -41,7 +43,9 @@
         try {
             const response = await fetch(`${apiBase}/events`);
             if (response.ok) {
-                events.value = await response.json();
+                const data = await response.json();
+                rawEvents.value = data;
+                events.value = [...data];
             }
         } catch (error) {
             console.error('Error fetching events:', error);
@@ -78,21 +82,29 @@
 
 <template>
     <NavBar></NavBar>
-    <main class="flex min-h-screen lg:pl-75">
-        <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
-            <!-- Buscador largo y botón alineados al área de contenido -->
-            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-6 mt-8 md:mt-12 w-full mb-8 md:mb-14">
-                <div class="flex-grow w-full max-w-3xl">
-                    <SearchBar @update:filtered="events = $event"></SearchBar>
-                </div>
-                
-                <!-- Botón Estilo Premium '+ NUEVO EVENTO' -->
-                <button v-if="canCreate" @click="activeModal = 'event'" 
-                    class="w-full md:w-auto bg-[#406071] hover:bg-[#507a8f] text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all active:scale-95 shadow-xl shadow-cyan-900/10 flex items-center justify-center gap-3 group border border-white/5 shrink-0">
+    <main class="flex flex-col min-h-screen lg:pl-75">
+        <PageHeader 
+            title="Eventos Académicos" 
+            subtitle="Participa en las actividades y charlas de tu centro."
+        >
+            <template #search>
+                <SearchBar 
+                    :items="rawEvents" 
+                    filterField="title"
+                    @update:filtered="events = $event"
+                    class="w-full"
+                />
+            </template>
+            <template #actions>
+                <button v-if="canCreate" 
+                    @click="activeModal = 'event'"                    class="w-full md:w-auto bg-[#406071] hover:bg-[#507a8f] text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all active:scale-95 shadow-xl shadow-cyan-900/10 flex items-center justify-center gap-3 group border border-white/5 shrink-0">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     <span>Nuevo Evento</span>
                 </button>
-            </div>
+            </template>
+        </PageHeader>
+
+        <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
 
             <div id="mainBody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center pb-20">
                 <EventCard 

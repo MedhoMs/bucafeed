@@ -6,23 +6,29 @@ const { t } = useTranslations()
 const search = ref('')
 
 const props = defineProps({
-    meetings: {
+    items: {
         type: Array,
         default: () => []
+    },
+    filterField: {
+        type: String,
+        default: 'name'
     }
 })
 
 const emit = defineEmits(['update:filtered'])
 
-const filteredMeetings = computed(() => {
-    if (!search.value.trim()) return props.meetings
-    return props.meetings.filter(m =>
-        m.name.toLowerCase().includes(search.value.toLowerCase())
-    )
+const filteredItems = computed(() => {
+    if (!search.value.trim()) return props.items
+    const query = search.value.toLowerCase()
+    return props.items.filter(item => {
+        const value = item[props.filterField]
+        return value && String(value).toLowerCase().includes(query)
+    })
 })
 
-// Emit whenever filteredMeetings changes
-watch(filteredMeetings, (newValue) => {
+// Emit whenever filteredItems changes
+watch(filteredItems, (newValue) => {
     emit('update:filtered', newValue)
 }, { immediate: true })
 </script>

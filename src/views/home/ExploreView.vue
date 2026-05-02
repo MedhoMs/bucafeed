@@ -1,23 +1,45 @@
 <script setup>
     import NavBar from '../../components/NavBar/NavBar.vue';
     import SearchBar from '../../components/SearchBar.vue';
+    import PrimaryButton from '../../components/common/PrimaryButton.vue';
+    import PageHeader from '@/components/common/PageHeader.vue';
+    import { ref } from 'vue';
+    import { user } from '@/stores/auth';
     
     import { useTranslations } from '../../composables/useTranslations'
-    const { t } = useTranslations() // Variable para llamar al archivo de traduccion
+    const { t } = useTranslations()
+
+    const showCreateEventModal = ref(false); // Placeholder logic for now
 </script>
 
 <template>
     <NavBar></NavBar>
-    <main class="flex min-h-screen lg:pl-75">
-        <section class="text-white w-full max-w-5xl mx-auto px-4 lg:px-10 mb-20">
-            <!-- Header con Buscador -->
-            <div class="mt-12 mb-12 max-w-2xl">
-                <SearchBar></SearchBar>
-            </div>
+    <main class="flex flex-col min-h-screen lg:pl-75">
+        <PageHeader 
+            title="Explorar Eventos" 
+            subtitle="Descubre eventos académicos, deportivos y culturales."
+        >
+            <template #search>
+                <SearchBar class="w-full"></SearchBar>
+            </template>
+            <template #actions>
+                <PrimaryButton 
+                    v-if="user?.role?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'centro'"
+                    text="Nuevo Evento" 
+                    icon="plus"
+                    @click="() => console.log('crear evento')"
+                />
+            </template>
+        </PageHeader>
 
-            <div id="mainExplore" class="flex flex-col items-center justify-center min-h-[50vh] bg-white/5 rounded-[2.5rem] border border-dashed border-white/10">
-                <h1 class="text-xl lg:text-3xl text-center font-black uppercase tracking-tighter text-white/20">No hay nada que buscar</h1>
-                <p class="text-white/10 text-[10px] font-bold uppercase mt-2">Prueba a explorar otras secciones</p>
+        <section class="text-white w-full px-4 lg:px-10 mb-20">
+
+            <div id="mainExplore" class="flex flex-col items-center justify-center min-h-[50vh] bg-white/5 rounded-[2.5rem] border border-dashed border-white/10 p-10 text-center">
+                <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-opacity="0.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6 -6" /><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /></svg>
+                </div>
+                <h1 class="text-xl lg:text-3xl font-black uppercase tracking-tighter text-white/20">No hay nada que buscar</h1>
+                <p class="text-white/10 text-xs font-bold uppercase mt-2 max-w-xs">Prueba a explorar otras secciones o utiliza el buscador para filtrar eventos</p>
             </div>
         </section>
     </main>
