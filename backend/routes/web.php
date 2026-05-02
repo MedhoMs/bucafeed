@@ -23,6 +23,7 @@ Route::get('/whoami', function () {
     ]);
 });
 
+
 Route::get('/prueba', function () {
     return view('prueba');
 });

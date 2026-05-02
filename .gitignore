@@ -24,7 +24,8 @@ dist-ssr
 *.sw?
 
 # Docker & Config
-#.env
+.env
+backend/.env
 #docker-compose.yml
 #docker-compose.override.yml
 #docker-compose.local.yml
