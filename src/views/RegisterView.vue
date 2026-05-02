@@ -26,6 +26,41 @@
         const EIInput = document.querySelectorAll('.EIInput');
         const codeInput = document.getElementById('code-register-form');
 
+        // ─── loadCenters definido UNA SOLA VEZ (fuera del click handler) ───
+        const educationLevelSelect = document.getElementById('educationLevelSelect');
+        const institutionSelect = document.getElementById('institutionSelect');
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+        async function loadCenters(type) {
+            institutionSelect.innerHTML = '<option value="">Cargando...</option>';
+            try {
+                const response = await fetch(`${apiBase}/educational-centers?type=${type}`);
+                const centers = await response.json();
+                institutionSelect.innerHTML = '';
+                if (!centers.length) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = 'No hay centros disponibles para este nivel';
+                    institutionSelect.appendChild(opt);
+                    return;
+                }
+                centers.forEach(center => {
+                    const option = document.createElement('option');
+                    option.value = center.id;
+                    option.textContent = center.name;
+                    institutionSelect.appendChild(option);
+                });
+            } catch (e) {
+                institutionSelect.innerHTML = '<option value="">Error al cargar centros</option>';
+            }
+        }
+
+        // Listener registrado UNA SOLA VEZ
+        educationLevelSelect.addEventListener('change', function () {
+            loadCenters(this.value);
+        });
+
+        // ─── resto del estado del formulario ───
         let formPath = '';
         let errorText;
 
@@ -41,9 +76,7 @@
             input.addEventListener("keyup", (e) => {
                 const name = e.target.name;
                 const regex = patterns[name];
-                if (regex) {
-                    validateExpresion(e.target, regex);
-                }
+                if (regex) validateExpresion(e.target, regex);
             });
         });
 
@@ -62,32 +95,37 @@
             }
         }
 
-        registerForm.addEventListener('click', function(e){
-            e.preventDefault();
-        });
+        registerForm.addEventListener('click', function(e) { e.preventDefault(); });
+        registerButton.addEventListener('click', function() { validateForm(); });
 
-        registerButton.addEventListener('click', function() {
-            validateForm();
-        });
+        function showWarning(msg) {
+            const el = document.getElementById('formErrWarning');
+            const p = el.querySelector('p') || el;
+            p.textContent = msg;
+            el.classList.add('opacity-100');
+            setTimeout(() => el.classList.remove('opacity-100'), 3000);
+        }
 
         function validateInputs(inputs) {
             for (let i = 0; i < inputs.length; i++) {
                 if (inputs[i].classList.contains('border-red-500') || inputs[i].value === '') {
-                    let formErrWarning = document.getElementById('formErrWarning');
-                    formErrWarning.classList.toggle('opacity-100');
-                    setTimeout(() => {
-                        formErrWarning.classList.toggle('opacity-100');
-                    }, 3000);
+                    showWarning('Faltan datos o hay datos erróneos');
                     return false;
                 }
             }
             return true;
         }
 
-        //Llamo a /api/send-code, guardo el payload en Laravel cache y envia el email
-        async function sendVerificationCode() {
-            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+        function buildEIPayload() {
+            const selectedOpt = institutionSelect.options[institutionSelect.selectedIndex];
+            return {
+                education_level:       EIInput[0].value,
+                institution_name:      selectedOpt ? selectedOpt.textContent : '',
+                educational_center_id: selectedOpt ? selectedOpt.value : '',
+            };
+        }
 
+        async function sendVerificationCode() {
             const allRolesValueList = {
                 email:    allRolesInput[0].value,
                 password: allRolesInput[1].value,
@@ -98,31 +136,23 @@
                 last_name: studentTeacheEuInput[1].value,
                 dni:       studentTeacheEuInput[2].value,
             };
-            const EIValueList = {
-                education_level:  EIInput[0].value,
-                institution_name: EIInput[1].value,
-            };
 
             let payload = { ...allRolesValueList };
             if (formPath === 'EU') {
                 payload = { ...payload, ...studentTeacheEuValueList };
             } else if (formPath === 'Student' || formPath === 'Teacher') {
-                payload = { ...payload, ...studentTeacheEuValueList, ...EIValueList };
+                payload = { ...payload, ...studentTeacheEuValueList, ...buildEIPayload() };
             } else if (formPath === 'EI') {
-                payload = { ...payload, ...EIValueList };
+                payload = { ...payload, ...buildEIPayload() };
             }
 
             try {
                 const response = await fetch(`${apiBase}/send-code`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 const data = await response.json();
-
                 if (data.status === 'success') {
                     validateEmailText.textContent = `Hemos enviado un código de verificación a ${allRolesInput[0].value}`;
                 } else {
@@ -133,30 +163,15 @@
             }
         }
 
-        //Envio el payload completo + el codigo a /api/register
         async function validateForm() {
-            // Validar que el código no esté vacío y tenga 6 dígitos
             if (!codeInput.value || codeInput.value.trim() === '') {
-                let formErrWarning = document.getElementById('formErrWarning');
-                formErrWarning.textContent = 'Por favor, ingresa el código de verificación';
-                formErrWarning.classList.toggle('opacity-100');
-                setTimeout(() => {
-                    formErrWarning.classList.toggle('opacity-100');
-                }, 3000);
+                showWarning('Por favor, ingresa el código de verificación');
                 return;
             }
-
             if (!/^\d{6}$/.test(codeInput.value)) {
-                let formErrWarning = document.getElementById('formErrWarning');
-                formErrWarning.textContent = 'El código debe contener exactamente 6 dígitos';
-                formErrWarning.classList.toggle('opacity-100');
-                setTimeout(() => {
-                    formErrWarning.classList.toggle('opacity-100');
-                }, 3000);
+                showWarning('El código debe contener exactamente 6 dígitos');
                 return;
             }
-
-            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
             const allRolesValueList = {
                 email:    allRolesInput[0].value,
@@ -168,56 +183,34 @@
                 last_name: studentTeacheEuInput[1].value,
                 dni:       studentTeacheEuInput[2].value,
             };
-            const EIValueList = {
-                education_level:  EIInput[0].value,
-                institution_name: EIInput[1].value,
-            };
 
             let payload = { ...allRolesValueList };
             if (formPath === 'EU') {
                 payload = { ...payload, ...studentTeacheEuValueList };
             } else if (formPath === 'Student' || formPath === 'Teacher') {
-                payload = { ...payload, ...studentTeacheEuValueList, ...EIValueList };
+                payload = { ...payload, ...studentTeacheEuValueList, ...buildEIPayload() };
             } else if (formPath === 'EI') {
-                payload = { ...payload, ...EIValueList };
+                payload = { ...payload, ...buildEIPayload() };
             }
-
-            //Añado el codigo de verificacion introducido por el usuario
             payload.verification_code = codeInput.value;
 
             try {
                 const response = await fetch(`${apiBase}/register`, {
                     method: 'POST',
                     credentials: 'include',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 const data = await response.json();
                 if (data.status === 'success') {
-                    if (data.user && data.access_token) {
-                        login(data.user, data.access_token);
-                    }
+                    if (data.user && data.access_token) login(data.user, data.access_token);
                     router.push('/home');
                 } else {
-                    let formErrWarning = document.getElementById('formErrWarning');
-                    formErrWarning.textContent = data.message || 'Código de verificación incorrecto o expirado';
-                    formErrWarning.classList.toggle('opacity-100');
-                    setTimeout(() => {
-                        formErrWarning.classList.toggle('opacity-100');
-                    }, 3000);
+                    showWarning(data.message || 'Código de verificación incorrecto o expirado');
                 }
-                console.log(data);
             } catch (error) {
                 console.error(error);
-                let formErrWarning = document.getElementById('formErrWarning');
-                formErrWarning.textContent = 'Error al procesar el registro. Intenta de nuevo.';
-                formErrWarning.classList.toggle('opacity-100');
-                setTimeout(() => {
-                    formErrWarning.classList.toggle('opacity-100');
-                }, 3000);
+                showWarning('Error al procesar el registro. Intenta de nuevo.');
             }
         }
 
@@ -225,12 +218,12 @@
 
             if (selectRole.value === "EI") {
                 formPath = "EI";
-
                 if (nextButton.id === "nextButton") {
                     if (!validateInputs(allRolesInput)) return;
                     allRolesForm.classList.replace('flex', 'hidden');
                     EIForm.classList.replace('hidden', 'flex');
                     nextButton.id = "validateEmail";
+                    loadCenters(educationLevelSelect.value); // Carga inicial al mostrar el paso
 
                 } else if (nextButton.id === "validateEmail") {
                     EIForm.classList.replace('flex', 'hidden');
@@ -242,7 +235,6 @@
 
             } else if (selectRole.value === "Student") {
                 formPath = "Student";
-
                 if (nextButton.id === "nextButton") {
                     if (!validateInputs(allRolesInput)) return;
                     allRolesForm.classList.replace('flex', 'hidden');
@@ -254,6 +246,7 @@
                     studentTeacheEuForm.classList.replace('flex', 'hidden');
                     EIForm.classList.replace('hidden', 'flex');
                     nextButton.id = "validateEmail";
+                    loadCenters(educationLevelSelect.value); // Carga inicial al mostrar el paso
 
                 } else if (nextButton.id === "validateEmail") {
                     EIForm.classList.replace('flex', 'hidden');
@@ -265,7 +258,6 @@
 
             } else if (selectRole.value === "Teacher") {
                 formPath = "Teacher";
-
                 if (nextButton.id === "nextButton") {
                     if (!validateInputs(allRolesInput)) return;
                     allRolesForm.classList.replace('flex', 'hidden');
@@ -277,6 +269,7 @@
                     studentTeacheEuForm.classList.replace('flex', 'hidden');
                     EIForm.classList.replace('hidden', 'flex');
                     nextButton.id = "validateEmail";
+                    loadCenters(educationLevelSelect.value); // Carga inicial al mostrar el paso
 
                 } else if (nextButton.id === "validateEmail") {
                     EIForm.classList.replace('flex', 'hidden');
@@ -288,7 +281,6 @@
 
             } else if (selectRole.value === "EU") {
                 formPath = "EU";
-
                 if (nextButton.id === "nextButton") {
                     if (!validateInputs(allRolesInput)) return;
                     allRolesForm.classList.replace('flex', 'hidden');
@@ -304,28 +296,6 @@
                     sendVerificationCode();
                 }
             }
-            const educationLevelSelect = document.getElementById('educationLevelSelect');
-            const institutionSelect = document.getElementById('institutionSelect');
-            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-
-            async function loadCenters(type) {
-                const response = await fetch(`${apiBase}/educational-centers?type=${type}`);
-                const centers = await response.json();
-                institutionSelect.innerHTML = '';
-                centers.forEach(center => {
-                    const option = document.createElement('option');
-                    option.value = center.id;
-                    option.textContent = center.name;
-                    institutionSelect.appendChild(option);
-                });
-            }
-
-            educationLevelSelect.addEventListener('change', function () {
-                loadCenters(this.value);
-            });
-
-            // Cargar centros del nivel por defecto al mostrar el formulario
-            loadCenters(educationLevelSelect.value);
         });
     });
 </script>
