@@ -1,36 +1,59 @@
 <script setup>
-    import { useRoute, useRouter } from 'vue-router';
-    import NavBar from '../../components/NavBar/NavBar.vue';
-    import MeetingChatBar from '../../components/MeetingChatBar.vue';
-    import ChatMembers from '../../components/ChatMembers.vue';
-    import { useTranslations } from '../../composables/useTranslations'
-    import { user as authUser } from '../../stores/auth';
-    
-    const { t } = useTranslations() // Variable para llamar al archivo de traduccion
-    const route = useRoute();
-    const router = useRouter();
+import { useRoute, useRouter } from 'vue-router';
+import NavBar from '../../components/NavBar/NavBar.vue';
+import MeetingChatBar from '../../components/MeetingChatBar.vue';
+import ChatMembers from '../../components/ChatMembers.vue';
+import { useTranslations } from '../../composables/useTranslations'
+import { user as authUser } from '../../stores/auth';
+import { ref, onMounted, computed } from 'vue';
+const { t } = useTranslations()
+const route = useRoute();
+const router = useRouter();
 
-    const meetingId = route.params.id;
-    const meetingGroup = route.params.group;
+const meetingId = route.params.id;
+const meetingGroup = route.params.group;
+const meeting = ref(null);
 
-    if (authUser.value && authUser.value.role === 'Student' && meetingGroup && authUser.value.institution_name !== meetingGroup) {
-        router.push({ name: 'meeting' });
+// Security check: only redirect if it's a specific group and doesn't match
+if (authUser.value && authUser.value.role === 'Student' && meetingGroup && meetingGroup !== 'Varios' && authUser.value.institution_name !== meetingGroup) {
+    router.push({ name: 'meeting' });
+}
+
+const fetchMeeting = async () => {
+    if (!meetingId) return;
+    try {
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+        const response = await fetch(`${apiBase}/meetings/${meetingId}`);
+        if (response.ok) {
+            meeting.value = await response.json();
+        }
+    } catch (error) {
+        console.error('Error fetching meeting:', error);
     }
+}
 
-    const meetingName = route.params.name ? (route.params.group ? `${route.params.name} - ${route.params.group}` : route.params.name) : 'Chat de Reunión';
+onMounted(fetchMeeting);
+
+const meetingName = computed(() => {
+    if (route.params.name) {
+        return route.params.group ? `${route.params.name} - ${route.params.group}` : route.params.name;
+    }
+    return meeting.value?.name || 'Chat de Reunión';
+});
 </script>
 
 <template>
     <NavBar></NavBar>
     <main class="flex h-screen w-full overflow-hidden lg:pl-75">
 
-        <div class="text-white lg:w-375 ml-auto lg:mr-4 flex flex-col flex-1 pt-5 px-5 lg:px-0 lg:pl-10 pb-6 overflow-hidden">
+        <div
+            class="text-white lg:w-375 ml-auto lg:mr-4 flex flex-col flex-1 pt-5 px-5 lg:px-0 lg:pl-10 pb-6 overflow-hidden">
             <p class="text-2xl lg:text-4xl text-center font-bold shrink-0 mb-4">
                 {{ meetingId ? `${meetingName}` : 'Chat de Reunión' }}
             </p>
-            <MeetingChatBar class="flex-1 overflow-hidden" />
+            <MeetingChatBar :meeting="meeting" class="flex-1 overflow-hidden" />
         </div>
 
-        <ChatMembers />
+        <ChatMembers :meeting="meeting" />
     </main>
 </template>

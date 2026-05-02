@@ -1,7 +1,7 @@
 <script setup>
     import { useTranslations } from "../composables/useTranslations";
     import { useRoute } from 'vue-router';
-    import { ref, computed, onMounted } from 'vue';
+    import { ref, computed, onMounted, watch } from 'vue';
     import { user as authUser } from '../stores/auth';
     import defaultLogo from '../assets/logo/logoTelamon.png';
 
@@ -9,8 +9,15 @@
     const route = useRoute();
     const students = ref([]);
 
+    const props = defineProps({
+        meeting: {
+            type: Object,
+            default: null
+        }
+    });
+
     const meetingId = computed(() => route.params.id);
-    const meetingTeacher = computed(() => route.params.teacher);
+    const meetingTeacherParam = computed(() => route.params.teacher);
     const groupName = computed(() => route.params.group);
 
     const getProfilePicture = (path) => {
@@ -23,17 +30,13 @@
     const isMenuOpen = ref(false)
     const isDesktop = ref(window.innerWidth >= 1024)
 
-    onMounted(async () => {
-        const handleResize = () => {
-            isDesktop.value = window.innerWidth >= 1024
-            if (isDesktop.value) isMenuOpen.value = false
-        }
-        window.addEventListener('resize', handleResize)
-
-        if (groupName.value) {
+    const fetchStudents = async () => {
+        // Usar el nombre del grupo del meeting si está cargado, si no, el de los params
+        const centerName = props.meeting?.educational_center?.name || groupName.value;
+        if (centerName) {
             try {
                 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-                const response = await fetch(`${apiBase}/users/by-center?center_name=${encodeURIComponent(groupName.value)}`);
+                const response = await fetch(`${apiBase}/users/by-center?center_name=${encodeURIComponent(centerName)}`);
                 if (response.ok) {
                     students.value = await response.json();
                 }
@@ -41,7 +44,21 @@
                 console.error('Error fetching students:', error);
             }
         }
+    }
+
+    onMounted(async () => {
+        const handleResize = () => {
+            isDesktop.value = window.innerWidth >= 1024
+            if (isDesktop.value) isMenuOpen.value = false
+        }
+        window.addEventListener('resize', handleResize)
+
+        await fetchStudents();
     });
+
+    // Re-fetch si cambia el meeting (pasado por prop) o el nombre del grupo
+    watch(() => props.meeting, fetchStudents);
+    watch(groupName, fetchStudents);
 
     function toggleMenu() {
         isMenuOpen.value = !isMenuOpen.value
@@ -92,9 +109,11 @@
                 <div class="mr-auto w-full shrink-0">
                     <p class="text-lg lg:text-2xl font-bold self-start mb-2">Profesor</p>
                     <div class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer transition-colors">
-                        <img src="../assets/logo/logoTelamon.png" alt=""
+                        <img :src="getProfilePicture(props.meeting?.teacher?.profile_picture)" alt=""
                             class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
-                        <p class="text-base lg:text-xl truncate">{{ meetingId ? meetingTeacher : 'Profesor' }}</p>
+                        <p class="text-base lg:text-xl truncate">
+                            {{ props.meeting?.teacher ? `${props.meeting.teacher.name} ${props.meeting.teacher.last_name || ''}` : (meetingId ? meetingTeacherParam : 'Profesor') }}
+                        </p>
                     </div>
                 </div>
 

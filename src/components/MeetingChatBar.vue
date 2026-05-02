@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from 'vue-router';
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, computed } from 'vue'
 import { useTranslations } from '@/composables/useTranslations'
 import TextChatBar from './TextChatBar.vue';
 
@@ -8,8 +8,20 @@ const { t } = useTranslations()
 const route = useRoute()
 const chatContainer = ref(null)
 
-const meetingId = route.params.id;
-const meetingTeacher = route.params.teacher;
+const props = defineProps({
+    meeting: {
+        type: Object,
+        default: null
+    }
+});
+
+const meetingId = computed(() => route.params.id);
+const meetingTeacher = computed(() => {
+    if (props.meeting?.teacher) {
+        return `${props.meeting.teacher.name} ${props.meeting.teacher.last_name || ''}`;
+    }
+    return route.params.teacher;
+});
 
 const messages = ref([
     { content: 'Hola, ¿cómo estás?', type: 'text', sender: 'teacher' },

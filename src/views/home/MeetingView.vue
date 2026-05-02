@@ -32,7 +32,7 @@ const fetchMeetings = async () => {
         if (user.value && user.value.role !== 'Admin') {
             url += `?institution_name=${encodeURIComponent(user.value.institution_name)}`;
         }
-        
+
         const response = await fetch(url);
         if (response.ok) {
             const data = await response.json();
@@ -166,25 +166,28 @@ const deleteMeeting = async (id) => {
     <main class="flex min-h-screen justify-between lg:pl-75">
         <section class="flex flex-col text-white lg:w-375 w-87.5 mx-auto lg:mr-14 mb-4">
             <div class="flex justify-between mt-4">
-                <SearchBar :meetings="availableMeetings" @update:filtered="filteredMeetings = $event" class="w-315"/>
-            
+                <SearchBar :meetings="availableMeetings" @update:filtered="filteredMeetings = $event" class="w-315" />
+
                 <!-- Botón al estilo admin para crear -->
-                <button 
-                    v-if="canCreateMeeting"
-                    @click="openModal"
-                    class="self-center bg-gradient-to-r from-[#326465] to-[#1d2e3e] hover:brightness-125 transition-all px-6 py-2 rounded-xl border border-white/10 shadow-lg font-bold text-sm lg:text-base flex items-center gap-2"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
+                <button v-if="canCreateMeeting" @click="openModal"
+                    class="self-center bg-gradient-to-r from-[#326465] to-[#1d2e3e] hover:brightness-125 transition-all px-6 py-2 rounded-xl border border-white/10 shadow-lg font-bold text-sm lg:text-base flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M12 5l0 14" />
+                        <path d="M5 12l14 0" />
+                    </svg>
                     Nueva Charla
                 </button>
             </div>
-            
+
             <p class="text-2xl text-center pt-5 pb-7 lg:text-4xl font-bold shrink-0">Charlas Disponibles</p>
 
             <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 lg:grid-cols-4 gap-4 justify-items-center">
                 <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
-                    :teacher="meeting.teacher" :schedule="meeting.schedule" :group="meeting.group" :description="meeting.description"
-                    @delete="deleteMeeting" />
+                    :teacher="meeting.teacher" :schedule="meeting.schedule" :group="meeting.group"
+                    :description="meeting.description" @delete="deleteMeeting" />
             </div>
 
             <div v-else
@@ -195,12 +198,19 @@ const deleteMeeting = async (id) => {
         </section>
 
         <!-- Modal de Creación -->
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div class="bg-[#1e2e38] border border-white/10 w-full max-w-lg rounded-[30px] p-8 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div v-if="showModal"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div
+                class="bg-[#1e2e38] border border-white/10 w-full max-w-lg rounded-[30px] p-8 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl lg:text-3xl font-extrabold text-white">Crear Nueva Charla</h2>
                     <button @click="closeModal" class="text-white/50 hover:text-white transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M18 6l-12 12" />
+                            <path d="M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
 
@@ -226,7 +236,7 @@ const deleteMeeting = async (id) => {
 
                     <div>
                         <label class="block text-sm font-medium text-white/70 mb-1 ml-2">Centro / Grupo</label>
-                        
+
                         <!-- Selector para Admin, input para el resto -->
                         <select v-if="user?.role === 'Admin'" v-model="newMeeting.educational_center_id" required
                             class="w-full bg-[#2a4a5a] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#326465] transition-all text-white appearance-none">
@@ -234,14 +244,15 @@ const deleteMeeting = async (id) => {
                                 {{ center.name }}
                             </option>
                         </select>
-                        
+
                         <input v-else :value="user?.institution_name" type="text" disabled
                             class="w-full bg-[#2a4a5a]/50 border border-white/10 rounded-2xl px-4 py-3 text-white/50 cursor-not-allowed">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-white/70 mb-1 ml-2">Descripción</label>
-                        <textarea v-model="newMeeting.description" rows="3" placeholder="Describe brevemente de qué trata la charla..."
+                        <textarea v-model="newMeeting.description" rows="3"
+                            placeholder="Describe brevemente de qué trata la charla..."
                             class="w-full bg-[#2a4a5a] border border-white/10 rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-[#326465] transition-all text-white resize-none"></textarea>
                     </div>
 
