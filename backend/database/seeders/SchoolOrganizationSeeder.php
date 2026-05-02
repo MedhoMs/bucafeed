@@ -213,8 +213,8 @@ class SchoolOrganizationSeeder extends Seeder
             ['name' => 'IES Agustín Espinosa', 'type' => 'SE', 'category' => 'IES', 'location' => 'Arrecife', 'cycles' => array_merge($esoCycles, $bachCycles)],
             ['name' => 'IES Salinas', 'type' => 'SE', 'category' => 'IES', 'location' => 'Arrecife', 'cycles' => array_merge($esoCycles, $bachCycles)],
             ['name' => 'IES en Altavista', 'type' => 'SE', 'category' => 'IES', 'location' => 'Arrecife', 'cycles' => array_merge($esoCycles, $bachCycles)],
-            ['name' => 'CIFP Zonzamas', 'type' => 'HE', 'category' => 'CIFP', 'location' => 'Arrecife', 'cycles' => array_values($fpCycles)],
-            ['name' => 'ULPGC Lanzarote', 'type' => 'HE', 'category' => 'Universidad', 'location' => 'Tahíche', 'cycles' => $uniCycles],
+            ['name' => 'CIFP Zonzamas', 'type' => 'FP', 'category' => 'CIFP', 'location' => 'Arrecife', 'cycles' => array_values($fpCycles)],
+            ['name' => 'ULPGC Lanzarote', 'type' => 'UR', 'category' => 'Universidad', 'location' => 'Tahíche', 'cycles' => $uniCycles],
             ['name' => 'Miyagi Do Karate', 'type' => 'SE', 'category' => 'IES', 'location' => 'Okinawa', 'cycles' => $karateCycles],
             ['name' => 'TelamoNet', 'type' => 'TM', 'category' => 'CIFP', 'location' => 'Lanzarote', 'cycles' => array_merge($esoCycles, $bachCycles, array_values($fpCycles))],
         ];
