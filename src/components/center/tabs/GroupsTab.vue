@@ -23,7 +23,7 @@ defineEmits(['update:expandedGroup', 'update:confirmingDelete', 'openModal', 'de
                     </div>
                     <div>
                         <h3 class="font-black text-lg text-white/90 uppercase tracking-tighter">{{ g.name }}</h3>
-                        <p class="text-[10px] text-white/40 font-black uppercase tracking-[0.1em]">
+                        <p class="text-[10px] text-white/40 font-black uppercase tracking-widest">
                             {{ g.cycle?.name || 'S/C' }} · {{ g.students?.length || 0 }} ALUMNOS
                         </p>
                     </div>

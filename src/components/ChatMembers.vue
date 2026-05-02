@@ -3,22 +3,16 @@
     import { useRoute } from 'vue-router';
     import { ref, computed, onMounted } from 'vue';
     import { user as authUser } from '../stores/auth';
+    import UserAvatar from './common/UserAvatar.vue';
     import defaultLogo from '../assets/logo/logoTelamon.png';
 
-    const { t } = useTranslations(); 
+    const { t } = useTranslations();
     const route = useRoute();
     const students = ref([]);
 
     const meetingId = computed(() => route.params.id);
     const meetingTeacher = computed(() => route.params.teacher);
     const groupName = computed(() => route.params.group);
-
-    const getProfilePicture = (path) => {
-        if (!path) return defaultLogo;
-        if (path.startsWith('http')) return path;
-        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-        return apiBase.replace('/api', '') + '/storage/' + path;
-    };
 
     onMounted(async () => {
         if (groupName.value) {
@@ -45,8 +39,7 @@
             <div class="mr-auto w-full shrink-0">
                 <p class="text-lg lg:text-2xl font-bold self-start mb-2">Profesor</p>
                 <div class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer">
-                    <img src="../assets/logo/logoTelamon.png" alt=""
-                        class="hidden lg:block w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
+                    <UserAvatar size="w-10 h-10" class="hidden lg:block border-2 border-white shadow-xs mr-2" />
                     <p class="text-base lg:text-xl">{{ meetingId ? meetingTeacher : 'Profesor' }}</p>
                 </div>
             </div>
@@ -58,16 +51,14 @@
             <div class="flex flex-col mr-auto w-full flex-1 overflow-y-auto pb-4 pr-2">
                 <!-- Estudiante Logueado (Yo) -->
                 <div v-if="authUser && authUser.role === 'Student'" class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer">
-                    <img :src="getProfilePicture(authUser.profile_picture)" alt=""
-                        class="hidden lg:block w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
+                    <UserAvatar :user="authUser" size="w-10 h-10" class="hidden lg:block border-2 border-white shadow-xs mr-2" />
                     <p class="text-base lg:text-xl">{{ authUser.name }} (Tú)</p>
                 </div>
 
                 <!-- Otros Estudiantes del Centro -->
                 <div v-for="student in students.filter(s => s.id !== authUser?.id)" :key="student.id"
                     class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer">
-                    <img :src="getProfilePicture(student.profile_picture)" alt=""
-                        class="hidden lg:block w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
+                    <UserAvatar :user="student" size="w-10 h-10" class="hidden lg:block border-2 border-white shadow-xs mr-2" />
                     <p class="text-base lg:text-xl">{{ student.name }} {{ student.last_name }}</p>
                 </div>
 
