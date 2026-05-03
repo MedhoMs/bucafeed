@@ -2,10 +2,11 @@
 import { ref, computed } from 'vue'
 
 const props = defineProps({
-    modelValue: { type: String, default: null },
+    modelValue: { type: [Object, File, String], default: null },
     label: { type: String, default: 'Seleccionar Imagen' },
     previewUrl: { type: String, default: null },
-    aspect: { type: String, default: 'square' } // square, video, banner
+    aspect: { type: String, default: 'square' }, // square, video, banner
+    variant: { type: String, default: 'classic' } // classic, minimal
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -17,8 +18,6 @@ const handleFile = (event) => {
     const file = event.target.files[0]
     if (!file) return
     
-    // Generar preview local (rápido)
-    const localUrl = URL.createObjectURL(file)
     emit('update:modelValue', file) // Emitir el objeto FILE real
 }
 
@@ -35,8 +34,9 @@ const displayUrl = computed(() => {
 </script>
 
 <template>
-    <div class="space-y-3">
-        <div 
+    <div :class="variant === 'classic' ? 'space-y-3' : ''">
+        <!-- Variant Classic (The dashed box) -->
+        <div v-if="variant === 'classic'"
             @click="triggerInput"
             @mouseenter="isHovered = true"
             @mouseleave="isHovered = false"
@@ -50,7 +50,7 @@ const displayUrl = computed(() => {
             <!-- Preview -->
             <img v-if="displayUrl" 
                 :src="displayUrl" 
-                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                class="absolute inset-0 w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
                 alt="Vista previa"
             >
             
@@ -70,18 +70,46 @@ const displayUrl = computed(() => {
                     {{ (modelValue || previewUrl) ? 'Cambiar Imagen' : label }}
                 </p>
             </div>
-
-            <input 
-                ref="fileInput"
-                type="file" 
-                accept="image/*"
-                class="hidden" 
-                @change="handleFile"
-            >
         </div>
 
+        <!-- Variant Minimal (The icon button for answers) -->
+        <div v-else class="flex items-center gap-2">
+            <!-- Mini Preview -->
+            <div v-if="displayUrl" class="relative w-10 h-10 rounded-lg overflow-hidden border border-white/20 animate-fade-in">
+                <img :src="displayUrl" class="w-full h-full object-cover" />
+                <button 
+                    type="button"
+                    @click.stop="emit('update:modelValue', null)" 
+                    class="absolute top-0 right-0 bg-black/60 rounded-bl-lg p-0.5 hover:bg-red-500 transition-colors"
+                >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <button
+                type="button"
+                @click="triggerInput"
+                class="hover:text-emerald-400 transition-colors" 
+                title="Subir Imagen"
+            >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                    <circle cx="9" cy="9" r="2"/>
+                    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                </svg>
+            </button>
+        </div>
+
+        <input 
+            ref="fileInput"
+            type="file" 
+            accept="image/*"
+            class="hidden" 
+            @change="handleFile"
+        >
+
         <!-- Success Message -->
-        <div v-if="modelValue" class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-emerald-400 ml-2 animate-pulse">
+        <div v-if="variant === 'classic' && modelValue" class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-emerald-400 ml-2 animate-pulse">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
             Imagen Lista para subir
         </div>

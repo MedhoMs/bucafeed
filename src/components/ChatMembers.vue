@@ -3,9 +3,10 @@
     import { useRoute } from 'vue-router';
     import { ref, computed, onMounted, watch } from 'vue';
     import { user as authUser } from '../stores/auth';
+    import UserAvatar from './common/UserAvatar.vue';
     import defaultLogo from '../assets/logo/logoTelamon.png';
 
-    const { t } = useTranslations(); 
+    const { t } = useTranslations();
     const route = useRoute();
     const students = ref([]);
 
@@ -19,13 +20,6 @@
     const meetingId = computed(() => route.params.id);
     const meetingTeacherParam = computed(() => route.params.teacher);
     const groupName = computed(() => route.params.group);
-
-    const getProfilePicture = (path) => {
-        if (!path) return defaultLogo;
-        if (path.startsWith('http')) return path;
-        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-        return apiBase.replace('/api', '') + '/storage/' + path;
-    };
 
     const isMenuOpen = ref(false)
     const isDesktop = ref(window.innerWidth >= 1024)
@@ -101,7 +95,6 @@
                 </svg>
             </div>
 
-
             <div class="hidden lg:flex self-center h-[90%] ml-4 bg-white w-0.5 shrink-0"></div>
 
             <div class="flex flex-col lg:w-full h-full items-center text-white p-5 overflow-hidden">
@@ -109,8 +102,7 @@
                 <div class="mr-auto w-full shrink-0">
                     <p class="text-lg lg:text-2xl font-bold self-start mb-2">Profesor</p>
                     <div class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer transition-colors">
-                        <img :src="getProfilePicture(props.meeting?.teacher?.profile_picture)" alt=""
-                            class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
+                        <UserAvatar :user="props.meeting?.teacher" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
                         <p class="text-base lg:text-xl truncate">
                             {{ props.meeting?.teacher ? `${props.meeting.teacher.name} ${props.meeting.teacher.last_name || ''}` : (meetingId ? meetingTeacherParam : 'Profesor') }}
                         </p>
@@ -122,20 +114,20 @@
                 <p class="text-lg lg:text-2xl font-bold self-start mt-5 mb-2 shrink-0">Alumnos</p>
 
                 <div class="flex flex-col mr-auto w-full flex-1 overflow-y-auto pb-4 pr-2 custom-scrollbar">
+                    <!-- Estudiante Logueado (Yo) -->
                     <div v-if="authUser && authUser.role === 'Student'" class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors">
-                        <img :src="getProfilePicture(authUser.profile_picture)" alt=""
-                            class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
+                        <UserAvatar :user="authUser" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
                         <p class="text-base lg:text-xl truncate">{{ authUser.name }} (Tú)</p>
                     </div>
 
+                    <!-- Otros Estudiantes -->
                     <div v-for="student in students.filter(s => s.id !== authUser?.id)" :key="student.id"
                         class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors">
-                        <img :src="getProfilePicture(student.profile_picture)" alt=""
-                            class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-xs mr-2 shrink-0" />
+                        <UserAvatar :user="student" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
                         <p class="text-base lg:text-xl truncate">{{ student.name }} {{ student.last_name }}</p>
                     </div>
 
-                    <p v-if="students.length === 0 && !authUser" class="text-sm text-white/40 italic">No hay otros alumnos</p>
+                    <p v-if="students.length === 0 && (!authUser || authUser.role !== 'Student')" class="text-sm text-white/40 italic">No hay otros alumnos</p>
                 </div>
 
             </div>
@@ -162,4 +154,3 @@
     background: rgba(255, 255, 255, 0.2);
 }
 </style>
-

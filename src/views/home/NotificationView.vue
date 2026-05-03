@@ -1,5 +1,6 @@
 <script setup>
     import NavBar from '../../components/NavBar/NavBar.vue';
+    import PageHeader from '@/components/common/PageHeader.vue';
     
     import { useTranslations } from '../../composables/useTranslations'
     const { t } = useTranslations() // Variable para llamar al archivo de traduccion
@@ -7,14 +8,18 @@
 
 <template>
     <NavBar></NavBar>
-    <main class="flex flex-col min-h-screen items-center lg:pl-75">
-        <section class="text-white lg:w-375 w-87.5 mx-auto lg:mr-14 mb-4">
-            <!-- Filtro de notificaciones -->
-            <div id="notificationFilter" class="flex lg:justify-between justify-end gap-5 items-start lg:text-[35px] mt-4">
-                <span class="py-3 rounded-3xl text-center cursor-pointer hover:bg-[#2A4A5A] duration-500">Todo</span>
-                <span class="py-3 rounded-3xl text-center cursor-pointer hover:bg-[#2A4A5A] duration-500">Charlas</span>
-                <span class="py-3 rounded-3xl text-center cursor-pointer w-35 hover:bg-[#2A4A5A] duration-500">Preguntas Pendientes</span>
-            </div>
+    <main class="flex flex-col min-h-screen items-center lg:pl-75 w-full">
+        <PageHeader noMargin>
+            <template #search>
+                <div id="notificationFilter" class="text-white flex lg:justify-between justify-end gap-5 items-start lg:text-[35px]">
+                    <span class="py-3 px-6 rounded-3xl text-center cursor-pointer hover:bg-[#2A4A5A] duration-500">Todo</span>
+                    <span class="py-3 px-6 rounded-3xl text-center cursor-pointer hover:bg-[#2A4A5A] duration-500">Charlas</span>
+                    <span class="py-3 px-6 rounded-3xl text-center cursor-pointer px-8 hover:bg-[#2A4A5A] duration-500">Preguntas Pendientes</span>
+                </div>
+            </template>
+        </PageHeader>
+
+        <section class="text-white w-full px-6 lg:px-14 mb-20">
 
             <div id="mainBody" class="flex flex-col gap-4 items-center min-h-[92.9vh]">
                 <!-- Notificacion de post -->

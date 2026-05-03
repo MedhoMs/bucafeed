@@ -107,9 +107,14 @@ abstract class TemplateController extends Controller
         return $this->renderForm($model, 'create');
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $model = $this->model::with($this->with)->findOrFail($id);
+
+        if ($request->is('api/*') || ($request->expectsJson() && !$request->ajax())) {
+            return response()->json($model);
+        }
+
         return $this->renderForm($model, 'show', 'disabled');
     }
 
