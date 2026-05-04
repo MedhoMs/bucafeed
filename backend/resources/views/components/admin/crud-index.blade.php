@@ -10,9 +10,7 @@
     'filterLabels' => [], {{-- Mapeo de valores a nombres legibles --}}
 ])
 
-@extends('layouts.admin')
-
-@section('content')
+{{-- Componente de índice CRUD --}}
 <div class="p-4 sm:p-8 min-h-screen text-white bg-linear-to-b from-(--admin-bg-gradient-start) via-(--admin-bg-gradient-via) to-(--admin-bg-main)">
     
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-5">
@@ -142,4 +140,3 @@
         
     {{ $slot }}
 </div>
-@endsection
