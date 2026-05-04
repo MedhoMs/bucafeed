@@ -138,8 +138,21 @@ class UserController extends TemplateController
             }
         }
 
+        // 4. Si cambia el rol, revocar todos los tokens del usuario
+        //    para que el JWT quede inválido de inmediato y el frontend
+        //    no pueda seguir usando datos obsoletos del localStorage.
+        $roleChanged = $user
+            && isset($data['role'])
+            && $data['role'] !== $user->role;
+
         $request->replace($data);
-        return parent::save($request, $user);
+        $result = parent::save($request, $user);
+
+        if ($roleChanged) {
+            $user->tokens()->delete();
+        }
+
+        return $result;
     }
 
     /**

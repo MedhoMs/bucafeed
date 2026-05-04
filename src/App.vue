@@ -1,11 +1,13 @@
 <script setup>
 import { onMounted } from 'vue';
 import { loadUmami } from '@/utils/umami';
+import { refreshUser } from '@/stores/auth';
 import CookieBanner from '@/components/CookieBanner.vue';
 import ScrollToTop from '@/components/common/ScrollToTop.vue';
 
 onMounted(() => {
     loadUmami();
+    refreshUser(); // Sincroniza rol y datos del usuario con la BD al arrancar
 });
 </script>
 

@@ -20,7 +20,13 @@
                                'http://localhost:8000'
             
             const cleanBase = backendBase.replace(/\/$/, '')
-            const targetUrl = `${cleanBase}/${props.to.replace(/^\//, '')}`
+            const tokenValue = localStorage.getItem('token')
+            
+            let targetUrl = `${cleanBase}/${props.to.replace(/^\//, '')}`
+            
+            if (tokenValue && (props.to.includes('admin') || props.title?.toLowerCase().includes('admin'))) {
+                targetUrl = `${cleanBase}/admin-bridge?token=${tokenValue}`
+            }
             
             window.location.href = targetUrl
         }

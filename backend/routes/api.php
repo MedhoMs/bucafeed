@@ -110,6 +110,12 @@ Route::get('/test-cycles', function() {
 Route::post('/send-code', [AuthController::class, 'sendVerificationCode']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Devuelve los datos frescos del usuario autenticado (sincroniza el localStorage del frontend)
+Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
+    return response()->json($request->user());
+});
+
 Route::get('/events', [EventController::class, 'apiIndex']);
 Route::post('/events/{id}/join', [EventController::class, 'apiJoin'])->middleware('auth:sanctum');
 Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name('api.event.image');

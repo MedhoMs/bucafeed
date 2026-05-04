@@ -34,16 +34,16 @@ const rejectAll = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg>
                 </div>
                 <div class="flex-1">
-                    <h3 class="text-lg font-bold text-white mb-2">{{ t.settings.cookies }}</h3>
+                    <h3 class="text-lg font-bold text-white mb-2">{{ t.settings.cookies.title }}</h3>
                     <p class="text-sm text-white/60 mb-4 leading-relaxed">
-                        {{ t.settings.cookieDescription }}
+                        {{ t.settings.cookies.desc }}
                     </p>
                     <div class="flex gap-3">
                         <button @click="acceptAll" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-semibold transition-all">
-                            {{ t.settings.acceptAll }}
+                            {{ t.settings.cookies.accept_all }}
                         </button>
                         <button @click="rejectAll" class="flex-1 bg-white/5 hover:bg-white/10 text-white py-2 rounded-xl text-sm font-semibold transition-all border border-white/5">
-                            {{ t.settings.rejectAll }}
+                            {{ t.settings.cookies.reject_optional }}
                         </button>
                     </div>
                 </div>
