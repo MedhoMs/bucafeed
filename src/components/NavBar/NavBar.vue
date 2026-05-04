@@ -129,7 +129,7 @@
                     </template>
                 </NavBarLinks>
  
-                <NavBarLinks v-if="user?.role?.toLowerCase() === 'admin'" to="/admin" title="Panel de administrador" backend>
+                <NavBarLinks v-if="user?.role?.toLowerCase() === 'admin' || user?.role_name?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'administrador'" to="/admin" title="Panel de administrador" backend>
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="6" cy="10" r="2"/><line x1="6" y1="4" x2="6" y2="8"/><line x1="6" y1="12" x2="6" y2="20"/><circle cx="12" cy="16" r="2"/><line x1="12" y1="4" x2="12" y2="14"/><line x1="12" y1="18" x2="12" y2="20"/><circle cx="18" cy="7" r="2"/><line x1="18" y1="4" x2="18" y2="5"/><line x1="18" y1="9" x2="18" y2="20"/></svg>
                     </template>
