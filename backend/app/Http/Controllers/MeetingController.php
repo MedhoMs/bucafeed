@@ -63,4 +63,10 @@ class MeetingController extends TemplateController
         
         return response()->json($meeting->load($this->with), 201);
     }
+
+    public function apiShow($id)
+    {
+        $meeting = Meeting::with($this->with)->findOrFail($id);
+        return response()->json($meeting);
+    }
 }

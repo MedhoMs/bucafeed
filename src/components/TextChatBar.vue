@@ -54,7 +54,7 @@
 
 <template>
     <div class="flex my-3 w-full">
-        <div class="flex items-center border border-white rounded-[20px] p-3.75 w-50 lg:w-full">
+        <div class="flex items-center border border-white rounded-[20px] p-3.75 w-full">
             <input 
                 ref="fileInput"
                 type="file" 

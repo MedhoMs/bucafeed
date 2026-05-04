@@ -6,6 +6,7 @@ import { profile } from './profile';
 import { post } from './post';
 import { videoCall } from './videoCall';
 import { validation } from './validation';
+import { settings } from './settings';
 
 export const en = {
     nav,
@@ -15,5 +16,6 @@ export const en = {
     profile,
     post,
     videoCall,
-    validation
+    validation,
+    settings
 };

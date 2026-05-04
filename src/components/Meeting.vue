@@ -30,17 +30,25 @@
 
 <template>
     <div class="
-        w-81.25
-        h-93.75 
-        rounded-[20px] 
+        w-80
+        h-96 
+        rounded-2xl 
         p-5 relative 
         bg-linear-to-br 
-        from-[rgba(255,255,255,0.08)] to-[rgba(255,255,255,0.04)] 
+        from-white/8 to-white/4 
         border 
-        border-[rgba(255,255,255,0.12)]
+        border-white/10
         hover:border-white/30
         transition-all
     ">
+        <!-- Logo Decorativo de Fondo -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden rounded-2xl">
+            <img 
+                src="../assets/logo/logoTelamon.png" 
+                class="w-72 h-72 object-contain opacity-5 grayscale brightness-200" 
+                alt="Decoration"
+            />
+        </div>
 
         <div class="flex justify-between items-start mb-2">
             <p class="text-2xl font-bold pr-8">{{ props.name }}</p>
@@ -81,8 +89,8 @@
             absolute 
             bottom-5 
             right-5 
-            rounded-[20px] 
-            w-25 
+            rounded-2xl 
+            w-24 
             text-base 
             text-center
             hover:bg-[#0a3a65] 

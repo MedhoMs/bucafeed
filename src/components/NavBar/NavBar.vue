@@ -129,7 +129,7 @@
                     </template>
                 </NavBarLinks>
  
-                <NavBarLinks v-if="user?.role?.toLowerCase() === 'admin'" to="/admin" title="Panel de administrador" backend>
+                <NavBarLinks v-if="user?.role?.toLowerCase() === 'admin' || user?.role_name?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'administrador'" to="/admin" title="Panel de administrador" backend>
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="6" cy="10" r="2"/><line x1="6" y1="4" x2="6" y2="8"/><line x1="6" y1="12" x2="6" y2="20"/><circle cx="12" cy="16" r="2"/><line x1="12" y1="4" x2="12" y2="14"/><line x1="12" y1="18" x2="12" y2="20"/><circle cx="18" cy="7" r="2"/><line x1="18" y1="4" x2="18" y2="5"/><line x1="18" y1="9" x2="18" y2="20"/></svg>
                     </template>
@@ -179,7 +179,7 @@
                     leave-to-class="opacity-0 translate-y-2">
                     <div v-if="showPopup" @click.stop="showPopup = false" class="absolute right-10 bottom-24 bg-[#1d2b38] rounded-xl shadow-lg">
                         <router-link class="flex gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#406071] active:font-semibold" :to="'/profile/' + user?.id">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12m-9 8v-1a6 6 0 0 1 12 0v1" /><path d="M12 10a4 4 0 1 1 0 -8a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
                             {{ t.nav.profile }}
                         </router-link>
                         <router-link class="flex gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#406071] active:font-semibold" to="/">

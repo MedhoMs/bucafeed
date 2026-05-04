@@ -97,7 +97,8 @@
             </template>
             <template #actions>
                 <button v-if="canCreate" 
-                    @click="activeModal = 'event'"                    class="w-full md:w-auto bg-[#406071] hover:bg-[#507a8f] text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all active:scale-95 shadow-xl shadow-cyan-900/10 flex items-center justify-center gap-3 group border border-white/5 shrink-0">
+                    @click="activeModal = 'event'"
+                    class="w-full md:w-auto bg-[#406071] hover:bg-[#507a8f] text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all active:scale-95 shadow-xl shadow-cyan-900/10 flex items-center justify-center gap-3 group border border-white/5 shrink-0">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     <span>Nuevo Evento</span>
                 </button>
@@ -138,5 +139,4 @@
 </template>
 
 <style scoped>
-
 </style>

@@ -5,5 +5,10 @@ export const profile = {
     likes: "Likes",
     followers: "followers",
     following: "following",
-    userContent: "User content..."
+    userContent: "User content...",
+    follow: "Follow",
+    events: "Events",
+    settings_tooltip: "Settings",
+    upload_banner: "Change banner",
+    upload_profile: "Change profile picture"
 };

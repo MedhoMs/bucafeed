@@ -100,13 +100,17 @@ class UserController extends TemplateController
 
     protected function rules($user = null)
     {
+        $isUpdate = $user && $user->exists;
+
         return [
-            'name'      => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email'     => 'required|string|email|max:255|unique:users,email,' . ($user->id ?? 'NULL'),
-            'password'  => ($user && $user->exists ? 'nullable' : 'required') . '|string|min:8',
-            'dni'       => 'required|string|max:20|unique:users,dni,' . ($user->id ?? 'NULL'),
-            'role'      => 'required|string',
+            'name'      => ($isUpdate ? 'nullable' : 'required') . '|string|max:255',
+            'last_name' => ($isUpdate ? 'nullable' : 'required') . '|string|max:255',
+            'email'     => ($isUpdate ? 'nullable' : 'required') . '|string|email|max:255|unique:users,email,' . ($user->id ?? 'NULL'),
+            'password'  => ($isUpdate ? 'nullable' : 'required') . '|string|min:8',
+            'dni'       => ($isUpdate ? 'nullable' : 'required') . '|string|max:20|unique:users,dni,' . ($user->id ?? 'NULL'),
+            'role'      => ($isUpdate ? 'nullable' : 'required') . '|string',
+            'profile_picture' => 'nullable|image|max:5120',
+            'banner'    => 'nullable|image|max:5120',
         ];
     }
 
@@ -134,8 +138,21 @@ class UserController extends TemplateController
             }
         }
 
+        // 4. Si cambia el rol, revocar todos los tokens del usuario
+        //    para que el JWT quede inválido de inmediato y el frontend
+        //    no pueda seguir usando datos obsoletos del localStorage.
+        $roleChanged = $user
+            && isset($data['role'])
+            && $data['role'] !== $user->role;
+
         $request->replace($data);
-        return parent::save($request, $user);
+        $result = parent::save($request, $user);
+
+        if ($roleChanged) {
+            $user->tokens()->delete();
+        }
+
+        return $result;
     }
 
     /**
