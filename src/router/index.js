@@ -12,6 +12,7 @@ import MeetingChatView from "../views/home/MeetingChatView.vue";
 import LaravelTestView from "../views/LaravelTestView.vue";
 import VideoCallView from "../views/home/VideoCallView.vue";
 import CenterManagementView from "../views/home/CenterManagementView.vue";
+import ForumView from "../views/home/ForumView.vue";
 import { user } from "@/stores/auth";
 
 const router = createRouter({
@@ -68,7 +69,7 @@ const router = createRouter({
         component: MeetingView
         },
         {
-        path: '/meetingchat',
+        path: '/meetingchat/:id/:name?/:teacher?/:group?',
         name: 'meetingchat',
         component: MeetingChatView
         },
@@ -81,6 +82,11 @@ const router = createRouter({
         path: '/mi-centro',
         name: 'center-management',
         component: CenterManagementView
+        },
+        {
+        path: '/foro',
+        name: 'foro',
+        component: ForumView
         }
     ]
 })

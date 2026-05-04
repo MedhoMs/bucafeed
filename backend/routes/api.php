@@ -116,6 +116,7 @@ Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name(
 Route::post('/events/generate-kahoot', [KahootController::class, 'generateQuestions']);
 Route::get('/educational-centers', [EducationalCenterController::class, 'apiIndex']);
 Route::get('/meetings', [MeetingController::class, 'apiIndex']);
+Route::get('/meetings/{id}', [MeetingController::class, 'apiShow']);
 Route::post('/meetings', [MeetingController::class, 'apiStore']);
 Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);
 Route::get('/all-cycles', [CycleController::class, 'apiIndex']);

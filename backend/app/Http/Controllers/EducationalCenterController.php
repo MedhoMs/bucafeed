@@ -203,7 +203,7 @@ class EducationalCenterController extends TemplateController
         return view('educational_centers.profile_modal', compact('center'));
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $center = EducationalCenter::with(['adminUser', 'students', 'teachers', 'cycles'])->findOrFail($id);
         return view('educational_centers.show', compact('center'));
