@@ -1,5 +1,12 @@
 <script setup>
-import ScrollToTop from './components/common/ScrollToTop.vue';
+import { onMounted } from 'vue';
+import { loadUmami } from '@/utils/umami';
+import CookieBanner from '@/components/CookieBanner.vue';
+import ScrollToTop from '@/components/common/ScrollToTop.vue';
+
+onMounted(() => {
+    loadUmami();
+});
 </script>
 
 <!--Desde la App se maneja todo lo que se va a ver, usando <router-view /> es lo que me permite elegir que vista va a ver el usuario-->
@@ -9,6 +16,7 @@ import ScrollToTop from './components/common/ScrollToTop.vue';
         <main class="main-content">
             <router-view />
         </main>
+        <CookieBanner />
         <ScrollToTop />
     </div>
 </template>

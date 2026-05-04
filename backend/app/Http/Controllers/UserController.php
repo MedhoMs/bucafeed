@@ -100,13 +100,17 @@ class UserController extends TemplateController
 
     protected function rules($user = null)
     {
+        $isUpdate = $user && $user->exists;
+
         return [
-            'name'      => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email'     => 'required|string|email|max:255|unique:users,email,' . ($user->id ?? 'NULL'),
-            'password'  => ($user && $user->exists ? 'nullable' : 'required') . '|string|min:8',
-            'dni'       => 'required|string|max:20|unique:users,dni,' . ($user->id ?? 'NULL'),
-            'role'      => 'required|string',
+            'name'      => ($isUpdate ? 'nullable' : 'required') . '|string|max:255',
+            'last_name' => ($isUpdate ? 'nullable' : 'required') . '|string|max:255',
+            'email'     => ($isUpdate ? 'nullable' : 'required') . '|string|email|max:255|unique:users,email,' . ($user->id ?? 'NULL'),
+            'password'  => ($isUpdate ? 'nullable' : 'required') . '|string|min:8',
+            'dni'       => ($isUpdate ? 'nullable' : 'required') . '|string|max:20|unique:users,dni,' . ($user->id ?? 'NULL'),
+            'role'      => ($isUpdate ? 'nullable' : 'required') . '|string',
+            'profile_picture' => 'nullable|image|max:5120',
+            'banner'    => 'nullable|image|max:5120',
         ];
     }
 

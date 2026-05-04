@@ -121,11 +121,9 @@ Route::post('/meetings', [MeetingController::class, 'apiStore']);
 Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);
 Route::get('/all-cycles', [CycleController::class, 'apiIndex']);
 
-// Usuarios (para poder ver perfiles públicos desde Vue)
+// Usuarios
+Route::apiResource('users', UserController::class);
 Route::get('/users/by-center', [UserController::class, 'apiStudentsByCenter']);
-Route::get('/users/{user}', function (User $user) {
-    return response()->json($user);
-});
 
 // Preguntas y Respuestas
 Route::apiResource('questions', QuestionController::class);

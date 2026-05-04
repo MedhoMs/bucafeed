@@ -1,107 +1,179 @@
 <script setup>
-import NavBar from '@/components/NavBar/NavBar.vue';
-import { useTranslations } from '@/composables/useTranslations'
 import { ref } from 'vue'
-import { toggleUmamiConsent } from '@/utils/umami'
+import NavBar from '@/components/NavBar/NavBar.vue'
+import { useTranslations } from '@/composables/useTranslations'
+import { useUmami } from '@/composables/useUmami'
 
-const { t } = useTranslations()
+import { SETTINGS_SECTIONS } from '@/constants/settings'
 
-const umamiEnabled = ref(localStorage.getItem('umami-consent') === 'true')
+const { t, locale, setLocale } = useTranslations()
+const { isTrackingEnabled, toggleTracking } = useUmami()
 
-const handleToggleUmami = () => {
-    umamiEnabled.value = !umamiEnabled.value
-    toggleUmamiConsent(umamiEnabled.value)
-}
-
-const acceptAll = () => {
-    umamiEnabled.value = true
-    toggleUmamiConsent(true)
-}
-
-const rejectAll = () => {
-    umamiEnabled.value = false
-    toggleUmamiConsent(false)
-}
+const activeSection = ref('account')
 </script>
 
 <template>
-    <NavBar></NavBar>
-    <main class="flex min-h-screen justify-center lg:pl-75">
-        <div class="text-white lg:w-375 w-full max-w-4xl mx-auto p-6 flex flex-col gap-8">
-            <header class="border-b border-white/10 pb-4">
-                <h1 class="text-3xl font-bold">{{ t.settings.title }}</h1>
+    <NavBar />
+    <main class="min-h-screen lg:pl-75 text-white">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+            <header class="mb-12">
+                <h1 class="text-4xl font-bold tracking-tight text-white">{{ t.settings.title }}</h1>
+                <p class="text-white/60 mt-1 text-lg">{{ t.settings.subtitle }}</p>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Sidebar -->
-                <aside class="flex flex-col gap-2">
-                    <button class="flex items-center gap-3 p-3 rounded-lg bg-white/5 text-white font-medium transition-all hover:bg-white/10 text-left">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        {{ t.settings.account }}
-                    </button>
-                    <button class="flex items-center gap-3 p-3 rounded-lg text-white/60 font-medium transition-all hover:bg-white/5 text-left">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        {{ t.settings.privacy }}
-                    </button>
-                    <button class="flex items-center gap-3 p-3 rounded-lg bg-blue-500/10 text-blue-400 font-medium transition-all text-left">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg>
-                        {{ t.settings.cookies }}
-                    </button>
-                </aside>
-
-                <!-- Main Content -->
-                <section class="md:col-span-2 flex flex-col gap-6">
-                    <div class="bg-[#15202b80] border border-white/10 rounded-2xl p-6 backdrop-blur-md shadow-2xl">
-                        <div class="flex items-start justify-between mb-6">
-                            <div>
-                                <h2 class="text-xl font-semibold mb-2 flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-400"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg>
-                                    {{ t.settings.cookies }} & {{ t.settings.analytics }}
-                                </h2>
-                                <p class="text-white/60 text-sm leading-relaxed">
-                                    {{ t.settings.cookieDescription }}
-                                </p>
-                            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+                <!-- Navigation -->
+                <nav class="lg:col-span-4 space-y-2">
+                    <button 
+                        v-for="section in SETTINGS_SECTIONS" 
+                        :key="section.id"
+                        @click="activeSection = section.id"
+                        :class="[
+                            'w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-300 text-left group cursor-pointer',
+                            activeSection === section.id 
+                                ? 'bg-[#15202b80] border border-white/10 shadow-lg' 
+                                : 'bg-transparent border border-transparent hover:bg-white/5'
+                        ]"
+                    >
+                        <div :class="[
+                            'w-10 h-10 rounded-lg flex items-center justify-center transition-colors',
+                            activeSection === section.id ? 'bg-[#406071] text-white' : 'bg-white/5 text-white/40 group-hover:text-white'
+                        ]">
+                            <span class="material-symbols-outlined">{{ section.icon }}</span>
                         </div>
+                        <div>
+                            <p :class="['font-bold text-sm transition-colors', activeSection === section.id ? 'text-white' : 'text-white/60 group-hover:text-white']">
+                                {{ t.settings.sections[section.id]?.label || section.label }}
+                            </p>
+                            <p :class="['text-[10px] uppercase tracking-widest mt-0.5 transition-colors', activeSection === section.id ? 'text-white/50' : 'text-white/20 group-hover:text-white/40']">
+                                {{ t.settings.sections[section.id]?.desc || section.desc }}
+                            </p>
+                        </div>
+                    </button>
+                </nav>
 
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 transition-all hover:bg-white/10">
-                                <div>
-                                    <p class="font-medium">{{ t.settings.umamiStatus }}</p>
-                                    <p class="text-xs text-white/40">{{ umamiEnabled ? t.settings.enabled : t.settings.disabled }}</p>
-                                </div>
+                <!-- Content Area -->
+                <div class="lg:col-span-8">
+                    <div class="bg-[#15202b80] border border-white/5 rounded-2xl p-8 lg:p-10 backdrop-blur-md shadow-2xl">
+                        
+                        <!-- Account Section -->
+                        <section v-if="activeSection === 'account'" class="space-y-8">
+                            <div class="flex items-center gap-4 mb-8">
+                                <h2 class="text-2xl font-bold">{{ t.settings.account.title }}</h2>
+                                <div class="h-px flex-1 bg-white/10"></div>
+                            </div>
+                        </section>
+
+                        <!-- Privacy Section -->
+                        <section v-if="activeSection === 'privacy'" class="space-y-8">
+                            <div class="flex items-center gap-4 mb-8">
+                                <h2 class="text-2xl font-bold">{{ t.settings.privacy.title }}</h2>
+                                <div class="h-px flex-1 bg-white/10"></div>
+                            </div>
+                            <p class="text-white/40 italic text-sm">{{ t.settings.privacy.coming_soon }}</p>
+                        </section>
+
+                        <!-- Language Section -->
+                        <section v-if="activeSection === 'language'" class="space-y-8">
+                            <div class="flex items-center gap-4 mb-8">
+                                <h2 class="text-2xl font-bold">{{ t.settings.language.title }}</h2>
+                                <div class="h-px flex-1 bg-white/10"></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <button 
-                                    @click="handleToggleUmami"
-                                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none"
-                                    :class="umamiEnabled ? 'bg-blue-600' : 'bg-white/20'"
+                                    @click="setLocale('es')"
+                                    :class="[
+                                        'flex items-center justify-between p-6 rounded-2xl border transition-all cursor-pointer',
+                                        locale === 'es' ? 'bg-[#326465]/10 border-[#326465] text-white' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+                                    ]"
                                 >
-                                    <span 
-                                        class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out"
-                                        :class="umamiEnabled ? 'translate-x-6' : 'translate-x-1'"
-                                    />
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-2xl">🇪🇸</span>
+                                        <span class="font-bold">{{ t.settings.language.spanish }}</span>
+                                    </div>
+                                    <span v-if="locale === 'es'" class="material-symbols-outlined text-[#326465]">check_circle</span>
+                                </button>
+
+                                <button 
+                                    @click="setLocale('en')"
+                                    :class="[
+                                        'flex items-center justify-between p-6 rounded-2xl border transition-all cursor-pointer',
+                                        locale === 'en' ? 'bg-[#326465]/10 border-[#326465] text-white' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+                                    ]"
+                                >
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-2xl">🇺🇸</span>
+                                        <span class="font-bold">{{ t.settings.language.english }}</span>
+                                    </div>
+                                    <span v-if="locale === 'en'" class="material-symbols-outlined text-[#326465]">check_circle</span>
                                 </button>
                             </div>
-                        </div>
+                        </section>
 
-                        <div class="mt-8 flex flex-col sm:flex-row gap-3">
-                            <button @click="acceptAll" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95">
-                                {{ t.settings.acceptAll }}
-                            </button>
-                            <button @click="rejectAll" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl font-semibold transition-all active:scale-95">
-                                {{ t.settings.rejectAll }}
-                            </button>
-                        </div>
+                        <!-- Cookies Section -->
+                        <section v-if="activeSection === 'cookies'" class="space-y-8">
+                            <div class="flex items-center gap-4 mb-8">
+                                <h2 class="text-2xl font-bold">{{ t.settings.cookies.title }}</h2>
+                                <div class="h-px flex-1 bg-white/10"></div>
+                            </div>
+                            
+                            <p class="text-white/60 leading-relaxed text-sm">
+                                {{ t.settings.cookies.desc }}
+                            </p>
+
+                            <div class="bg-black/20 rounded-2xl p-6 border border-white/5">
+                                <div class="flex items-center justify-between gap-6">
+                                    <div>
+                                        <p class="font-bold text-base">{{ t.settings.cookies.tracking_label }}</p>
+                                        <p class="text-xs text-white/40 mt-1">
+                                            {{ isTrackingEnabled ? t.settings.cookies.tracking_on : t.settings.cookies.tracking_off }}
+                                        </p>
+                                    </div>
+                                    <button 
+                                        @click="toggleTracking"
+                                        :class="[
+                                            'w-14 h-7 rounded-full transition-all relative shrink-0 cursor-pointer',
+                                            isTrackingEnabled ? 'bg-emerald-500' : 'bg-white/20'
+                                        ]"
+                                    >
+                                        <div :class="[
+                                            'absolute top-1 w-5 h-5 bg-white rounded-full transition-all shadow-lg',
+                                            isTrackingEnabled ? 'left-8' : 'left-1'
+                                        ]"></div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-4 pt-4">
+                                <button class="bg-[#326465] hover:bg-[#3d7a7b] text-white text-[11px] font-black uppercase tracking-[0.2em] px-8 py-3.5 rounded-[22px] transition-all cursor-pointer">
+                                    {{ t.settings.cookies.accept_all }}
+                                </button>
+                                <button class="bg-white/5 hover:bg-white/10 text-white/60 text-[11px] font-black uppercase tracking-[0.2em] px-8 py-3.5 rounded-[22px] transition-all border border-white/10 cursor-pointer">
+                                    {{ t.settings.cookies.reject_optional }}
+                                </button>
+                            </div>
+                        </section>
+
+                        <!-- Notifications Section -->
+                        <section v-if="activeSection === 'notifications'" class="space-y-8">
+                            <div class="flex items-center gap-4 mb-8">
+                                <h2 class="text-2xl font-bold">{{ t.settings.notifications.title }}</h2>
+                                <div class="h-px flex-1 bg-white/10"></div>
+                            </div>
+                            <p class="text-white/40 italic text-sm">{{ t.settings.notifications.coming_soon }}</p>
+                        </section>
+
                     </div>
-                </section>
+                </div>
             </div>
         </div>
     </main>
 </template>
 
 <style scoped>
-/* Refined styles for premium feel */
-main {
-    background: radial-gradient(circle at top right, rgba(29, 78, 216, 0.05), transparent 400px),
-                radial-gradient(circle at bottom left, rgba(30, 41, 59, 0.2), transparent 400px);
+/* Estilos simplificados sin animaciones de transición complejas */
+.bg-gradient-to-br {
+    background-attachment: fixed;
 }
 </style>
