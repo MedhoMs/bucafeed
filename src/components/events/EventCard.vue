@@ -28,7 +28,7 @@ const endTime = computed(() => props.event.end_time?.substring(0, 5) || '00:00')
 </script>
 
 <template>
-    <div @click="emit('details', event)" class="event-card-unified relative bg-[#1a2d37] border border-white/10 rounded-[2rem] overflow-hidden cursor-pointer hover:-translate-y-1 hover:shadow-2xl transition-all duration-300">
+    <div class="event-card-unified relative bg-[#1a2d37] border border-white/10 rounded-[2rem] overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition-all duration-300">
         
         <!-- HEADER / IMAGEN -->
         <div class="relative h-44 overflow-hidden">

@@ -67,7 +67,8 @@
 
     function actualizarMapa() {
         if (!direccion.value) return
-        mapaUrl.value = `https://maps.google.com/maps?q=${encodeURIComponent(direccion.value)}&output=embed`
+        const searchQuery = direccion.value.includes(',') ? direccion.value : `${direccion.value}, Lanzarote`;
+        mapaUrl.value = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&output=embed`
     }
 </script>
 
@@ -129,6 +130,9 @@
 
             <div class="flex flex-col gap-4 mt-8">
                 <h3 class="text-3xl font-bold mx-auto mb-2">Ubicación</h3>
+                <p v-if="eventDetails?.location" class="text-white/60 text-xs text-center mb-2 uppercase tracking-[0.2em] font-black">
+                    {{ eventDetails.location }}
+                </p>
                 <iframe
                     :src="mapaUrl"
                     class="w-4/5 h-[450px] rounded-2xl mx-auto"

@@ -77,10 +77,8 @@ watch(() => route.params.id, (newId) => {
 <template>
     <NavBar></NavBar>
     <main class="flex min-h-screen justify-between lg:pl-75">
-        <div class="text-white lg:w-375 w-87.5 mx-auto lg:mr-14 mb-4 flex flex-col">
-
+        <div class="text-white w-full mx-auto flex flex-col">
             <section class="bg-[#15202b80] text-white flex-1">
-
                 <div class="relative">
                     <div class="banner">
                         <img :src="profileData.bannerUrl" alt="banner" class="w-full h-75 object-cover" />
