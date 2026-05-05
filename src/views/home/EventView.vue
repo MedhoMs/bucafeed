@@ -88,61 +88,63 @@
 </script>
 
 <template>
-    <NavBar></NavBar>
-    <main class="flex flex-col min-h-screen lg:pl-75">
-        <PageHeader 
-            title="Eventos Académicos" 
-            subtitle="Participa en las actividades y charlas de tu centro."
-        >
-            <template #search>
-                <SearchBar 
-                    :items="rawEvents" 
-                    filterField="title"
-                    @update:filtered="events = $event"
-                    class="w-full"
-                />
-            </template>
-            <template #actions>
-                <button v-if="canCreate" 
-                    @click="activeModal = 'event'"
-                    class="w-full md:w-auto bg-[#406071] hover:bg-[#507a8f] text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all cursor-pointer active:scale-95 shadow-xl shadow-cyan-900/10 flex items-center justify-center gap-3 group border border-white/5 shrink-0">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    <span>Nuevo Evento</span>
-                </button>
-            </template>
-        </PageHeader>
-
-        <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
-
-            <div id="mainBody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center pb-20">
-                <EventCard 
-                    v-for="event in events" 
-                    :key="event.id" 
-                    :event="event" 
-                    mode="public"
-                    @details="goToDetails"
-                />
+    <div class="min-h-screen">
+        <NavBar></NavBar>
+        <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
+            <PageHeader 
+                title="Eventos Académicos" 
+                subtitle="Participa en las actividades y charlas de tu centro."
+            >
+                <template #search>
+                    <SearchBar 
+                        :items="rawEvents" 
+                        filterField="title"
+                        @update:filtered="events = $event"
+                        class="w-full"
+                    />
+                </template>
+                <template #actions>
+                    <button v-if="canCreate" 
+                        @click="activeModal = 'event'"
+                        class="w-full md:w-auto bg-[#406071] hover:bg-[#507a8f] text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all cursor-pointer active:scale-95 shadow-xl shadow-cyan-900/10 flex items-center justify-center gap-3 group border border-white/5 shrink-0">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <span>Nuevo Evento</span>
+                    </button>
+                </template>
+            </PageHeader>
+    
+            <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
+    
+                <div id="mainBody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center pb-20">
+                    <EventCard 
+                        v-for="event in events" 
+                        :key="event.id" 
+                        :event="event" 
+                        mode="public"
+                        @details="goToDetails"
+                    />
+                </div>
+            </section>
+    
+            <!-- Modal de Creación-->
+            <CenterManagerCore 
+                v-if="activeModal"
+                activeModal="event" 
+                :apiBase="apiBase" 
+                :headers="headers" 
+                @close="activeModal = null" 
+                @refresh="fetchEvents"
+                @toast="showToast"
+            />
+    
+            <!-- Toast Notification -->
+            <div v-if="toast.show" 
+                :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-xl shadow-2xl font-semibold text-sm transition-all duration-300', 
+                         toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white']">
+                {{ toast.msg }}
             </div>
-        </section>
-
-        <!-- Modal de Creación-->
-        <CenterManagerCore 
-            v-if="activeModal"
-            activeModal="event" 
-            :apiBase="apiBase" 
-            :headers="headers" 
-            @close="activeModal = null" 
-            @refresh="fetchEvents"
-            @toast="showToast"
-        />
-
-        <!-- Toast Notification -->
-        <div v-if="toast.show" 
-            :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-xl shadow-2xl font-semibold text-sm transition-all duration-300', 
-                     toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white']">
-            {{ toast.msg }}
-        </div>
-    </main>
+        </main>
+    </div>
 </template>
 
 <style scoped>

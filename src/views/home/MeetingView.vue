@@ -197,35 +197,37 @@ const deleteMeeting = async (id) => {
 </script>
 
 <template>
-    <NavBar></NavBar>
-    <main class="flex flex-col min-h-screen lg:pl-80">
-        <PageHeader title="Charlas Disponibles" subtitle="Conecta con profesores y compañeros en tiempo real.">
-            <template #search>
-                <SearchBar :meetings="availableMeetings" @update:filtered="filteredMeetings = $event" />
-            </template>
-            <template #actions>
-                <PrimaryButton v-if="canCreateMeeting" text="Nueva Charla" icon="plus" @click="openModal" />
-            </template>
-        </PageHeader>
-
-        <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
-            <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center pb-20">
-                <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
-                    :teacher="meeting.teacher" :schedule="meeting.schedule" :group="meeting.group"
-                    :description="meeting.description" @delete="deleteMeeting" />
-            </div>
-
-            <div v-else
-                class="w-fit bg-[#2a4a5a] p-8 mx-auto my-auto rounded-3xl shadow-xl border border-white/10 text-center">
-                <h3 class="text-2xl font-bold text-white mb-2">No se han encontrado reuniones</h3>
-                <p v-if="!user" class="text-white/60">Debes iniciar sesión para ver tus charlas.</p>
-            </div>
-        </section>
-
-        <!-- Modal de Creación -->
-        <BaseModal v-if="showModal" title="Crear Nueva Charla" confirm-text="Crear Charla" @close="closeModal"
-            @confirm="saveMeeting">
-            <GenericForm v-model="newMeeting" :fields="meetingFields" />
-        </BaseModal>
-    </main>
+    <div class="min-h-screen">
+        <NavBar></NavBar>
+        <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
+            <PageHeader title="Charlas Disponibles" subtitle="Conecta con profesores y compañeros en tiempo real.">
+                <template #search>
+                    <SearchBar :meetings="availableMeetings" @update:filtered="filteredMeetings = $event" />
+                </template>
+                <template #actions>
+                    <PrimaryButton v-if="canCreateMeeting" text="Nueva Charla" icon="plus" @click="openModal" />
+                </template>
+            </PageHeader>
+    
+            <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
+                <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center pb-20">
+                    <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
+                        :teacher="meeting.teacher" :schedule="meeting.schedule" :group="meeting.group"
+                        :description="meeting.description" @delete="deleteMeeting" />
+                </div>
+    
+                <div v-else
+                    class="w-fit bg-[#2a4a5a] p-8 mx-auto my-auto rounded-3xl shadow-xl border border-white/10 text-center">
+                    <h3 class="text-2xl font-bold text-white mb-2">No se han encontrado reuniones</h3>
+                    <p v-if="!user" class="text-white/60">Debes iniciar sesión para ver tus charlas.</p>
+                </div>
+            </section>
+    
+            <!-- Modal de Creación -->
+            <BaseModal v-if="showModal" title="Crear Nueva Charla" confirm-text="Crear Charla" @close="closeModal"
+                @confirm="saveMeeting">
+                <GenericForm v-model="newMeeting" :fields="meetingFields" />
+            </BaseModal>
+        </main>
+    </div>
 </template>
