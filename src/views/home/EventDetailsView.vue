@@ -118,21 +118,27 @@
                         <h2 class="text-3xl font-bold">{{ eventDetails?.title || 'Detalles del Evento' }}</h2>
                         <p class="w-200 text-white/80 whitespace-pre-line">{{ eventDetails?.description || 'No hay descripción disponible para este evento.' }}</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined bg-[#0f2828] py-2 px-3 !text-3xl rounded-2xl">groups</span>
-                        <div>
-                            <p class="font-bold text-xs">Participantes</p>
-                            <p>{{ eventDetails?.participants_count || 0 }} admitidos</p>
+                    <div class="flex gap-12">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined bg-[#0f2828] py-2 px-3 !text-3xl rounded-2xl">groups</span>
+                            <div>
+                                <p class="font-bold text-xs">Participantes</p>
+                                <p>{{ eventDetails?.participants_count || 0 }} admitidos</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined bg-[#0f2828] py-2 px-3 !text-3xl rounded-2xl">location_on</span>
+                            <div>
+                                <p class="font-bold text-xs">Ubicación</p>
+                                <p>{{ eventDetails?.location || 'Ubicación no disponible' }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="flex flex-col gap-4 mt-8">
-                <h3 class="text-3xl font-bold mx-auto mb-2">Ubicación</h3>
-                <p v-if="eventDetails?.location" class="text-white/60 text-xs text-center mb-2 uppercase tracking-[0.2em] font-black">
-                    {{ eventDetails.location }}
-                </p>
+                <h3 class="text-3xl font-bold mx-auto mb-2">Google Maps</h3>
                 <iframe
                     :src="mapaUrl"
                     class="w-4/5 h-[450px] rounded-2xl mx-auto"
