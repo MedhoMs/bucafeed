@@ -75,23 +75,23 @@
 <template>
     <div class="min-h-screen">
         <NavBar></NavBar>
-        <main class="lg:pl-75 pt-10 lg:pt-0 flex flex-col min-h-screen">
-            <div class="flex flex-col md:flex-row md:items-center">
-                <PageHeader 
-                    title="Eventos Académicos"  
-                    subtitle="Participa en las actividades y charlas de tu centro."
-                />
-                <div class="flex items-center gap-4 px-6 lg:px-0 md:mt-12 md:mr-20 mb-6 md:mb-0">
+        <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
+            <PageHeader 
+                title="Eventos Académicos"  
+                subtitle="Participa en las actividades y charlas de tu centro."
+                noMargin
+            >
+                <template #headerActions>
                     <button @click="handleJoin" 
                         :class="['flex justify-center items-center gap-2 p-4 cursor-pointer rounded-2xl duration-300 ease-in shadow-xl min-w-[180px] w-full md:w-auto', 
                                  eventDetails?.joined ? 'bg-cyan-600 hover:bg-cyan-500 text-white' : 'bg-[#0f2828] hover:bg-[#507a8f] text-white']">
                         <span class="material-symbols-outlined !text-3xl text-white">{{ eventDetails?.joined ? 'check_circle' : 'local_activity' }}</span>
                         {{ eventDetails?.joined ? 'Anotado / Dentro' : 'Participar' }}
                     </button>
-                </div>
-            </div>
+                </template>
+            </PageHeader>
 
-            <section class="flex flex-col gap-8 text-white w-full max-w-screen-2xl mx-auto px-6 xl:px-4 mb-20">
+            <section class="flex flex-col gap-8 text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
                 <div class="flex flex-col sm:flex-row gap-8 sm:gap-14 w-fit mt-4">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined bg-[#0f2828] py-2 px-3 !text-3xl rounded-2xl text-white">school</span>
