@@ -14,6 +14,7 @@ import VideoCallView from "../views/home/VideoCallView.vue";
 import CenterManagementView from "../views/home/CenterManagementView.vue";
 import ForumView from "../views/home/ForumView.vue";
 import SettingsView from "../views/SettingsView.vue";
+import EventDetailsView from "../views/home/EventDetailsView.vue";
 import { user } from "@/stores/auth";
 
 const router = createRouter({
@@ -65,6 +66,11 @@ const router = createRouter({
             component: EventView
         },
         {
+            path: '/event-details/:id?',
+            name: 'event-details',
+            component: EventDetailsView
+        },
+        {
             path: '/meeting',
             name: 'meeting',
             component: MeetingView
@@ -93,7 +99,7 @@ const router = createRouter({
             path: '/settings',
             name: 'settings',
             component: SettingsView
-        }
+        },
     ]
 })
 
