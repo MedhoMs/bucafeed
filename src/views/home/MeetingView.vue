@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted, reactive } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import NavBar from '../../components/NavBar/NavBar.vue';
 import SearchBar from '../../components/SearchBar.vue';
@@ -8,45 +8,39 @@ import PageHeader from '@/components/common/PageHeader.vue';
 import PrimaryButton from '@/components/common/PrimaryButton.vue';
 import BaseModal from '@/components/modals/BaseModal.vue';
 import GenericForm from '@/components/common/forms/GenericForm.vue';
-import Pagination from '../../components/common/Pagination.vue';
 import { useTranslations } from '../../composables/useTranslations'
 import { user } from '../../stores/auth';
-import { useApi } from '../../composables/useApi';
 
 const { t } = useTranslations()
-const { get, post: apiPost, loading: apiLoading } = useApi();
 
 const meetings = ref([]);
 const centers = ref([]);
 
-const pagination = reactive({
-    currentPage: 1,
-    lastPage: 1
-});
-
 const fetchCenters = async () => {
     if (user.value?.role !== 'Admin') return;
     try {
-        const data = await get('educational-centers');
-        centers.value = data;
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+        const response = await fetch(`${apiBase}/educational-centers`);
+        if (response.ok) {
+            centers.value = await response.json();
+        }
     } catch (error) {
         console.error('Error fetching centers:', error);
     }
 };
 
-const fetchMeetings = async (page = 1) => {
+const fetchMeetings = async () => {
     try {
-        let endpoint = `meetings?page=${page}`;
+        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+        let url = `${apiBase}/meetings`;
         if (user.value && user.value.role !== 'Admin') {
-            endpoint += `&institution_name=${encodeURIComponent(user.value.institution_name)}`;
+            url += `?institution_name=${encodeURIComponent(user.value.institution_name)}`;
         }
 
-        const result = await get(endpoint);
-        
-        const dataArray = result.data || result;
-        
-        if (Array.isArray(dataArray)) {
-            meetings.value = dataArray.map(m => ({
+        const response = await fetch(url);
+        if (response.ok) {
+            const data = await response.json();
+            meetings.value = data.map(m => ({
                 id: m.id,
                 name: m.name,
                 teacher: m.teacher ? m.teacher.name : (m.teacher_name || 'Desconocido'),
@@ -54,18 +48,10 @@ const fetchMeetings = async (page = 1) => {
                 schedule: m.schedule,
                 description: m.description
             }));
-            
-            pagination.currentPage = result.current_page || 1;
-            pagination.lastPage = result.last_page || 1;
         }
     } catch (error) {
         console.error('Error fetching meetings:', error);
     }
-};
-
-const handlePageChange = (page) => {
-    fetchMeetings(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 onMounted(() => {
@@ -211,42 +197,37 @@ const deleteMeeting = async (id) => {
 </script>
 
 <template>
-    <NavBar></NavBar>
-    <main class="flex flex-col min-h-screen lg:pl-80">
-        <PageHeader title="Charlas Disponibles" subtitle="Conecta con profesores y compañeros en tiempo real.">
-            <template #search>
-                <SearchBar :meetings="availableMeetings" @update:filtered="filteredMeetings = $event" />
-            </template>
-            <template #actions>
-                <PrimaryButton v-if="canCreateMeeting" text="Nueva Charla" icon="plus" @click="openModal" />
-            </template>
-        </PageHeader>
-
-        <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
-            <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center pb-10">
-                <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
-                    :teacher="meeting.teacher" :schedule="meeting.schedule" :group="meeting.group"
-                    :description="meeting.description" @delete="deleteMeeting" />
-            </div>
-
-            <Pagination 
-                v-if="meetings.length > 0"
-                :current-page="pagination.currentPage" 
-                :last-page="pagination.lastPage" 
-                @change="handlePageChange"
-            />
-
-            <div v-else
-                class="w-fit bg-[#2a4a5a] p-8 mx-auto my-auto rounded-3xl shadow-xl border border-white/10 text-center">
-                <h3 class="text-2xl font-bold text-white mb-2">No se han encontrado reuniones</h3>
-                <p v-if="!user" class="text-white/60">Debes iniciar sesión para ver tus charlas.</p>
-            </div>
-        </section>
-
-        <!-- Modal de Creación -->
-        <BaseModal v-if="showModal" title="Crear Nueva Charla" confirm-text="Crear Charla" @close="closeModal"
-            @confirm="saveMeeting">
-            <GenericForm v-model="newMeeting" :fields="meetingFields" />
-        </BaseModal>
-    </main>
+    <div class="min-h-screen">
+        <NavBar></NavBar>
+        <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
+            <PageHeader title="Charlas Disponibles" subtitle="Conecta con profesores y compañeros en tiempo real.">
+                <template #search>
+                    <SearchBar :meetings="availableMeetings" @update:filtered="filteredMeetings = $event" />
+                </template>
+                <template #actions>
+                    <PrimaryButton v-if="canCreateMeeting" text="Nueva Charla" icon="plus" @click="openModal" />
+                </template>
+            </PageHeader>
+    
+            <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
+                <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center pb-20">
+                    <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
+                        :teacher="meeting.teacher" :schedule="meeting.schedule" :group="meeting.group"
+                        :description="meeting.description" @delete="deleteMeeting" />
+                </div>
+    
+                <div v-else
+                    class="w-fit bg-[#2a4a5a] p-8 mx-auto my-auto rounded-3xl shadow-xl border border-white/10 text-center">
+                    <h3 class="text-2xl font-bold text-white mb-2">No se han encontrado reuniones</h3>
+                    <p v-if="!user" class="text-white/60">Debes iniciar sesión para ver tus charlas.</p>
+                </div>
+            </section>
+    
+            <!-- Modal de Creación -->
+            <BaseModal v-if="showModal" title="Crear Nueva Charla" confirm-text="Crear Charla" @close="closeModal"
+                @confirm="saveMeeting">
+                <GenericForm v-model="newMeeting" :fields="meetingFields" />
+            </BaseModal>
+        </main>
+    </div>
 </template>

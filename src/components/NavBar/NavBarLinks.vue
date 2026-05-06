@@ -17,11 +17,16 @@
     const navigate = () => {
         if (props.backend) {
             const backendBase = import.meta.env.VITE_BACKEND_URL || 
-                               import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 
                                'http://localhost:8000'
             
             const cleanBase = backendBase.replace(/\/$/, '')
-            const targetUrl = `${cleanBase}/${props.to.replace(/^\//, '')}`
+            const tokenValue = localStorage.getItem('token')
+            
+            let targetUrl = `${cleanBase}/${props.to.replace(/^\//, '')}`
+            
+            if (tokenValue && (props.to.includes('admin') || props.title?.toLowerCase().includes('admin'))) {
+                targetUrl = `${cleanBase}/admin-bridge?token=${tokenValue}`
+            }
             
             window.location.href = targetUrl
         }

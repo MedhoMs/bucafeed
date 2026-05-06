@@ -317,15 +317,15 @@
     <main class="relative flex flex-col justify-center items-center min-h-screen bg-black/50">
 
         <span id="formErrWarning" class="absolute opacity-0 top-5 p-2 bg-red-300/80 border-2 rounded-xl border-red-500/80 transition-all duration-300">
-            <p class="font-bold text-white [text-shadow:-1px_1px_1px_black]">Faltan datos o hay datos erroneos</p>
+            <p class="font-bold text-white text-shadow-sm">Faltan datos o hay datos erroneos</p>
         </span>
 
-        <h1 class="text-3xl lg:text-6xl my-4 lg:mt-0 lg:mb-17.5 font-bold text-white [text-shadow:-3px_3px_1px_black]">{{ t.register.title }}</h1>
+        <h1 class="text-3xl lg:text-6xl my-4 lg:mt-0 lg:mb-17.5 font-bold text-white text-shadow-lg">{{ t.register.title }}</h1>
         <div class="flex flex-col lg:flex-row justify-center items-center mb-37.5" id="form-container">
             <div class="flex flex-col lg:justify-center items-center lg:h-100 w-90 lg:w-100 p-2.5 text-white rounded-tl-xl rounded-tr-xl lg:rounded-bl-xl lg:rounded-tl-xl lg:rounded-tr-none" id="side-panel">
-                <p class="text-center text-[22px] lg:text-[29px] font-bold mb-7.5 [text-shadow:-2px_2px_1px_black]" id="welcome">{{ t.register.welcome }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span></p>
+                <p class="text-center text-2xl lg:text-3xl font-bold mb-7.5 text-shadow-md" id="welcome">{{ t.register.welcome }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span></p>
                 <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
-                <p class="text-center text-[18px] lg:text-[20px] font-bold mt-7.5 [text-shadow:-2px_2px_1px_black]" id="eslogan">{{ t.register.eslogan }}{{ t.nav.website }}</p>
+                <p class="text-center text-lg lg:text-xl font-bold mt-7.5 text-shadow-md" id="eslogan">{{ t.register.eslogan }}{{ t.nav.website }}</p>
             </div>
             <form id="registerForm" class="relative flex flex-col justify-center lg:h-100 w-90 lg:w-100 p-2.5 pl-5 pr-5 bg-white rounded-br-xl rounded-bl-xl lg:rounded-br-xl lg:rounded-tr-xl lg:rounded-bl-none" method="post">
                 
@@ -336,7 +336,7 @@
                     <p hidden class="absolute top-27.5 left-33.75 font-semibold">Email inválido</p>
                     <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
                     <input type="password" class="allRolesInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
-                    <p hidden class="absolute top-48.75 left-27.5 text-[15px] font-semibold">Al menos 8 carácteres</p>
+                    <p hidden class="absolute top-48.75 left-27.5 text-sm font-semibold">Al menos 8 carácteres</p>
                     <label class="font-bold" for="who-register-form" id="who-register-label">¿Quién eres?</label>
                     <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
                         <option value="EI">Institución Educativa</option>
@@ -349,13 +349,13 @@
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="student-name" id="studentName">Nombre</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="name-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <p hidden class="absolute top-18 left-6 lg:top-22.5 lg:left-7.5 text-[15px] font-semibold">El nombre debe tener entre 2 y 12 letras</p>
+                    <p hidden class="absolute top-18 left-6 lg:top-22.5 lg:left-7.5 text-sm font-semibold">El nombre debe tener entre 2 y 12 letras</p>
                     <label class="font-bold" for="student-name" id="studentName">Apellidos</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="surname-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <p hidden class="absolute top-40 left-25 text-[15px] font-semibold">Deben haber 2 apellidos</p>
+                    <p hidden class="absolute top-40 left-25 text-sm font-semibold">Deben haber 2 apellidos</p>
                     <label class="font-bold" for="student-name" id="studentName">DNI/NIE</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="dni-register-form" :placeholder="t.register.placeholderEmail" required></input>
-                    <p hidden class="absolute top-61.75 left-31.25 text-[15px] font-semibold">DNI/NIE inválido</p>
+                    <p hidden class="absolute top-61.75 left-31.25 text-sm font-semibold">DNI/NIE inválido</p>
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
@@ -383,7 +383,7 @@
 
                 <ButtonForm id="nextButton" value="Siguiente" class="absolute bottom-15 right-8 lg:bottom-15 lg:right-12.5 border rounded-lg"></ButtonForm>
 
-                <RouterLink to="/login" class="absolute bottom-5 right-12 lg:right-16 flex justify-center items-center text-[15px] gap-1 text-[#4a4a4a] font-bold transition-all duration-200 ease-in-out hover:brightness-200" id="redirect-login">{{ t.register.haveAccount }}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></RouterLink>
+                <RouterLink to="/login" class="absolute bottom-5 right-12 lg:right-16 flex justify-center items-center text-sm gap-1 text-[#4a4a4a] font-bold transition-all duration-200 ease-in-out hover:brightness-200" id="redirect-login">{{ t.register.haveAccount }}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></RouterLink>
 
             </form>
             

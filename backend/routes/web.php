@@ -28,6 +28,31 @@ Route::get('/prueba', function () {
     return view('prueba');
 });
 
+// Puente de autenticación: permite a usuarios de Vue (con token API) iniciar sesión web para acceder al panel admin
+Route::get('/admin-bridge', function (\Illuminate\Http\Request $request) {
+    $token = $request->query('token');
+    
+    if (!$token) {
+        return redirect()->away(env('APP_FRONTEND_URL', 'http://localhost:5173'));
+    }
+
+    // Buscar el token en la tabla personal_access_tokens de Sanctum
+    $accessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+    
+    if (!$accessToken) {
+        return redirect()->away(env('APP_FRONTEND_URL', 'http://localhost:5173'));
+    }
+
+    $user = $accessToken->tokenable;
+
+    if ($user && strtolower($user->role ?? '') === 'admin') {
+        \Illuminate\Support\Facades\Auth::login($user);
+        return redirect('/admin');
+    }
+
+    return redirect()->away(env('APP_FRONTEND_URL', 'http://localhost:5173'));
+});
+
 
 
 
