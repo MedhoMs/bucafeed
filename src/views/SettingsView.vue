@@ -2,12 +2,12 @@
 import { ref } from 'vue'
 import NavBar from '@/components/NavBar/NavBar.vue'
 import { useTranslations } from '@/composables/useTranslations'
-import { useUmami } from '@/composables/useUmami'
+import { useAnalytics } from '@/composables/useAnalytics'
 
 import { SETTINGS_SECTIONS } from '@/constants/settings'
 
 const { t, locale, setLocale } = useTranslations()
-const { isTrackingEnabled, toggleTracking } = useUmami()
+const { isTrackingEnabled, toggleTracking } = useAnalytics()
 
 const activeSection = ref('account')
 </script>

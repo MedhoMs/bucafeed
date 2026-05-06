@@ -1,9 +1,21 @@
 <script setup>
+    import { ref, reactive } from 'vue';
     import NavBar from '../../components/NavBar/NavBar.vue';
     import PageHeader from '@/components/common/PageHeader.vue';
+    import Pagination from '../../components/common/Pagination.vue';
     
     import { useTranslations } from '../../composables/useTranslations'
-    const { t } = useTranslations() // Variable para llamar al archivo de traduccion
+    const { t } = useTranslations()
+
+    const pagination = reactive({
+        currentPage: 1,
+        lastPage: 3 // Mocked as notifications are currently static
+    });
+
+    const handlePageChange = (page) => {
+        pagination.currentPage = page;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 </script>
 
 <template>
@@ -19,6 +31,12 @@
                     </div>
                 </template>
             </PageHeader>
+
+            <Pagination
+                :current-page="pagination.currentPage" 
+                :last-page="pagination.lastPage" 
+                @change="handlePageChange"
+            />
     
             <section class="text-white w-full px-6 lg:px-14 mb-20">
     
@@ -170,6 +188,9 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Pagination -->
+
             </section>
         </main>
     </div>
