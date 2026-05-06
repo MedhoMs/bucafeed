@@ -5,10 +5,11 @@
     import ForumManagerCore from '../../components/forum/ForumManagerCore.vue';
     import PageHeader from '@/components/common/PageHeader.vue';
     import PrimaryButton from '@/components/common/PrimaryButton.vue';
-    import { ref, onMounted} from 'vue';
+    import { ref, onMounted, reactive} from 'vue';
     import { user } from '@/stores/auth';
     import { useRouter } from 'vue-router';
     import { useApi } from '../../composables/useApi';
+    import Pagination from '../../components/common/Pagination.vue';
 
     import { useTranslations } from '../../composables/useTranslations'
 
@@ -18,6 +19,10 @@
     
     const rawQuestions = ref([]);
     const questions = ref([]);
+    const pagination = reactive({
+        currentPage: 1,
+        lastPage: 1
+    });
     const activeModal = ref(null); // 'question' | null
     const toast = ref({ show: false, msg: '', type: 'success' });
 
@@ -38,15 +43,30 @@
         }
     };
 
-    const loadQuestions = async () => {
+    const loadQuestions = async (page = 1) => {
         try {
-            const result = await get('questions');
-            const data = result.data || result;
-            rawQuestions.value = data;
-            questions.value = [...data];
+            const result = await get(`questions?page=${page}`);
+            
+            if (result.data && Array.isArray(result.data)) {
+                rawQuestions.value = result.data;
+                questions.value = [...result.data];
+                pagination.currentPage = result.current_page;
+                pagination.lastPage = result.last_page;
+            } else {
+                const data = result.data || result;
+                rawQuestions.value = data;
+                questions.value = [...data];
+                pagination.currentPage = 1;
+                pagination.lastPage = 1;
+            }
         } catch (e) {
             console.error("Error cargando preguntas:", e);
         }
+    };
+
+    const handlePageChange = (page) => {
+        loadQuestions(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const getImageUrl = (path) => {
@@ -123,8 +143,14 @@
                             </button>
                         </div>
                     </div>
-                </div>
-            </section>
+                <!-- Pagination -->
+                <Pagination 
+                    :current-page="pagination.currentPage" 
+                    :last-page="pagination.lastPage" 
+                    @change="handlePageChange"
+                />
+            </div>
+        </section>
         </main>
     </div>
 

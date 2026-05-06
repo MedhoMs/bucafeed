@@ -1,14 +1,17 @@
 <script setup>
-    import { ref, onMounted, computed } from 'vue';
+    import { ref, onMounted, computed, reactive } from 'vue';
     import { useRouter } from 'vue-router';
     import NavBar from '../../components/NavBar/NavBar.vue';
     import SearchBar from '../../components/SearchBar.vue';
     import CenterManagerCore from '../../components/center/modals/CenterManagerCore.vue'
     import EventCard from '../../components/events/EventCard.vue'
     import PageHeader from '@/components/common/PageHeader.vue';
+    import Pagination from '../../components/common/Pagination.vue';
 
     import { useTranslations } from '../../composables/useTranslations'
+    import { useApi } from '../../composables/useApi';
     const { t } = useTranslations()
+    const { get, loading: apiLoading } = useApi();
 
     // Importamos directamente las variables reactivas del auth.js
     import { user as authUser, token as authToken } from '@/stores/auth'
@@ -20,6 +23,11 @@
     const activeModal = ref(null)
     const toast = ref({ show: false, msg: '', type: 'success' })
     const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+    const pagination = reactive({
+        currentPage: 1,
+        lastPage: 1
+    });
 
     const showToast = ({ msg, type = 'success' }) => {
         // Intentar traducir si el mensaje parece una clave de i18n
@@ -41,18 +49,31 @@
         'Authorization': `Bearer ${token.value}`
     }))
 
-    const fetchEvents = async () => {
+    const fetchEvents = async (page = 1) => {
         try {
-            const response = await fetch(`${apiBase}/events`);
-            if (response.ok) {
-                const data = await response.json();
+            const result = await get(`events?page=${page}`);
+            
+            if (result.data && Array.isArray(result.data)) {
+                rawEvents.value = result.data;
+                events.value = [...result.data];
+                pagination.currentPage = result.current_page;
+                pagination.lastPage = result.last_page;
+            } else {
+                const data = result.data || result;
                 rawEvents.value = data;
                 events.value = [...data];
+                pagination.currentPage = 1;
+                pagination.lastPage = 1;
             }
         } catch (error) {
             console.error('Error fetching events:', error);
         }
     }
+
+    const handlePageChange = (page) => {
+        fetchEvents(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     onMounted(fetchEvents);
 
@@ -124,6 +145,12 @@
                         @details="goToDetails"
                     />
                 </div>
+
+                <Pagination 
+                    :current-page="pagination.currentPage" 
+                    :last-page="pagination.lastPage" 
+                    @change="handlePageChange"
+                />
             </section>
     
             <!-- Modal de Creación-->
