@@ -11,6 +11,14 @@ class AnswerController extends TemplateController
     protected $viewPath = 'answers';
     protected $with = ['user', 'question'];
 
+    protected function extraFilters($query, Request $request)
+    {
+        if ($request->filled('question_id')) {
+            $query->where('question_id', $request->question_id);
+        }
+        return $query;
+    }
+
     protected function getFormFields($answer = null)
     {
         return [

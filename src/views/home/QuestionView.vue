@@ -6,7 +6,8 @@
     import UserAvatar from '../../components/common/UserAvatar.vue';
     import EmojiPicker from '../../components/common/EmojiPicker.vue';
     import PageHeader from '@/components/common/PageHeader.vue';
-    import { ref, onMounted, watch } from 'vue';
+    import Pagination from '../../components/common/Pagination.vue';
+    import { ref, onMounted, watch, reactive } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { user } from '@/stores/auth';
 
@@ -27,7 +28,14 @@
     
     const route = useRoute();
     const question = ref(null);
+    const answers = ref([]);
+    const pagination = reactive({
+        currentPage: 1,
+        lastPage: 1,
+        total: 0
+    });
     const loading = ref(true);
+    const loadingAnswers = ref(false);
     const submitting = ref(false);
     const isExpanded = ref(false);
     const newAnswer = ref("");
@@ -50,6 +58,8 @@
         try {
             const data = await get(`questions/${id}`);
             question.value = data.question || data;
+            // Initially load the first page of answers
+            await loadAnswers(id, 1);
         } catch (e) {
             console.error("Error cargando pregunta", e);
         } finally {
@@ -57,11 +67,45 @@
         }
     };
 
+    const loadAnswers = async (questionId, page = 1) => {
+        loadingAnswers.value = true;
+        try {
+            const result = await get(`answers?question_id=${questionId}&page=${page}`);
+            
+            if (result.data && Array.isArray(result.data)) {
+                answers.value = result.data;
+                pagination.currentPage = result.current_page;
+                pagination.lastPage = result.last_page;
+                pagination.total = result.total;
+            } else {
+                // Fallback
+                answers.value = result.data || result || [];
+                pagination.currentPage = 1;
+                pagination.lastPage = 1;
+                pagination.total = answers.value.length;
+            }
+        } catch (e) {
+            console.error("Error cargando respuestas", e);
+        } finally {
+            loadingAnswers.value = false;
+        }
+    };
+
+    const handlePageChange = (page) => {
+        if (question.value) {
+            loadAnswers(question.value.id, page);
+            // Scroll to the answers section
+            const answersHeading = document.getElementById('answers-title');
+            if (answersHeading) {
+                answersHeading.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    };
+
     const handleDelete = async (type, id) => {
         if (type === 'answer') {
-            if (question.value && question.value.answers) {
-                question.value.answers = question.value.answers.filter(a => a.id != id);
-            }
+            answers.value = answers.value.filter(a => a.id != id);
+            pagination.total--;
         }
 
         try {
@@ -97,7 +141,10 @@
             newImage.value = null;
             if (textareaRef.value) textareaRef.value.style.height = 'auto';
             isExpanded.value = false;
-            await loadQuestion(route.params.id); 
+            // Reload the first page of answers to show the new one (usually new ones are at the end or start depending on ordering)
+            // But usually we just want to see the last page if added at end, or first if added at start.
+            // Assuming they are ordered by newest first as per TemplateController's orderBy('id', 'desc')
+            await loadAnswers(question.value.id, 1); 
         } catch (e) {
             console.error("Error al enviar respuesta", e);
         } finally {
@@ -219,17 +266,18 @@
                     </div>
 
                     <!-- Sección de Respuestas -->
-                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2 px-2">
+                    <h3 id="answers-title" class="text-xl font-bold text-white mb-6 flex items-center gap-2 px-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10" /><path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2" /></svg>
-                        Respuestas ({{ question.answers ? question.answers.length : 0 }})
+                        Respuestas ({{ pagination.total }})
                     </h3>
 
                     <div class="flex flex-col gap-4">
-                        <div v-if="!question.answers || question.answers.length === 0" class="text-center py-10 bg-black/20 border border-white/5 rounded-2xl">
+                        <div v-if="loadingAnswers && answers.length === 0" class="text-white/40 italic py-10">Cargando respuestas...</div>
+                        <div v-else-if="answers.length === 0" class="text-center py-10 bg-black/20 border border-white/5 rounded-2xl">
                              <p class="text-white/40 italic">Aún no hay respuestas para esta pregunta. ¡Sé el primero en ayudar!</p>
                         </div>
                         
-                        <div v-for="ans in question.answers" :key="ans.id" class="bg-black/40 border border-white/5 rounded-xl p-5 flex gap-4 items-start relative hover:bg-black/60 transition-colors">
+                        <div v-for="ans in answers" :key="ans.id" class="bg-black/40 border border-white/5 rounded-xl p-5 flex gap-4 items-start relative hover:bg-black/60 transition-colors">
                                 <UserAvatar :user="ans.user" class="shrink-0 shadow-sm bg-[#15202b]" />
                             <div class="flex-1 min-w-0">
                                 <div class="flex justify-between items-center mb-2">
@@ -259,6 +307,13 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Pagination for Answers -->
+                    <Pagination 
+                        :current-page="pagination.currentPage" 
+                        :last-page="pagination.lastPage" 
+                        @change="handlePageChange"
+                    />
 
                 </div>
             </div>
