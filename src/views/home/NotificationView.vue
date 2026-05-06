@@ -31,6 +31,12 @@
                     </div>
                 </template>
             </PageHeader>
+
+            <Pagination
+                :current-page="pagination.currentPage" 
+                :last-page="pagination.lastPage" 
+                @change="handlePageChange"
+            />
     
             <section class="text-white w-full px-6 lg:px-14 mb-20">
     
@@ -184,11 +190,7 @@
                 </div>
 
                 <!-- Pagination -->
-                <Pagination 
-                    :current-page="pagination.currentPage" 
-                    :last-page="pagination.lastPage" 
-                    @change="handlePageChange"
-                />
+
             </section>
         </main>
     </div>

@@ -96,6 +96,7 @@
                         class="w-full"
                     />
                 </template>
+
                 <template #actions>
                     <PrimaryButton 
                         text="Nueva Pregunta"
@@ -104,6 +105,7 @@
                     />
                 </template>
             </PageHeader>
+
     
             <section class="text-white w-full px-6 lg:px-14 mb-20">
                 <div id="mainBody" class="flex flex-col gap-6 w-full">
@@ -144,11 +146,7 @@
                         </div>
                     </div>
                 <!-- Pagination -->
-                <Pagination 
-                    :current-page="pagination.currentPage" 
-                    :last-page="pagination.lastPage" 
-                    @change="handlePageChange"
-                />
+
             </div>
         </section>
         </main>

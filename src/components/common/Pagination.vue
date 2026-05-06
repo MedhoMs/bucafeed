@@ -77,7 +77,7 @@ const changePage = (page) => {
                 class="px-3.5 py-2 text-sm transition-all rounded-xl"
                 :class="[
                     page === currentPage 
-                        ? 'z-10 bg-[#179cf0]/80 text-white font-black border border-[#179cf0]/30 shadow-[0_0_15px_rgba(23,156,240,0.4)]' 
+                        ? 'z-10 bg-[#0f2828] hover:bg-[#507a8f] text-white font-black border border-[#179cf0]/30' 
                         : 'font-bold text-white/40 hover:text-white hover:bg-white/5'
                 ]"
             >
