@@ -1,13 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useTranslations } from '@/composables/useTranslations';
-import { toggleUmamiConsent } from '@/utils/umami';
+import { toggleAnalyticsConsent } from '@/utils/analytics';
 
 const { t } = useTranslations();
 const visible = ref(false);
 
 onMounted(() => {
-    const consent = localStorage.getItem('umami-consent');
+    const consent = localStorage.getItem('analytics-consent');
     if (consent === null) {
         setTimeout(() => {
             visible.value = true;
@@ -16,12 +16,12 @@ onMounted(() => {
 });
 
 const acceptAll = () => {
-    toggleUmamiConsent(true);
+    toggleAnalyticsConsent(true);
     visible.value = false;
 };
 
 const rejectAll = () => {
-    toggleUmamiConsent(false);
+    toggleAnalyticsConsent(false);
     visible.value = false;
 };
 </script>

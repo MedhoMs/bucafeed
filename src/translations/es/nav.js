@@ -9,6 +9,7 @@ export const nav = {
     meeting: "Charlas",
     meetingChat: "Chat Charla",
     event: "Eventos",
+    eventDetails: "Eventos Detalles",
     foro: "Foro",
     videoCall: "Videollamada",
     post: "Crear",

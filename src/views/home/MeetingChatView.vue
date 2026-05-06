@@ -43,17 +43,19 @@ const meetingName = computed(() => {
 </script>
 
 <template>
-    <NavBar></NavBar>
-    <main class="flex h-screen w-full overflow-hidden lg:pl-75">
-
-        <div
-            class="text-white lg:w-375 ml-auto lg:mr-4 flex flex-col flex-1 pt-5 px-5 lg:px-0 lg:pl-10 pb-6 overflow-hidden">
-            <p class="text-2xl lg:text-4xl text-center font-bold shrink-0 mb-4 px-16 lg:px-0">
-                {{ meetingId ? `${meetingName}` : 'Chat de Reunión' }}
-            </p>
-            <MeetingChatBar :meeting="meeting" class="flex-1 overflow-hidden" />
-        </div>
-
-        <ChatMembers :meeting="meeting" />
-    </main>
+    <div class="h-screen overflow-hidden">
+        <NavBar></NavBar>
+        <main class="lg:pl-75 pt-16 lg:pt-0 flex w-full h-full overflow-hidden">
+    
+            <div
+                class="text-white flex flex-col flex-1 pt-5 px-5 lg:px-0 lg:pl-10 pb-6 overflow-hidden">
+                <p class="text-2xl lg:text-4xl text-center font-bold shrink-0 mb-4 px-16 lg:px-0">
+                    {{ meetingId ? `${meetingName}` : 'Chat de Reunión' }}
+                </p>
+                <MeetingChatBar :meeting="meeting" class="flex-1 overflow-hidden" />
+            </div>
+    
+            <ChatMembers :meeting="meeting" />
+        </main>
+    </div>
 </template>

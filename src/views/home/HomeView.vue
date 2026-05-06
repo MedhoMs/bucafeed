@@ -33,16 +33,18 @@
 </script>
 
 <template>
-    <NavBar></NavBar>
-    <main class="flex flex-col min-h-screen lg:pl-75">
-        <PageHeader 
-            :title="t.home?.welcome || 'Bienvenido a TelamoNet'" 
-            :subtitle="t.home?.subtitle || 'Tu red social académica.'"
-            noMargin
-        />
-
-        <EventCarousel :events="rawEvents" :loading="loading" />
-    </main>
+    <div class="min-h-screen">
+        <NavBar></NavBar>
+        <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
+            <PageHeader 
+                :title="t.home?.welcome || 'Bienvenido a TelamoNet'" 
+                :subtitle="t.home?.subtitle || 'Tu red social académica.'"
+                noMargin
+            />
+    
+            <EventCarousel :events="rawEvents" :loading="loading" />
+        </main>
+    </div>
 </template>
 
 <style scoped>
