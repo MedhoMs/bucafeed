@@ -88,6 +88,11 @@ class User extends Authenticatable
                     ->distinct();
     }
 
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

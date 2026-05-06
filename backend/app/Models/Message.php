@@ -12,6 +12,7 @@ class Message extends Model
     protected $fillable = [
         'chat_id',
         'user_id',
+        'group_id',
         'content',
     ];
 
@@ -23,6 +24,11 @@ class Message extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
     }
 }
 

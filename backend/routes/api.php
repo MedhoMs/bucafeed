@@ -16,6 +16,7 @@ use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\KahootController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\CycleController;
 
 Route::get('/health', function () {
@@ -126,6 +127,10 @@ Route::get('/meetings/{id}', [MeetingController::class, 'apiShow']);
 Route::post('/meetings', [MeetingController::class, 'apiStore']);
 Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);
 Route::get('/all-cycles', [CycleController::class, 'apiIndex']);
+
+// Chat grupal (Mensajes)
+Route::post('/groups/{group}/mensajes', [MensajeController::class, 'store']);
+Route::get('/groups/{group}/mensajes', [MensajeController::class, 'index']);
 
 // Usuarios
 Route::apiResource('users', UserController::class);

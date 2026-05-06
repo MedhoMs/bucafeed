@@ -29,76 +29,57 @@
 </script>
 
 <template>
-    <div class="
-        w-80
-        h-96 
-        rounded-2xl 
-        p-5 relative 
-        bg-linear-to-br 
-        from-white/8 to-white/4 
-        border 
-        border-white/10
-        hover:border-white/30
-        transition-all
-    ">
-        <!-- Logo Decorativo de Fondo -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden rounded-2xl">
-            <img 
-                src="../assets/logo/logoTelamon.png" 
-                class="w-72 h-72 object-contain opacity-5 grayscale brightness-200" 
-                alt="Decoration"
-            />
+    <div class="group relative bg-linear-to-br from-white/8 to-white/4 border border-white/10 hover:border-[#406071]/50 rounded-[2rem] p-8 h-[420px] transition-all duration-500 hover:-translate-y-1 shadow-xl flex flex-col">
+        
+        <div class="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none">
+            <img src="../assets/logo/logoTelamon.png" class="w-32 h-32 object-contain grayscale" alt="Decoration" />
         </div>
 
-        <div class="flex justify-between items-start mb-2">
-            <p class="text-2xl font-bold pr-8">{{ props.name }}</p>
+        <div class="flex justify-between items-start mb-6">
+            <h3 class="text-xl font-black text-white uppercase tracking-tight line-clamp-2 pr-8">{{ props.name }}</h3>
             
-            <!-- Botón de Eliminar -->
             <button 
                 v-if="canManageMeeting"
-                @click="handleDelete"
-                class="absolute top-4 right-4 p-2 text-white/30 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all cursor-pointer"
+                @click.stop="handleDelete"
+                class="absolute top-6 right-6 p-2 text-white/20 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all cursor-pointer z-10"
                 title="Eliminar charla"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
             </button>
         </div>
 
-        <div class="flex mt-2 mb-4">
-            <p class="font-bold mr-2">Profesor:</p>
-            <p>{{ props.teacher }}</p>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+                <p class="text-[9px] font-black uppercase text-white/20 tracking-[0.2em] mb-1">Ponente</p>
+                <p class="text-xs font-bold text-white/80 truncate">{{ props.teacher }}</p>
+            </div>
+            <div>
+                <p class="text-[9px] font-black uppercase text-white/20 tracking-[0.2em] mb-1">Horario</p>
+                <p class="text-xs font-bold text-white/80 truncate">{{ props.schedule }}</p>
+            </div>
         </div>
 
-        <div class="flex mt-2 mb-4">
-            <p class="font-bold mr-2">Horario:</p>
-            <p>{{ props.schedule }}</p>
+        <div class="mb-6">
+            <p class="text-[9px] font-black uppercase text-white/20 tracking-[0.2em] mb-1">Grupo / Institución</p>
+            <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></span>
+                <p class="text-xs font-bold text-white/80 truncate">{{ props.group }}</p>
+            </div>
         </div>
 
-        <div class="flex mt-2 mb-4">
-            <p class="font-bold mr-2">Grupo:</p>
-            <p>{{ props.group }}</p>
+        <div class="flex-1 min-h-0 mb-8 overflow-hidden">
+            <p class="text-[11px] font-medium text-white/40 leading-relaxed line-clamp-4 italic">
+                {{ props.description || 'Sin descripción disponible para esta charla.' }}
+            </p>
         </div>
 
-        <p class="h-30 overflow-y-auto">{{ props.description }}</p>
-            
-        <router-link 
-            :to="{ name: 'meetingchat', params: { id: props.id, name: props.name, teacher: props.teacher, group: props.group } }"
-            class="
-            bg-[#0a2d4e]
-            p-2 
-            absolute 
-            bottom-5 
-            right-5 
-            rounded-2xl 
-            w-24 
-            text-base 
-            text-center
-            hover:bg-[#0a3a65] 
-            hover:cursor-pointer 
-            transition-colors 
-            duration-200
-        ">
-            Entrar
-        </router-link>
+        <div class="mt-auto pt-6 border-t border-white/5 flex justify-end">
+            <router-link 
+                :to="{ name: 'meetingchat', params: { id: props.id, name: props.name, teacher: props.teacher, group: props.group } }"
+                class="bg-[#1a2d42] hover:bg-[#406071] text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-xl transition-all duration-300 active:scale-95 border border-white/5 shadow-lg shadow-black/20"
+            >
+                Entrar al Chat
+            </router-link>
+        </div>
     </div>
 </template>

@@ -18,6 +18,7 @@ const { get, post: apiPost, loading: apiLoading } = useApi();
 
 const meetings = ref([]);
 const centers = ref([]);
+const groups = ref([]);
 
 const pagination = reactive({
     currentPage: 1,
@@ -31,6 +32,17 @@ const fetchCenters = async () => {
         centers.value = data;
     } catch (error) {
         console.error('Error fetching centers:', error);
+    }
+};
+
+const fetchGroups = async () => {
+    if (!user.value || (user.value.role !== 'Admin' && user.value.role !== 'EI' && user.value.role !== 'Teacher')) return;
+    try {
+        const endpoint = user.value.role === 'Admin' ? 'my-center/groups' : 'my-center/groups';
+        const data = await get('my-center/groups');
+        groups.value = data;
+    } catch (error) {
+        console.error('Error fetching groups:', error);
     }
 };
 
@@ -71,6 +83,7 @@ const handlePageChange = (page) => {
 onMounted(() => {
     fetchMeetings();
     fetchCenters();
+    fetchGroups();
 });
 
 // 1. Charlas disponibles para este usuario según su centro
@@ -93,14 +106,16 @@ const showModal = ref(false);
 
 const canCreateMeeting = computed(() => {
     if (!user.value) return false;
-    const allowedRoles = ['Teacher', 'Admin', 'EI'];
-    return allowedRoles.includes(user.value.role);
+    const role = user.value.role?.toLowerCase();
+    const allowedRoles = ['teacher', 'admin', 'ei', 'administrador'];
+    return allowedRoles.includes(role);
 });
 
 const newMeeting = ref({
     name: '',
     teacher_name: '', // Nombre libre (editable)
     educational_center_id: null,
+    group_id: null,
     schedule: '',
     description: ''
 });
@@ -130,6 +145,15 @@ const meetingFields = computed(() => {
         });
     }
 
+    baseFields.push({
+        id: 'group_id',
+        type: 'select',
+        label: 'Grupo / Clase (Opcional)',
+        placeholder: 'Seleccionar grupo...',
+        required: false,
+        options: groups.value.map(g => ({ id: g.id, name: g.name }))
+    });
+
     baseFields.push({ id: 'description', type: 'textarea', label: 'Descripción', placeholder: 'Describe brevemente de qué trata la charla...', required: false });
 
     return baseFields;
@@ -142,6 +166,7 @@ const openModal = () => {
             name: '',
             teacher_name: user.value?.name || '',
             educational_center_id: user.value?.educational_center_id || null,
+            group_id: null,
             schedule: '',
             description: ''
         };
@@ -155,32 +180,23 @@ const closeModal = () => {
 
 const saveMeeting = async () => {
     // Validar campos requeridos
-    if (newMeeting.value.name && newMeeting.value.schedule && newMeeting.value.educational_center_id) {
+    if (newMeeting.value.name && newMeeting.value.schedule && (newMeeting.value.educational_center_id || user.value?.educational_center_id)) {
         try {
-            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-                const response = await fetch(`${apiBase}/meetings`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({
-                    name: newMeeting.value.name,
-                    teacher_id: user.value.id, // ID del creador
-                    teacher_name: newMeeting.value.teacher_name, // Nombre que aparecerá
-                    educational_center_id: newMeeting.value.educational_center_id,
-                    schedule: newMeeting.value.schedule,
-                    description: newMeeting.value.description
-                })
-            });
+            const payload = {
+                name: newMeeting.value.name,
+                teacher_id: user.value.id,
+                teacher_name: newMeeting.value.teacher_name,
+                educational_center_id: newMeeting.value.educational_center_id || user.value.educational_center_id,
+                group_id: newMeeting.value.group_id,
+                schedule: newMeeting.value.schedule,
+                description: newMeeting.value.description
+            };
 
-            if (response.ok) {
+            const response = await apiPost('meetings', payload);
+            
+            if (response) {
                 await fetchMeetings();
                 closeModal();
-            } else {
-                const errData = await response.json();
-                console.error('Failed to save meeting:', errData);
             }
         } catch (error) {
             console.error('Error saving meeting:', error);

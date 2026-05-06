@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import BaseModal from '@/components/modals/BaseModal.vue'
 import GenericForm from '@/components/common/forms/GenericForm.vue'
+import { user as authUser } from '@/stores/auth'
 
 const props = defineProps({
     activeModal: { type: String, default: null },
@@ -126,6 +127,18 @@ const MODAL_MAP = computed(() => ({
         title: 'Vincular Ciclos Formativos',
         msg: 'Ciclos vinculados con éxito',
         url: '/my-center/enroll-cycles'
+    },
+    meeting: {
+        title: 'Crear Nueva Charla',
+        msg: 'Charla programada con éxito',
+        url: '/meetings',
+        fields: [
+            { id: 'info_group', type: 'info', label: 'Grupo Seleccionado', value: props.group?.name },
+            { id: 'name', type: 'text', label: 'Título de la Charla', placeholder: 'Ej: Charla de Orientación', required: true },
+            { id: 'teacher_name', type: 'text', label: 'Nombre del Ponente', placeholder: 'Ej: Dr. García', required: true },
+            { id: 'schedule', type: 'text', label: 'Horario', placeholder: 'Ej: Mañana 10:00', required: true, full: false },
+            { id: 'description', type: 'textarea', label: 'Descripción', placeholder: '¿De qué trata la charla?', required: true }
+        ]
     }
 }))
 
@@ -215,6 +228,13 @@ async function handleAction() {
 
         if (props.activeModal?.includes('enroll')) {
             body = JSON.stringify({ ids: selectedIds.value, type: activeEnrollTab.value })
+        } else if (props.activeModal === 'meeting') {
+            body = JSON.stringify({
+                ...form.value,
+                group_id: props.group?.id,
+                educational_center_id: props.center?.id,
+                teacher_id: authUser.value?.id
+            })
         } else {
             // Detectar si hay archivos para usar FormData
             const hasFiles = Object.values(form.value).some(v => v instanceof File);
