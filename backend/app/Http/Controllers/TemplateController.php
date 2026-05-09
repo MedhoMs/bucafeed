@@ -36,7 +36,8 @@ abstract class TemplateController extends Controller
         // Aplicar filtros extra si existen
         $query = $this->extraFilters($query, $request);
 
-        return response()->json($query->orderBy('id', 'desc')->get());
+        // Devolvemos paginado (10 por defecto o lo que se prefiera)
+        return response()->json($query->orderBy('id', 'desc')->paginate(12));
     }
 
     /**

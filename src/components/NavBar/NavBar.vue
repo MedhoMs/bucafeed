@@ -71,7 +71,7 @@
  
 <template>
     <!--Hamburger menu-->
-    <svg v-show="!menu" @click="activeMenu()" class="lg:hidden absolute top-5 left-6 z-5 text-white cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none" /> <path d="M4 6l16 0" /><path d="M4 12l16 0" /><path d="M4 18l16 0" /></svg>
+    <svg v-show="!menu" @click="activeMenu()" class="lg:hidden fixed top-5 left-6 z-hamburger text-white cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none" /> <path d="M4 6l16 0" /><path d="M4 12l16 0" /><path d="M4 18l16 0" /></svg>
  
     <!--Overlay oscuro-->
     <Transition
@@ -81,7 +81,7 @@
         leave-active-class="transition-opacity duration-300 ease-in"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0">
-        <div v-if="menu" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60"></div>
+        <div v-if="menu" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"></div>
     </Transition>
  
     <!--Sidebar siempre visible en desktop, toggle en móvil-->
@@ -92,17 +92,18 @@
         leave-active-class="transition-transform duration-300 ease-in"
         leave-from-class="translate-x-0"
         leave-to-class="-translate-x-full">
-        <nav v-if="menu || true" v-show="menu || isDesktop" class="fixed top-0 left-0 flex flex-col w-75 h-screen z-50 px-5 bg-[linear-gradient(180deg,#1f5252_0%,#0f2828_100%)] shadow-[5px_0px_20px_rgba(0,0,0,0.6)]">
+        <nav v-if="menu || true" v-show="menu || isDesktop" class="fixed top-0 left-0 flex flex-col w-75 h-screen px-5 nav-sidebar shrink-0 overflow-y-auto overflow-x-hidden">
  
-            <div class="flex flex-row items-center gap-3 mb-4 mt-4">
+            <div class="flex flex-row items-center gap-3 mb-4 mt-4 shrink-0">
                 <img class="w-16.25 h-17.5" src="@/assets/logo/logoTelamon.png" alt="Logo">
-                <h1 class="font-bold text-[20px] text-white">
+                <h1 class="font-bold text-xl text-white">
                     {{ t.nav.title }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span>
                 </h1>
                 <!--Botón X-->
                 <svg @click="closeMenu()" class="lg:hidden ml-auto shrink-0 text-white/70 hover:text-white cursor-pointer transition-colors" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none"/> <path d="M18 6l-12 12" /><path d="M6 6l12 12" />
                 </svg>
             </div>
+
  
             <section class="flex flex-col h-full">
                 <NavBarLinks to="/home" :title=t.nav.home>
@@ -163,7 +164,7 @@
                 </NavBarLinks>
  
                 <router-link
-                    class="relative flex items-center gap-2.5 mb-5 mr-4 mt-auto rounded-xl text-[17px] font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#406071] hover:cursor-pointer active:bg-[#406071] active:font-bold"
+                    class="relative flex items-center gap-2.5 mb-5 mr-4 mt-auto rounded-xl text-base font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#406071] hover:cursor-pointer active:bg-[#406071] active:font-bold"
                     id="profile" to="/profile">
                     <UserAvatar :user="user" size="w-10 h-10" class="border-2 border-white shadow-xs" />
                     <p>{{ user ? user.name : 'Usuario' }}</p>
@@ -178,15 +179,15 @@
                     leave-from-class="opacity-100 translate-y-0"
                     leave-to-class="opacity-0 translate-y-2">
                     <div v-if="showPopup" @click.stop="showPopup = false" class="absolute right-10 bottom-24 bg-[#1d2b38] rounded-xl shadow-lg">
-                        <router-link class="flex gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#406071] active:font-semibold" :to="'/profile/' + user?.id">
+                        <router-link class="flex gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#406071] active:font-semibold" :to="'/profile/' + user?.id">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
                             {{ t.nav.profile }}
                         </router-link>
-                        <router-link class="flex gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#406071] active:font-semibold" to="/">
+                        <router-link class="flex gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#406071] active:font-semibold" to="/">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
                             {{ t.nav.addAccount }}
                         </router-link>
-                        <div @click="handleLogout" class="flex cursor-pointer gap-2.5 m-1 text-[17px] items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#ef4444] active:font-semibold">
+                        <div @click="handleLogout" class="flex cursor-pointer gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#ef4444] active:font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" /><path d="M15 12h-12l3 -3" /><path d="M6 15l-3 -3" /></svg>
                             {{ t.nav.logout }}
                         </div>
