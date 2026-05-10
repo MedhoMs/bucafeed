@@ -1,114 +1,211 @@
 @import 'tailwindcss';
 
-/*
-  All global/reset styles go inside @layer base so that
-  Tailwind utilities (@layer utilities) can override them.
-  In CSS cascade layers, unlayered CSS beats ALL layers,
-  which is why putting * { margin:0 } outside a layer
-  was breaking every spacing utility (px-5, py-3, mb-5, etc.)
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    overscroll-behavior: none;
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
-  }
-
-  * {
-    margin: 0;
-    padding: 0;
-  }
-
-  #app {
-    font-family: 'Montserrat', sans-serif;
-    min-height: 100vh;
-    width: 100%;
-    overflow-x: hidden;
-    background: linear-gradient(
-      180deg,
-      #326465,
-      #1d2e3e
-    );
-    background-attachment: fixed;
-  }
-
-  :root {
-    --btn-primary-bg: #0891b2;
-    --btn-primary-hover: #06b6d4;
-    --btn-primary-shadow: rgba(8, 145, 178, 0.2);
+:root {
+    --background: #1d2e3e;
+    --foreground: #ffffff;
     
-    /* Navigation Tokens */
-    --nav-bg-start: #1f5252;
-    --nav-bg-end: #0f2828;
-    --nav-shadow: 5px 0px 20px rgba(0, 0, 0, 0.6);
-    --z-sidebar: 50;
-    --z-hamburger: 60;
-    --z-toast: 200;
+    /* PRIMARY */
+    --primary-light: #e0f2fe;
+    --primary-light-hover: #bae6fd;
+    --primary-light-active: #7dd3fc;
+    --primary-normal: #179cf0;
+    --primary-normal-hover: #1aaae0;
+    --primary-normal-active: #0284c7;
+    --primary-dark: #0369a1;
+    --primary-dark-hover: #075985;
+    --primary-dark-active: #0c4a6e;
+    --primary-darker: #082f49;
 
-    /* Project Colors */
-    --color-surface: #15202b;
-    --color-brand: #179cf0;
-    --color-accent: #326465;
-  }
+    /* SECONDARY */
+    --secondary-light: #f1f5f9;
+    --secondary-light-hover: #e2e8f0;
+    --secondary-light-active: #cbd5e1;
+    --secondary-normal: #406071;
+    --secondary-normal-hover: #507a8f;
+    --secondary-normal-active: #334155;
+    --secondary-dark: #1e293b;
+    --secondary-dark-hover: #0f172a;
+    --secondary-dark-active: #020617;
+
+    /* ERROR */
+    --error-light: #fae6e6;
+    --error-light-hover: #f7dada;
+    --error-light-active: #eeb2b2;
+    --error-normal: #ef4444;
+    --error-normal-hover: #dc2626;
+    --error-normal-active: #b91c1c;
+    --error-dark: #991b1b;
+    --error-dark-hover: #7f1d1d;
+    --error-dark-active: #450a0a;
+
+    /* SUCCESS */
+    --success-light: #e6fae7;
+    --success-light-hover: #daf7db;
+    --success-light-active: #b2eeb6;
+    --success-normal: #10b981;
+    --success-normal-hover: #059669;
+    --success-normal-active: #047857;
+    --success-dark: #065f46;
+    --success-dark-hover: #064e3b;
+    --success-dark-active: #022c22;
+
+    /* WARNING */
+    --warning-light: #fafae6;
+    --warning-light-hover: #f7f7da;
+    --warning-light-active: #eeeeb2;
+    --warning-normal: #f59e0b;
+    --warning-normal-hover: #d97706;
+    --warning-normal-active: #b45309;
+    --warning-dark: #92400e;
+    --warning-dark-hover: #78350f;
+    --warning-dark-active: #451a03;
+
+    /* ACCENT */
+    --accent-normal: #0f2828;
+    --accent-normal-hover: #1f5252;
+
+    /* BRAND & UI SPECIFIC */
+    --brand-net: #448888;
+    --forum-card-bg: #1a2d37;
 }
 
-@theme {
-  --color-nav-start: var(--nav-bg-start);
-  --color-nav-end: var(--nav-bg-end);
-  --z-index-sidebar: var(--z-sidebar);
-  --z-index-hamburger: var(--z-hamburger);
-  --z-index-toast: var(--z-toast);
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
 
-  --color-surface: var(--color-surface);
-  --color-brand: var(--color-brand);
-  --color-accent: var(--color-accent);
+    /* PRIMARY */
+    --color-primary-light: var(--primary-light);
+    --color-primary-light-hover: var(--primary-light-hover);
+    --color-primary-light-active: var(--primary-light-active);
+    --color-primary-normal: var(--primary-normal);
+    --color-primary-normal-hover: var(--primary-normal-hover);
+    --color-primary-normal-active: var(--primary-normal-active);
+    --color-primary-dark: var(--primary-dark);
+    --color-primary-dark-hover: var(--primary-dark-hover);
+    --color-primary-dark-active: var(--primary-dark-active);
+    --color-primary-darker: var(--primary-darker);
+
+    /* SECONDARY */
+    --color-secondary-light: var(--secondary-light);
+    --color-secondary-light-hover: var(--secondary-light-hover);
+    --color-secondary-light-active: var(--secondary-light-active);
+    --color-secondary-normal: var(--secondary-normal);
+    --color-secondary-normal-hover: var(--secondary-normal-hover);
+    --color-secondary-normal-active: var(--secondary-normal-active);
+    --color-secondary-dark: var(--secondary-dark);
+    --color-secondary-dark-hover: var(--secondary-dark-hover);
+    --color-secondary-dark-active: var(--secondary-dark-active);
+
+    /* ERROR */
+    --color-error-normal: var(--error-normal);
+    --color-error-normal-hover: var(--error-normal-hover);
+    
+    /* SUCCESS */
+    --color-success-normal: var(--success-normal);
+    --color-success-normal-hover: var(--success-normal-hover);
+    
+    /* WARNING */
+    --color-warning-normal: var(--warning-normal);
+    --color-warning-normal-hover: var(--warning-normal-hover);
+
+    /* ACCENT */
+    --color-accent-normal: var(--accent-normal);
+    --color-accent-normal-hover: var(--accent-normal-hover);
+
+    /* BRAND */
+    --color-brand-net: var(--brand-net);
+    --color-forum-card: var(--forum-card-bg);
 }
 
-@utility nav-sidebar {
-  background: linear-gradient(180deg, var(--nav-bg-start) 0%, var(--nav-bg-end) 100%);
-  box-shadow: var(--nav-shadow);
-  z-index: var(--z-sidebar);
+body {
+    color: var(--foreground);
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(180deg, #326465, var(--background));
+    background-attachment: fixed;
+    min-height: 100vh;
 }
 
-@utility glass-card {
-  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
+*, ::before, ::after {
+    box-sizing: border-box;
 }
 
-@utility text-shadow-sm {
-  text-shadow: -1px 1px 1px black;
+/* Skeletons */
+.skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.05) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: 0.75rem;
+}
+@keyframes skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
-@utility text-shadow-md {
-  text-shadow: -2px 2px 1px black;
+/* Utilidades Genéricas */
+.nav-sidebar {
+    background: linear-gradient(180deg, #1f5252 0%, #0f2828 100%);
+    box-shadow: 5px 0px 20px rgba(0, 0, 0, 0.6);
+    z-index: 50;
 }
 
-@utility text-shadow-lg {
-  text-shadow: -3px 3px 1px black;
+.glass-card {
+    background-color: var(--forum-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-@utility btn-primary {
-  background-color: var(--btn-primary-bg);
-  color: white;
-  box-shadow:
-    0 10px 15px -3px var(--btn-primary-shadow),
-    0 4px 6px -4px var(--btn-primary-shadow);
-  transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-  &:hover {
-    background-color: var(--btn-primary-hover);
-  }
+.text-shadow-sm { text-shadow: -1px 1px 1px black; }
+.text-shadow-md { text-shadow: -2px 2px 1px black; }
+.text-shadow-lg { text-shadow: -3px 3px 1px black; }
+
+/* Carrusel y Elementos Interactivos Oscuros */
+.btn-dark-icon {
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    transition: all 0.2s ease;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+.btn-dark-icon:hover {
+    background-color: var(--accent-normal);
+}
+.btn-dark-icon:active {
+    transform: scale(0.9);
+}
+
+.dot-indicator {
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: all 0.5s ease;
+}
+.dot-indicator:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+.dot-indicator-active {
+    background-color: white;
+}
+
+/* Componentes de Tarjetas y Etiquetas */
+.glass-pill {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.text-dimmed {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Botón Temático Claro */
+.btn-light {
+    background-color: white;
+    color: var(--background);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+.btn-light:hover {
+    background-color: #f3f4f6;
+}
+.btn-light:active {
+    transform: scale(0.95);
 }

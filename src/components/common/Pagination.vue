@@ -53,13 +53,13 @@ const changePage = (page) => {
 </script>
 
 <template>
-    <nav v-if="lastPage > 1" role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-center gap-1 sm:gap-2 mt-8">
+    <nav role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-center gap-1 sm:gap-2 mt-8">
         <!-- Previous Page Link -->
         <button 
             @click="changePage(currentPage - 1)"
             :disabled="currentPage === 1"
             class="p-2 transition-colors group disabled:opacity-20 disabled:cursor-default"
-            :class="currentPage === 1 ? 'text-white/20' : 'text-white/60 hover:text-white'"
+            :class="currentPage === 1 ? 'text-white/20' : 'text-dimmed hover:text-white'"
             aria-label="Previous page"
         >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -77,8 +77,8 @@ const changePage = (page) => {
                 class="px-3.5 py-2 text-sm transition-all rounded-xl"
                 :class="[
                     page === currentPage 
-                        ? 'z-10 bg-[#0f2828] hover:bg-[#507a8f] text-white font-black border border-[#179cf0]/30' 
-                        : 'font-bold text-white/40 hover:text-white hover:bg-white/5'
+                        ? 'z-10 bg-accent-normal hover:bg-accent-normal-hover text-white font-black border border-primary-normal/30' 
+                        : 'font-bold text-dimmed hover:text-white hover:bg-white/5'
                 ]"
             >
                 {{ page }}
@@ -90,7 +90,7 @@ const changePage = (page) => {
             @click="changePage(currentPage + 1)"
             :disabled="currentPage === lastPage"
             class="p-2 transition-colors group disabled:opacity-20 disabled:cursor-default"
-            :class="currentPage === lastPage ? 'text-white/20' : 'text-white/60 hover:text-white'"
+            :class="currentPage === lastPage ? 'text-white/20' : 'text-dimmed hover:text-white'"
             aria-label="Next page"
         >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>

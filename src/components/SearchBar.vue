@@ -36,8 +36,8 @@ watch(filteredItems, (newValue) => {
 
 
 <template>
-    <div class="group flex items-center bg-white/5 border border-white/10 rounded-[22px] px-5 py-3.5 transition-all focus-within:bg-white/10 focus-within:border-cyan-500/50 focus-within:ring-1 focus-within:ring-cyan-500/20">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-white/20 group-focus-within:text-cyan-400 transition-colors">
+    <div class="group flex items-center bg-white/5 border border-white/10 rounded-[22px] px-5 py-3.5 transition-all focus-within:bg-white/10 focus-within:border-primary-normal/50 focus-within:ring-1 focus-within:ring-primary-normal/20">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-white/20 group-focus-within:text-primary-normal transition-colors">
             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
             <circle cx="10" cy="10" r="7" />
             <path d="M21 21l-6 -6" />

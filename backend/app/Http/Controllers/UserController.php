@@ -109,8 +109,8 @@ class UserController extends TemplateController
             'password'  => ($isUpdate ? 'nullable' : 'required') . '|string|min:8',
             'dni'       => ($isUpdate ? 'nullable' : 'required') . '|string|max:20|unique:users,dni,' . ($user->id ?? 'NULL'),
             'role'      => ($isUpdate ? 'nullable' : 'required') . '|string',
-            'profile_picture' => 'nullable|image|max:5120',
-            'banner'    => 'nullable|image|max:5120',
+            'profile_picture' => 'nullable|image|max:15360',
+            'banner'    => 'nullable|image|max:15360',
         ];
     }
 

@@ -1,5 +1,5 @@
 # ─── Stage 1: Composer deps ───────────────────────────────────────────────────
-FROM composer:2 AS composer-deps
+FROM mirror.gcr.io/library/composer:2 AS composer-deps
 WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install \
@@ -11,7 +11,7 @@ RUN composer install \
     --no-dev
 
 # ─── Stage 2: App ─────────────────────────────────────────────────────────────
-FROM php:8.4-fpm-alpine
+FROM mirror.gcr.io/library/php:8.4-fpm-alpine
 
 # Install system dependencies (Alpine uses apk, not apt-get)
 RUN apk add --no-cache \

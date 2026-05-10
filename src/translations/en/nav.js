@@ -17,5 +17,7 @@ export const nav = {
     register: "Register",
     login: "Login",
     logout: "Logout",
-    selectLanguage: "Select your language"
+    selectLanguage: "Select your language",
+    adminPanel: "Admin Panel",
+    myCenter: "My Center"
 };

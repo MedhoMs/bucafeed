@@ -35,7 +35,7 @@ services:
 
   # Servidor Web para Laravel (Nginx)
   nginx:
-    image: nginx:stable-alpine
+    image: mirror.gcr.io/library/nginx:stable-alpine
     container_name: telamonet_nginx
     ports:
       - "127.0.0.1:${NGINX_PORT:-8000}:80"
@@ -49,7 +49,7 @@ services:
 
   # Base de Datos - MySQL
   db:
-    image: mysql:${MYSQL_VERSION:-8.0}
+    image: mirror.gcr.io/library/mysql:${MYSQL_VERSION:-8.0}
     container_name: telamonet_db
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
@@ -78,7 +78,7 @@ services:
 
   # phpMyAdmin
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: mirror.gcr.io/phpmyadmin/phpmyadmin
     container_name: telamonet_phpmyadmin
     environment:
       PMA_HOST: db

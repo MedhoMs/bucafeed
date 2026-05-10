@@ -1,0 +1,22 @@
+export const forum = {
+    title: "Community Forum",
+    subtitle: "Resolve your doubts and help other students.",
+    newQuestion: "New Question",
+    loading: "Loading questions from server...",
+    responses: "Replies",
+    viewThread: "View Thread",
+    delete: "Delete",
+    deleted: "Question deleted",
+    errorDelete: "Error deleting",
+    backToForum: "Back to forum",
+    loadingThread: "Loading discussion thread...",
+    notFound: "The question does not exist or was deleted.",
+    noReplies: "There are no replies for this question yet. Be the first to help!",
+    addComment: "Add comment...",
+    deleteQuestion: "Delete question (Admin)",
+    deleteAnswer: "Delete reply (Admin)",
+    user: "User",
+    student: "Student",
+    admin: "ADMINISTRATOR",
+    teacher: "TEACHER"
+};

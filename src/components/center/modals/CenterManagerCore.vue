@@ -2,6 +2,9 @@
 import { ref, computed, watch } from 'vue'
 import BaseModal from '@/components/modals/BaseModal.vue'
 import GenericForm from '@/components/common/forms/GenericForm.vue'
+import { useTranslations } from '@/composables/useTranslations'
+
+const { t } = useTranslations()
 
 const props = defineProps({
     activeModal: { type: String, default: null },
@@ -21,9 +24,9 @@ const labels = computed(() => {
     const isSchool = props.center?.type === 'PE'
     const isUni = props.center?.type === 'HE' && (props.center?.category?.toLowerCase() === 'university' || props.center?.category?.toLowerCase() === 'universidad')
     
-    if (isSchool) return { cycle: 'Curso / Etapa', subject: 'Asignatura / Área' }
-    if (isUni) return { cycle: 'Grado / Carrera', subject: 'Asignatura / Crédito' }
-    return { cycle: 'Ciclo Formativo', subject: 'Asignatura / Módulo' }
+    if (isSchool) return { cycle: t.value.manager.labels.schoolCycle, subject: t.value.manager.labels.schoolSubject }
+    if (isUni) return { cycle: t.value.manager.labels.uniCycle, subject: t.value.manager.labels.uniSubject }
+    return { cycle: t.value.manager.labels.cycle, subject: t.value.manager.labels.subject }
 })
 
 // Estado único para todos los formularios
@@ -53,78 +56,78 @@ watch(() => props.activeModal, (val) => {
 
 const MODAL_MAP = computed(() => ({
     create: {
-        title: 'Crear Nuevo Grupo',
-        msg: 'Grupo creado',
+        title: t.value.manager.modals.create.title,
+        msg: t.value.manager.modals.create.msg,
         url: '/my-center/groups',
         fields: [
-            { id: 'name', type: 'text', label: 'Nombre Identificativo', placeholder: 'Ej: 1º DAW A o 2º Primaria B', required: true },
+            { id: 'name', type: 'text', label: t.value.manager.modals.create.nameLabel, placeholder: t.value.manager.modals.create.namePlaceholder, required: true },
             { id: 'cycle_id', type: 'select', label: labels.value.cycle, options: props.cycles, required: true }
         ]
     },
     tutor: {
-        title: 'Asignar Tutor',
-        msg: 'Tutor asignado',
+        title: t.value.manager.modals.tutor.title,
+        msg: t.value.manager.modals.tutor.msg,
         url: `/my-center/groups/${props.group?.id}/tutor`,
         method: 'PUT',
         fields: [
-            { id: 'info', type: 'info', label: 'Grupo Seleccionado', value: props.group?.name },
-            { id: 'user_id', type: 'select', label: 'Personal Docente', options: props.teachers.map(t => ({ id: t.id, name: `${t.name} ${t.last_name}` })) }
+            { id: 'info', type: 'info', label: t.value.manager.modals.tutor.groupInfo, value: props.group?.name },
+            { id: 'user_id', type: 'select', label: t.value.manager.modals.tutor.teacherLabel, options: props.teachers.map(t => ({ id: t.id, name: `${t.name} ${t.last_name}` })) }
         ]
     },
     students: {
-        title: 'Gestión de Alumnos',
-        msg: 'Alumnos actualizados',
+        title: t.value.manager.modals.students.title,
+        msg: t.value.manager.modals.students.msg,
         url: `/my-center/groups/${props.group?.id}/students`,
         fields: [
-            { id: 'student_ids', type: 'checklist', label: 'Censo de Alumnos', options: props.students }
+            { id: 'student_ids', type: 'checklist', label: t.value.manager.modals.students.censusLabel, options: props.students }
         ]
     },
     subject: {
-        title: 'Asignar Asignatura',
-        msg: 'Docencia asignada',
+        title: t.value.manager.modals.subject.title,
+        msg: t.value.manager.modals.subject.msg,
         url: `/my-center/groups/${props.group?.id}/subjects`,
         fields: [
             { id: 'tag_id', type: 'select-grouped', label: labels.value.subject, groups: props.cycles },
-            { id: 'user_id', type: 'select', label: 'Personal Docente', options: props.teachers.map(t => ({ id: t.id, name: `${t.name} ${t.last_name}` })) }
+            { id: 'user_id', type: 'select', label: t.value.manager.modals.subject.teacherLabel, options: props.teachers.map(t => ({ id: t.id, name: `${t.name} ${t.last_name}` })) }
         ]
     },
     event: {
-        title: 'Crear Nuevo Evento',
-        msg: 'Evento publicado con éxito',
+        title: t.value.manager.modals.event.title,
+        msg: t.value.manager.modals.event.msg,
         url: '/my-center/events',
         fields: [
-            { id: 'title', type: 'text', label: 'Título del Evento', placeholder: 'Ej: Jornada Deportiva', required: true },
-            { id: 'description', type: 'textarea', label: 'Descripción', placeholder: '¿De qué trata el evento?', required: true , full: true},
-            { id: 'location', type: 'text', label: 'Nombre de la calle', placeholder: 'Ej: Calle de la Marina, 12', required: true, full: false},
-            { id: 'date', type: 'date', label: 'Fecha', required: true , full: false},
-            { id: 'start_time', type: 'time', label: 'Hora Inicio', required: true, full: false },
-            { id: 'end_time', type: 'time', label: 'Hora Fin', required: true, full: false },
-            { id: 'image', type: 'file', label: 'Imagen de portada', aspect: 'video' }
+            { id: 'title', type: 'text', label: t.value.manager.modals.event.titleLabel, placeholder: t.value.manager.modals.event.titlePlaceholder, required: true },
+            { id: 'description', type: 'textarea', label: t.value.manager.modals.event.descLabel, placeholder: t.value.manager.modals.event.descPlaceholder, required: true , full: true},
+            { id: 'location', type: 'text', label: t.value.manager.modals.event.locationLabel, placeholder: t.value.manager.modals.event.locationPlaceholder, required: true, full: false},
+            { id: 'date', type: 'date', label: t.value.manager.modals.event.dateLabel, required: true , full: false},
+            { id: 'start_time', type: 'time', label: t.value.manager.modals.event.startLabel, required: true, full: false },
+            { id: 'end_time', type: 'time', label: t.value.manager.modals.event.endLabel, required: true, full: false },
+            { id: 'image', type: 'file', label: t.value.manager.modals.event.imageLabel, aspect: 'video' }
         ]
     },
     edit_event: {
-        title: 'Editar Evento',
-        msg: 'Evento actualizado correctamente',
+        title: t.value.manager.modals.editEvent.title,
+        msg: t.value.manager.modals.editEvent.msg,
         url: `/my-center/events/${props.event?.id}`,
         method: 'PUT',
         fields: [
-            { id: 'title', type: 'text', label: 'Título del Evento', placeholder: 'Ej: Jornada Deportiva', required: true },
-            { id: 'description', type: 'textarea', label: 'Descripción', placeholder: '¿De qué trata el evento?', required: true },
-            { id: 'date', type: 'date', label: 'Fecha', required: true },
-            { id: 'start_time', type: 'time', label: 'Hora Inicio', required: true, full: false },
-            { id: 'end_time', type: 'time', label: 'Hora Fin', required: true, full: false },
-            { id: 'location', type: 'text', label: 'Nombre de la calle', placeholder: 'Ej: Calle de la Marina, 12', required: true },
-            { id: 'image', type: 'file', label: 'Nueva imagen (opcional)', aspect: 'video' }
+            { id: 'title', type: 'text', label: t.value.manager.modals.event.titleLabel, placeholder: t.value.manager.modals.event.titlePlaceholder, required: true },
+            { id: 'description', type: 'textarea', label: t.value.manager.modals.event.descLabel, placeholder: t.value.manager.modals.event.descPlaceholder, required: true },
+            { id: 'date', type: 'date', label: t.value.manager.modals.event.dateLabel, required: true },
+            { id: 'start_time', type: 'time', label: t.value.manager.modals.event.startLabel, required: true, full: false },
+            { id: 'end_time', type: 'time', label: t.value.manager.modals.event.endLabel, required: true, full: false },
+            { id: 'location', type: 'text', label: t.value.manager.modals.event.locationLabel, placeholder: t.value.manager.modals.event.locationPlaceholder, required: true },
+            { id: 'image', type: 'file', label: t.value.manager.modals.editEvent.imageLabel, aspect: 'video' }
         ]
     },
     enroll_users: {
-        title: 'Matricular Usuarios',
-        msg: 'Usuarios matriculados con éxito',
+        title: t.value.manager.modals.enrollUsers.title,
+        msg: t.value.manager.modals.enrollUsers.msg,
         url: '/my-center/enroll-users'
     },
     enroll_cycles: {
-        title: 'Vincular Ciclos Formativos',
-        msg: 'Ciclos vinculados con éxito',
+        title: t.value.manager.modals.enrollCycles.title,
+        msg: t.value.manager.modals.enrollCycles.msg,
         url: '/my-center/enroll-cycles'
     }
 }))
@@ -274,33 +277,36 @@ async function handleAction() {
             <!-- Custom UI for Enrollment -->
             <div v-if="activeModal?.includes('enroll')" class="space-y-6">
                 <!-- Tabs for Users -->
-                <div v-if="activeModal === 'enroll_users'" class="flex p-1 bg-white/5 rounded-xl border border-white/10">
+                <div v-if="activeModal === 'enroll_users'" class="flex p-1 bg-white/5 rounded-xl border border-white/10 shadow-inner">
                     <button v-for="r in ['Student', 'Teacher']" :key="r" 
                         @click="activeEnrollTab = r"
-                        :class="['flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all', activeEnrollTab === r ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-white/20 hover:text-white/40']">
-                        {{ r === 'Student' ? 'Alumnos' : 'Profesores' }}
+                        :class="['flex-1 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all flex items-center justify-center gap-2', activeEnrollTab === r ? 'bg-secondary-normal text-white shadow-lg' : 'text-white/20 hover:text-white/40']">
+                        <span class="material-symbols-outlined !text-sm">{{ r === 'Student' ? 'person' : 'school' }}</span>
+                        {{ r === 'Student' ? t.manager.modals.enrollUsers.tabs.student : t.manager.modals.enrollUsers.tabs.teacher }}
                     </button>
                 </div>
 
                 <!-- Search Bar -->
                 <div class="relative">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/20">search</span>
                     <input v-model="searchQuery" 
-                        :placeholder="activeModal === 'enroll_users' ? 'Buscar por nombre o email...' : 'Buscar ciclo formativo...'"
-                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-[#406071] outline-none transition-all shadow-inner"
+                        :placeholder="activeModal === 'enroll_users' ? t.manager.modals.enrollUsers.searchPlaceholder : t.manager.modals.enrollCycles.searchPlaceholder"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm focus:border-secondary-normal focus:ring-1 focus:ring-secondary-normal outline-none transition-all shadow-inner"
                     >
                     <div v-if="searchLoading" class="absolute right-4 top-1/2 -translate-y-1/2">
-                        <div class="w-4 h-4 border-2 border-[#406071]/30 border-t-[#406071] rounded-full animate-spin"></div>
+                        <span class="material-symbols-outlined animate-spin text-secondary-normal">progress_activity</span>
                     </div>
                 </div>
 
                 <!-- Results List -->
-                <div class="min-h-[200px] max-h-72 overflow-y-auto space-y-2 pr-2 custom-scrollbar border border-white/5 p-2 rounded-xl bg-black/10">
-                    <p v-if="!searchLoading && searchResults.length === 0" class="text-center py-8 text-white/20 text-[10px] font-black uppercase tracking-widest">
-                        No se encontraron resultados
-                    </p>
+                <div class="min-h-[200px] max-h-72 overflow-y-auto space-y-2 pr-2 custom-scrollbar border border-white/5 p-2 rounded-xl bg-black/10 shadow-inner">
+                    <div v-if="!searchLoading && searchResults.length === 0" class="flex flex-col items-center justify-center py-10 opacity-20">
+                        <span class="material-symbols-outlined !text-5xl mb-2">search_off</span>
+                        <p class="text-[10px] font-black uppercase tracking-widest">{{ t.manager.labels.noResults }}</p>
+                    </div>
                     
                     <label v-for="item in searchResults" :key="item.id" 
-                        :class="['flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer group', selectedIds.includes(item.id) ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-white/5 border-white/5 hover:bg-white/10', item.alreadyLinked ? 'opacity-50 cursor-not-allowed border-emerald-500/20' : '']">
+                        :class="['flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer group glass-card', selectedIds.includes(item.id) ? 'bg-brand-net/10 border-brand-net/30 ring-1 ring-brand-net/20' : 'bg-white/5 border-white/5 hover:bg-white/10', item.alreadyLinked ? 'opacity-50 cursor-not-allowed border-brand-net/20' : '']">
                         <input type="checkbox" :value="item.id" 
                             :disabled="item.alreadyLinked"
                             :checked="selectedIds.includes(item.id) || item.alreadyLinked"
@@ -315,7 +321,7 @@ async function handleAction() {
                                 <span class="text-xs text-white/90 font-black uppercase tracking-tight group-hover:translate-x-1 transition-transform">
                                     {{ item.name || item.email }}
                                 </span>
-                                <span v-if="item.alreadyLinked" class="text-[9px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full uppercase">Ya vinculado</span>
+                                <span v-if="item.alreadyLinked" class="text-[9px] font-black text-brand-net bg-brand-net/10 px-2 py-0.5 rounded-full uppercase">{{ t.manager.labels.alreadyLinked }}</span>
                             </div>
                             <span class="text-[9px] text-white/20 font-bold tracking-wider">{{ item.area || item.email }}</span>
                             <!-- Mostrar tags si existen -->
@@ -328,7 +334,7 @@ async function handleAction() {
                 </div>
                 
                 <p class="text-[9px] text-white/20 font-black uppercase tracking-[0.2em] text-center italic">
-                    Selecciona los elementos que deseas matricular en tu centro
+                    {{ t.manager.labels.enrollHint }}
                 </p>
             </div>
 
