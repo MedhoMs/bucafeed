@@ -13,6 +13,7 @@ class Message extends Model
         'chat_id',
         'user_id',
         'group_id',
+        'meeting_id',
         'content',
     ];
 
@@ -29,6 +30,11 @@ class Message extends Model
     public function group()
     {
         return $this->belongsTo(Group::class);
+    }
+
+    public function meeting()
+    {
+        return $this->belongsTo(Meeting::class);
     }
 }
 

@@ -132,6 +132,10 @@ Route::get('/all-cycles', [CycleController::class, 'apiIndex']);
 Route::post('/groups/{group}/mensajes', [MensajeController::class, 'store']);
 Route::get('/groups/{group}/mensajes', [MensajeController::class, 'index']);
 
+// Chat de Charlas (Meetings)
+Route::get('/meetings/{meeting}/mensajes', [\App\Http\Controllers\MeetingMessageController::class, 'index']);
+Route::post('/meetings/{meeting}/mensajes', [\App\Http\Controllers\MeetingMessageController::class, 'store']);
+
 // Usuarios
 Route::apiResource('users', UserController::class);
 Route::get('/users/by-center', [UserController::class, 'apiStudentsByCenter']);

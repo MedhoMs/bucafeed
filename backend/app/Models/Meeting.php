@@ -14,6 +14,7 @@ class Meeting extends Model
         'teacher_id',
         'teacher_name',
         'educational_center_id',
+        'group_id',
         'schedule',
         'description',
     ];
@@ -26,5 +27,10 @@ class Meeting extends Model
     public function educationalCenter()
     {
         return $this->belongsTo(EducationalCenter::class);
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
     }
 }

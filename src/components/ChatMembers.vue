@@ -3,8 +3,11 @@
     import { useRoute } from 'vue-router';
     import { ref, computed, onMounted, watch } from 'vue';
     import { user as authUser } from '../stores/auth';
+    import { useApi } from "../composables/useApi";
     import UserAvatar from './common/UserAvatar.vue';
     import defaultLogo from '../assets/logo/logoTelamon.png';
+
+    const { get } = useApi();
 
     const { t } = useTranslations();
     const route = useRoute();
@@ -25,15 +28,26 @@
     const isDesktop = ref(window.innerWidth >= 1024)
 
     const fetchStudents = async () => {
-        // Usar el nombre del grupo del meeting si está cargado, si no, el de los params
+        const centerId = props.meeting?.educational_center_id;
         const centerName = props.meeting?.educational_center?.name || groupName.value;
-        if (centerName) {
+        const groupId = props.meeting?.group_id;
+        
+        console.log('Fetching students for center/group:', { centerId, centerName, groupId });
+        
+        if (centerId || centerName || groupId) {
             try {
-                const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-                const response = await fetch(`${apiBase}/users/by-center?center_name=${encodeURIComponent(centerName)}`);
-                if (response.ok) {
-                    students.value = await response.json();
+                let url = `users/by-center?`;
+                if (groupId) {
+                    url += `group_id=${groupId}`;
+                } else if (centerId) {
+                    url += `center_id=${centerId}`;
+                } else {
+                    url += `center_name=${encodeURIComponent(centerName)}`;
                 }
+
+                const response = await get(url);
+                console.log('Students received:', response);
+                students.value = response || [];
             } catch (error) {
                 console.error('Error fetching students:', error);
             }
@@ -115,7 +129,7 @@
 
                 <div class="flex flex-col mr-auto w-full flex-1 overflow-y-auto pb-4 pr-2 custom-scrollbar">
                     <!-- Estudiante Logueado (Yo) -->
-                    <div v-if="authUser && authUser.role === 'Student'" class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors">
+                    <div v-if="authUser && (['student', 'alumno', 'estudiante'].includes(authUser.role?.toLowerCase()))" class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors">
                         <UserAvatar :user="authUser" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
                         <p class="text-base lg:text-xl truncate">{{ authUser.name }} (Tú)</p>
                     </div>
