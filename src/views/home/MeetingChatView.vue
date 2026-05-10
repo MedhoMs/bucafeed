@@ -48,7 +48,7 @@ const meetingName = computed(() => {
     if (route.params.name) {
         return route.params.group ? `${route.params.name} - ${route.params.group}` : route.params.name;
     }
-    return meeting.value?.name || 'Chat de Reunión';
+    return meeting.value?.name || t.meetings.chatTitle;
 });
 </script>
 

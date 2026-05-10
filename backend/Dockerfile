@@ -1,58 +1,76 @@
-FROM php:8.2-fpm
+# ─── Stage 1: Composer deps ───────────────────────────────────────────────────
+FROM mirror.gcr.io/library/composer:2 AS composer-deps
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install \
+    --no-interaction \
+    --no-scripts \
+    --no-autoloader \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-dev
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# ─── Stage 2: App ─────────────────────────────────────────────────────────────
+FROM mirror.gcr.io/library/php:8.4-fpm-alpine
+
+# Install system dependencies (Alpine uses apk, not apt-get)
+RUN apk add --no-cache \
     git \
     curl \
+    bash \
+    nginx \
+    supervisor \
     libpng-dev \
-    libonig-dev \
+    oniguruma-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip \
-    nginx \
-    supervisor
-
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+    nodejs \
+    npm
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip
 
 # Configure PHP settings
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
     sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' "$PHP_INI_DIR/php.ini" && \
     sed -i 's/post_max_size = 8M/post_max_size = 50M/g' "$PHP_INI_DIR/php.ini"
 
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Install Node.js
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs
+# Get Composer from stage 1
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www
 
-# Copy existing application directory contents
+# Copy pre-installed vendor from stage 1 (cache layer)
+COPY --from=composer-deps /app/vendor ./vendor
+
+# Copy application source
 COPY . /var/www
 
-# Copy Nginx and Supervisor configurations
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+# Generate optimized autoloader with full source
+RUN composer dump-autoload --optimize --no-dev
+
+# Copy Nginx and Supervisor configs
+COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Remove default Nginx site
-RUN rm -f /etc/nginx/sites-enabled/default
-
-# Install composer and npm dependencies, then build assets
-RUN composer install --no-interaction --optimize-autoloader --no-dev
-RUN npm install && npm run build
+# Install npm dependencies and build assets
+RUN npm ci && npm run build
 
 # Make entrypoint executable
 RUN chmod +x /var/www/entrypoint.sh
 
-# Set entrypoint
-ENTRYPOINT ["/var/www/entrypoint.sh"]
-
-# Expose port 8080 (Railway uses PORT env var, default 8080)
+# Expose port
 EXPOSE 8080
+
+ENTRYPOINT ["/var/www/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

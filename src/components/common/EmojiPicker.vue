@@ -58,13 +58,24 @@ const close = () => {
 :deep(.v3-emoji-picker) {
     background: linear-gradient(180deg, #1f5252 0%, #0f2828 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 1rem !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
 }
 
 :deep(.v3-emoji-picker .v3-search input) {
     background: rgba(255, 255, 255, 0.05) !important;
     color: white !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px !important;
+}
+
+:deep(.v3-emoji-picker .v3-skin-tones) {
+    display: none !important; /* Quitar skin tones */
+}
+
+:deep(.v3-emoji-picker .v3-footer) {
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 8px !important;
 }
 
 :deep(.v3-emoji-picker .v3-groups button:hover) {

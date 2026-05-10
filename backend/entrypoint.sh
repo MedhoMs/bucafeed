@@ -24,9 +24,10 @@ mkdir -p storage/logs
 mkdir -p bootstrap/cache
 
 # Ajustar permisos si es necesario
-chmod -R 775 storage bootstrap/cache
-chmod -R 777 database
-chown -R www-data:www-data storage bootstrap/cache database 2>/dev/null || true
+echo "Ajustando permisos de directorios..."
+mkdir -p public/uploads
+chmod -R 777 storage bootstrap/cache database public/uploads
+chown -R www-data:www-data storage bootstrap/cache database public/uploads 2>/dev/null || true
 
 # Asegurar enlace simbólico de storage
 if [ ! -L "public/storage" ]; then

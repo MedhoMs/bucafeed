@@ -10,26 +10,26 @@ defineEmits(['close', 'confirm'])
 </script>
 
 <template>
-    <div class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center px-4" @click.self="$emit('close')">
-        <div class="bg-[#1a2332] border border-white/10 rounded-2xl p-7 w-full max-w-[460px] shadow-[0_25px_60px_rgba(0,0,0,0.5)]">
-            <h3 class="text-xl font-black text-white/90 mb-6 uppercase tracking-tight">{{ title }}</h3>
+    <div class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center px-4" @click.self="$emit('close')">
+        <div class="bg-[#0f2828] border border-white/10 rounded-3xl p-8 w-full max-w-[480px] shadow-[0_25px_80px_rgba(0,0,0,0.8)]">
+            <h3 class="text-2xl font-black text-white mb-8 uppercase tracking-tighter">{{ title }}</h3>
             
-            <div class="space-y-3">
+            <div class="space-y-4">
                 <slot></slot>
             </div>
             
-            <div v-if="!hideFooter" class="flex justify-end gap-3 mt-8">
+            <div v-if="!hideFooter" class="flex justify-end gap-4 mt-10">
                 <slot name="footer">
                     <button 
                         @click="$emit('close')" 
-                        class="flex-1 py-3 px-5 rounded-xl text-xs font-black uppercase text-white/30 bg-white/5 border border-white/5 cursor-pointer hover:text-white hover:bg-white/10 transition-all"
+                        class="flex-1 py-4 px-6 rounded-2xl text-xs font-black uppercase text-white/40 bg-white/5 border border-white/5 cursor-pointer hover:text-white hover:bg-white/10 transition-all"
                     >
                         {{ cancelText }}
                     </button>
                     <button 
                         @click="$emit('confirm')" 
                         :disabled="isConfirmDisabled"
-                        class="flex-1 py-3 px-5 rounded-xl text-xs font-black uppercase text-white bg-[#406071] shadow-lg hover:shadow-[#406071]/20 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-all border border-white/10"
+                        class="w-full md:w-auto bg-accent-normal hover:bg-accent-normal-hover text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all active:scale-95 shadow-xl shadow-accent-normal/20 flex items-center justify-center gap-3 group border border-white/5 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         {{ confirmText }}
                     </button>

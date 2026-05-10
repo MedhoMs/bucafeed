@@ -36,10 +36,9 @@
         rawQuestions.value = rawQuestions.value.filter(q => q.id != id);
         try {
             await del(`questions/${id}`);
-            showToast({ msg: 'Pregunta eliminada' });
+            showToast({ msg: t.forum.deleted });
         } catch (e) {
-            console.error("Error en servidor al eliminar:", e);
-            showToast({ msg: 'Error al eliminar', type: 'error' });
+            showToast({ msg: t.forum.errorDelete, type: 'error' });
         }
     };
 
@@ -85,8 +84,8 @@
         <NavBar></NavBar>
         <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
             <PageHeader 
-                title="Foro de la Comunidad" 
-                subtitle="Resuelve tus dudas y ayuda a otros estudiantes."
+                :title="t.forum.title" 
+                :subtitle="t.forum.subtitle"
             >
                 <template #search>
                     <SearchBar 
@@ -99,9 +98,18 @@
 
                 <template #actions>
                     <PrimaryButton 
-                        text="Nueva Pregunta"
+                        :text="t.forum.newQuestion"
                         icon="plus"
                         @click="activeModal = 'question'"
+                    />
+                </template>
+
+                <template #bottom>
+                    <Pagination 
+                        :currentPage="pagination.currentPage" 
+                        :lastPage="pagination.lastPage"
+                        @change="loadQuestions"
+                        class="mt-0!"
                     />
                 </template>
             </PageHeader>
@@ -109,16 +117,21 @@
     
             <section class="text-white w-full px-6 lg:px-14 mb-20">
                 <div id="mainBody" class="flex flex-col gap-6 w-full">
-                    <div v-if="apiLoading && questions.length === 0" class="text-white/40 italic py-10">Cargando preguntas del servidor...</div>
+                    <div v-if="apiLoading && questions.length === 0" class="text-white/40 italic py-10">{{ t.forum.loading }}</div>
     
                     <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">
                         <div class="flex gap-4 items-center mb-4">
                             <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
                             <div class="flex flex-col">
                                 <span class="text-sm font-bold text-white">
-                                    {{ q.user?.name ?? 'Usuario' }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
+                                    {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
                                 </span>
-                                <span class="text-xs text-white/40 uppercase tracking-widest">{{ q.user?.role_name || q.user?.role || 'Estudiante' }}</span>
+                                <span class="text-xs text-white/40 uppercase tracking-widest">
+                                    {{ 
+                                        q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                        (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
+                                    }}
+                                </span>
                             </div>
                         </div>
                         <h2 class="post-title text-white">{{ q.title }}</h2>
@@ -129,23 +142,23 @@
                             <img :src="getImageUrl(q.image)" alt="Preview" class="w-full h-full object-contain" />
                         </div>
                         <div class="post-footer mt-4 flex items-center justify-between">
-                            <router-link :to="'/question/' + q.id" class="responses-badge bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95 px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 select-none group" title="Ver hilo completo">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white/60 group-hover:text-[#406071] transition-colors"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
-                                <span class="response-count text-sm text-white/80 font-bold">{{ q.answers ? q.answers.length : 0 }} Respuestas</span>
-                                <span class="text-xs text-[#179cf0] font-black uppercase ml-2 opacity-0 group-hover:opacity-100 transition-opacity">Ver Hilo</span>
+                            <router-link :to="'/question/' + q.id" class="responses-badge bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95 px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 select-none group" :title="t.forum.viewThread">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-dimmed group-hover:text-success-normal transition-colors"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+                                <span class="response-count text-sm text-white/80 font-bold">{{ q.answers ? q.answers.length : 0 }} {{ t.forum.responses }}</span>
+                                <span class="text-xs text-success-normal font-black uppercase ml-2 opacity-0 group-hover:opacity-100 transition-opacity">{{ t.forum.viewThread }}</span>
                             </router-link>
     
                             <button 
                                 v-if="user?.role?.toLowerCase() === 'admin'"
                                 @click.stop="deleteQuestion(q.id)"
                                 class="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
-                                title="Eliminar pregunta (Admin)"
+                                :title="t.forum.delete"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                             </button>
                         </div>
                     </div>
-                <!-- Pagination -->
+
 
             </div>
         </section>

@@ -1,6 +1,9 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useTranslations } from '../../composables/useTranslations'
 import defaultImage from '../../assets/logo/logoTelamon.png';
+
+const { t } = useTranslations()
 
 const props = defineProps({
     events: {
@@ -71,6 +74,12 @@ onMounted(() => {
     startAutoSlide();
 });
 
+watch(() => props.events, (newVal) => {
+    if (newVal && newVal.length > 1) {
+        startAutoSlide();
+    }
+}, { deep: true });
+
 onUnmounted(() => {
     stopAutoSlide();
 });
@@ -79,18 +88,18 @@ onUnmounted(() => {
 <template>
     <section class="text-white w-full max-w-screen-2xl mx-auto px-4 md:px-6 lg:px-14 mb-20">
         <div id="carouselContainer" class="w-full relative group/carousel py-6 lg:py-10 overflow-hidden">
-            <div v-if="loading" class="text-white/20 italic py-40 text-center">Cargando eventos...</div>
+            <div v-if="loading" class="text-white/20 italic py-40 text-center">{{ t.home.loadingEvents }}</div>
             
             <div v-if="!loading && events.length === 0" class="text-white/20 italic py-40 text-center bg-white/5 rounded-[3rem] border border-dashed border-white/10">
-                No hay eventos programados actualmente.
+                {{ t.home.noEvents }}
             </div>
             
             <div v-if="events.length > 0" class="relative">
                 <!-- Flechas de navegación -->
-                <button @click="prevSlide(); startAutoSlide()" class="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 lg:p-4 bg-black/60 hover:bg-[#179cf0] text-white rounded-full transition-all active:scale-90 shadow-2xl opacity-100 lg:opacity-0 lg:group-hover/carousel:opacity-100">
+                <button @click="prevSlide(); startAutoSlide()" class="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 lg:p-4 rounded-full btn-dark-icon opacity-100 lg:opacity-0 lg:group-hover/carousel:opacity-100">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="lg:w-7 lg:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
                 </button>
-                <button @click="nextSlide(); startAutoSlide()" class="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 lg:p-4 bg-black/60 hover:bg-[#179cf0] text-white rounded-full transition-all active:scale-90 shadow-2xl opacity-100 lg:opacity-0 lg:group-hover/carousel:opacity-100">
+                <button @click="nextSlide(); startAutoSlide()" class="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 lg:p-4 rounded-full btn-dark-icon opacity-100 lg:opacity-0 lg:group-hover/carousel:opacity-100">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="lg:w-7 lg:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                 </button>
 
@@ -110,13 +119,13 @@ onUnmounted(() => {
                             
                             <div v-if="index === activeIndex" class="absolute bottom-0 left-0 p-5 md:p-12 lg:p-16 w-full transform transition-all duration-700">
                                 <div class="flex items-center gap-2 lg:gap-4 mb-2 lg:mb-6">
-                                    <span class="px-3 py-1 bg-[#406071] text-[8px] lg:text-[10px] font-black uppercase rounded-lg lg:rounded-xl shadow-xl tracking-widest text-white">{{ event.center_name }}</span>
-                                    <span class="text-[#a0c4d4] text-[10px] lg:text-xs font-bold uppercase tracking-wider lg:tracking-[0.2em]">{{ new Date(event.date).toLocaleDateString() }}</span>
+                                    <span class="px-3 py-1 glass-pill text-[8px] lg:text-[10px] font-black uppercase rounded-lg lg:rounded-xl tracking-widest">{{ event.center_name }}</span>
+                                    <span class="text-dimmed text-[10px] lg:text-xs font-bold uppercase tracking-wider lg:tracking-[0.2em]">{{ new Date(event.date).toLocaleDateString() }}</span>
                                 </div>
                                 <h3 class="text-xl md:text-5xl lg:text-6xl font-black mb-2 lg:mb-6 tracking-tighter text-white line-clamp-2">{{ event.title }}</h3>
                                 <p class="hidden md:block text-white/70 text-sm md:text-lg lg:text-xl line-clamp-2 mb-6 lg:mb-10 max-w-3xl leading-relaxed">{{ event.description }}</p>
-                                <router-link :to="'/event'" class="inline-flex items-center gap-2 lg:gap-3 bg-[#179cf0] text-white px-4 lg:px-8 py-2 lg:py-4 rounded-xl lg:rounded-2xl font-black uppercase text-[8px] lg:text-xs tracking-widest hover:bg-[#406071] transition-all shadow-lg shadow-[#179cf0]/20">
-                                    Explorar
+                                <router-link :to="'/explore'" class="inline-flex items-center justify-center btn-light gap-2 lg:gap-3 px-4 lg:px-8 py-2 lg:py-4 rounded-xl lg:rounded-2xl font-black uppercase text-[8px] lg:text-xs tracking-widest">
+                                    {{ t.home.explore }}
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" class="lg:w-5 lg:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
                                 </router-link>
                             </div>
@@ -129,7 +138,7 @@ onUnmounted(() => {
             <div v-if="events.length > 1" class="flex justify-center gap-2 lg:gap-3 mt-6 lg:mt-12">
                 <button v-for="(_, i) in events" :key="i" 
                         @click="goToSlide(i); startAutoSlide()"
-                        :class="['h-1.5 lg:h-2 rounded-full transition-all duration-500', (activeIndex === i + 1) ? 'w-8 lg:w-10 bg-[#179cf0]' : 'w-1.5 lg:w-2 bg-white/20 hover:bg-white/40']">
+                        :class="['h-1.5 lg:h-2 rounded-full', (activeIndex === i + 1) ? 'w-8 lg:w-10 dot-indicator-active' : 'w-1.5 lg:w-2 dot-indicator']">
                 </button>
             </div>
         </div>

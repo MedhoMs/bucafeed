@@ -7,6 +7,13 @@ import { post } from './post';
 import { videoCall } from './videoCall';
 import { validation } from './validation';
 import { settings } from './settings';
+import { forum } from './forum';
+import { explore } from './explore';
+import { home } from './home';
+import { notifications } from './notifications';
+import { meetings } from './meetings';
+import { events } from './events';
+import { manager } from './manager';
 
 export const es = {
     nav,
@@ -17,5 +24,12 @@ export const es = {
     post,
     videoCall,
     validation,
-    settings
+    settings,
+    forum,
+    explore,
+    home,
+    notifications,
+    meetings,
+    events,
+    manager
 };

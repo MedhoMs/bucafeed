@@ -3,7 +3,6 @@ export const login = {
     title: "LOGIN",
     welcome: "Welcome back",
     eslogan: "Login again to see what's new in TelamoNet",
-    username: "Username",
     email: "Institutional Email",
     emailSpan: "Only students or teachers, other users may use their email",
     password: "Password",

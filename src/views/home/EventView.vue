@@ -1,15 +1,16 @@
 <script setup>
     import { ref, onMounted, computed, reactive } from 'vue';
     import { useRouter } from 'vue-router';
-    import NavBar from '../../components/NavBar/NavBar.vue';
-    import SearchBar from '../../components/SearchBar.vue';
-    import CenterManagerCore from '../../components/center/modals/CenterManagerCore.vue'
-    import EventCard from '../../components/events/EventCard.vue'
+    import NavBar from '@/components/NavBar/NavBar.vue';
+    import SearchBar from '@/components/SearchBar.vue';
+    import CenterManagerCore from '@/components/center/modals/CenterManagerCore.vue'
+    import EventCard from '@/components/events/EventCard.vue'
     import PageHeader from '@/components/common/PageHeader.vue';
-    import Pagination from '../../components/common/Pagination.vue';
+    import Pagination from '@/components/common/Pagination.vue';
+    import PrimaryButton from '@/components/common/PrimaryButton.vue';
 
-    import { useTranslations } from '../../composables/useTranslations'
-    import { useApi } from '../../composables/useApi';
+    import { useTranslations } from '@/composables/useTranslations'
+    import { useApi } from '@/composables/useApi';
     const { t } = useTranslations()
     const { get, loading: apiLoading } = useApi();
 
@@ -79,7 +80,7 @@
 
     const handleJoin = async (event) => {
         if (!token.value) {
-            alert('Debes iniciar sesión para unirte a eventos');
+            showToast({ msg: t.events.loginRequired, type: 'error' });
             return;
         }
         try {
@@ -92,13 +93,13 @@
                 // Actualizar el evento localmente
                 event.joined = data.joined;
                 event.participants_count = data.count;
-                showToast({ msg: event.joined ? 'Te has unido al evento' : 'Has abandonado el evento' });
+                showToast({ msg: event.joined ? t.events.joined : t.events.left });
             } else {
                 const data = await res.json();
                 showToast({ msg: data.message || 'Error', type: 'error' });
             }
         } catch (e) {
-            showToast({ msg: 'Error de red', type: 'error' });
+            showToast({ msg: t.events.networkError, type: 'error' });
         }
     }
 
@@ -113,8 +114,8 @@
         <NavBar></NavBar>
         <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
             <PageHeader 
-                title="Eventos Académicos" 
-                subtitle="Participa en las actividades y charlas de tu centro."
+                :title="t.events.title" 
+                :subtitle="t.events.subtitle"
             >
                 <template #search>
                     <SearchBar 
@@ -125,12 +126,20 @@
                     />
                 </template>
                 <template #actions>
-                    <button v-if="canCreate" 
+                    <PrimaryButton 
+                        v-if="canCreate" 
+                        :text="t.events.newEvent" 
+                        icon="plus" 
                         @click="activeModal = 'event'"
-                        class="w-full md:w-auto bg-[#406071] hover:bg-[#507a8f] text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all cursor-pointer active:scale-95 shadow-xl shadow-cyan-900/10 flex items-center justify-center gap-3 group border border-white/5 shrink-0">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-500"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        <span>Nuevo Evento</span>
-                    </button>
+                    />
+                </template>
+                <template #bottom>
+                    <Pagination 
+                        v-if="events.length > 0"
+                        :current-page="pagination.currentPage" 
+                        :last-page="pagination.lastPage" 
+                        @change="handlePageChange"
+                    />
                 </template>
             </PageHeader>
     
@@ -146,11 +155,7 @@
                     />
                 </div>
 
-                <Pagination 
-                    :current-page="pagination.currentPage" 
-                    :last-page="pagination.lastPage" 
-                    @change="handlePageChange"
-                />
+
             </section>
     
             <!-- Modal de Creación-->
@@ -166,8 +171,8 @@
     
             <!-- Toast Notification -->
             <div v-if="toast.show" 
-                :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-xl shadow-2xl font-semibold text-sm transition-all duration-300', 
-                         toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white']">
+                :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-xl shadow-2xl font-black uppercase tracking-widest text-xs transition-all duration-300 border border-white/10', 
+                         toast.type === 'error' ? 'bg-error-normal text-white' : 'bg-secondary-normal text-white']">
                 {{ toast.msg }}
             </div>
         </main>

@@ -64,8 +64,8 @@ const fetchMeetings = async (page = 1) => {
             meetings.value = dataArray.map(m => ({
                 id: m.id,
                 name: m.name,
-                teacher: m.teacher ? m.teacher.name : (m.teacher_name || 'Desconocido'),
-                group: m.educational_center ? m.educational_center.name : 'Varios',
+                teacher: m.teacher ? m.teacher.name : (m.teacher_name || t.meetings.unknown),
+                group: m.educational_center ? m.educational_center.name : t.meetings.various,
                 schedule: m.schedule,
                 description: m.description
             }));
@@ -139,8 +139,8 @@ const meetingFields = computed(() => {
         baseFields.push({
             id: 'educational_center_id',
             type: 'select',
-            label: 'Centro Educativo',
-            placeholder: 'Seleccionar centro...',
+            label: t.meetings.form.center,
+            placeholder: t.meetings.form.centerPlaceholder,
             required: true,
             options: centers.value.map(c => ({ id: c.id, name: c.name }))
         });
@@ -153,7 +153,7 @@ const meetingFields = computed(() => {
         });
     }
 
-    baseFields.push({ id: 'description', type: 'textarea', label: 'Descripción', placeholder: 'Describe brevemente de qué trata la charla...', required: false });
+    baseFields.push({ id: 'description', type: 'textarea', label: t.meetings.form.description, placeholder: t.meetings.form.descriptionPlaceholder, required: false });
 
     return baseFields;
 });
@@ -232,12 +232,12 @@ const deleteMeeting = async () => {
     <div class="min-h-screen">
         <NavBar></NavBar>
         <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
-            <PageHeader title="Charlas Disponibles" subtitle="Conecta con profesores y compañeros en tiempo real.">
+            <PageHeader :title="t.meetings.title" :subtitle="t.meetings.subtitle">
                 <template #search>
                     <SearchBar :items="availableMeetings" @update:filtered="filteredMeetings = $event" />
                 </template>
                 <template #actions>
-                    <PrimaryButton v-if="canCreateMeeting" text="Nueva Charla" icon="plus" @click="openModal" />
+                    <PrimaryButton v-if="canCreateMeeting" :text="t.meetings.newMeeting" icon="plus" @click="openModal" />
                 </template>
             </PageHeader>
     
@@ -268,7 +268,7 @@ const deleteMeeting = async () => {
             </section>
     
             <!-- Modal de Creación -->
-            <BaseModal v-if="showModal" title="Crear Nueva Charla" confirm-text="Crear Charla" @close="closeModal"
+            <BaseModal v-if="showModal" :title="t.meetings.createTitle" :confirm-text="t.meetings.createConfirm" @close="closeModal"
                 @confirm="saveMeeting">
                 <GenericForm v-model="newMeeting" :fields="meetingFields" />
             </BaseModal>

@@ -1,0 +1,22 @@
+export const forum = {
+    title: "Foro de la Comunidad",
+    subtitle: "Resuelve tus dudas y ayuda a otros estudiantes.",
+    newQuestion: "Nueva Pregunta",
+    loading: "Cargando preguntas del servidor...",
+    responses: "Respuestas",
+    viewThread: "Ver Hilo",
+    delete: "Eliminar",
+    deleted: "Pregunta eliminada",
+    errorDelete: "Error al eliminar",
+    backToForum: "Volver al foro",
+    loadingThread: "Cargando hilo de discusión...",
+    notFound: "La pregunta no existe o fue eliminada.",
+    noReplies: "Aún no hay respuestas para esta pregunta. ¡Sé el primero en ayudar!",
+    addComment: "Añadir comentario...",
+    deleteQuestion: "Eliminar pregunta (Admin)",
+    deleteAnswer: "Eliminar respuesta (Admin)",
+    user: "Usuario",
+    student: "Estudiante",
+    admin: "ADMINISTRADOR",
+    teacher: "PROFESOR"
+};
