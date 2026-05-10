@@ -317,7 +317,7 @@
     <main class="relative flex flex-col justify-center items-center min-h-screen bg-black/50">
 
         <span id="formErrWarning" class="absolute opacity-0 top-5 p-2 bg-red-300/80 border-2 rounded-xl border-red-500/80 transition-all duration-300">
-            <p class="font-bold text-white text-shadow-sm">Faltan datos o hay datos erroneos</p>
+            <p class="font-bold text-white text-shadow-sm">{{ t.register.formErrorMessage }}</p>
         </span>
 
         <h1 class="text-3xl lg:text-6xl my-4 lg:mt-0 lg:mb-17.5 font-bold text-white text-shadow-lg">{{ t.register.title }}</h1>
@@ -333,10 +333,10 @@
                     <label class="font-bold lg:mt-7.5" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
                     <span class=" text-xs">{{ t.register.emailSpan }}</span>
                     <input type="text" class="allRolesInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="email-register-form" name="email-register-form" :placeholder="t.register.placeholderEmail" required>
-                    <p hidden class="absolute top-27.5 left-33.75 font-semibold">Email inválido</p>
+                    <p hidden class="absolute top-27.5 left-33.75 font-semibold">{{ t.register.invalidEmail }}</p>
                     <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
                     <input type="password" class="allRolesInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
-                    <p hidden class="absolute top-48.75 left-27.5 text-sm font-semibold">Al menos 8 carácteres</p>
+                    <p hidden class="absolute top-48.75 left-27.5 text-sm font-semibold">{{ t.register.invalidPassword }}</p>
                     <label class="font-bold" for="who-register-form" id="who-register-label">{{ t.register.whoAreYou }}</label>
                     <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
                         <option value="EI">{{ t.register.educationalInstitution }}</option>
@@ -349,13 +349,13 @@
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="student-name" id="studentName">{{ t.register.name }}</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="name-register-form" :placeholder="t.register.placeholderName" required></input>
-                    <p hidden class="absolute top-18 left-6 lg:top-22.5 lg:left-7.5 text-sm font-semibold">El nombre debe tener entre 2 y 12 letras</p>
+                    <p hidden class="absolute top-18 left-6 lg:top-22.5 lg:left-7.5 text-sm font-semibold">{{ t.register.invalidName }}</p>
                     <label class="font-bold" for="student-name" id="studentName">{{ t.register.surnames }}</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="surname-register-form" :placeholder="t.register.placeholderSurnames" required></input>
-                    <p hidden class="absolute top-40 left-25 text-sm font-semibold">Deben haber 2 apellidos</p>
+                    <p hidden class="absolute top-40 left-25 text-sm font-semibold">{{ t.register.invalidSurnames }}</p>
                     <label class="font-bold" for="student-name" id="studentName">{{ t.register.DNI }}</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="dni-register-form" :placeholder="t.register.placeholderDNI" required></input>
-                    <p hidden class="absolute top-61.75 left-31.25 text-sm font-semibold">DNI/NIE inválido</p>
+                    <p hidden class="absolute top-61.75 left-31.25 text-sm font-semibold">{{ t.register.invalidDNI }}</p>
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
@@ -368,12 +368,12 @@
                     </select>
                     <label class="mt-8 font-bold">{{ t.register.yourEducationalInstitution }}</label>
                     <select id="institutionSelect" class="EIInput border-b border-black pb-1">
-                        <option value="">Selecciona un nivel primero</option>
+                        <option value="">{{ t.register.selectLevel }}</option>
                     </select>
                 </section>
 
                 <section id="validateEmailForm" class="forms hidden flex-col items-center mb-16">
-                    <p id="validateEmailText" class="mb-5 text-center font-bold">Hemos enviado un código de verificación a tu correo</p>
+                    <p id="validateEmailText" class="mb-5 text-center font-bold">{{ t.register.emailSent }}</p>
                     <input type="text" class="validateEmailInput outline-hidden border-b border-black mb-7.5 p-0.5 w-32 text-center text-xl" maxlength="6" autocomplete="off" id="code-register-form" name="code-register-form" required></input>
                 </section>
 
