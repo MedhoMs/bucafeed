@@ -359,7 +359,7 @@
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
-                    <label class="font-bold" for="choose-center">{{ t.register.educationalLevel }}</label>
+                    <label class="font-bold" for="choose-center">{{ t.register.educationLevel }}</label>
                     <select id="educationLevelSelect" class="EIInput border-b border-black pb-1">
                         <option value="PE">{{ t.register.primary }}</option>
                         <option value="SE">{{ t.register.secondary }}</option>
