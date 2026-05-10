@@ -21,7 +21,7 @@ const emit = defineEmits(['update:modelValue', 'submit'])
             :class="[field.full !== false ? 'col-span-full' : 'col-span-1', 'space-y-2']">
             
             <!-- LABEL -->
-            <label v-if="field.type !== 'info'" class="block text-[10px] font-black uppercase text-dimmed tracking-[0.2em] ml-1">
+            <label v-if="field.type !== 'info'" class="block text-[10px] font-black uppercase text-white/60 tracking-[0.2em] ml-1">
                 {{ field.label }}
                 <span v-if="field.required" class="text-error-normal ml-1">*</span>
             </label>
@@ -32,7 +32,7 @@ const emit = defineEmits(['update:modelValue', 'submit'])
                 :value="modelValue[field.id]"
                 @input="emit('update:modelValue', { ...modelValue, [field.id]: $event.target.value })"
                 :placeholder="field.placeholder" 
-                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-secondary-normal outline-none transition-all shadow-inner"
+                class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white !text-white text-sm focus:border-brand-net outline-none transition-all shadow-inner"
             >
 
             <!-- TEXTAREA -->
@@ -41,7 +41,7 @@ const emit = defineEmits(['update:modelValue', 'submit'])
                 @input="emit('update:modelValue', { ...modelValue, [field.id]: $event.target.value })"
                 :placeholder="field.placeholder"
                 rows="3"
-                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-secondary-normal outline-none transition-all shadow-inner resize-none"
+                class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white !text-white text-sm focus:border-brand-net outline-none transition-all shadow-inner resize-none"
             ></textarea>
 
             <!-- SELECT SIMPLE -->

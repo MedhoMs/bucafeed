@@ -12,7 +12,7 @@ defineEmits(['click'])
     <button 
         @click="$emit('click')"
         :disabled="loading"
-        class="w-full md:w-auto bg-secondary-normal hover:bg-secondary-normal-hover text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all active:scale-95 shadow-xl shadow-secondary-normal/10 flex items-center justify-center gap-3 group border border-white/5 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        class="w-full md:w-auto bg-white/5 hover:bg-white/10 text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all active:scale-95 shadow-xl flex items-center justify-center gap-3 group border border-white/10 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
     >
         <template v-if="!loading">
             <!-- Icono Plus (Default) -->
