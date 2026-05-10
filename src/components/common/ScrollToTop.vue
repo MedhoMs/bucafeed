@@ -35,7 +35,7 @@ onUnmounted(() => {
         <button
             v-if="showScrollButton"
             @click="scrollToTop"
-            class="fixed bottom-24 right-6 lg:bottom-28 lg:right-10 z-[45] bg-emerald-500 hover:bg-emerald-400 text-white p-3 rounded-full shadow-[0_4px_14px_rgba(16,185,129,0.3)] backdrop-blur-sm transition-all hover:-translate-y-1 active:scale-95"
+            class="fixed bottom-24 right-6 lg:bottom-28 lg:right-10 z-[100] bg-success-normal hover:bg-success-normal-hover text-white p-3 rounded-full shadow-2xl transition-all hover:-translate-y-1 active:scale-95 border border-white/10"
             title="Volver arriba"
         >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

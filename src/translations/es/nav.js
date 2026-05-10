@@ -18,5 +18,7 @@ export const nav = {
     register: "Registrarse",
     login: "Iniciar Sesión",
     logout: "Cerrar Sesión",
-    selectLanguage: "Selecciona tu idioma"
+    selectLanguage: "Selecciona tu idioma",
+    adminPanel: "Panel de administrador",
+    myCenter: "Mi Centro"
 };

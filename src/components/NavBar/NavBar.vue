@@ -87,18 +87,22 @@
 </script>
  
 <template>
-    <!--Hamburger menu-->
-    <svg v-show="!menu" @click="activeMenu()" class="lg:hidden fixed top-5 left-6 z-hamburger text-white cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none" /> <path d="M4 6l16 0" /><path d="M4 12l16 0" /><path d="M4 18l16 0" /></svg>
+    <!--Hamburger menu flotante premium-->
+    <button v-show="!menu" @click="activeMenu()" 
+        class="lg:hidden fixed top-5 left-6 z-[100] bg-accent-normal/80 backdrop-blur-md p-2 rounded-xl border border-white/10 text-white shadow-2xl active:scale-95 transition-all flex items-center justify-center">
+        <span class="material-symbols-outlined !text-3xl">menu</span>
+    </button>
  
     <!--Overlay oscuro-->
     <Transition
+Enter
         enter-active-class="transition-opacity duration-300 ease-out"
         enter-from-class="opacity-0"
         enter-to-class="opacity-100"
         leave-active-class="transition-opacity duration-300 ease-in"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0">
-        <div v-if="menu" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"></div>
+        <div v-if="menu" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60"></div>
     </Transition>
  
     <!--Sidebar siempre visible en desktop, toggle en móvil-->
@@ -116,9 +120,10 @@
                 <h1 class="font-bold text-xl text-white">
                     {{ t.nav.title }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span>
                 </h1>
-                <!--Botón X-->
-                <svg @click="closeMenu()" class="lg:hidden ml-auto shrink-0 text-white/70 hover:text-white cursor-pointer transition-colors" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path stroke="none" d="M0 0h24v24H0z" fill="none"/> <path d="M18 6l-12 12" /><path d="M6 6l12 12" />
-                </svg>
+                <!--Botón X Material-->
+                <button @click="closeMenu()" class="lg:hidden ml-auto p-1.5 rounded-lg hover:bg-white/10 text-white/70 transition-all">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
             </div>
 
  
@@ -147,16 +152,16 @@
                     </template>
                 </NavBarLinks>
  
-                <NavBarLinks v-if="user?.role?.toLowerCase() === 'admin' || user?.role_name?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'administrador'" to="/admin" title="Panel de administrador" backend>
+                <NavBarLinks v-if="user?.role?.toLowerCase() === 'admin' || user?.role_name?.toLowerCase() === 'admin' || user?.role?.toLowerCase() === 'administrador'" to="/admin" :title="t.nav.adminPanel" backend>
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><circle cx="6" cy="10" r="2"/><line x1="6" y1="4" x2="6" y2="8"/><line x1="6" y1="12" x2="6" y2="20"/><circle cx="12" cy="16" r="2"/><line x1="12" y1="4" x2="12" y2="14"/><line x1="12" y1="18" x2="12" y2="20"/><circle cx="18" cy="7" r="2"/><line x1="18" y1="4" x2="18" y2="5"/><line x1="18" y1="9" x2="18" y2="20"/></svg>
                     </template>
-                    <span v-if="dbStatus === 'connected'" class="ml-auto w-3 h-3 bg-green-500 rounded-full" title="Conectado a DB"></span>
-                    <span v-else-if="dbStatus === 'error'" class="ml-auto w-3 h-3 bg-red-500 rounded-full" title="Error de conexión"></span>
-                    <span v-else class="ml-auto w-3 h-3 bg-yellow-500 rounded-full animate-pulse" title="Cargando..."></span>
+                    <span v-if="dbStatus === 'connected'" class="ml-auto w-3 h-3 bg-success-normal rounded-full" title="Conectado a DB"></span>
+                    <span v-else-if="dbStatus === 'error'" class="ml-auto w-3 h-3 bg-error-normal rounded-full" title="Error de conexión"></span>
+                    <span v-else class="ml-auto w-3 h-3 bg-warning-normal rounded-full animate-pulse" title="Cargando..."></span>
                 </NavBarLinks>
  
-                <NavBarLinks v-if="user?.role?.toLowerCase() === 'ei'" to="/mi-centro" title="Mi Centro">
+                <NavBarLinks v-if="user?.role?.toLowerCase() === 'ei'" to="/mi-centro" :title="t.nav.myCenter">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21l18 0" /><path d="M5 21v-14l8 -4v18" /><path d="M19 21v-10l-6 -4" /><path d="M9 9l0 .01" /><path d="M9 12l0 .01" /><path d="M9 15l0 .01" /><path d="M9 18l0 .01" /></svg>
                     </template>
@@ -181,11 +186,11 @@
                 </NavBarLinks>
  
                 <router-link
-                    class="relative flex items-center gap-2.5 mb-5 mr-4 mt-auto rounded-xl text-base font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-[#406071] hover:cursor-pointer active:bg-[#406071] active:font-bold"
+                    class="relative flex items-center gap-2.5 mb-5 mr-4 mt-auto rounded-xl text-base font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-secondary-normal hover:cursor-pointer active:bg-secondary-normal active:font-bold"
                     id="profile" to="/profile">
                     <UserAvatar :user="user" size="w-10 h-10" class="border-2 border-white shadow-xs" />
                     <p>{{ user ? user.name : 'Usuario' }}</p>
-                    <svg id="dots" @click.stop.prevent="toggleDotsPopup" class="absolute right-4 w-6 h-6 z-10 rounded-xl hover:bg-[#447c9a] transition-colors duration-200 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                    <svg id="dots" @click.stop.prevent="toggleDotsPopup" class="absolute right-4 w-6 h-6 z-10 rounded-xl hover:bg-secondary-normal-hover transition-colors duration-200 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
                 </router-link>
  
                 <Transition
@@ -200,11 +205,11 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
                             {{ t.nav.profile }}
                         </router-link>
-                        <router-link class="flex gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#406071] active:font-semibold" to="/">
+                        <router-link class="flex gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-secondary-normal active:font-semibold" to="/">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
                             {{ t.nav.addAccount }}
                         </router-link>
-                        <div @click="handleLogout" class="flex cursor-pointer gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-[#ef4444] active:font-semibold">
+                        <div @click="handleLogout" class="flex cursor-pointer gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-error-normal active:font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" /><path d="M15 12h-12l3 -3" /><path d="M6 15l-3 -3" /></svg>
                             {{ t.nav.logout }}
                         </div>

@@ -17,11 +17,12 @@
             const response = await fetch(`${apiBase}/events`);
             if (response.ok) {
                 const data = await response.json();
+                // Manejar tanto si la API devuelve un array directo como un objeto paginado
+                const items = Array.isArray(data) ? data : (data.data || []);
                 // Ordenar por ID descendente (más nuevos primero) y tomar los 10 primeros
-                rawEvents.value = data.sort((a, b) => b.id - a.id).slice(0, 10);
+                rawEvents.value = items.sort((a, b) => b.id - a.id).slice(0, 10);
             }
-        } catch (e) {
-            console.error("Error cargando eventos:", e);
+        } catch {
         } finally {
             loading.value = false;
         }
@@ -37,8 +38,8 @@
         <NavBar></NavBar>
         <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
             <PageHeader 
-                :title="t.home?.welcome || 'Bienvenido a TelamoNet'" 
-                :subtitle="t.home?.subtitle || 'Tu red social académica.'"
+                :title="t.home.welcome" 
+                :subtitle="t.home.subtitle"
                 noMargin
             />
     
