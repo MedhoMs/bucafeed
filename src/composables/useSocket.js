@@ -29,6 +29,12 @@ export function useSocket() {
         }
     }
 
+    function leaveRoom(roomId) {
+        if (socket.value?.connected) {
+            socket.value.emit('leave-room', roomId);
+        }
+    }
+
     function emit(event, roomId, data = {}) {
         if (socket.value?.connected) {
             socket.value.emit(event, roomId, data);
@@ -64,6 +70,7 @@ export function useSocket() {
         connected,
         connect,
         joinRoom,
+        leaveRoom,
         emit,
         on,
         off,
