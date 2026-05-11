@@ -29,8 +29,8 @@ const fetchCenters = async () => {
     const role = user.value?.role?.toLowerCase();
     if (role !== 'admin' && role !== 'administrador') return;
     try {
-        const data = await get('educational-centers');
-        centers.value = data;
+        const result = await get('educational-centers');
+        centers.value = Array.isArray(result) ? result : (result.data || []);
     } catch (error) {
         console.error('Error fetching centers:', error);
     }
@@ -64,7 +64,7 @@ const fetchMeetings = async (page = 1) => {
             meetings.value = dataArray.map(m => ({
                 id: m.id,
                 name: m.name,
-                teacher: m.teacher_name || (m.teacher ? m.teacher.name : t.value.meetings.unknown),
+                teacher: m.teacher ? m.teacher.name : (m.teacher_name || t.value.meetings.unknown),
                 group: m.educational_center ? m.educational_center.name : t.value.meetings.various,
                 schedule: m.schedule,
                 description: m.description
@@ -137,7 +137,7 @@ const meetingFields = computed(() => {
     const baseFields = [
         { id: 'name', type: 'text', label: t.value.meetings.form.title, placeholder: t.value.meetings.form.titlePlaceholder, required: true },
         { id: 'teacher_name', type: 'text', label: t.value.meetings.form.teacher, placeholder: t.value.meetings.form.teacherPlaceholder, required: true, full: false },
-        { id: 'schedule', type: 'time', label: t.value.meetings.form.schedule, placeholder: t.value.meetings.form.schedulePlaceholder, required: true, full: false },
+        { id: 'schedule', type: 'text', label: t.value.meetings.form.schedule, placeholder: t.value.meetings.form.schedulePlaceholder, required: true, full: false },
     ];
 
     if (user.value?.role?.toLowerCase().includes('admin')) {

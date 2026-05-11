@@ -48,7 +48,7 @@ const meetingName = computed(() => {
     if (route.params.name) {
         return route.params.group ? `${route.params.name} - ${route.params.group}` : route.params.name;
     }
-    return meeting.value?.name || t.meetings.chatTitle;
+    return meeting.value?.name || t.value.meetings.chatTitle;
 });
 </script>
 
@@ -60,7 +60,6 @@ const meetingName = computed(() => {
             <div
                 class="text-white flex flex-col flex-1 pt-5 px-5 lg:px-10 pb-6 overflow-hidden relative">
                 
-                <!-- Header con botón y título -->
                 <div class="flex items-center justify-between mb-4 gap-4 shrink-0">
                     <button @click="router.push({ name: 'meeting' })" 
                             class="flex items-center gap-2 cursor-pointer text-white/70 hover:text-white transition-colors group shrink-0">
@@ -77,7 +76,6 @@ const meetingName = computed(() => {
                         {{ meetingId ? `${meetingName}` : 'Chat de Reunión' }}
                     </p>
 
-                    <!-- Espaciador para mantener el título centrado -->
                     <div class="w-7 lg:w-16 xl:w-24 shrink-0"></div>
                 </div>
 
