@@ -170,13 +170,23 @@
             <PageHeader noMargin>
                 <template #left v-if="!loading && question">
                     <!-- Botón Volver -->
-                    <router-link to="/foro" class="inline-flex items-center gap-2 text-[#179cf0] hover:text-white transition-colors bg-[#179cf0]/10 hover:bg-[#179cf0]/20 px-6 py-3 rounded-full text-sm font-bold w-full md:w-auto justify-center">
+                    <router-link to="/foro" class="inline-flex items-center gap-2 text-white hover:bg-accent-normal-hover transition-colors bg-accent-normal px-6 py-3 rounded-xl text-sm font-bold w-full md:w-auto justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
-                        Volver al foro
+                        {{ t.forum.backToForum }}
                     </router-link>
                 </template>
                 <template #search>
                     <SearchBar class="w-full"></SearchBar>
+                </template>
+                <template #bottom>
+                    <div class="py-2">
+                        <Pagination 
+                            :current-page="pagination.currentPage" 
+                            :last-page="pagination.lastPage" 
+                            @change="handlePageChange"
+                            class="mt-0!"
+                        />
+                    </div>
                 </template>
             </PageHeader>
     
@@ -184,10 +194,10 @@
     
                 <div id="mainTrending" class="flex flex-col items-center mt-6 min-h-screen w-full">
                     
-                    <div v-if="apiLoading && !question" class="text-white/40 italic py-10 mt-20">Cargando hilo de discusión...</div>
+                    <div v-if="apiLoading && !question" class="text-white/40 italic py-10 mt-20">{{ t.forum.loadingThread }}</div>
                     
                     <div v-else-if="!apiLoading && !question" class="text-white/40 italic py-10 mt-20 text-2xl font-bold">
-                        La pregunta no existe o fue eliminada.
+                        {{ t.forum.notFound }}
                     </div>
     
                     <div v-else class="w-full">
@@ -206,7 +216,7 @@
                                     v-if="user?.role?.toLowerCase() === 'admin'"
                                     @click="handleDelete('question', question.id)"
                                     class="ml-auto p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
-                                    title="Eliminar pregunta (Admin)"
+                                    :title="t.forum.deleteQuestion"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                                 </button>
@@ -219,22 +229,22 @@
                             </div>
                             
                             <div v-if="question.tags && question.tags.length" class="mt-6 pt-4 border-t border-white/5 flex flex-wrap gap-2">
-                                 <div v-for="tag in question.tags" :key="tag.id" class="px-3 py-1 rounded-full bg-[#179cf0]/10 text-[#179cf0] border border-[#179cf0]/20 text-xs font-bold shadow-xs">
+                                 <div v-for="tag in question.tags" :key="tag.id" class="px-3 py-1 rounded-full bg-accent-normal text-white border border-white/10 text-xs font-bold shadow-xs">
                                       {{ tag.name }}
                                  </div>
                             </div>
                         </div>
-    
+
                         <!-- Sección de Respuestas -->
                         <h3 id="answers-title" class="text-xl font-bold text-white mb-6 flex items-center gap-2 px-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-400"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10" /><path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2" /></svg>
-                            Respuestas ({{ pagination.total }})
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-success-normal"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10" /><path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2" /></svg>
+                            {{ t.forum.responses }} ({{ pagination.total }})
                         </h3>
     
                         <div class="flex flex-col gap-4">
-                            <div v-if="loadingAnswers && answers.length === 0" class="text-white/40 italic py-10">Cargando respuestas...</div>
+                            <div v-if="loadingAnswers && answers.length === 0" class="text-white/40 italic py-10">{{ t.forum.loading }}</div>
                             <div v-else-if="answers.length === 0" class="text-center py-10 bg-black/20 border border-white/5 rounded-2xl">
-                                 <p class="text-white/40 italic">Aún no hay respuestas para esta pregunta. ¡Sé el primero en ayudar!</p>
+                                 <p class="text-white/40 italic">{{ t.forum.noReplies }}</p>
                             </div>
                             
                             <div v-for="ans in answers" :key="ans.id" class="bg-black/40 border border-white/5 rounded-xl p-5 flex gap-4 items-start relative hover:bg-black/60 transition-colors">
@@ -243,9 +253,14 @@
                                     <div class="flex justify-between items-center mb-2">
                                         <div class="flex flex-col">
                                             <span class="text-sm font-bold text-white">
-                                                {{ ans.user?.name ?? 'Usuario' }} <span v-if="ans.user?.last_name">{{ ans.user.last_name }}</span>
+                                                {{ ans.user?.name ?? t.forum.user }} <span v-if="ans.user?.last_name">{{ ans.user.last_name }}</span>
                                             </span>
-                                            <span class="text-[10px] text-white/30 uppercase tracking-widest mt-0.5">{{ ans.user?.role_name || ans.user?.role || 'Estudiante' }}</span>
+                                            <span class="text-[10px] text-white/30 uppercase tracking-widest mt-0.5">
+                                                {{ 
+                                                    ans.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                                    (ans.user?.role?.toLowerCase() === 'teacher' || ans.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
+                                                }}
+                                            </span>
                                         </div>
                                         <div class="flex items-center gap-3">
                                             <span class="text-xs text-white/30">{{ new Date(ans.created_at).toLocaleDateString() }}</span>
@@ -254,7 +269,7 @@
                                                 v-if="user?.role?.toLowerCase() === 'admin'"
                                                 @click="handleDelete('answer', ans.id)"
                                                 class="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
-                                                title="Eliminar respuesta (Admin)"
+                                                :title="t.forum.deleteAnswer"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                                             </button>
@@ -267,24 +282,13 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Pagination for Answers -->
-                        <Pagination 
-                            :current-page="pagination.currentPage" 
-                            :last-page="pagination.lastPage" 
-                            @change="handlePageChange"
-                        />
-    
                     </div>
                 </div>
             </section>
     
             <!-- El Formulario ahora está fixed en el bottom y centrado respecto al main content -->
             <div class="fixed bottom-0 right-0 left-0 lg:left-75 bg-[#0f2828] border-t border-white/10 px-4 lg:px-8 py-3 z-50 flex flex-col gap-2">
-                <EmojiPicker 
-                    v-model:show="showEmojiPicker"
-                    @select="onSelectEmoji"
-                />
+
     
                 <div class="flex items-end gap-3 w-full max-w-7xl mx-auto">
     
@@ -293,13 +297,18 @@
                         <textarea 
                             ref="textareaRef"
                             v-model="newAnswer"
-                            placeholder="Añadir comentario..." 
+                            :placeholder="t.forum.addComment" 
                             class="w-full bg-transparent text-white placeholder:text-white/40 focus:outline-none resize-none text-sm leading-relaxed max-h-32 min-h-[20px] self-center py-1 overflow-y-auto"
                             rows="1"
                         ></textarea>
                         
                         <!-- Icons inside the input -->
-                        <div class="flex items-center gap-3 shrink-0 text-white/50 self-end mb-0.5">
+                        <div class="flex items-center gap-3 shrink-0 text-white/50 self-end mb-0.5 relative">
+                            <EmojiPicker 
+                                v-model:show="showEmojiPicker"
+                                @select="onSelectEmoji"
+                                customClass="right-0"
+                            />
                             <button class="hover:text-white transition-colors" title="Emoji" @click="showEmojiPicker = !showEmojiPicker">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
                             </button>
@@ -311,7 +320,7 @@
                     <button 
                         @click="submitAnswer"
                         :disabled="(!newAnswer.trim() && !newImage) || submitting"
-                        class="w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-all bg-[#406071] text-white disabled:opacity-50 disabled:bg-white/10 hover:bg-[#447c9a] hover:scale-105 active:scale-95 mb-0.5"
+                        class="w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-all bg-secondary-normal text-white disabled:opacity-50 disabled:bg-white/10 hover:bg-secondary-normal-hover hover:scale-105 active:scale-95 mb-0.5"
                     >
                         <svg v-if="submitting" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>

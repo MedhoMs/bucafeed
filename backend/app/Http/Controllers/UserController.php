@@ -109,8 +109,8 @@ class UserController extends TemplateController
             'password'  => ($isUpdate ? 'nullable' : 'required') . '|string|min:8',
             'dni'       => ($isUpdate ? 'nullable' : 'required') . '|string|max:20|unique:users,dni,' . ($user->id ?? 'NULL'),
             'role'      => ($isUpdate ? 'nullable' : 'required') . '|string',
-            'profile_picture' => 'nullable|image|max:5120',
-            'banner'    => 'nullable|image|max:5120',
+            'profile_picture' => 'nullable|image|max:15360',
+            'banner'    => 'nullable|image|max:15360',
         ];
     }
 
@@ -169,14 +169,32 @@ class UserController extends TemplateController
      */
     public function apiStudentsByCenter(Request $request)
     {
+        $centerId = $request->query('center_id');
         $centerName = $request->query('center_name');
+        $groupId = $request->query('group_id');
         
-        if (!$centerName) {
+        if (!$centerId && !$centerName && !$groupId) {
             return response()->json([]);
         }
 
-        $students = User::where('institution_name', $centerName)
-            ->where('role', 'Student')
+        $query = User::query();
+
+        if ($groupId) {
+            $query->whereHas('groupsAsStudent', function($q) use ($groupId) {
+                $q->where('groups.id', $groupId);
+            });
+        } elseif ($centerId && $centerName) {
+            $query->where(function($q) use ($centerId, $centerName) {
+                $q->where('educational_center_id', $centerId)
+                  ->orWhereRaw('LOWER(institution_name) = ?', [strtolower($centerName)]);
+            });
+        } elseif ($centerId) {
+            $query->where('educational_center_id', $centerId);
+        } elseif ($centerName && strtolower($centerName) !== 'varios') {
+            $query->whereRaw('LOWER(institution_name) = ?', [strtolower($centerName)]);
+        }
+
+        $students = $query->whereIn('role', ['Student', 'student', 'Alumno', 'alumno', 'Estudiante', 'estudiante', 'estudiantes'])
             ->limit(20)
             ->get(['id', 'name', 'last_name', 'profile_picture']);
 

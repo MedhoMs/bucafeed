@@ -53,16 +53,16 @@ const changePage = (page) => {
 </script>
 
 <template>
-    <nav v-if="lastPage > 1" role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-center gap-1 sm:gap-2 mt-8">
+    <nav role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-center gap-1 sm:gap-2 mt-8">
         <!-- Previous Page Link -->
         <button 
             @click="changePage(currentPage - 1)"
             :disabled="currentPage === 1"
-            class="p-2 transition-colors group disabled:opacity-20 disabled:cursor-default"
-            :class="currentPage === 1 ? 'text-white/20' : 'text-white/60 hover:text-white'"
+            class="w-10 h-10 flex items-center justify-center transition-all disabled:opacity-10 disabled:cursor-default"
+            :class="currentPage === 1 ? 'text-white/20' : 'text-white/60 hover:text-white hover:bg-white/5 rounded-xl'"
             aria-label="Previous page"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </button>
 
         <!-- Pagination Elements -->
@@ -74,11 +74,11 @@ const changePage = (page) => {
                 v-else
                 @click="changePage(page)"
                 :aria-current="page === currentPage ? 'page' : undefined"
-                class="px-3.5 py-2 text-sm transition-all rounded-xl"
+                class="w-10 h-10 flex items-center justify-center text-sm transition-all rounded-2xl border border-white/10"
                 :class="[
                     page === currentPage 
-                        ? 'z-10 bg-[#0f2828] hover:bg-[#507a8f] text-white font-black border border-[#179cf0]/30' 
-                        : 'font-bold text-white/40 hover:text-white hover:bg-white/5'
+                        ? 'bg-[#0f2828] text-white font-black shadow-lg' 
+                        : 'bg-transparent font-bold text-white/40 hover:text-white hover:bg-white/5 border-transparent'
                 ]"
             >
                 {{ page }}
@@ -89,11 +89,11 @@ const changePage = (page) => {
         <button 
             @click="changePage(currentPage + 1)"
             :disabled="currentPage === lastPage"
-            class="p-2 transition-colors group disabled:opacity-20 disabled:cursor-default"
-            :class="currentPage === lastPage ? 'text-white/20' : 'text-white/60 hover:text-white'"
+            class="w-10 h-10 flex items-center justify-center transition-all disabled:opacity-10 disabled:cursor-default"
+            :class="currentPage === lastPage ? 'text-white/20' : 'text-white/60 hover:text-white hover:bg-white/5 rounded-xl'"
             aria-label="Next page"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </button>
     </nav>
 </template>

@@ -38,7 +38,7 @@ const activeSection = ref('account')
                         >
                             <div :class="[
                                 'w-10 h-10 rounded-lg flex items-center justify-center transition-colors',
-                                activeSection === section.id ? 'bg-[#406071] text-white' : 'bg-white/5 text-white/40 group-hover:text-white'
+                                activeSection === section.id ? 'bg-[#0f2828] text-white shadow-lg' : 'bg-white/5 text-white/40 group-hover:text-white'
                             ]">
                                 <span class="material-symbols-outlined">{{ section.icon }}</span>
                             </div>
@@ -46,7 +46,7 @@ const activeSection = ref('account')
                                 <p :class="['font-bold text-sm transition-colors', activeSection === section.id ? 'text-white' : 'text-white/60 group-hover:text-white']">
                                     {{ t.settings.sections[section.id]?.label || section.label }}
                                 </p>
-                                <p :class="['text-xs uppercase tracking-widest mt-0.5 transition-colors', activeSection === section.id ? 'text-white/50' : 'text-white/20 group-hover:text-white/40']">
+                                <p :class="['text-[9px] uppercase tracking-[0.2em] mt-0.5 transition-colors', activeSection === section.id ? 'text-white/40' : 'text-white/10 group-hover:text-white/30']">
                                     {{ t.settings.sections[section.id]?.desc || section.desc }}
                                 </p>
                             </div>
@@ -55,30 +55,30 @@ const activeSection = ref('account')
     
                     <!-- Content Area -->
                     <div class="lg:col-span-8">
-                        <div class="glass-card rounded-2xl p-8 lg:p-10 shadow-2xl">
+                        <div class="glass-card !bg-[#0f2828]/50 backdrop-blur-md rounded-3xl p-8 lg:p-12 shadow-2xl border border-white/5">
                             
                             <!-- Account Section -->
                             <section v-if="activeSection === 'account'" class="space-y-8">
-                                <div class="flex items-center gap-4 mb-8">
-                                    <h2 class="text-2xl font-bold">{{ t.settings.account.title }}</h2>
-                                    <div class="h-px flex-1 bg-white/10"></div>
+                                <div class="flex items-center gap-4 mb-10">
+                                    <h2 class="text-3xl font-black uppercase tracking-tighter">{{ t.settings.account.title }}</h2>
+                                    <div class="h-px flex-1 bg-brand-net/20"></div>
                                 </div>
                             </section>
     
                             <!-- Privacy Section -->
                             <section v-if="activeSection === 'privacy'" class="space-y-8">
-                                <div class="flex items-center gap-4 mb-8">
-                                    <h2 class="text-2xl font-bold">{{ t.settings.privacy.title }}</h2>
-                                    <div class="h-px flex-1 bg-white/10"></div>
+                                <div class="flex items-center gap-4 mb-10">
+                                    <h2 class="text-3xl font-black uppercase tracking-tighter">{{ t.settings.privacy.title }}</h2>
+                                    <div class="h-px flex-1 bg-brand-net/20"></div>
                                 </div>
                                 <p class="text-white/40 italic text-sm">{{ t.settings.privacy.coming_soon }}</p>
                             </section>
     
                             <!-- Language Section -->
                             <section v-if="activeSection === 'language'" class="space-y-8">
-                                <div class="flex items-center gap-4 mb-8">
-                                    <h2 class="text-2xl font-bold">{{ t.settings.language.title }}</h2>
-                                    <div class="h-px flex-1 bg-white/10"></div>
+                                <div class="flex items-center gap-4 mb-10">
+                                    <h2 class="text-3xl font-black uppercase tracking-tighter">{{ t.settings.language.title }}</h2>
+                                    <div class="h-px flex-1 bg-brand-net/20"></div>
                                 </div>
                                 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -86,37 +86,37 @@ const activeSection = ref('account')
                                         @click="setLocale('es')"
                                         :class="[
                                             'flex items-center justify-between p-6 rounded-2xl border transition-all cursor-pointer',
-                                            locale === 'es' ? 'bg-accent/10 border-accent text-white' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+                                            locale === 'es' ? 'bg-brand-net/10 border-brand-net text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
                                         ]"
                                     >
                                         <div class="flex items-center gap-4">
                                             <span class="text-2xl">🇪🇸</span>
                                             <span class="font-bold">{{ t.settings.language.spanish }}</span>
                                         </div>
-                                        <span v-if="locale === 'es'" class="material-symbols-outlined text-accent">check_circle</span>
+                                        <span v-if="locale === 'es'" class="material-symbols-outlined text-brand-net">check_circle</span>
                                     </button>
     
                                     <button 
                                         @click="setLocale('en')"
                                         :class="[
                                             'flex items-center justify-between p-6 rounded-2xl border transition-all cursor-pointer',
-                                            locale === 'en' ? 'bg-accent/10 border-accent text-white' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
+                                            locale === 'en' ? 'bg-brand-net/10 border-brand-net text-white shadow-xl' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10'
                                         ]"
                                     >
                                         <div class="flex items-center gap-4">
                                             <span class="text-2xl">🇺🇸</span>
                                             <span class="font-bold">{{ t.settings.language.english }}</span>
                                         </div>
-                                        <span v-if="locale === 'en'" class="material-symbols-outlined text-accent">check_circle</span>
+                                        <span v-if="locale === 'en'" class="material-symbols-outlined text-brand-net">check_circle</span>
                                     </button>
                                 </div>
                             </section>
     
                             <!-- Cookies Section -->
                             <section v-if="activeSection === 'cookies'" class="space-y-8">
-                                <div class="flex items-center gap-4 mb-8">
-                                    <h2 class="text-2xl font-bold">{{ t.settings.cookies.title }}</h2>
-                                    <div class="h-px flex-1 bg-white/10"></div>
+                                <div class="flex items-center gap-4 mb-10">
+                                    <h2 class="text-3xl font-black uppercase tracking-tighter">{{ t.settings.cookies.title }}</h2>
+                                    <div class="h-px flex-1 bg-brand-net/20"></div>
                                 </div>
                                 
                                 <p class="text-white/60 leading-relaxed text-sm">
@@ -135,7 +135,7 @@ const activeSection = ref('account')
                                             @click="toggleTracking"
                                             :class="[
                                                 'w-14 h-7 rounded-full transition-all relative shrink-0 cursor-pointer',
-                                                isTrackingEnabled ? 'bg-emerald-500' : 'bg-white/20'
+                                                isTrackingEnabled ? 'bg-brand-net' : 'bg-white/20'
                                             ]"
                                         >
                                             <div :class="[
@@ -147,7 +147,7 @@ const activeSection = ref('account')
                                 </div>
     
                                 <div class="flex flex-wrap gap-4 pt-4">
-                                    <button class="bg-accent hover:bg-accent/80 text-white text-xs font-black uppercase tracking-widest px-8 py-3.5 rounded-3xl transition-all cursor-pointer">
+                                    <button class="bg-brand-net hover:bg-brand-net/80 text-white text-xs font-black uppercase tracking-widest px-8 py-3.5 rounded-3xl transition-all cursor-pointer">
                                         {{ t.settings.cookies.accept_all }}
                                     </button>
                                     <button class="bg-white/5 hover:bg-white/10 text-white/60 text-xs font-black uppercase tracking-widest px-8 py-3.5 rounded-3xl transition-all border border-white/10 cursor-pointer">
@@ -158,9 +158,9 @@ const activeSection = ref('account')
     
                             <!-- Notifications Section -->
                             <section v-if="activeSection === 'notifications'" class="space-y-8">
-                                <div class="flex items-center gap-4 mb-8">
-                                    <h2 class="text-2xl font-bold">{{ t.settings.notifications.title }}</h2>
-                                    <div class="h-px flex-1 bg-white/10"></div>
+                                <div class="flex items-center gap-4 mb-10">
+                                    <h2 class="text-3xl font-black uppercase tracking-tighter">{{ t.settings.notifications.title }}</h2>
+                                    <div class="h-px flex-1 bg-brand-net/20"></div>
                                 </div>
                                 <p class="text-white/40 italic text-sm">{{ t.settings.notifications.coming_soon }}</p>
                             </section>

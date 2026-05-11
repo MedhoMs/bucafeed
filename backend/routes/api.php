@@ -16,6 +16,8 @@ use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\KahootController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\MeetingMessageController;
+use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\CycleController;
 
 Route::get('/health', function () {
@@ -110,6 +112,8 @@ Route::get('/test-cycles', function() {
 Route::post('/send-code', [AuthController::class, 'sendVerificationCode']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Devuelve los datos frescos del usuario autenticado (sincroniza el localStorage del frontend)
 Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
@@ -120,6 +124,114 @@ Route::get('/events', [EventController::class, 'apiIndex']);
 Route::post('/events/{id}/join', [EventController::class, 'apiJoin'])->middleware('auth:sanctum');
 Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name('api.event.image');
 Route::post('/events/generate-kahoot', [KahootController::class, 'generateQuestions']);
+Route::get('/test-gemini', function (\Illuminate\Http\Request $request) {
+    $apiKey = config('services.gemini.api_key');
+    if (!$apiKey) return response()->json(['error' => 'No API key'], 500);
+    try {
+        $client = new \GuzzleHttp\Client(['timeout' => 30]);
+        $response = $client->post("https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={$apiKey}", [
+            'json' => ['contents' => [['parts' => [['text' => 'Responde solo: OK']]]]],
+        ]);
+        $body = json_decode($response->getBody(), true);
+        return response()->json([
+            'status' => $response->getStatusCode(),
+            'response' => $body['candidates'][0]['content']['parts'][0]['text'] ?? 'no text',
+            'model' => 'gemini-2.5-flash v1',
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/meetings/{meeting}/kahoot', [KahootController::class, 'createSession']);
+    Route::get('/meetings/{meeting}/kahoot/active', [KahootController::class, 'getActiveSession']);
+    Route::post('/kahoot/{session}/start', [KahootController::class, 'startSession']);
+    Route::get('/kahoot/{session}/current', [KahootController::class, 'getCurrentQuestion']);
+    Route::post('/kahoot/{session}/answer', [KahootController::class, 'submitAnswer']);
+    Route::post('/kahoot/{session}/next', [KahootController::class, 'nextQuestion']);
+    Route::get('/kahoot/{session}/leaderboard', [KahootController::class, 'getLeaderboard']);
+    Route::get('/kahoot/{session}/results', [KahootController::class, 'getResults']);
+
+    // File Upload
+    Route::post('/upload', function (\Illuminate\Http\Request $request) {
+        $request->validate([
+            'file' => 'required|file|mimes:jpeg,png,gif,pdf|max:10240',
+        ]);
+        $file = $request->file('file');
+        $id = bin2hex(random_bytes(16));
+        $ext = $file->getClientOriginalExtension();
+        $filename = $id . '.' . $ext;
+        $file->storeAs('chat-uploads', $filename, 'public');
+        $baseUrl = rtrim(config('app.url'), '/');
+        return response()->json([
+            'url' => $baseUrl . '/api/serve-file/' . $filename,
+            'filename' => $file->getClientOriginalName(),
+        ]);
+    });
+
+    // Chat Messages
+    Route::get('/meetings/{meeting}/messages', function (\App\Models\Meeting $meeting) {
+        $messages = \App\Models\Message::where('meeting_id', $meeting->id)
+            ->with('user')
+            ->orderBy('created_at')
+            ->get()
+            ->map(function ($msg) {
+                return [
+                    'id' => $msg->id,
+                    'type' => $msg->message_type,
+                    'content' => $msg->content,
+                    'file_name' => $msg->file_name,
+                    'metadata' => $msg->metadata,
+                    'sender' => $msg->user_id,
+                    'user_name' => $msg->user ? $msg->user->name : 'Usuario',
+                    'created_at' => $msg->created_at,
+                ];
+            });
+        return response()->json($messages);
+    });
+    Route::post('/meetings/{meeting}/messages', function (\Illuminate\Http\Request $request, \App\Models\Meeting $meeting) {
+        $validated = $request->validate([
+            'content' => 'nullable|string',
+            'type' => 'required|string|in:text,image,pdf,kahoot',
+            'file_name' => 'nullable|string|max:255',
+            'metadata' => 'nullable|array',
+        ]);
+        $message = \App\Models\Message::create([
+            'meeting_id' => $meeting->id,
+            'user_id' => $request->user()->id,
+            'content' => $validated['content'] ?? '',
+            'message_type' => $validated['type'],
+            'file_name' => $validated['file_name'] ?? null,
+            'metadata' => $validated['metadata'] ?? null,
+        ]);
+        $message->load('user');
+        return response()->json([
+            'id' => $message->id,
+            'type' => $message->message_type,
+            'content' => $message->content,
+            'file_name' => $message->file_name,
+            'metadata' => $message->metadata,
+            'sender' => $message->user_id,
+            'user_name' => $message->user ? $message->user->name : 'Usuario',
+            'created_at' => $message->created_at,
+        ], 201);
+    });
+});
+
+// Serve uploaded files (no auth required for images/PDFs to display)
+Route::get('/serve-file/{filename}', function ($filename) {
+    try {
+        $path = storage_path('app/public/chat-uploads/' . basename($filename));
+        if (!file_exists($path)) {
+            return response()->json(['error' => 'File not found'], 404);
+        }
+        $mime = \Illuminate\Support\Facades\File::mimeType($path);
+        return response(file_get_contents($path))->header('Content-Type', $mime);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+});
+
 Route::get('/educational-centers', [EducationalCenterController::class, 'apiIndex']);
 Route::get('/meetings', [MeetingController::class, 'apiIndex']);
 Route::get('/meetings/{id}', [MeetingController::class, 'apiShow']);
@@ -127,9 +239,17 @@ Route::post('/meetings', [MeetingController::class, 'apiStore']);
 Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);
 Route::get('/all-cycles', [CycleController::class, 'apiIndex']);
 
+// Chat grupal (Mensajes)
+Route::post('/groups/{group}/mensajes', [MensajeController::class, 'store']);
+Route::get('/groups/{group}/mensajes', [MensajeController::class, 'index']);
+
+// Chat de Charlas (Meetings)
+Route::get('/meetings/{meeting}/mensajes', [MeetingMessageController::class, 'index']);
+Route::post('/meetings/{meeting}/mensajes', [MeetingMessageController::class, 'store']);
+
 // Usuarios
-Route::apiResource('users', UserController::class);
 Route::get('/users/by-center', [UserController::class, 'apiStudentsByCenter']);
+Route::apiResource('users', UserController::class);
 
 // Preguntas y Respuestas
 Route::apiResource('questions', QuestionController::class);

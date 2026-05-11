@@ -13,6 +13,13 @@
 
     const { isMobile } = useIsMobile()
 
+    // Helper para obtener el token CSRF de las cookies
+    const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+    }
+
     onMounted(() => {
         const loginButton = document.getElementById('loginButton');
         const emailInput  = document.getElementById('username-register-form');
@@ -22,7 +29,6 @@
         loginButton.addEventListener('click', async (e) => {
             e.preventDefault();
 
-            // Validación básica de campos vacíos
             if (emailInput.value === '' || passInput.value === '') {
                 errorMsg.textContent = 'Por favor, rellena todos los campos';
                 errorMsg.classList.remove('hidden');
@@ -31,12 +37,22 @@
 
             try {
                 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+                const base = apiBase.replace('/api', '');
+
+                // 1. Inicializar CSRF
+                await fetch(`${base}/sanctum/csrf-cookie`, { credentials: 'include' });
+
+                // 2. Obtener el token de la cookie XSRF-TOKEN
+                const csrfToken = getCookie('XSRF-TOKEN');
+
+                // 3. Login
                 const response = await fetch(`${apiBase}/login`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
+                        'X-XSRF-TOKEN': csrfToken // Requerido para peticiones de estado en Sanctum
                     },
                     body: JSON.stringify({
                         email:    emailInput.value,
@@ -47,18 +63,16 @@
                 const data = await response.json();
 
                 if (data.status === 'success') {
-                    // Guardar los datos del usuario en el estado
                     if (data.user && data.access_token) {
                         login(data.user, data.access_token);
                     }
                     router.push('/home');
                 } else {
-                    // Mostrar el mensaje de error que devuelve Laravel
                     errorMsg.textContent = data.message || 'Credenciales incorrectas';
                     errorMsg.classList.remove('hidden');
                 }
             } catch (error) {
-                console.error('Error de red:', error);
+                console.error('Error de login:', error);
                 errorMsg.textContent = 'Error de conexión, inténtalo de nuevo';
                 errorMsg.classList.remove('hidden');
             }
@@ -77,7 +91,7 @@
                 <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
                 <p class="text-center text-2xl lg:text-xl font-bold mt-7.5 ml-2.5 mr-2.5 text-shadow-md" id="eslogan">{{ t.login.eslogan }}</p>
             </div>
-            <form id="registerForm" class="relative flex flex-col justify-center lg:h-100 w-90 lg:w-100 p-2.5 pl-5 pr-5 bg-white rounded-bl-xl rounded-br-xl lg:rounded-tr-xl-none lg:rounded-tl-xl lg:rounded-br-none" method="post">
+            <form id="registerForm" class="relative flex flex-col justify-center lg:h-100 w-90 lg:w-100 p-2.5 pl-5 pr-5 bg-white text-black rounded-bl-xl rounded-br-xl lg:rounded-tr-xl-none lg:rounded-tl-xl lg:rounded-br-none" method="post">
 
                 <!-- Mensaje de error -->
                 <p id="loginErrorMsg" class="hidden absolute top-4 left-0 right-0 text-center text-red-500 text-sm font-semibold px-4"></p>
@@ -93,7 +107,11 @@
                     <ButtonForm :value="t.login.submit"></ButtonForm>
                 </button>
 
-                <RouterLink to="/" class="flex justify-center items-center text-sm gap-1 text-[#4a4a4a] font-bold mt-5 lg:mt-12.5 mb-2 lg:mb-0 transition-all duration-200 ease-in-out hover:brightness-200" id="redirect-login">
+                <RouterLink to="/recover-password">
+                    <p class="absolute left-22 lg:left-27 bottom-13 lg:bottom-17 text-sm text-gray-700 hover:text-black hover:underline transition-all duration-200 ease-in-out">¿Olvidaste la contraseña?</p>
+                </RouterLink>
+
+                <RouterLink to="/" class="flex justify-center items-center text-sm gap-1 text-[#4a4a4a] font-bold mt-12 lg:mt-12.5 mb-2 lg:mb-0 transition-all duration-200 ease-in-out hover:brightness-200" id="redirect-login">
                     <p class="lg:text-md text-sm">{{ t.login.noAccount }}</p>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

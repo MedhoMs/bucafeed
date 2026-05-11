@@ -24,9 +24,10 @@ mkdir -p storage/logs
 mkdir -p bootstrap/cache
 
 # Ajustar permisos si es necesario
-chmod -R 775 storage bootstrap/cache
-chmod -R 777 database
-chown -R www-data:www-data storage bootstrap/cache database 2>/dev/null || true
+echo "Ajustando permisos de directorios..."
+mkdir -p public/uploads
+chmod -R 777 storage bootstrap/cache database public/uploads
+chown -R www-data:www-data storage bootstrap/cache database public/uploads 2>/dev/null || true
 
 # Asegurar enlace simbólico de storage
 if [ ! -L "public/storage" ]; then
@@ -51,15 +52,15 @@ if [ ! -f "routes/api.php" ]; then
     php artisan install:api --no-interaction
 fi
 
-# 5. Instalar dependencias de Node solo si falta la carpeta node_modules o esta vacia
-if [ ! -d "node_modules" ] || [ -z "$(ls -A node_modules)" ]; then
-    echo "Instalando dependencias de Node..."
+# 5. Instalar dependencias de Node solo si falta la carpeta node_modules
+if [ ! -d "node_modules" ]; then
+    echo "Instalando dependencias de Node para el Admin Panel..."
     npm install
 fi
 
-# 6. Construir assets solo si no existe la carpeta build
+# 6. Construir assets si no existe la carpeta build (necesario para ver estilos del admin)
 if [ ! -d "public/build" ]; then
-    echo "Compilando assets por primera vez..."
+    echo "Compilando assets del Admin Panel (esto puede tardar un poco)..."
     npm run build
 fi
 
@@ -75,7 +76,8 @@ if [ "$APP_ENV" = "production" ]; then
 fi
 
 # 8. Run migrations (--force needed for production)
-php artisan migrate --force
+echo "Refrescando base de datos y cargando seeders..."
+php artisan migrate:fresh --seed --force
 
 # Iniciar Supervisor (que gestiona PHP y Nginx)
 echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."
