@@ -42,7 +42,7 @@ const endTime = computed(() => props.event.end_time?.substring(0, 5) || '00:00')
             
             <!-- Badge Participantes (Solo en modo public) -->
             <div v-if="mode === 'public'" class="absolute top-4 right-4 bg-black/40 px-2 py-1 rounded-lg border border-white/10 text-[9px] font-black text-white/60">
-                {{ t.events.cardJoined.replace('{count}', event.participants_count || 0) }}
+                {{ (t.events.cardJoined || '{count} join').replace('{count}', event.participants_count || 0) }}
             </div>
         </div>
 

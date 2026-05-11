@@ -5,5 +5,9 @@ export const events = {
     joined: "Te has unido al evento",
     left: "Has abandonado el evento",
     loginRequired: "Debes iniciar sesión para unirte a eventos",
-    networkError: "Error de red"
+    networkError: "Error de red",
+    cardJoined: "{count} participantes",
+    viewDetails: "Ver Detalles",
+    timeLabel: "Horario",
+    noDate: "Sin fecha"
 };

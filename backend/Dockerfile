@@ -27,7 +27,8 @@ RUN apk add --no-cache \
     zip \
     unzip \
     nodejs \
-    npm
+    npm \
+    netcat-openbsd
 
 # Install PHP extensions
 RUN docker-php-ext-install \
@@ -64,7 +65,7 @@ COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Install npm dependencies and build assets
-RUN npm ci && npm run build
+RUN npm install && npm run build
 
 # Make entrypoint executable
 RUN chmod +x /var/www/entrypoint.sh
