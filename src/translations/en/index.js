@@ -14,6 +14,7 @@ import { notifications } from './notifications';
 import { meetings } from './meetings';
 import { events } from './events';
 import { manager } from './manager';
+import { kahoot } from './kahoot';
 
 export const en = {
     nav,
@@ -31,5 +32,6 @@ export const en = {
     notifications,
     meetings,
     events,
-    manager
+    manager,
+    kahoot
 };

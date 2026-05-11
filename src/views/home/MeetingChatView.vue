@@ -38,7 +38,7 @@ const meetingName = computed(() => {
     if (route.params.name) {
         return route.params.group ? `${route.params.name} - ${route.params.group}` : route.params.name;
     }
-    return meeting.value?.name || t.meetings.chatTitle;
+    return meeting.value?.name || t.value.meetings.chatTitle;
 });
 </script>
 
@@ -50,7 +50,7 @@ const meetingName = computed(() => {
             <div
                 class="text-white flex flex-col flex-1 pt-5 px-5 lg:px-0 lg:pl-10 pb-6 overflow-hidden">
                 <p class="text-2xl lg:text-4xl text-center font-bold shrink-0 mb-4 px-16 lg:px-0">
-                    {{ meetingId ? `${meetingName}` : t.meetings.chatTitle }}
+                    {{ meetingId ? `${meetingName}` : t.value.meetings.chatTitle }}
                 </p>
                 <MeetingChatBar :meeting="meeting" class="flex-1 overflow-hidden" />
             </div>

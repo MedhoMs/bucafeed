@@ -36,9 +36,9 @@
         rawQuestions.value = rawQuestions.value.filter(q => q.id != id);
         try {
             await del(`questions/${id}`);
-            showToast({ msg: t.forum.deleted });
+            showToast({ msg: t.value.forum.deleted });
         } catch (e) {
-            showToast({ msg: t.forum.errorDelete, type: 'error' });
+            showToast({ msg: t.value.forum.errorDelete, type: 'error' });
         }
     };
 

@@ -80,7 +80,7 @@
 
     const handleJoin = async (event) => {
         if (!token.value) {
-            showToast({ msg: t.events.loginRequired, type: 'error' });
+            showToast({ msg: t.value.events.loginRequired, type: 'error' });
             return;
         }
         try {
@@ -93,13 +93,13 @@
                 // Actualizar el evento localmente
                 event.joined = data.joined;
                 event.participants_count = data.count;
-                showToast({ msg: event.joined ? t.events.joined : t.events.left });
+                showToast({ msg: event.joined ? t.value.events.joined : t.value.events.left });
             } else {
                 const data = await res.json();
                 showToast({ msg: data.message || 'Error', type: 'error' });
             }
         } catch (e) {
-            showToast({ msg: t.events.networkError, type: 'error' });
+            showToast({ msg: t.value.events.networkError, type: 'error' });
         }
     }
 

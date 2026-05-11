@@ -177,7 +177,7 @@ class UserController extends TemplateController
 
         $students = User::where('institution_name', $centerName)
             ->where('role', 'Student')
-            ->limit(20)
+            ->limit(100)
             ->get(['id', 'name', 'last_name', 'profile_picture']);
 
         return response()->json($students);

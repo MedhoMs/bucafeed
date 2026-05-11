@@ -27,8 +27,8 @@ const pagination = reactive({
 const fetchCenters = async () => {
     if (user.value?.role !== 'Admin') return;
     try {
-        const data = await get('educational-centers');
-        centers.value = data;
+        const result = await get('educational-centers');
+        centers.value = Array.isArray(result) ? result : (result.data || []);
     } catch (error) {
         console.error('Error fetching centers:', error);
     }
@@ -49,8 +49,8 @@ const fetchMeetings = async (page = 1) => {
             meetings.value = dataArray.map(m => ({
                 id: m.id,
                 name: m.name,
-                teacher: m.teacher ? m.teacher.name : (m.teacher_name || t.meetings.unknown),
-                group: m.educational_center ? m.educational_center.name : t.meetings.various,
+                teacher: m.teacher ? m.teacher.name : (m.teacher_name || t.value.meetings.unknown),
+                group: m.educational_center ? m.educational_center.name : t.value.meetings.various,
                 schedule: m.schedule,
                 description: m.description
             }));
@@ -107,17 +107,17 @@ const newMeeting = ref({
 
 const meetingFields = computed(() => {
     const baseFields = [
-        { id: 'name', type: 'text', label: t.meetings.form.title, placeholder: t.meetings.form.titlePlaceholder, required: true },
-        { id: 'teacher_name', type: 'text', label: t.meetings.form.teacher, placeholder: t.meetings.form.teacherPlaceholder, required: true, full: false },
-        { id: 'schedule', type: 'text', label: t.meetings.form.schedule, placeholder: t.meetings.form.schedulePlaceholder, required: true, full: false },
+        { id: 'name', type: 'text', label: t.value.meetings.form.title, placeholder: t.value.meetings.form.titlePlaceholder, required: true },
+        { id: 'teacher_name', type: 'text', label: t.value.meetings.form.teacher, placeholder: t.value.meetings.form.teacherPlaceholder, required: true, full: false },
+        { id: 'schedule', type: 'text', label: t.value.meetings.form.schedule, placeholder: t.value.meetings.form.schedulePlaceholder, required: true, full: false },
     ];
 
     if (user.value?.role === 'Admin') {
         baseFields.push({
             id: 'educational_center_id',
             type: 'select',
-            label: t.meetings.form.center,
-            placeholder: t.meetings.form.centerPlaceholder,
+            label: t.value.meetings.form.center,
+            placeholder: t.value.meetings.form.centerPlaceholder,
             required: true,
             options: centers.value.map(c => ({ id: c.id, name: c.name }))
         });
@@ -130,7 +130,7 @@ const meetingFields = computed(() => {
         });
     }
 
-    baseFields.push({ id: 'description', type: 'textarea', label: t.meetings.form.description, placeholder: t.meetings.form.descriptionPlaceholder, required: false });
+    baseFields.push({ id: 'description', type: 'textarea', label: t.value.meetings.form.description, placeholder: t.value.meetings.form.descriptionPlaceholder, required: false });
 
     return baseFields;
 });
