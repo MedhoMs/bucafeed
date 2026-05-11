@@ -50,7 +50,7 @@ defineEmits(['update:expandedGroup', 'update:confirmingDelete', 'openModal', 'de
             
             <div v-if="expandedGroup === g.id" class="px-5 pb-6 space-y-6 bg-black/10 border-t border-white/5 pt-5">
                 <div class="flex flex-wrap gap-2">
-                    <button v-for="a in [{t:'Cambiar Tutor', id:'tutor'}, {t:'Añadir Alumnos', id:'students'}, {t:'Asignar Materia', id:'subject'}]" :key="a.id" @click.stop="$emit('openModal', a.id, g)" class="text-[9px] font-black uppercase tracking-widest bg-white/5 hover:bg-[#406071] px-4 py-2 rounded-xl border border-white/5 transition-all cursor-pointer">
+                    <button v-for="a in [{t:'Nueva Charla', id:'meeting'}, {t:'Cambiar Tutor', id:'tutor'}, {t:'Añadir Alumnos', id:'students'}, {t:'Asignar Materia', id:'subject'}]" :key="a.id" @click.stop="$emit('openModal', a.id, g)" class="text-[9px] font-black uppercase tracking-widest bg-white/5 hover:bg-[#406071] px-4 py-2 rounded-xl border border-white/5 transition-all cursor-pointer">
                         {{ a.t }}
                     </button>
                 </div>

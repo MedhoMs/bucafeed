@@ -1,8 +1,14 @@
 <script setup>
 import { useRoute } from 'vue-router';
-import { ref, onMounted, nextTick, computed } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
+import { io } from 'socket.io-client';
 import { useTranslations } from '@/composables/useTranslations'
+import { useApi } from '@/composables/useApi';
+import { user } from '@/stores/auth';
 import TextChatBar from './TextChatBar.vue';
+
+const { get, post } = useApi();
+const socket = ref(null);
 
 const { t } = useTranslations()
 const route = useRoute()
@@ -23,32 +29,109 @@ const meetingTeacher = computed(() => {
     return route.params.teacher;
 });
 
-const messages = ref([
-    { content: 'Hola, ¿cómo estás?', type: 'text', sender: 'teacher' },
-    { content: 'Bien, gracias!', type: 'text', sender: 'student' },
-    { content: '¿Tienes alguna duda?', type: 'text', sender: 'teacher' },
-    { content: 'Sí, no entiendo el ejercicio 3', type: 'text', sender: 'student' },
-])
+const messages = ref([])
 
 const scrollToBottom = () => {
-    if (chatContainer.value) {
-        chatContainer.value.scrollTop = chatContainer.value.scrollHeight
-    }
+    nextTick(() => {
+        if (chatContainer.value) {
+            chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+        }
+    })
 }
 
+const fetchMessages = async () => {
+    if (!meetingId.value) return;
+    try {
+        const response = await get(`meetings/${meetingId.value}/mensajes`);
+        if (response && response.mensajes) {
+            messages.value = response.mensajes.map(m => ({
+                id: m.id,
+                content: m.contenido,
+                type: 'text',
+                sender: m.usuario.rol.toLowerCase().includes('profesor') || m.usuario.rol.toLowerCase().includes('teacher') ? 'teacher' : 'student',
+                userName: `${m.usuario.nombre} ${m.usuario.apellido}`,
+                userId: m.usuario.id,
+                timestamp: m.fecha_hora
+            }));
+            scrollToBottom();
+        }
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+    }
+};
+
 onMounted(() => {
-    scrollToBottom()
+    fetchMessages();
+
+    // Configuration Socket.io
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
+    socket.value = io(socketUrl);
+
+    socket.value.on('connect', () => {
+        console.log('Conectado al servidor de sockets');
+        socket.value.emit('join-room', `meeting_${meetingId.value}`, user.value?.id);
+    });
+
+    socket.value.on('receive-message', (data) => {
+        if (data.userId !== user.value?.id) {
+            messages.value.push({
+                content: data.message,
+                type: data.type || 'text',
+                sender: data.role.toLowerCase().includes('profesor') || data.role.toLowerCase().includes('teacher') ? 'teacher' : 'student',
+                userName: data.userName,
+                userId: data.userId,
+                fileName: data.fileName
+            });
+            scrollToBottom();
+        }
+    });
 })
 
+onUnmounted(() => {
+    if (socket.value) {
+        socket.value.disconnect();
+    }
+});
+
 async function handleSendMessage(msgObj) {
-    messages.value.push({
-        content: msgObj.content,
-        type: msgObj.type,
-        fileName: msgObj.fileName,
-        sender: 'student'
-    })
-    await nextTick()
-    scrollToBottom()
+    if (!user.value) return;
+
+    const role = user.value.role?.toLowerCase() || 'student';
+    const isTeacher = role.includes('profesor') || role.includes('teacher');
+    
+    try {
+        const response = await post(`meetings/${meetingId.value}/mensajes`, {
+            contenido: msgObj.content,
+            id_usuario: user.value.id
+        });
+
+        if (response) {
+            const newMessage = {
+                content: msgObj.content,
+                type: msgObj.type,
+                fileName: msgObj.fileName,
+                sender: isTeacher ? 'teacher' : 'student',
+                userName: `${user.value.name} ${user.value.last_name || ''}`,
+                userId: user.value.id
+            };
+            
+            messages.value.push(newMessage);
+
+            socket.value.emit('send-message', {
+                roomId: `meeting_${meetingId.value}`,
+                message: msgObj.content,
+                userId: user.value.id,
+                userName: `${user.value.name} ${user.value.last_name || ''}`,
+                role: role,
+                type: msgObj.type,
+                fileName: msgObj.fileName
+            });
+
+            scrollToBottom();
+        }
+    } catch (error) {
+        console.error('Error sending message:', error);
+    }
 }
 
 </script>
@@ -61,11 +144,11 @@ async function handleSendMessage(msgObj) {
                     <div
                         :class="[msg.sender === 'teacher' ? 'self-start' : 'self-end flex flex-col items-end', 'max-w-3/5 min-w-0']">
                         <p :class="[msg.sender === 'teacher' ? 'ml-2' : 'mr-2', 'mb-1 text-xs text-gray-400']">
-                            {{ msg.sender === 'teacher' ? (meetingId ? `${meetingTeacher}` : 'Profesor') : 'Alumno' }}
+                            {{ msg.userName || (msg.sender === 'teacher' ? (meetingId ? `${meetingTeacher}` : 'Profesor') : 'Alumno') }}
                         </p>
 
                         <div
-                            :class="[msg.sender === 'teacher' ? 'bg-[#1e2e38]' : 'bg-[#2a4a5a]', 'rounded-2xl p-4 text-white shadow-md w-full overflow-hidden']">
+                            :class="[msg.sender === 'teacher' ? 'bg-[#1e2e38]' : 'bg-[#2a4a5a]', 'rounded-2xl p-4 text-white shadow-md w-fit max-w-full overflow-hidden']">
                             <!-- Text Message -->
                             <p v-if="msg.type === 'text'" class="break-all whitespace-pre-wrap">{{ msg.content }}</p>
 
@@ -106,7 +189,6 @@ async function handleSendMessage(msgObj) {
 </template>
 
 <style scoped>
-/* Estilización básica del scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
 }
