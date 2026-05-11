@@ -9,20 +9,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('messages', function (Blueprint $table) {
-            $table->unsignedBigInteger('meeting_id')->nullable()->after('chat_id');
-            $table->string('message_type', 50)->default('text')->after('content');
-            $table->string('file_name')->nullable()->after('message_type');
-            $table->json('metadata')->nullable()->after('file_name');
-
-            $table->foreign('meeting_id')->references('id')->on('meetings')->onDelete('cascade');
+            if (!Schema::hasColumn('messages', 'message_type')) {
+                $table->string('message_type', 50)->default('text')->after('content');
+            }
+            if (!Schema::hasColumn('messages', 'file_name')) {
+                $table->string('file_name')->nullable()->after('message_type');
+            }
+            if (!Schema::hasColumn('messages', 'metadata')) {
+                $table->json('metadata')->nullable()->after('file_name');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('messages', function (Blueprint $table) {
-            $table->dropForeign(['meeting_id']);
-            $table->dropColumn(['meeting_id', 'message_type', 'file_name', 'metadata']);
+            $columns = [];
+            if (Schema::hasColumn('messages', 'message_type')) $columns[] = 'message_type';
+            if (Schema::hasColumn('messages', 'file_name')) $columns[] = 'file_name';
+            if (Schema::hasColumn('messages', 'metadata')) $columns[] = 'metadata';
+            if (!empty($columns)) $table->dropColumn($columns);
         });
     }
 };

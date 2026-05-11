@@ -14,7 +14,6 @@ class Message extends Model
         'meeting_id',
         'user_id',
         'group_id',
-        'meeting_id',
         'content',
         'message_type',
         'file_name',
@@ -43,10 +42,5 @@ class Message extends Model
     public function group()
     {
         return $this->belongsTo(Group::class);
-    }
-
-    public function meeting()
-    {
-        return $this->belongsTo(Meeting::class);
     }
 }
