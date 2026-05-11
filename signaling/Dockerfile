@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copiar solo los manifiestos primero → cachea deps si el código no cambia
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copiar el resto del código
 COPY . .

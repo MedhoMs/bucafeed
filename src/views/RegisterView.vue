@@ -327,7 +327,7 @@
                 <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
                 <p class="text-center text-lg lg:text-xl font-bold mt-7.5 text-shadow-md" id="eslogan">{{ t.register.eslogan }}{{ t.nav.website }}</p>
             </div>
-            <form id="registerForm" class="relative flex flex-col justify-center lg:h-100 w-90 lg:w-100 p-2.5 pl-5 pr-5 bg-white rounded-br-xl rounded-bl-xl lg:rounded-br-xl lg:rounded-tr-xl lg:rounded-bl-none" method="post">
+            <form id="registerForm" class="relative flex flex-col justify-center lg:h-100 w-90 lg:w-100 p-2.5 pl-5 pr-5 bg-white text-black rounded-br-xl rounded-bl-xl lg:rounded-br-xl lg:rounded-tr-xl lg:rounded-bl-none" method="post">
                 
                 <section id="allRolesForm" class="forms flex flex-col mb-32">
                     <label class="font-bold lg:mt-7.5" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
