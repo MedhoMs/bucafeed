@@ -8,8 +8,8 @@ export function useSocket() {
     function connect(roomId, userData = null) {
         if (socket.value?.connected) return;
 
-        const host = window.location.hostname;
-        socket.value = io(`http://${host}:3000`);
+        const socketUrl = import.meta.env.VITE_SOCKET_URL || `//${window.location.hostname}:3000`;
+        socket.value = io(socketUrl);
 
         socket.value.on('connect', () => {
             connected.value = true;

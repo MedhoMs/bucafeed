@@ -32,8 +32,6 @@
         const centerName = props.meeting?.educational_center?.name || groupName.value;
         const groupId = props.meeting?.group_id;
         
-        console.log('Fetching students for center/group:', { centerId, centerName, groupId });
-        
         if (centerId || centerName || groupId) {
             try {
                 let url = `users/by-center?`;
@@ -46,7 +44,6 @@
                 }
 
                 const response = await get(url);
-                console.log('Students received:', response);
                 students.value = response || [];
             } catch (error) {
                 console.error('Error fetching students:', error);
