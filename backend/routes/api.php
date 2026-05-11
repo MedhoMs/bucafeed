@@ -16,6 +16,7 @@ use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\KahootController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\MeetingMessageController;
 use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\CycleController;
 
@@ -133,8 +134,8 @@ Route::post('/groups/{group}/mensajes', [MensajeController::class, 'store']);
 Route::get('/groups/{group}/mensajes', [MensajeController::class, 'index']);
 
 // Chat de Charlas (Meetings)
-Route::get('/meetings/{meeting}/mensajes', [\App\Http\Controllers\MeetingMessageController::class, 'index']);
-Route::post('/meetings/{meeting}/mensajes', [\App\Http\Controllers\MeetingMessageController::class, 'store']);
+Route::get('/meetings/{meeting}/mensajes', [MeetingMessageController::class, 'index']);
+Route::post('/meetings/{meeting}/mensajes', [MeetingMessageController::class, 'store']);
 
 // Usuarios
 Route::apiResource('users', UserController::class);

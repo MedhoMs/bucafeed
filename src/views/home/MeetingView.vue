@@ -64,8 +64,8 @@ const fetchMeetings = async (page = 1) => {
             meetings.value = dataArray.map(m => ({
                 id: m.id,
                 name: m.name,
-                teacher: m.teacher ? m.teacher.name : (m.teacher_name || t.meetings.unknown),
-                group: m.educational_center ? m.educational_center.name : t.meetings.various,
+                teacher: m.teacher_name || (m.teacher ? m.teacher.name : t.value.meetings.unknown),
+                group: m.educational_center ? m.educational_center.name : t.value.meetings.various,
                 schedule: m.schedule,
                 description: m.description
             }));
@@ -112,6 +112,11 @@ watch(availableMeetings, (newList) => {
 const showModal = ref(false);
 const showDeleteModal = ref(false);
 const meetingToDelete = ref(null);
+const toast = ref({ show: false, msg: '', type: 'success' });
+const showToast = (msg, type = 'success') => {
+    toast.value = { show: true, msg, type };
+    setTimeout(() => { toast.value.show = false; }, 3000);
+};
 
 const canCreateMeeting = computed(() => {
     if (!user.value) return false;
@@ -130,17 +135,17 @@ const newMeeting = ref({
 
 const meetingFields = computed(() => {
     const baseFields = [
-        { id: 'name', type: 'text', label: 'Título de la Charla', placeholder: 'Ej: Dudas sobre PHP', required: true },
-        { id: 'teacher_name', type: 'text', label: 'Profesor (Editable)', placeholder: 'Tu nombre', required: true, full: false },
-        { id: 'schedule', type: 'time', label: 'Horario', placeholder: 'Ej: 10:00', required: true, full: false },
+        { id: 'name', type: 'text', label: t.value.meetings.form.title, placeholder: t.value.meetings.form.titlePlaceholder, required: true },
+        { id: 'teacher_name', type: 'text', label: t.value.meetings.form.teacher, placeholder: t.value.meetings.form.teacherPlaceholder, required: true, full: false },
+        { id: 'schedule', type: 'time', label: t.value.meetings.form.schedule, placeholder: t.value.meetings.form.schedulePlaceholder, required: true, full: false },
     ];
 
     if (user.value?.role?.toLowerCase().includes('admin')) {
         baseFields.push({
             id: 'educational_center_id',
             type: 'select',
-            label: t.meetings.form.center,
-            placeholder: t.meetings.form.centerPlaceholder,
+            label: t.value.meetings.form.center,
+            placeholder: t.value.meetings.form.centerPlaceholder,
             required: true,
             options: centers.value.map(c => ({ id: c.id, name: c.name }))
         });
@@ -148,12 +153,12 @@ const meetingFields = computed(() => {
         baseFields.push({
             id: 'info_center',
             type: 'info',
-            label: 'Centro',
-            value: user.value?.institution_name || 'Mi Centro'
+            label: t.value.meetings.form.center,
+            value: user.value?.institution_name || t.value.meetings.various
         });
     }
 
-    baseFields.push({ id: 'description', type: 'textarea', label: t.meetings.form.description, placeholder: t.meetings.form.descriptionPlaceholder, required: false });
+    baseFields.push({ id: 'description', type: 'textarea', label: t.value.meetings.form.description, placeholder: t.value.meetings.form.descriptionPlaceholder, required: false });
 
     return baseFields;
 });
@@ -184,7 +189,7 @@ const saveMeeting = async () => {
                 name: newMeeting.value.name,
                 teacher_id: user.value.id,
                 teacher_name: newMeeting.value.teacher_name,
-                educational_center_id: Number(centerId),
+                educational_center_id: centerId ? Number(centerId) : null,
                 schedule: newMeeting.value.schedule,
                 description: newMeeting.value.description
             };
@@ -192,11 +197,13 @@ const saveMeeting = async () => {
             const response = await apiPost('meetings', payload);
             
             if (response) {
+                showToast(t.value.meetings.success || 'Charla creada correctamente', 'success')
                 await fetchMeetings();
                 closeModal();
             }
         } catch (error) {
             console.error('Error saving meeting:', error);
+            showToast('Error al crear la charla', 'error')
         }
     }
 };
@@ -216,11 +223,13 @@ const deleteMeeting = async () => {
         meetingToDelete.value = null;
 
         await apiDelete(`meetings/${id}`);
+        showToast('Charla eliminada', 'success')
         
         // Recargar la lista para sincronizar con el servidor
         await fetchMeetings();
     } catch (error) {
         console.error('Error deleting meeting:', error);
+        showToast('Error al eliminar', 'error')
         // Si falló, volver a cargar la lista por si acaso
         await fetchMeetings();
     }
@@ -231,6 +240,11 @@ const deleteMeeting = async () => {
 <template>
     <div class="min-h-screen">
         <NavBar></NavBar>
+
+        <div v-if="toast.show" :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-xl shadow-2xl font-semibold text-sm', toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white']">
+            {{ toast.msg }}
+        </div>
+
         <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
             <PageHeader :title="t.meetings.title" :subtitle="t.meetings.subtitle">
                 <template #search>
@@ -262,8 +276,8 @@ const deleteMeeting = async () => {
     
                 <div v-if="filteredMeetings.length === 0"
                     class="w-fit bg-white/5 backdrop-blur-md p-10 mx-auto rounded-3xl shadow-xl border border-white/10 text-center">
-                    <h3 class="text-2xl font-bold text-white mb-2">No se han encontrado reuniones</h3>
-                    <p v-if="!user" class="text-white/60">Debes iniciar sesión para ver tus charlas.</p>
+                    <h3 class="text-2xl font-bold text-white mb-2">{{ t.meetings.noMeetings || 'No se han encontrado reuniones' }}</h3>
+                    <p v-if="!user" class="text-white/60">{{ t.meetings.loginRequired || 'Debes iniciar sesión para ver tus charlas.' }}</p>
                 </div>
             </section>
     
