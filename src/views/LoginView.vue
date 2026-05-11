@@ -93,6 +93,10 @@
                     <ButtonForm :value="t.login.submit"></ButtonForm>
                 </button>
 
+                <RouterLink to="/recover-password">
+                    <p class="absolute left-27 bottom-17 text-sm text-gray-700 hover:text-black hover:underline transition-all duration-200 ease-in-out">¿Olvidaste la contraseña?</p>
+                </RouterLink>
+
                 <RouterLink to="/" class="flex justify-center items-center text-sm gap-1 text-[#4a4a4a] font-bold mt-5 lg:mt-12.5 mb-2 lg:mb-0 transition-all duration-200 ease-in-out hover:brightness-200" id="redirect-login">
                     <p class="lg:text-md text-sm">{{ t.login.noAccount }}</p>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

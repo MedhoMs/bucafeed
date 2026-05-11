@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/home/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
+import GetPasswordView from "../views/GetPasswordView.vue";
 import ProfileView from "../views/ProfileView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import QuestionView from "../views/home/QuestionView.vue";
@@ -39,6 +40,11 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: LoginView
+        },
+        {
+            path: '/recover-password',
+            name: 'recover-password',
+            component: GetPasswordView
         },
         {
             path: '/profile/:id?',
@@ -105,7 +111,7 @@ const router = createRouter({
 
 // Navigation Guard
 router.beforeEach((to, from, next) => {
-    const publicPages = ['/login', '/'];
+    const publicPages = ['/login', '/', '/recover-password'];
     const authRequired = !publicPages.includes(to.path);
     const loggedIn = user.value;
 

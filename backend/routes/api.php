@@ -110,6 +110,8 @@ Route::get('/test-cycles', function() {
 Route::post('/send-code', [AuthController::class, 'sendVerificationCode']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Devuelve los datos frescos del usuario autenticado (sincroniza el localStorage del frontend)
 Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
