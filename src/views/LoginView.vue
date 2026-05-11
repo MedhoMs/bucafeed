@@ -13,6 +13,13 @@
 
     const { isMobile } = useIsMobile()
 
+    // Helper para obtener el token CSRF de las cookies
+    const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+    }
+
     onMounted(() => {
         const loginButton = document.getElementById('loginButton');
         const emailInput  = document.getElementById('username-register-form');
@@ -22,7 +29,6 @@
         loginButton.addEventListener('click', async (e) => {
             e.preventDefault();
 
-            // Validación básica de campos vacíos
             if (emailInput.value === '' || passInput.value === '') {
                 errorMsg.textContent = 'Por favor, rellena todos los campos';
                 errorMsg.classList.remove('hidden');
@@ -31,12 +37,22 @@
 
             try {
                 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+                const base = apiBase.replace('/api', '');
+
+                // 1. Inicializar CSRF
+                await fetch(`${base}/sanctum/csrf-cookie`, { credentials: 'include' });
+
+                // 2. Obtener el token de la cookie XSRF-TOKEN
+                const csrfToken = getCookie('XSRF-TOKEN');
+
+                // 3. Login
                 const response = await fetch(`${apiBase}/login`, {
                     method: 'POST',
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
+                        'X-XSRF-TOKEN': csrfToken // Requerido para peticiones de estado en Sanctum
                     },
                     body: JSON.stringify({
                         email:    emailInput.value,
@@ -47,18 +63,16 @@
                 const data = await response.json();
 
                 if (data.status === 'success') {
-                    // Guardar los datos del usuario en el estado
                     if (data.user && data.access_token) {
                         login(data.user, data.access_token);
                     }
                     router.push('/home');
                 } else {
-                    // Mostrar el mensaje de error que devuelve Laravel
                     errorMsg.textContent = data.message || 'Credenciales incorrectas';
                     errorMsg.classList.remove('hidden');
                 }
             } catch (error) {
-                console.error('Error de red:', error);
+                console.error('Error de login:', error);
                 errorMsg.textContent = 'Error de conexión, inténtalo de nuevo';
                 errorMsg.classList.remove('hidden');
             }
