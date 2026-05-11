@@ -16,6 +16,8 @@ use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\KahootController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\MeetingMessageController;
+use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\CycleController;
 
 Route::get('/health', function () {
@@ -110,6 +112,8 @@ Route::get('/test-cycles', function() {
 Route::post('/send-code', [AuthController::class, 'sendVerificationCode']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Devuelve los datos frescos del usuario autenticado (sincroniza el localStorage del frontend)
 Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
@@ -234,6 +238,14 @@ Route::get('/meetings/{id}', [MeetingController::class, 'apiShow']);
 Route::post('/meetings', [MeetingController::class, 'apiStore']);
 Route::delete('/meetings/{id}', [MeetingController::class, 'destroy']);
 Route::get('/all-cycles', [CycleController::class, 'apiIndex']);
+
+// Chat grupal (Mensajes)
+Route::post('/groups/{group}/mensajes', [MensajeController::class, 'store']);
+Route::get('/groups/{group}/mensajes', [MensajeController::class, 'index']);
+
+// Chat de Charlas (Meetings)
+Route::get('/meetings/{meeting}/mensajes', [MeetingMessageController::class, 'index']);
+Route::post('/meetings/{meeting}/mensajes', [MeetingMessageController::class, 'store']);
 
 // Usuarios
 Route::get('/users/by-center', [UserController::class, 'apiStudentsByCenter']);

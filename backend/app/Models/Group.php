@@ -42,4 +42,9 @@ class Group extends Model
             ->withPivot('user_id')
             ->withTimestamps();
     }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
 }

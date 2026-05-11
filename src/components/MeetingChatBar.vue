@@ -8,7 +8,6 @@ import { user as authUser } from '@/stores/auth'
 import TextChatBar from './TextChatBar.vue';
 import KahootMessage from './KahootMessage.vue';
 
-const { t } = useTranslations()
 const { get, post } = useApi()
 const route = useRoute()
 const chatContainer = ref(null)
@@ -29,11 +28,9 @@ function scrollToBottom() {
     })
 }
 
-// ── Message Persistence ──
 async function loadMessages() {
     try {
         const data = await get(`meetings/${meetingId.value}/messages`)
-        const myId = authUser.value?.id
         const loaded = (data || []).map(m => ({
             id: m.id,
             type: m.type,
@@ -48,49 +45,35 @@ async function loadMessages() {
             timePerQuestion: m.metadata?.time_per_question || 30,
             currentQuestionIndex: m.metadata?.current_question_index || 0,
         }))
-        // For kahoot messages, check actual session status
         for (const msg of loaded) {
             if (msg.type === 'kahoot' && msg.sessionId) {
                 try {
                     const sessionData = await get(`kahoot/${msg.sessionId}/current`)
                     if (sessionData.finished) { msg.status = 'finished' }
                     else if (sessionData.question) { msg.status = 'playing'; msg.totalQuestions = sessionData.total_questions || msg.totalQuestions }
-                } catch { /* session might not exist yet */ }
+                } catch { /* */ }
             }
         }
         messages.value = loaded
         scrollToBottom()
-    } catch { /* no messages */ }
+    } catch { /* */ }
 }
 
 async function saveMessage(type, content, extra = {}) {
     try {
-        const payload = {
-            type,
-            content: content || '',
-            file_name: extra.fileName || null,
-            metadata: extra.metadata || null,
-        }
+        const payload = { type, content: content || '', file_name: extra.fileName || null, metadata: extra.metadata || null }
         const result = await post(`meetings/${meetingId.value}/messages`, payload)
         const msg = {
-            id: result.id,
-            type: result.type || type,
-            content: result.content || content,
-            file_name: result.file_name || extra.fileName || null,
-            metadata: result.metadata || extra.metadata || null,
-            sender: result.sender,
-            userName: result.user_name || authUser.value?.name || 'Yo',
-            status: extra.metadata?.status || 'pending',
-            sessionId: extra.metadata?.session_id,
-            totalQuestions: extra.metadata?.total_questions || 0,
-            timePerQuestion: extra.metadata?.time_per_question || 30,
+            id: result.id, type: result.type || type, content: result.content || content,
+            file_name: result.file_name || extra.fileName || null, metadata: result.metadata || extra.metadata || null,
+            sender: result.sender, userName: result.user_name || authUser.value?.name || 'Yo',
+            status: extra.metadata?.status || 'pending', sessionId: extra.metadata?.session_id,
+            totalQuestions: extra.metadata?.total_questions || 0, timePerQuestion: extra.metadata?.time_per_question || 30,
             currentQuestionIndex: extra.metadata?.current_question_index || 0,
         }
         messages.value.push(msg)
         scrollToBottom()
-        // Broadcast via socket
-        const roomId = `meeting-${meetingId.value}`
-        emitSocket('chat:message', roomId, msg)
+        emitSocket('chat:message', `meeting-${meetingId.value}`, msg)
         return msg
     } catch (err) { console.error('Error saving message:', err) }
 }
@@ -112,7 +95,7 @@ async function handleSendMessage(msgObj) {
     }
 }
 
-// ── Kahoot Creator ──
+// Kahoot Creator
 const showKahootCreator = ref(false)
 const pdfFile = ref(null)
 const numQuestions = ref(10)
@@ -122,23 +105,16 @@ const title = ref('')
 const generating = ref(false)
 const errorMsg = ref('')
 
-function toggleKahootCreator() {
-    showKahootCreator.value = !showKahootCreator.value
-    errorMsg.value = ''
-}
-
+function toggleKahootCreator() { showKahootCreator.value = !showKahootCreator.value; errorMsg.value = '' }
 function handleFileChange(e) {
-    const file = e.target.files[0]
-    if (!file) return
+    const file = e.target.files[0]; if (!file) return
     if (file.type !== 'application/pdf') { errorMsg.value = 'Solo PDF'; return }
-    pdfFile.value = file
-    errorMsg.value = ''
+    pdfFile.value = file; errorMsg.value = ''
 }
 
 async function generateQuestions() {
     if (!pdfFile.value) { errorMsg.value = 'Selecciona un PDF'; return }
-    generating.value = true
-    errorMsg.value = ''
+    generating.value = true; errorMsg.value = ''
     try {
         const reader = new FileReader()
         const base64 = await new Promise((resolve, reject) => {
@@ -146,16 +122,10 @@ async function generateQuestions() {
             reader.onerror = reject
             reader.readAsDataURL(pdfFile.value)
         })
-        const response = await post('events/generate-kahoot', {
-            pdf_base64: base64,
-            num_questions: numQuestions.value,
-        })
+        const response = await post('events/generate-kahoot', { pdf_base64: base64, num_questions: numQuestions.value })
         questions.value = response.questions.map(q => ({ ...q, answers: q.answers.slice(0, 4) }))
-    } catch (err) {
-        errorMsg.value = err.message || 'Error al generar preguntas'
-    } finally {
-        generating.value = false
-    }
+    } catch (err) { errorMsg.value = err.message || 'Error al generar preguntas' }
+    finally { generating.value = false }
 }
 
 function removeQuestion(i) { questions.value.splice(i, 1) }
@@ -164,49 +134,29 @@ function addQuestion() { questions.value.push({ question: '', answers: ['', '', 
 
 async function sendKahoot() {
     if (questions.value.length === 0) return
-    errorMsg.value = ''
     try {
         const session = await post(`meetings/${meetingId.value}/kahoot`, {
-            title: title.value || 'Kahoot',
-            questions: questions.value,
-            time_per_question: timePerQuestion.value,
+            title: title.value || 'Kahoot', questions: questions.value, time_per_question: timePerQuestion.value,
         })
-        await saveMessage('kahoot', '', {
-            metadata: {
-                session_id: session.id,
-                status: 'pending',
-                total_questions: questions.value.length,
-                time_per_question: timePerQuestion.value,
-            }
-        })
-        showKahootCreator.value = false
-        questions.value = []
-        pdfFile.value = null
+        await saveMessage('kahoot', '', { metadata: { session_id: session.id, status: 'pending', total_questions: questions.value.length, time_per_question: timePerQuestion.value } })
+        showKahootCreator.value = false; questions.value = []; pdfFile.value = null
     } catch (err) { errorMsg.value = err.message }
 }
 
-// ── Kahoot Answer Tracking ──
-const kahootPlayerCount = ref({}) // { sessionId: count }
-const kahootAnsweredCount = ref({}) // { sessionId: count }
+const kahootAnsweredCount = ref({})
 
-// ── Kahoot Game Actions ──
 async function startKahoot(sessionId) {
     try {
         const data = await post(`kahoot/${sessionId}/start`)
         kahootAnsweredCount.value[sessionId] = 0
         const msg = messages.value.find(m => m.sessionId === sessionId)
-        if (msg) {
-            msg.status = 'playing'
-            msg.totalQuestions = data.total_questions
-        }
-        const roomId = `meeting-${meetingId.value}`
-        emitSocket('kahoot:started', roomId, { sessionId, meetingId: meetingId.value })
+        if (msg) { msg.status = 'playing'; msg.totalQuestions = data.total_questions }
+        emitSocket('kahoot:started', `meeting-${meetingId.value}`, { sessionId })
     } catch (err) { errorMsg.value = err.message }
 }
 
 function handleKahootAnswer(sessionId) {
-    const roomId = `meeting-${meetingId.value}`
-    emitSocket('kahoot:player-answered', roomId, { sessionId, userId: authUser.value?.id })
+    emitSocket('kahoot:player-answered', `meeting-${meetingId.value}`, { sessionId, userId: authUser.value?.id })
 }
 
 async function nextQuestion(sessionId) {
@@ -214,17 +164,11 @@ async function nextQuestion(sessionId) {
         const data = await post(`kahoot/${sessionId}/next`)
         const msg = messages.value.find(m => m.sessionId === sessionId)
         const roomId = `meeting-${meetingId.value}`
-        if (data.finished) {
-            if (msg) msg.status = 'finished'
-            emitSocket('kahoot:ended', roomId, { sessionId })
-        } else {
-            if (msg) msg.currentQuestionIndex = data.question.index
-            emitSocket('kahoot:next-question', roomId, { sessionId, questionIndex: data.question.index })
-        }
+        if (data.finished) { if (msg) msg.status = 'finished'; emitSocket('kahoot:ended', roomId, { sessionId }) }
+        else { if (msg) msg.currentQuestionIndex = data.question.index; emitSocket('kahoot:next-question', roomId, { sessionId, questionIndex: data.question.index }) }
     } catch (err) { console.error(err) }
 }
 
-// ── Socket ──
 function setupSocket() {
     const roomId = `meeting-${meetingId.value}`
     const userData = authUser.value ? { userId: authUser.value.id, username: authUser.value.name, role: authUser.value.role } : null
@@ -232,8 +176,7 @@ function setupSocket() {
 
     onSocket('chat:message', (data) => {
         if (data.sender !== authUser.value?.id && !messages.value.find(m => m.id === data.id)) {
-            messages.value.push(data)
-            scrollToBottom()
+            messages.value.push(data); scrollToBottom()
         }
     })
     onSocket('kahoot:started', async (data) => {
@@ -249,23 +192,16 @@ function setupSocket() {
         if (msg) { msg.status = 'finished' } else { await loadMessages() }
     })
     onSocket('kahoot:player-answered', (data) => {
-        if (data.sessionId) {
-            kahootAnsweredCount.value[data.sessionId] = (kahootAnsweredCount.value[data.sessionId] || 0) + 1
-        }
+        if (data.sessionId) { kahootAnsweredCount.value[data.sessionId] = (kahootAnsweredCount.value[data.sessionId] || 0) + 1 }
     })
 }
 
-// ── Lifecycle ──
-onMounted(async () => {
-    await loadMessages()
-    setupSocket()
-})
+onMounted(async () => { await loadMessages(); setupSocket() })
 onUnmounted(() => disconnectSocket())
 </script>
 
 <template>
     <div class="flex flex-col w-full h-full overflow-hidden">
-        <!-- Messages -->
         <div ref="chatContainer" class="flex flex-col flex-1 min-h-0 pb-4 pr-2 overflow-y-auto scroll-smooth">
             <div class="flex flex-col justify-end min-h-max space-y-4 pt-4">
                 <div v-if="errorMsg" class="bg-red-500/20 border border-red-500 text-red-200 p-3 rounded-lg text-sm">
@@ -274,26 +210,18 @@ onUnmounted(() => disconnectSocket())
                 </div>
 
                 <template v-for="(msg, index) in messages" :key="msg.id || index">
-                    <!-- Kahoot -->
                     <div v-if="msg.type === 'kahoot'" class="self-start max-w-3/4 min-w-0 w-full">
                         <p class="text-xs text-gray-400 mb-1 ml-2">{{ msg.userName || 'Profesor' }}</p>
                         <div class="bg-gradient-to-br from-[#1f5252] to-[#0f2828] rounded-2xl p-5 text-white shadow-md border border-[#2a6a6a]">
                             <KahootMessage
-                                :sessionId="msg.sessionId"
-                                :status="msg.status"
-                                :totalQuestions="msg.totalQuestions"
-                                :timePerQuestion="msg.timePerQuestion"
-                                :questionIndex="msg.currentQuestionIndex || 0"
-                                :isTeacher="canCreateKahoot"
-                                :playersAnswered="kahootAnsweredCount[msg.sessionId] || 0"
-                                @start="startKahoot(msg.sessionId)"
-                                @next="nextQuestion(msg.sessionId)"
-                                @answered="handleKahootAnswer(msg.sessionId)"
-                            />
+                                :sessionId="msg.sessionId" :status="msg.status" :totalQuestions="msg.totalQuestions"
+                                :timePerQuestion="msg.timePerQuestion" :questionIndex="msg.currentQuestionIndex || 0"
+                                :isTeacher="canCreateKahoot" :playersAnswered="kahootAnsweredCount[msg.sessionId] || 0"
+                                @start="startKahoot(msg.sessionId)" @next="nextQuestion(msg.sessionId)"
+                                @answered="handleKahootAnswer(msg.sessionId)" />
                         </div>
                     </div>
 
-                    <!-- Text/Image/PDF -->
                     <div v-else
                         :class="[Number(msg.sender) === Number(authUser?.id) ? 'self-end flex flex-col items-end' : 'self-start', 'max-w-3/5 min-w-0']">
                         <p class="text-xs text-gray-400 mb-1" :class="Number(msg.sender) === Number(authUser?.id) ? 'mr-2' : 'ml-2'">
@@ -309,20 +237,14 @@ onUnmounted(() => disconnectSocket())
                         </div>
                     </div>
                 </template>
-
-                <div v-if="messages.length === 0" class="text-center text-white/30 py-8">
-                    No hay mensajes aún.
-                </div>
+                <div v-if="messages.length === 0" class="text-center text-white/30 py-8">No hay mensajes aún.</div>
             </div>
         </div>
 
-        <!-- Kahoot Creator -->
         <div v-if="showKahootCreator" class="bg-[#1e2e38] rounded-2xl p-4 mb-3 border border-[#2a4a5a] shrink-0 max-h-72 overflow-y-auto custom-scrollbar">
             <div class="flex items-center justify-between mb-2">
                 <h3 class="font-bold text-white text-sm">Crear Kahoot</h3>
-                <button @click="showKahootCreator = false" class="text-white/50 hover:text-white cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
-                </button>
+                <button @click="showKahootCreator = false" class="text-white/50 hover:text-white cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg></button>
             </div>
 
             <template v-if="questions.length > 0">
@@ -338,9 +260,7 @@ onUnmounted(() => disconnectSocket())
                             <div v-for="(a, ai) in q.answers" :key="ai" @click="markCorrect(qi, ai)"
                                 class="flex items-center gap-1 p-1 rounded text-xs cursor-pointer"
                                 :class="q.correct === ai ? 'bg-[#1f5252]/40 border border-[#1f5252]' : 'bg-white/5'">
-                                <span class="w-2.5 h-2.5 rounded-full border flex items-center justify-center shrink-0" :class="q.correct === ai ? 'bg-[#1f5252]' : ''">
-                                    <span v-if="q.correct === ai" class="w-1 h-1 rounded-full bg-white"></span>
-                                </span>
+                                <span class="w-2.5 h-2.5 rounded-full border flex items-center justify-center shrink-0" :class="q.correct === ai ? 'bg-[#1f5252]' : ''"><span v-if="q.correct === ai" class="w-1 h-1 rounded-full bg-white"></span></span>
                                 <input type="text" v-model="q.answers[ai]" @click.stop class="w-full bg-transparent text-white outline-hidden text-xs" />
                             </div>
                         </div>
@@ -364,14 +284,10 @@ onUnmounted(() => disconnectSocket())
                     <input type="number" v-model.number="numQuestions" min="1" max="30" placeholder="Nº preguntas" class="w-20 bg-[#152027] border border-white/10 rounded-lg px-2 py-1 text-white text-xs outline-hidden" />
                     <input type="number" v-model.number="timePerQuestion" min="5" max="120" placeholder="Tiempo (s)" class="w-20 bg-[#152027] border border-white/10 rounded-lg px-2 py-1 text-white text-xs outline-hidden" />
                 </div>
-                <button @click="generateQuestions" :disabled="generating || !pdfFile"
-                    class="w-full bg-[#1f5252] hover:bg-[#2a6a6a] disabled:opacity-50 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-colors cursor-pointer">
-                    {{ generating ? 'Generando...' : 'Generar con IA' }}
-                </button>
+                <button @click="generateQuestions" :disabled="generating || !pdfFile" class="w-full bg-[#1f5252] hover:bg-[#2a6a6a] disabled:opacity-50 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-colors cursor-pointer">{{ generating ? 'Generando...' : 'Generar con IA' }}</button>
             </template>
         </div>
 
-        <!-- Input -->
         <div class="pt-2 shrink-0">
             <div class="flex items-center gap-2 mb-2">
                 <button v-if="canCreateKahoot" @click="toggleKahootCreator"
@@ -390,6 +306,7 @@ onUnmounted(() => disconnectSocket())
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 .custom-scrollbar::-webkit-scrollbar { width: 4px; display: block; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 </style>

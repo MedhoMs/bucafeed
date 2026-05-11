@@ -54,6 +54,16 @@ export const manager = {
             title: "Vincular Ciclos Formativos",
             msg: "Ciclos vinculados con éxito",
             searchPlaceholder: "Buscar ciclo formativo..."
+        },
+        user: {
+            title: "Crear Nuevo Usuario",
+            msg: "Usuario creado con éxito",
+            nameLabel: "Nombre",
+            lastNameLabel: "Apellidos",
+            dniLabel: "DNI/NIE",
+            emailLabel: "Email",
+            passLabel: "Contraseña",
+            roleLabel: "Rol"
         }
     },
     labels: {

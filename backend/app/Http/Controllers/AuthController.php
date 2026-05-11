@@ -164,4 +164,81 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ]);
     }
+
+    /**
+     * Envía un código de verificación al email si el usuario existe.
+     */
+    public function forgotPassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+            ]);
+
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'No existe ninguna cuenta con ese email',
+                ], 404);
+            }
+
+            $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+            Cache::put('pwd_reset_code_' . $request->email, $code, now()->addMinutes(10));
+
+            Mail::to($request->email)->send(new VerificationCodeMail($code));
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Código de verificación enviado',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Error al enviar el correo: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Verifica el código y actualiza la contraseña del usuario.
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email'             => 'required|email',
+            'verification_code' => 'required|string|size:6',
+            'password'          => 'required|string|min:8|confirmed',
+        ]);
+
+        $cachedCode = Cache::get('pwd_reset_code_' . $request->email);
+
+        if (!$cachedCode || $cachedCode !== $request->verification_code) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Código de verificación incorrecto o expirado',
+            ], 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Usuario no encontrado',
+            ], 404);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        Cache::forget('pwd_reset_code_' . $request->email);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Contraseña actualizada correctamente',
+        ]);
+    }
 }

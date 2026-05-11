@@ -15,6 +15,13 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Rutas públicas permitidas sin autenticación ni rol admin
+        $allowedPaths = ['/register', '/login', '/recover-password'];
+
+        if (in_array($request->path() === '/' ? '/' : '/' . ltrim($request->path(), '/'), $allowedPaths)) {
+            return $next($request);
+        }
+
         if (auth()->check() && strtolower(auth()->user()->role ?? '') === 'admin') {
             return $next($request);
         }
@@ -24,9 +31,9 @@ class AdminMiddleware
             return response()->json(['error' => 'Acceso denegado'], 403);
         }
 
-        // Si intenta entrar desde el navegador, lo expulsamos al frontend.
+        // Si intenta entrar desde el navegador por cualquier otra ruta, lo mandamos a /register
         $frontendUrl = env('APP_FRONTEND_URL', 'http://localhost:5173');
-        
+
         // Asegurar que la URL es absoluta para evitar bucles en producción
         if (!preg_match('~^(?:f|ht)tps?://~i', $frontendUrl)) {
             $frontendUrl = 'https://' . ltrim($frontendUrl, '/');

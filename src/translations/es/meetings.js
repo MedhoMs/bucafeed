@@ -19,6 +19,7 @@ export const meetings = {
         center: "Centro Educativo",
         centerPlaceholder: "Seleccionar centro...",
         description: "Descripción",
-        descriptionPlaceholder: "Describe brevemente de qué trata la charla..."
+        descriptionPlaceholder: "Describe brevemente de qué trata la charla...",
+        success: "Charla creada correctamente"
     }
 };
