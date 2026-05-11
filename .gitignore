@@ -39,3 +39,4 @@ backend/.env
 mysql_data/
 *.sql
 
+package-lock.json

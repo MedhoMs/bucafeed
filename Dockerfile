@@ -7,7 +7,7 @@ RUN apk add --no-cache python3 make g++
 # Copiar solo los manifiestos primero → Docker cachea la capa de deps
 # si el código cambia pero package.json no, no reinstala nada
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copiar el resto del código
 COPY . .

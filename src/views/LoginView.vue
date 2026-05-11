@@ -77,7 +77,7 @@
                 <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
                 <p class="text-center text-2xl lg:text-xl font-bold mt-7.5 ml-2.5 mr-2.5 text-shadow-md" id="eslogan">{{ t.login.eslogan }}</p>
             </div>
-            <form id="registerForm" class="relative flex flex-col justify-center lg:h-100 w-90 lg:w-100 p-2.5 pl-5 pr-5 bg-white rounded-bl-xl rounded-br-xl lg:rounded-tr-xl-none lg:rounded-tl-xl lg:rounded-br-none" method="post">
+            <form id="registerForm" class="relative flex flex-col justify-center lg:h-100 w-90 lg:w-100 p-2.5 pl-5 pr-5 bg-white text-black rounded-bl-xl rounded-br-xl lg:rounded-tr-xl-none lg:rounded-tl-xl lg:rounded-br-none" method="post">
 
                 <!-- Mensaje de error -->
                 <p id="loginErrorMsg" class="hidden absolute top-4 left-0 right-0 text-center text-red-500 text-sm font-semibold px-4"></p>
