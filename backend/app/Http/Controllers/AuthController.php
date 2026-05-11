@@ -142,19 +142,18 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Buscar el usuario por email
         $user = User::where('email', $request->email)->first();
 
-        // Si no existe el usuario o la contraseña no coincide
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'status'  => 'error',
                 'message' => 'El email o la contraseña son incorrectos',
             ], 401);
         }
-        Auth::login($user);
 
-        // Generar token para el frontend (Vue)
+        Auth::login($user);
+        $request->session()->regenerate();
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
