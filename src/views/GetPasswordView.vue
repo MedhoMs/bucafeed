@@ -103,9 +103,7 @@
 <template>
     <main class="relative flex flex-col justify-center items-center min-h-screen bg-black/50">
 
-        <h1 class="text-3xl lg:text-6xl my-4 lg:mt-0 lg:mb-17.5 font-bold text-white text-shadow-lg">
-            RECUPERAR CONTRASEÑA
-        </h1>
+        <h1 class="text-3xl lg:text-6xl my-4 lg:mt-0 lg:mb-17.5 text-center font-bold text-white text-shadow-lg">RECUPERAR CONTRASEÑA</h1>
 
         <div class="flex flex-col lg:flex-row justify-center items-center mb-37.5" id="form-container">
 
@@ -119,9 +117,7 @@
             </div>
 
             <!-- Formulario principal -->
-            <form
-                class="relative flex flex-col justify-center lg:h-auto w-90 lg:w-100 p-5 bg-white rounded-bl-xl rounded-br-xl lg:rounded-tr-xl lg:rounded-bl-none"
-                @submit.prevent>
+            <form class="relative flex flex-col justify-center lg:h-68 w-90 lg:w-100 p-5 text-black bg-white rounded-bl-xl rounded-br-xl lg:rounded-tl-xl lg:rounded-br-none" @submit.prevent>
 
                 <!-- Mensajes de feedback -->
                 <p v-if="errorMsg"   class="text-red-500   text-sm font-semibold text-center mb-3 px-2">{{ errorMsg }}</p>
@@ -203,7 +199,7 @@
 
             <!-- Panel lateral (escritorio, derecha) -->
             <div v-if="!isMobile"
-                class="flex flex-col lg:justify-center items-center lg:h-auto w-90 lg:w-100 p-2.5 text-white rounded-tl-xl rounded-tr-xl lg:rounded-br-xl lg:rounded-tr-xl lg:rounded-tl-none bg-[linear-gradient(140deg,#326465,#1d2e3e)]"
+                class="flex flex-col lg:justify-center items-center lg:h-68 w-90 lg:w-100 p-2.5 text-white rounded-tl-xl rounded-tr-xl lg:rounded-br-xl lg:rounded-tr-xl lg:rounded-tl-none bg-[linear-gradient(140deg,#326465,#1d2e3e)]"
                 id="side-panel">
                 <p class="text-center text-2xl lg:text-3xl font-bold mb-7.5 text-shadow-md" id="welcome">{{ t.login.welcome }}</p>
                 <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
