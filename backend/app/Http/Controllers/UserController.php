@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Rol;
+use App\Models\Group;
 use App\Models\EducationalCenter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -195,9 +196,75 @@ class UserController extends TemplateController
         }
 
         $students = $query->whereIn('role', ['Student', 'student', 'Alumno', 'alumno', 'Estudiante', 'estudiante', 'estudiantes'])
-            ->limit(20)
+            ->limit(100)
             ->get(['id', 'name', 'last_name', 'profile_picture']);
 
         return response()->json($students);
+    }
+
+    /**
+     * API: Generar usuarios de prueba
+     */
+    public function apiGenerateTestUsers(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !in_array(strtolower($user->role), ['admin', 'ei', 'administrador'])) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $count = min((int) $request->input('count', 20), 100);
+        $centerId = $request->input('center_id', $user->educational_center_id);
+
+        if (!$centerId) {
+            return response()->json(['message' => 'No tienes un centro asignado'], 400);
+        }
+
+        $center = EducationalCenter::find($centerId);
+        if (!$center) {
+            return response()->json(['message' => 'Centro no encontrado'], 404);
+        }
+
+        $nombres = ['Carlos', 'Lucía', 'Mateo', 'Valentina', 'Alejandro', 'Sofía', 'Hugo', 'Martina', 'Daniel', 'Julia', 'Pablo', 'Emma', 'Diego', 'Valeria', 'Alba', 'Mario', 'Elena', 'Adrian', 'Paula', 'Marcos', 'Irene', 'Raúl', 'Lara', 'Sergio', 'Claudia', 'Jorge', 'Natalia', 'Álvaro', 'Celia', 'Ismael', 'Ainoa', 'Rubén', 'Cristina', 'Oriol', 'Marina', 'Guille', 'Laia', 'Nacho', 'Rocío', 'Edu', 'Ángela', 'Unai', 'Marta', 'Víctor', 'Silvia', 'Iván', 'Gema', 'Javier', 'Nerea', 'Álex'];
+        $apellidos = ['García', 'Fernández', 'López', 'Martínez', 'González', 'Pérez', 'Rodríguez', 'Sánchez', 'Ramírez', 'Torres', 'Díaz', 'Muñoz', 'Romero', 'Alonso', 'Navarro', 'Ruiz', 'Jiménez', 'Moreno', 'Álvarez', 'Gutiérrez', 'Castro', 'Ortiz', 'Rubio', 'Molina', 'Delgado', 'Gil', 'Serrano', 'Blanco', 'Cortés', 'Suárez', 'Mendoza', 'Herrera', 'Medina', 'Garrido', 'Vargas', 'Flores', 'Peña', 'Cabrera', 'Campos', 'Santos', 'Iglesias', 'Cruz', 'Reyes', 'Vega', 'Aguilar', 'Carrasco', 'Benítez', 'Moya', 'Rivas', 'Pascual'];
+
+        $groups = Group::where('educational_center_id', $center->id)->get();
+        $existingEmails = User::pluck('email')->toArray();
+        $created = 0;
+
+        for ($i = 0; $i < $count; $i++) {
+            $name = $nombres[array_rand($nombres)];
+            $surname = $apellidos[array_rand($apellidos)];
+            $seed = rand(100000, 999999);
+            $email = strtolower($name) . "." . strtolower($surname) . "." . $seed . "@" . strtolower(str_replace(' ', '', $center->name)) . ".es";
+
+            if (in_array($email, $existingEmails)) continue;
+
+            $role = rand(0, 4) === 0 ? 'Teacher' : 'Student';
+            $existingEmails[] = $email;
+
+            $newUser = User::create([
+                'name' => $name,
+                'last_name' => $surname,
+                'email' => $email,
+                'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
+                'role' => $role,
+                'educational_center_id' => $center->id,
+                'dni' => sprintf('%08d', 20000000 + $seed) . ($role === 'Teacher' ? 'T' : 'S'),
+                'institution_name' => $center->name,
+                'education_level' => $center->type,
+            ]);
+
+            if ($role === 'Student' && $groups->isNotEmpty()) {
+                $group = $groups->random();
+                $group->students()->syncWithoutDetaching([$newUser->id]);
+            }
+
+            $created++;
+        }
+
+        return response()->json([
+            'message' => "{$created} usuarios creados correctamente en {$center->name}",
+            'created' => $created
+        ]);
     }
 }

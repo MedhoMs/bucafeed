@@ -6,13 +6,9 @@ use App\Models\User;
 use App\Models\Rol;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         echo "🌱 Iniciando seeding Maestro de TelamoNet...\n";
@@ -30,29 +26,11 @@ class DatabaseSeeder extends Seeder
             Rol::firstOrCreate(['code' => $code], ['name' => $name]);
         }
 
-        // 2. Administradores del Sistema (Usuarios fijos)
+        // 2. Administradores del Sistema
         $admins = [
-            [
-                'name' => 'Antonio', 
-                'last_name' => 'Morera Marrero', 
-                'email' => 'antoniomorera784@gmail.com', 
-                'dni' => '78845622N', 
-                'password' => 'mikaela123'
-            ],
-            [
-                'name' => 'Daniel', 
-                'last_name' => 'Bucaloiu Morales', 
-                'email' => 'danielbucaloiu@gmail.com', 
-                'dni' => '12345678Z', 
-                'password' => '0000'
-            ],
-            [
-                'name' => 'Jason', 
-                'last_name' => 'Camila Sotto', 
-                'email' => 'jasoncsotto16@gmail.com', 
-                'dni' => '12345678A', 
-                'password' => 'luigi2005'
-            ]
+            ['name' => 'Antonio', 'last_name' => 'Morera Marrero', 'email' => 'antoniomorera784@gmail.com', 'dni' => '78845622N', 'password' => 'mikaela123'],
+            ['name' => 'Daniel', 'last_name' => 'Bucaloiu Morales', 'email' => 'danielbucaloiu@gmail.com', 'dni' => '12345678Z', 'password' => '0000'],
+            ['name' => 'Jason', 'last_name' => 'Camila Sotto', 'email' => 'jasoncsotto16@gmail.com', 'dni' => '12345678A', 'password' => 'luigi2005'],
         ];
 
         foreach ($admins as $admin) {
@@ -67,7 +45,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 3. Usuarios Externos (EU)
+        // 3. Usuarios Externos
         $externalUsers = [
             ['name' => 'David', 'last_name' => 'Fernández', 'email' => 'david.external@gmail.com', 'dni' => '10101010U'],
             ['name' => 'Emma', 'last_name' => 'Santos', 'email' => 'emma.external@gmail.com', 'dni' => '11111111V'],
@@ -85,9 +63,15 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 4. Organización Escolar (La nueva estructura lógica)
+        // 4. Seeders organizados por módulos
         $this->call([
-            SchoolOrganizationSeeder::class,
+            TagsSeeder::class,
+            CyclesSeeder::class,
+            CentersSeeder::class,
+            UsersAndGroupsSeeder::class,
+            MeetingsSeeder::class,
+            EventsSeeder::class,
+            ForumQuestionsSeeder::class,
         ]);
 
         echo "🏁 Seeding Maestro completado.\n";

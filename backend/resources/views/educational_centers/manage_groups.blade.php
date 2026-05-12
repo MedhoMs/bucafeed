@@ -84,7 +84,9 @@
                                 const rows = document.querySelectorAll('.tag-row');
                                 rows.forEach(r => {
                                     if(!cid) {
-                                        r.style.display = ''; // Mostrar genéricas si no hay ciclo seleccionado
+                                        r.style.display = 'none'; // Ocultar hasta elegir ciclo
+                                        const sel = r.querySelector('.teacher-select');
+                                        if (sel) sel.value = '';
                                     } else {
                                         const tid = parseInt(r.getAttribute('data-tag-id'));
                                         if(cycleMap[cid] && cycleMap[cid].includes(tid)) {
