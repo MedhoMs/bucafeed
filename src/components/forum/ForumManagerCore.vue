@@ -138,7 +138,7 @@ async function validateContent() {
         }
     } catch (e) {
         validationStatus.value  = false
-        validationMessage.value = 'Error al conectar con el validador. Inténtalo de nuevo.'
+        validationMessage.value = e.message || 'Error al conectar con el validador. Inténtalo de nuevo.'
         console.error('Validation error:', e)
     } finally {
         validationLoading.value = false

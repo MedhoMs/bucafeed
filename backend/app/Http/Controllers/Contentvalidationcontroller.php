@@ -51,7 +51,8 @@ El texto es: "{$content}"
 Responde SOLO con un JSON válido sin markdown:
 {
   "es_apropiado": true/false,
-  "palabras_detectadas": ["lista de palabras problemáticas si las hay"]
+  "palabras_detectadas": ["lista de palabras problemáticas si las hay"],
+  "motivo": "explicación breve de por qué se rechaza o aprueba"
 }
 PROMPT
                     ]

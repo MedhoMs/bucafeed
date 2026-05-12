@@ -88,7 +88,7 @@
             }
         } catch (e) {
             validationStatus.value  = false
-            validationMessage.value = 'Error al conectar con el validador.'
+            validationMessage.value = e.message || 'Error al conectar con el validador.'
             console.error('Validation error:', e)
         } finally {
             validationLoading.value = false

@@ -264,6 +264,9 @@ Route::apiResource('answers', AnswerController::class);
 Route::apiResource('tags', TagController::class);
 Route::post('answers/{answer}/useful', [AnswerController::class, 'markAsUseful']);
 
+// Validación de contenido con IA (Groq)
+Route::post('/validate-content', [ContentValidationController::class, 'validate']);
+
 // ── Panel de Gestión de Centro (para usuarios EI) ──
 Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
     Route::get('/', [EducationalCenterController::class, 'apiShowMyCenter']);
