@@ -106,10 +106,23 @@
         if (!currentChat.value?.id || !authUser.value) return;
         
         try {
+            let content = msgObj.content;
+            let fileName = msgObj.fileName || null;
+
+            if (msgObj.type === 'image' || msgObj.type === 'pdf') {
+                const response = await fetch(msgObj.content);
+                const blob = await response.blob();
+                const formData = new FormData();
+                formData.append('file', blob, fileName || 'file');
+                const uploadResult = await post('upload', formData);
+                content = uploadResult.url;
+                fileName = uploadResult.filename || fileName;
+            }
+
             const savedMsg = await post(`chats/${currentChat.value.id}/messages`, {
                 type: msgObj.type,
-                content: msgObj.content,
-                file_name: msgObj.fileName || null
+                content: content,
+                file_name: fileName
             });
             
             if (savedMsg && savedMsg.id) {

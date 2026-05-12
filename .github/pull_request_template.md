@@ -7,9 +7,9 @@
 
 ## Tipo de cambio
 
-- [ ] Bugfix
-- [ ] Nueva feature
-- [ ] Refactor / mejora técnica
+- [ ] feat
+- [ ] fix
+- [ ] chore
 - [ ] Cambio de configuración / deploy
 - [ ] Documentación
 
@@ -19,29 +19,16 @@ Closes #
 
 ## Documentación
 
-- [ ] Se actualizó la documentación existente (README, wiki, etc.)
-- [ ] Se añadió documentación nueva
+- [ ] Se actualizó la documentación existente
 - [ ] No requiere cambios de documentación
 
 ## Screenshots / Evidencias
 
 <!--
-  Adjunta capturas de pantalla o videos ANTES y DESPUÉS si hay cambios visuales.
-  Para cambios de backend: adjunta logs, respuestas de API o tests.
+  Adjunta capturas de pantalla si hay cambios visuales.
+  .
 -->
 
-| Antes | Después |
-|-------|---------|
-| (imagen) | (imagen) |
-
-## Pasos para probar
-
-<!--
-  Instrucciones claras para probar los cambios localmente o en staging:
-  1. Ir a '...'
-  2. Hacer clic en '...'
-  3. Verificar que '...'
--->
 
 ## Checklist
 
