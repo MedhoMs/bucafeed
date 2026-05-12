@@ -18,5 +18,9 @@ export const forum = {
     user: "User",
     student: "Student",
     admin: "ADMINISTRATOR",
-    teacher: "TEACHER"
+    teacher: "TEACHER",
+    confirmDeleteTitle: "Are you sure?",
+    confirmDeleteMessage: "This action cannot be undone. The question and all its replies will be permanently deleted.",
+    confirm: "Confirm",
+    cancel: "Cancel"
 };

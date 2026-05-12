@@ -96,7 +96,7 @@
     <!--Hamburger menu flotante premium-->
     <button v-show="!menu && !hideHamburger" @click="activeMenu()" 
         class="lg:hidden fixed top-5 left-6 z-[100] bg-accent-normal/80 backdrop-blur-md p-2 rounded-xl border border-white/10 text-white shadow-2xl active:scale-95 transition-all flex items-center justify-center">
-        <span class="material-symbols-outlined !text-3xl">menu</span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
     </button>
  
     <!--Overlay oscuro-->
@@ -128,7 +128,7 @@ Enter
                 </h1>
                 <!--Botón X Material-->
                 <button @click="closeMenu()" class="lg:hidden ml-auto p-1.5 rounded-lg hover:bg-white/10 text-white/70 transition-all">
-                    <span class="material-symbols-outlined">close</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                 </button>
             </div>
 

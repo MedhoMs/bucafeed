@@ -155,19 +155,11 @@
                         @click="activeModal = 'event'"
                     />
                 </template>
-                <template #bottom>
-                    <Pagination 
-                        v-if="events.length > 0"
-                        :current-page="pagination.currentPage" 
-                        :last-page="pagination.lastPage" 
-                        @change="handlePageChange"
-                    />
-                </template>
             </PageHeader>
     
-            <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
+            <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20 flex-1 flex flex-col">
     
-                <div id="mainBody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center pb-20">
+                <div id="mainBody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center pb-20 flex-1">
                     <EventCard 
                         v-for="event in events" 
                         :key="event.id" 
@@ -178,7 +170,14 @@
                     />
                 </div>
 
-
+                <!-- Paginación al final al centro -->
+                <div v-if="events.length > 0" class="mt-auto py-10 flex justify-center w-full">
+                    <Pagination 
+                        :current-page="pagination.currentPage" 
+                        :last-page="pagination.lastPage" 
+                        @change="handlePageChange"
+                    />
+                </div>
             </section>
     
             <!-- Modal de Creación-->
