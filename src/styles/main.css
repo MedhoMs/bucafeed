@@ -159,6 +159,10 @@ body {
 .text-shadow-md { text-shadow: -2px 2px 1px black; }
 .text-shadow-lg { text-shadow: -3px 3px 1px black; }
 
+.z-toast {
+    z-index: 9999;
+}
+
 /* Carrusel y Elementos Interactivos Oscuros */
 .btn-dark-icon {
     background-color: rgba(0, 0, 0, 0.6);

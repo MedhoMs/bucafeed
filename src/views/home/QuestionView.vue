@@ -2,12 +2,13 @@
     import NavBar from '../../components/NavBar/NavBar.vue';
 
     import SideBar from '../../components/SideBar.vue';
-    import ImageUpload from '../../components/common/forms/ImageUpload.vue';
     import UserAvatar from '../../components/common/UserAvatar.vue';
     import EmojiPicker from '../../components/common/EmojiPicker.vue';
 
-    import Pagination from '../../components/common/Pagination.vue';
     import BaseModal from '@/components/modals/BaseModal.vue';
+    import PageHeader from '@/components/common/PageHeader.vue';
+    import Pagination from '../../components/common/Pagination.vue';
+    import TextChatBar from '@/components/TextChatBar.vue';
     import { ref, onMounted, watch, reactive } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { user } from '@/stores/auth';
@@ -138,27 +139,26 @@
         }
     };
 
-    const submitAnswer = async () => {
-        if ((!newAnswer.value.trim() && !newImage.value) || submitting.value) return;
+    const handleSendMessage = async (msgObj) => {
+        if (submitting.value) return;
         
         submitting.value = true;
         try {
             const formData = new FormData();
             formData.append('question_id', question.value.id);
             formData.append('user_id', user.value?.id);
-            if (newAnswer.value.trim()) {
-                formData.append('content', newAnswer.value);
-            }
-            if (newImage.value) {
-                formData.append('image', newImage.value);
+            
+            if (msgObj.type === 'text') {
+                formData.append('content', msgObj.content);
+            } else {
+                // Fetch the blob from the object URL created by TextChatBar
+                const response = await fetch(msgObj.content);
+                const blob = await response.blob();
+                formData.append('image', blob, msgObj.fileName || 'upload');
             }
 
             await post('answers', formData);
 
-            newAnswer.value = "";
-            newImage.value = null;
-            if (textareaRef.value) textareaRef.value.style.height = 'auto';
-            isExpanded.value = false;
             // Reload the first page of answers to show the new one
             await loadAnswers(question.value.id, 1); 
         } catch (e) {
@@ -300,46 +300,10 @@
                     </div>
                 </div>
             </section>
-    
-            <!-- El Formulario ahora está fixed en el bottom y centrado respecto al main content -->
-            <div class="fixed bottom-0 right-0 left-0 lg:left-75 bg-[#0f2828] border-t border-white/10 px-4 lg:px-8 py-3 z-50 flex flex-col gap-2">
-
-    
-                <div class="flex items-end gap-3 w-full max-w-7xl mx-auto">
-    
-                    <!-- Input Pill Container -->
-                    <div class="flex-1 bg-white/5 border border-white/10 rounded-3xl flex items-center px-4 py-2 gap-2 transition-colors focus-within:bg-white/10 focus-within:border-white/20">
-                        <textarea 
-                            ref="textareaRef"
-                            v-model="newAnswer"
-                            :placeholder="t.forum.addComment" 
-                            class="w-full bg-transparent text-white placeholder:text-white/40 focus:outline-none resize-none text-sm leading-relaxed max-h-32 min-h-[20px] self-center py-1 overflow-y-auto"
-                            rows="1"
-                        ></textarea>
-                        
-                        <!-- Icons inside the input -->
-                        <div class="flex items-center gap-3 shrink-0 text-white/50 self-end mb-0.5 relative">
-                            <EmojiPicker 
-                                v-model:show="showEmojiPicker"
-                                @select="onSelectEmoji"
-                                customClass="right-0"
-                            />
-                            <button class="hover:text-white transition-colors" title="Emoji" @click="showEmojiPicker = !showEmojiPicker">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
-                            </button>
-                            <ImageUpload v-model="newImage" variant="minimal" />
-                        </div>
-                    </div>
-    
-                    <!-- Submit Button -->
-                    <button 
-                        @click="submitAnswer"
-                        :disabled="(!newAnswer.trim() && !newImage) || submitting"
-                        class="w-10 h-10 shrink-0 rounded-full flex items-center justify-center transition-all bg-secondary-normal text-white disabled:opacity-50 disabled:bg-white/10 hover:bg-secondary-normal-hover hover:scale-105 active:scale-95 mb-0.5"
-                    >
-                        <svg v-if="submitting" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
-                    </button>
+            <!-- El Formulario ahora usa TextChatBar con validación de Groq -->
+            <div class="fixed bottom-0 right-0 left-0 lg:left-75 bg-[#0f2828] border-t border-white/10 px-4 lg:px-8 py-3 z-50">
+                <div class="w-full max-w-7xl mx-auto">
+                    <TextChatBar is-response @sendMessage="handleSendMessage" />
                 </div>
             </div>
         </main>

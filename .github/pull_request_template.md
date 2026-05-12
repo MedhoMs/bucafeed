@@ -1,30 +1,39 @@
-
 ## Resumen
 
-<!--Explica brevemente qué cambia este PR y por qué.-->
+<!--
+  Describe los cambios: ¿qué se añadió, modificó o corrigió? ¿Por qué?
+  Incluye el contexto necesario para entender el PR sin leer todo el código.
+-->
+
+## Tipo de cambio
+
+- [ ] feat
+- [ ] fix
+- [ ] chore
+- [ ] Cambio de configuración / deploy
+- [ ] Documentación
 
 ## Issue relacionada
 
 Closes #
 
-## Comprobaciones realizadas
+## Documentación
 
-- [ ] CI en verde
-- [ ] Railway preview deploy en verde
-- [ ] Si toca frontend, he ejecutado `npm install` y `npm run build`
-- [ ] Si toca backend, he ejecutado `composer install` y `php artisan test`
-- [ ] Si este PR añade o cambia variables de entorno, está documentado en la descripción
-- [ ] He revisado manualmente los flujos afectados por este PR
+- [ ] Se actualizó la documentación existente
+- [ ] No requiere cambios de documentación
 
-## Capturas de pantalla
+## Screenshots / Evidencias
 
-<!--Adjunta capturas si hay cambios visuales.-->
+<!--
+  Adjunta capturas de pantalla si hay cambios visuales.
+  .
+-->
 
-## Evidencias de validación
 
-<!--Adjunta capturas de CI, Railway, tests o validaciones manuales si aplica.-->
+## Checklist
 
-## Lighthouse
-
-<!--Incluye resultados solo si este PR afecta al rendimiento, accesibilidad o SEO.-->
-
+- [ ] El código sigue el estilo del proyecto
+- [ ] Probé los cambios manualmente (local o staging)
+- [ ] No hay errores en la consola del navegador
+- [ ] Las migraciones son retrocompatibles (no rompen datos existentes)
+- [ ] Las variables de entorno nuevas están documentadas en `.env.example`
