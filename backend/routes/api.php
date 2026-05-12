@@ -20,6 +20,7 @@ use App\Http\Controllers\MeetingMessageController;
 use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\CycleController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ContentValidationController;
 
 Route::get('/health', function () {
     return response()->json([
