@@ -8,11 +8,12 @@
     import PageHeader from '@/components/common/PageHeader.vue';
     import Pagination from '@/components/common/Pagination.vue';
     import PrimaryButton from '@/components/common/PrimaryButton.vue';
+    import BaseModal from '@/components/modals/BaseModal.vue';
 
     import { useTranslations } from '@/composables/useTranslations'
     import { useApi } from '@/composables/useApi';
     const { t } = useTranslations()
-    const { get, loading: apiLoading } = useApi();
+    const { get, del: apiDelete, loading: apiLoading } = useApi();
 
     // Importamos directamente las variables reactivas del auth.js
     import { user as authUser, token as authToken } from '@/stores/auth'
@@ -22,6 +23,8 @@
     const router = useRouter();
     const loading = ref(false)
     const activeModal = ref(null)
+    const showDeleteModal = ref(false)
+    const eventToDelete = ref(null)
     const toast = ref({ show: false, msg: '', type: 'success' })
     const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -107,6 +110,25 @@
         localStorage.setItem('selectedEvent', JSON.stringify(event));
         router.push({ name: 'event-details', params: { id: event.id } });
     }
+
+    const confirmDelete = (event) => {
+        eventToDelete.value = event;
+        showDeleteModal.value = true;
+    }
+
+    const deleteEvent = async () => {
+        if (!eventToDelete.value) return;
+        try {
+            await apiDelete(`events/${eventToDelete.value.id}`);
+            showToast({ msg: t.value.events.deleted || 'Evento eliminado correctamente' });
+            showDeleteModal.value = false;
+            eventToDelete.value = null;
+            fetchEvents(pagination.currentPage);
+        } catch (error) {
+            console.error('Error deleting event:', error);
+            showToast({ msg: 'Error al eliminar el evento', type: 'error' });
+        }
+    }
 </script>
 
 <template>
@@ -152,6 +174,7 @@
                         :event="event" 
                         mode="public"
                         @details="goToDetails"
+                        @delete="confirmDelete"
                     />
                 </div>
 
@@ -168,6 +191,19 @@
                 @refresh="fetchEvents"
                 @toast="showToast"
             />
+
+            <!-- Modal de Confirmación de Borrado -->
+            <BaseModal 
+                v-if="showDeleteModal" 
+                :title="t.events.deleteTitle || '¿Eliminar evento?'" 
+                :confirm-text="t.events.deleteConfirm || 'Eliminar'" 
+                @close="showDeleteModal = false"
+                @confirm="deleteEvent"
+            >
+                <p class="text-white/60 text-sm">
+                    {{ t.events.deleteWarning || 'Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar este evento?' }}
+                </p>
+            </BaseModal>
     
             <!-- Toast Notification -->
             <div v-if="toast.show" 

@@ -4,6 +4,7 @@
  */
 import { computed } from 'vue'
 import { useTranslations } from '../../composables/useTranslations'
+import { user } from '../../stores/auth'
 
 const { t } = useTranslations()
 
@@ -28,6 +29,13 @@ const formattedDate = computed(() => {
 
 const startTime = computed(() => props.event.start_time?.substring(0, 5) || '00:00')
 const endTime = computed(() => props.event.end_time?.substring(0, 5) || '00:00')
+
+const canManageEvent = computed(() => {
+    if (!user.value) return false;
+    const role = user.value.role?.toLowerCase();
+    const allowedRoles = ['admin', 'ei', 'administrador'];
+    return allowedRoles.includes(role);
+});
 </script>
 
 <template>
@@ -39,10 +47,14 @@ const endTime = computed(() => props.event.end_time?.substring(0, 5) || '00:00')
             <div v-else class="w-full h-full bg-secondary-normal/20 flex items-center justify-center">
                 <span class="material-symbols-outlined !text-4xl opacity-10 text-white">image</span>
             </div>
-            
+
             <!-- Badge Participantes (Solo en modo public) -->
             <div v-if="mode === 'public'" class="absolute top-4 right-4 bg-black/40 px-2 py-1 rounded-lg border border-white/10 text-[9px] font-black text-white/60">
-                {{ (t.events.cardJoined || '{count} join').replace('{count}', event.participants_count || 0) }}
+                <button v-if="canManageEvent" @click.stop="emit('delete', event)" 
+                    class="p-2 text-white/20 hover:text-red-400 transition-colors active:scale-90 cursor-pointer flex items-center justify-center"
+                    title="Eliminar evento">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+                </button>
             </div>
         </div>
 
@@ -61,10 +73,15 @@ const endTime = computed(() => props.event.end_time?.substring(0, 5) || '00:00')
                 <span class="text-white/90 text-[9px] font-black tracking-widest truncate uppercase">{{ event.location || 'CIFP Zonzamas, Arrecife' }}</span>
             </div>
 
+            <div class="flex items-center gap-1.5 mb-5">
+                <span class="material-symbols-outlined !text-[14px] text-secondary-normal shrink-0">location_on</span>
+                <span class="text-white/90 text-[9px] font-black tracking-widest truncate uppercase">{{ (t.events.cardJoined || '{count} join').replace('{count}', event.participants_count || 0) }}</span>
+            </div>
+
             <div class="flex items-center justify-between pt-6 border-t border-white/5 mt-auto">
                 <div class="flex flex-col">
                     <span class="text-[9px] text-white/20 font-black uppercase tracking-widest mb-1">{{ t.events.timeLabel }}</span>
-                    <span class="text-xs text-white/70 font-bold tracking-tighter">{{ startTime }} - {{ endTime }}</span>
+                    <span class="text-xs text-white/70 font-bold tracking-tighter">{{ startTime }} - {{ endTime }}</span>   
                 </div>
 
                 <div v-if="mode === 'manage'" class="flex items-center gap-1">
@@ -77,7 +94,7 @@ const endTime = computed(() => props.event.end_time?.substring(0, 5) || '00:00')
                 </div>
 
                 <!-- ACCIONES MODO PÚBLICO (ENTRAR) -->
-                <div v-else>
+                <div v-else class="flex items-center gap-3">
                     <button @click.stop="emit('details', event)" 
                         class="px-6 py-2 cursor-pointer rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 active:scale-95 shadow-lg bg-secondary-normal text-white border border-white/10 hover:bg-secondary-normal-hover">
                         {{ t.events.viewDetails }}
