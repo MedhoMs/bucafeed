@@ -3,7 +3,8 @@ defineProps({
     title: { type: String, required: true },
     confirmText: { type: String, default: 'Confirmar' },
     cancelText: { type: String, default: 'Cancelar' },
-    isConfirmDisabled: { type: Boolean, default: false },
+    confirmDisabled: { type: Boolean, default: false },
+    loading: { type: Boolean, default: false },
     hideFooter: { type: Boolean, default: false }
 })
 defineEmits(['close', 'confirm'])
@@ -28,9 +29,11 @@ defineEmits(['close', 'confirm'])
                     </button>
                     <button 
                         @click="$emit('confirm')" 
-                        :disabled="isConfirmDisabled"
-                        class="w-full md:w-auto bg-accent-normal hover:bg-accent-normal-hover text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all active:scale-95 shadow-xl shadow-accent-normal/20 flex items-center justify-center gap-3 group border border-white/5 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                        :disabled="confirmDisabled || loading"
+                        class="w-full md:w-auto bg-accent-normal text-white text-[11px] font-black uppercase tracking-[0.2em] px-10 py-4.5 rounded-[22px] transition-all shadow-xl shadow-accent-normal/20 flex items-center justify-center gap-3 group border border-white/5 shrink-0"
+                        :class="confirmDisabled || loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent-normal-hover cursor-pointer active:scale-95'"
                     >
+                        <span v-if="loading" class="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"></span>
                         {{ confirmText }}
                     </button>
                 </slot>

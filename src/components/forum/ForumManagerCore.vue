@@ -198,7 +198,7 @@ async function handleAction() {
             />
 
             <!-- ── Content Validator ─────────────────────────────────────── -->
-            <div class="mt-3 space-y-2">
+            <div class="flex flex-col items-center justify-center mt-3 space-y-2">
 
                 <!-- Validate button -->
                 <button
