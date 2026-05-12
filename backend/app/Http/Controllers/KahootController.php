@@ -330,7 +330,7 @@ class KahootController extends Controller
     {
         $request->validate([
             'question_index' => 'required|integer|min:0',
-            'selected_answer' => 'required|integer|between:0,3',
+            'selected_answer' => 'required|integer|between:-1,3',
             'time_remaining' => 'sometimes|numeric|min:0',
         ]);
 
