@@ -229,7 +229,7 @@ onUnmounted(() => disconnectSocket())
                         </p>
                         <div :class="[Number(msg.sender) === Number(authUser?.id) ? 'bg-[#2a4a5a]' : 'bg-[#1e2e38]', 'rounded-2xl p-4 text-white shadow-md']">
                             <p v-if="msg.type === 'text'" class="break-all whitespace-pre-wrap">{{ msg.content }}</p>
-                            <img v-else-if="msg.type === 'image'" :src="msg.content" class="max-w-full rounded-lg cursor-pointer" @click="window.open(msg.content, '_blank')" />
+                            <img v-else-if="msg.type === 'image'" :src="msg.content" class="w-full max-w-80 max-h-64 object-contain rounded-lg cursor-pointer bg-black/20" @click="window.open(msg.content, '_blank')" />
                             <a v-else-if="msg.type === 'pdf'" :href="msg.content" target="_blank" class="flex items-center gap-3 bg-[#152027] p-3 rounded-xl no-underline text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4444" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/></svg>
                                 <span class="text-sm truncate">{{ msg.file_name || 'PDF' }}</span>

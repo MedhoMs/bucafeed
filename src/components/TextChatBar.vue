@@ -134,6 +134,9 @@
         if (selectedFile.value || !props.isResponse || validationStatus.value === true) {
             sendMessage()
         }
+        message.value = ''
+        showEmojiPicker.value = false
+        inputRef.value?.style?.removeProperty('height')
     }
 </script>
 
