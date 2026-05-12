@@ -237,7 +237,6 @@ onUnmounted(() => disconnectSocket())
                         </div>
                     </div>
                 </template>
-                <div v-if="messages.length === 0" class="text-center text-white/30 py-8">No hay mensajes aún.</div>
             </div>
         </div>
 
