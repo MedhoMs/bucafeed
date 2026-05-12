@@ -110,7 +110,7 @@
         </div>
 
         <div class="footer">
-            <p>© 2026 TelamoNet. Todos los derechos reservados.</p>
+            <p>© {{ date('Y') }} TelamoNet. Todos los derechos reservados.</p>
             <p>Este es un correo automático, por favor no responder a este mensaje.</p>
         </div>
     </div>
