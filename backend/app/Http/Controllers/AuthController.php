@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Mail\VerificationCodeMail;
+use App\Mail\PasswordResetMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
@@ -188,7 +189,7 @@ class AuthController extends Controller
 
             Cache::put('pwd_reset_code_' . $request->email, $code, now()->addMinutes(10));
 
-            Mail::to($request->email)->send(new VerificationCodeMail($code));
+            Mail::to($request->email)->send(new PasswordResetMail($code));
 
             return response()->json([
                 'status'  => 'success',
