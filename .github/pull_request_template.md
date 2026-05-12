@@ -1,30 +1,52 @@
-
 ## Resumen
 
-<!--Explica brevemente qué cambia este PR y por qué.-->
+<!--
+  Describe los cambios: ¿qué se añadió, modificó o corrigió? ¿Por qué?
+  Incluye el contexto necesario para entender el PR sin leer todo el código.
+-->
+
+## Tipo de cambio
+
+- [ ] Bugfix
+- [ ] Nueva feature
+- [ ] Refactor / mejora técnica
+- [ ] Cambio de configuración / deploy
+- [ ] Documentación
 
 ## Issue relacionada
 
 Closes #
 
-## Comprobaciones realizadas
+## Documentación
 
-- [ ] CI en verde
-- [ ] Railway preview deploy en verde
-- [ ] Si toca frontend, he ejecutado `npm install` y `npm run build`
-- [ ] Si toca backend, he ejecutado `composer install` y `php artisan test`
-- [ ] Si este PR añade o cambia variables de entorno, está documentado en la descripción
-- [ ] He revisado manualmente los flujos afectados por este PR
+- [ ] Se actualizó la documentación existente (README, wiki, etc.)
+- [ ] Se añadió documentación nueva
+- [ ] No requiere cambios de documentación
 
-## Capturas de pantalla
+## Screenshots / Evidencias
 
-<!--Adjunta capturas si hay cambios visuales.-->
+<!--
+  Adjunta capturas de pantalla o videos ANTES y DESPUÉS si hay cambios visuales.
+  Para cambios de backend: adjunta logs, respuestas de API o tests.
+-->
 
-## Evidencias de validación
+| Antes | Después |
+|-------|---------|
+| (imagen) | (imagen) |
 
-<!--Adjunta capturas de CI, Railway, tests o validaciones manuales si aplica.-->
+## Pasos para probar
 
-## Lighthouse
+<!--
+  Instrucciones claras para probar los cambios localmente o en staging:
+  1. Ir a '...'
+  2. Hacer clic en '...'
+  3. Verificar que '...'
+-->
 
-<!--Incluye resultados solo si este PR afecta al rendimiento, accesibilidad o SEO.-->
+## Checklist
 
+- [ ] El código sigue el estilo del proyecto
+- [ ] Probé los cambios manualmente (local o staging)
+- [ ] No hay errores en la consola del navegador
+- [ ] Las migraciones son retrocompatibles (no rompen datos existentes)
+- [ ] Las variables de entorno nuevas están documentadas en `.env.example`
