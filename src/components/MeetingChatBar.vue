@@ -179,17 +179,17 @@ function setupSocket() {
             messages.value.push(data); scrollToBottom()
         }
     })
-    onSocket('kahoot:started', async (data) => {
+    onSocket('kahoot:started', (data) => {
         const msg = messages.value.find(m => m.sessionId === data.sessionId)
-        if (msg) { msg.status = 'playing' } else { await loadMessages() }
+        if (msg) { msg.status = 'playing' }
     })
-    onSocket('kahoot:next-question', async (data) => {
+    onSocket('kahoot:next-question', (data) => {
         const msg = messages.value.find(m => m.sessionId === data.sessionId)
-        if (msg) { msg.currentQuestionIndex = data.questionIndex } else { await loadMessages() }
+        if (msg) { msg.currentQuestionIndex = data.questionIndex }
     })
-    onSocket('kahoot:ended', async (data) => {
+    onSocket('kahoot:ended', (data) => {
         const msg = messages.value.find(m => m.sessionId === data.sessionId)
-        if (msg) { msg.status = 'finished' } else { await loadMessages() }
+        if (msg) { msg.status = 'finished' }
     })
     onSocket('kahoot:player-answered', (data) => {
         if (data.sessionId) { kahootAnsweredCount.value[data.sessionId] = (kahootAnsweredCount.value[data.sessionId] || 0) + 1 }
