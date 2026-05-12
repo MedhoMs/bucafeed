@@ -68,7 +68,7 @@
         let errorText;
 
         const patterns = {
-            "name-register-form": /^[A-ZÁÉÍÓÚÑ][a-záéíóúüñ]{1,12}$/,
+            "name-register-form": /^[A-ZÁÉÍÓÚÑ][a-záéíóúüñ]{1,20}(?:\s[A-ZÁÉÍÓÚÑa-záéíóúüñ]{1,20})*$/,
             "surname-register-form": /^[A-ZÁÉÍÓÚÑ][a-záéíóúüñ]{2,20}\s[A-ZÁÉÍÓÚÑ][a-záéíóúüñ]{2,20}$/,
             "dni-register-form": /^(\d{8}[A-Z]|[XYZ]\d{7}[A-Z])$/,
             "email-register-form": /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,

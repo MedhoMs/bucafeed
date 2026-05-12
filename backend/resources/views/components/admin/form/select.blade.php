@@ -8,6 +8,7 @@
     'placeholder' => 'Seleccionar...',
     'required' => false,
     'multiple' => false,
+    'data' => [],
 ])
 
 @php
@@ -20,6 +21,12 @@
     if ($oldValues !== null) {
         $selectedValues = is_array($oldValues) ? $oldValues : [$oldValues];
     }
+
+    // Build data attributes string
+    $dataAttrs = '';
+    foreach ($data as $key => $val) {
+        $dataAttrs .= ' data-' . e($key) . "='" . e($val) . "'";
+    }
 @endphp
 
 <div>
@@ -29,7 +36,8 @@
     </label>
     <select {{ $disabled }} {{ $required ? 'required' : '' }} {{ $multiple ? 'multiple' : '' }}
         name="{{ $realName }}" id="{{ $inputId }}"
-        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 scheme-dark {{ $multiple ? 'min-h-30' : '' }}">
+        {!! $dataAttrs !!}
+        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-white/30 focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 scheme-dark {{ $multiple ? 'min-h-30' : '' }} {{ $disabled ? 'opacity-60 cursor-not-allowed' : '' }}">
 
         @if($placeholder && !$multiple)
             <option value="" class="bg-[#1a202c]">{{ $placeholder }}</option>
@@ -45,6 +53,9 @@
         @endforeach
         {{ $slot }}
     </select>
+    @if($disabled)
+        <input type="hidden" name="{{ $name }}" value="{{ $selectedValues[0] ?? '' }}">
+    @endif
     @error($name)
         <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span>
     @enderror
