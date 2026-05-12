@@ -19,6 +19,7 @@ use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MeetingMessageController;
 use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\CycleController;
+use App\Http\Controllers\ChatController;
 
 Route::get('/health', function () {
     return response()->json([
@@ -216,6 +217,11 @@ Route::middleware('auth:sanctum')->group(function () {
             'created_at' => $message->created_at,
         ], 201);
     });
+    
+    // Private Chats
+    Route::post('/chats/find-or-create', [ChatController::class, 'findOrCreate']);
+    Route::get('/chats/{chat}/messages', [ChatController::class, 'getMessages']);
+    Route::post('/chats/{chat}/messages', [ChatController::class, 'sendMessage']);
 });
 
 // Serve uploaded files (no auth required for images/PDFs to display)

@@ -43,7 +43,9 @@ RUN docker-php-ext-install \
 # Configure PHP settings
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
     sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 50M/g' "$PHP_INI_DIR/php.ini" && \
-    sed -i 's/post_max_size = 8M/post_max_size = 50M/g' "$PHP_INI_DIR/php.ini"
+    sed -i 's/post_max_size = 8M/post_max_size = 50M/g' "$PHP_INI_DIR/php.ini" && \
+    sed -i 's/max_execution_time = 30/max_execution_time = 300/g' "$PHP_INI_DIR/php.ini" && \
+    sed -i 's/max_input_time = 60/max_input_time = 300/g' "$PHP_INI_DIR/php.ini"
 
 # Get Composer from stage 1
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

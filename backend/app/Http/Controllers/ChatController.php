@@ -1,0 +1,107 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Chat;
+use App\Models\Message;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class ChatController extends Controller
+{
+    /**
+     * Find or create a private chat between the authenticated user and another user.
+     */
+    public function findOrCreate(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        $authUser = $request->user();
+        $otherUserId = $request->user_id;
+
+        // Search for a private chat that contains both users
+        $chat = Chat::where('type', 'private')
+            ->whereHas('users', function($q) use ($authUser) {
+                $q->where('users.id', $authUser->id);
+            })
+            ->whereHas('users', function($q) use ($otherUserId) {
+                $q->where('users.id', $otherUserId);
+            })
+            ->first();
+
+        if (!$chat) {
+            // Create a new private chat
+            $chat = Chat::create([
+                'type' => 'private',
+                'educational_center_id' => $authUser->educational_center_id
+            ]);
+
+            // Attach both users
+            $chat->users()->attach([$authUser->id, $otherUserId]);
+        }
+
+        return response()->json($chat);
+    }
+
+    /**
+     * Get messages for a specific chat.
+     */
+    public function getMessages(Chat $chat)
+    {
+        $messages = $chat->messages()
+            ->with('user')
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function ($msg) {
+                return [
+                    'id' => $msg->id,
+                    'type' => $msg->message_type,
+                    'content' => $msg->content,
+                    'file_name' => $msg->file_name,
+                    'metadata' => $msg->metadata,
+                    'sender' => $msg->user_id,
+                    'user_name' => $msg->user ? $msg->user->name : 'Usuario',
+                    'created_at' => $msg->created_at,
+                ];
+            });
+
+        return response()->json($messages);
+    }
+
+    /**
+     * Store a new message in a chat.
+     */
+    public function sendMessage(Request $request, Chat $chat)
+    {
+        $validated = $request->validate([
+            'content' => 'nullable|string',
+            'type' => 'required|string|in:text,image,pdf',
+            'file_name' => 'nullable|string|max:255',
+            'metadata' => 'nullable|array',
+        ]);
+
+        $message = $chat->messages()->create([
+            'user_id' => $request->user()->id,
+            'content' => $validated['content'] ?? '',
+            'message_type' => $validated['type'],
+            'file_name' => $validated['file_name'] ?? null,
+            'metadata' => $validated['metadata'] ?? null,
+        ]);
+
+        $message->load('user');
+
+        return response()->json([
+            'id' => $message->id,
+            'type' => $message->message_type,
+            'content' => $message->content,
+            'file_name' => $message->file_name,
+            'metadata' => $message->metadata,
+            'sender' => $message->user_id,
+            'user_name' => $message->user ? $message->user->name : 'Usuario',
+            'created_at' => $message->created_at,
+        ], 201);
+    }
+}

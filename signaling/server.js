@@ -17,6 +17,11 @@ io.on('connection', socket => {
     socket.to(roomId).emit('user-connected', userId);
   });
 
+  socket.on('leave-room', (roomId) => {
+    console.log(`Client ${socket.id} left room: ${roomId}`);
+    socket.leave(roomId);
+  });
+
   socket.on('send-message', (data) => {
     console.log(`Message in ${data.roomId} from ${data.userId}: ${data.message}`);
     io.to(data.roomId).emit('receive-message', data);

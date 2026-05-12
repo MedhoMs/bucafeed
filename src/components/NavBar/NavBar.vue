@@ -80,15 +80,21 @@
         menu.value = false
     }
 
+    const props = defineProps({
+        hideHamburger: { type: Boolean, default: false }
+    })
+
     const handleLogout = () => {
         logout()
         router.push('/login')
     }
+
+    defineExpose({ activeMenu })
 </script>
  
 <template>
     <!--Hamburger menu flotante premium-->
-    <button v-show="!menu" @click="activeMenu()" 
+    <button v-show="!menu && !hideHamburger" @click="activeMenu()" 
         class="lg:hidden fixed top-5 left-6 z-[100] bg-accent-normal/80 backdrop-blur-md p-2 rounded-xl border border-white/10 text-white shadow-2xl active:scale-95 transition-all flex items-center justify-center">
         <span class="material-symbols-outlined !text-3xl">menu</span>
     </button>
@@ -170,6 +176,12 @@ Enter
                 <NavBarLinks to="/meeting" :title=t.nav.meeting>
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12" /></svg>
+                    </template>
+                </NavBarLinks>
+
+                <NavBarLinks to="/private-chat" :title=t.nav.privateChat>
+                    <template #icon>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M218-381q-24 13-51 5.5T126-406q-17-29-6-60t43-42l337-112 36 71-318 168Zm22 261v-227l349-184-17-35 228-114 36 72-276 208v280H240Zm-39-481q-41-41-41-99t41-99q41-41 99-41t99 41q41 41 41 99t-41 99q-41 41-99 41t-99-41Z"/></svg>
                     </template>
                 </NavBarLinks>
  

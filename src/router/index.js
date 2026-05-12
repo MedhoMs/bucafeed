@@ -16,6 +16,7 @@ import CenterManagementView from "../views/home/CenterManagementView.vue";
 import ForumView from "../views/home/ForumView.vue";
 import SettingsView from "../views/SettingsView.vue";
 import EventDetailsView from "../views/home/EventDetailsView.vue";
+import PrivateChatView from "../views/home/PrivateChatView.vue";
 import { user } from "@/stores/auth";
 
 const router = createRouter({
@@ -85,6 +86,11 @@ const router = createRouter({
             path: '/meetingchat/:id/:name?/:teacher?/:group?',
             name: 'meetingchat',
             component: MeetingChatView
+        },
+        {
+            path: '/private-chat',
+            name: 'private-chat',
+            component: PrivateChatView
         },
         {
             path: '/laravel',

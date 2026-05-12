@@ -76,8 +76,13 @@ if [ "$APP_ENV" = "production" ]; then
 fi
 
 # 8. Run migrations (--force needed for production)
-echo "Refrescando base de datos y cargando seeders..."
-php artisan migrate:fresh --seed --force
+echo "Ejecutando migraciones pendientes..."
+php artisan migrate --force
+
+# En desarrollo, sembrar datos de prueba si la tabla está vacía
+if [ "$APP_ENV" != "production" ]; then
+    php artisan db:seed --force
+fi
 
 # Iniciar Supervisor (que gestiona PHP y Nginx)
 echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."

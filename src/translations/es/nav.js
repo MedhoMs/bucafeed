@@ -8,6 +8,7 @@ export const nav = {
     notification: "Notificaciones",
     meeting: "Charlas",
     meetingChat: "Chat Charla",
+    privateChat: "Chat Privado",
     event: "Eventos",
     eventDetails: "Eventos Detalles",
     foro: "Foro",

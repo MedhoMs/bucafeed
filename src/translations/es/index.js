@@ -15,6 +15,7 @@ import { meetings } from './meetings';
 import { events } from './events';
 import { manager } from './manager';
 import { kahoot } from './kahoot';
+import { privateChat } from './privateChat';
 
 export const es = {
     nav,
@@ -31,6 +32,7 @@ export const es = {
     home,
     notifications,
     meetings,
+    privateChat,
     events,
     manager,
     kahoot
