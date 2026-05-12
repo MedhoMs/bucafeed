@@ -78,7 +78,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="container">
         <div class="header">
             <h1>TelamoNet</h1>
         </div>
@@ -86,7 +86,7 @@
         <div class="content">
             <p>¡Hola!</p>
 
-            <p>Has iniciado el proceso de registro en <strong>TelamoNet</strong>. Para confirmar tu identidad y completar el registro, utiliza el siguiente código de verificación:</p>
+            <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en <strong>TelamoNet</strong>. Utiliza el siguiente código de verificación para continuar con el proceso:</p>
 
             <div class="code-box">
                 <div class="code">{{ $verificationCode }}</div>
@@ -94,13 +94,13 @@
             </div>
 
             <div>
-                <strong>Importante:</strong> Si no has iniciado este registro, ignora este email. No compartas este código con nadie.
+                <strong>Importante:</strong> Si no solicitaste restablecer tu contraseña, puedes ignorar este correo de forma segura. No compartas este código con nadie.
             </div>
 
-            <p>Una vez ingreses este código, podrás completar tu registro y acceder a TelamoNet.</p>
+            <p>Una vez ingreses este código, podrás crear una nueva contraseña y recuperar el acceso a tu cuenta.</p>
 
             <p>
-                ¿Tienes problemas? <a href="{{ config('app.frontend_url') }}">Vuelve a intentarlo</a>
+                ¿Tienes problemas? <a href="{{ config('app.frontend_url') }}">Inténtalo nuevamente</a>
             </p>
 
             <p>

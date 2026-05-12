@@ -333,7 +333,7 @@
                     <label class="font-bold lg:mt-7.5" for="username-register-form" id="username-register-label">{{ t.register.email }}</label>
                     <span class=" text-xs">{{ t.register.emailSpan }}</span>
                     <input type="text" class="allRolesInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="email-register-form" name="email-register-form" :placeholder="t.register.placeholderEmail" required>
-                    <p hidden class="absolute top-27.5 left-33.75 font-semibold">{{ t.register.invalidEmail }}</p>
+                    <p hidden class="absolute top-27.5 left-33.75 text-sm font-semibold">{{ t.register.invalidEmail }}</p>
                     <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
                     <input type="password" class="allRolesInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
                     <p hidden class="absolute top-48.75 left-27.5 text-sm font-semibold">{{ t.register.invalidPassword }}</p>
@@ -349,13 +349,13 @@
                 <section id="studentTeacheEuForm" class="forms flex-col mb-20 hidden">
                     <label class="font-bold" for="student-name" id="studentName">{{ t.register.name }}</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="name-register-form" name="name-register-form" :placeholder="t.register.placeholderName" required></input>
-                    <p hidden class="absolute top-18 left-6 lg:top-22.5 lg:left-7.5 text-sm font-semibold">{{ t.register.invalidName }}</p>
+                    <p hidden class="absolute top-18 left-9 lg:top-21.5 lg:left-15 text-sm font-semibold">{{ t.register.invalidName }}</p>
                     <label class="font-bold" for="student-name" id="studentName">{{ t.register.surnames }}</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="surname-register-form" name="surname-register-form" :placeholder="t.register.placeholderSurnames" required></input>
-                    <p hidden class="absolute top-40 left-25 text-sm font-semibold">{{ t.register.invalidSurnames }}</p>
+                    <p hidden class="absolute top-40 lg:top-43 left-21 lg:left-28 text-sm font-semibold">{{ t.register.invalidSurnames }}</p>
                     <label class="font-bold" for="student-name" id="studentName">{{ t.register.DNI }}</label>
                     <input type="text" class="studentTeacheEuInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="50" autocomplete="off" id="dni-register-form" name="dni-register-form" :placeholder="t.register.placeholderDNI" required></input>
-                    <p hidden class="absolute top-61.75 left-31.25 text-sm font-semibold">{{ t.register.invalidDNI }}</p>
+                    <p hidden class="absolute top-61.5 lg:top-63.75 left-30 lg:left-34.25 text-sm font-semibold">{{ t.register.invalidDNI }}</p>
                 </section>
 
                 <section id="EIForm" class="forms flex-col mb-20 hidden">
