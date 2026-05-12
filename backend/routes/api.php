@@ -20,6 +20,7 @@ use App\Http\Controllers\MeetingMessageController;
 use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\CycleController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ContentValidationController;
 
 Route::get('/health', function () {
     return response()->json([
@@ -262,6 +263,9 @@ Route::apiResource('questions', QuestionController::class);
 Route::apiResource('answers', AnswerController::class);
 Route::apiResource('tags', TagController::class);
 Route::post('answers/{answer}/useful', [AnswerController::class, 'markAsUseful']);
+
+// Validación de contenido con IA (Groq)
+Route::post('/validate-content', [ContentValidationController::class, 'validate']);
 
 // ── Panel de Gestión de Centro (para usuarios EI) ──
 Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
