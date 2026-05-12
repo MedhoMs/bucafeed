@@ -96,7 +96,9 @@
     }
 
     // ── Send ──────────────────────────────────────────────────────────────────
-    function sendMessage() {
+    async function sendMessage() {
+        if (validationLoading.value) return
+
         // Files bypass text-validation (they're images / PDFs)
         if (selectedFile.value) {
             const fileUrl = URL.createObjectURL(selectedFile.value)
@@ -116,10 +118,12 @@
         const text = message.value.trim()
         if (!text) return
 
-        // Block send if text hasn't been validated yet (ONLY if isResponse is true)
+        // 1. Automate validation if isResponse and not yet done
         if (props.isResponse && validationStatus.value !== true) {
-            // Pulse the validate button to hint the user (handled via CSS class)
-            return
+            await validateMessage()
+            if (validationStatus.value !== true) {
+                return
+            }
         }
 
         emit('sendMessage', { content: text, type: 'text' })
@@ -129,44 +133,27 @@
         validatedText.value     = ''
     }
 
-    // Allow Enter to send only when validated (if validation is required)
-    function onEnter() {
-        if (selectedFile.value || !props.isResponse || validationStatus.value === true) {
-            sendMessage()
-        }
-        message.value = ''
+    // Allow Enter to send
+    async function onEnter() {
+        if (validationLoading.value) return
+        await sendMessage()
         showEmojiPicker.value = false
-        inputRef.value?.style?.removeProperty('height')
     }
 </script>
 
 <template>
     <div class="flex flex-col my-3 w-full gap-1">
 
-        <!-- Validation feedback strip (only visible after a check) -->
+        <!-- Validation feedback strip (only visible if rejected) -->
         <transition name="slide-fade">
             <div
-                v-if="validationStatus !== null"
-                class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium"
-                :class="{
-                    'bg-green-900/40 text-green-300 border border-green-700/50': validationStatus === true,
-                    'bg-red-900/40   text-red-300   border border-red-700/50':   validationStatus === false,
-                }"
+                v-if="validationStatus === false"
+                class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-900/40 text-red-300 border border-red-700/50 shadow-lg"
             >
-                <!-- Approved -->
-                <template v-if="validationStatus === true">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    <span>Respuesta verificada — ya puedes enviarla</span>
-                </template>
-                <!-- Rejected -->
-                <template v-else>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                    <span>{{ validationMessage }}</span>
-                </template>
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>{{ validationMessage }}</span>
             </div>
         </transition>
 
@@ -208,56 +195,20 @@
                     </svg>
                 </button>
 
-                <!-- ── Validate button ──────────────────────────────────── -->
+                <!-- Send button -->
                 <button
-                    v-if="props.isResponse && !selectedFile"
-                    type="button"
-                    :disabled="validationLoading || !message.trim()"
-                    @click="validateMessage"
-                    class="transition-colors cursor-pointer rounded-lg p-1 disabled:opacity-30 disabled:cursor-not-allowed"
-                    :class="{
-                        'text-white/50 hover:text-white hover:bg-[#152027]': validationStatus === null,
-                        'text-green-400 hover:bg-green-900/30':              validationStatus === true,
-                        'text-red-400   hover:bg-red-900/30':                validationStatus === false,
-                    }"
-                    :title="validationStatus === true
-                        ? 'Contenido verificado'
-                        : validationStatus === false
-                            ? 'Verificación fallida — corrige y vuelve a validar'
-                            : 'Verificar contenido antes de enviar'"
+                    @click="sendMessage"
+                    :disabled="validationLoading"
+                    class="disabled:opacity-50 transition-opacity"
                 >
-                    <!-- Spinner -->
-                    <svg v-if="validationLoading" class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                    </svg>
-                    <!-- Shield check (approved) -->
-                    <svg v-else-if="validationStatus === true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        <polyline points="9 12 11 14 15 10"/>
-                    </svg>
-                    <!-- Shield X (rejected) -->
-                    <svg v-else-if="validationStatus === false" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        <line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/>
-                    </svg>
-                    <!-- Shield idle -->
-                    <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
+                        class="icon icon-tabler icons-tabler-filled icon-tabler-square-arrow-right shrink-0 transition-opacity cursor-pointer"
+                    >
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M19 2a3 3 0 0 1 3 3v14a3 3 0 0 1 -3 3h-14a3 3 0 0 1 -3 -3v-14a3 3 0 0 1 3 -3zm-6.387 5.21a1 1 0 0 0 -1.32 .083l-.083 .094a1 1 0 0 0 .083 1.32l2.292 2.293h-5.585l-.117 .007a1 1 0 0 0 .117 1.993h5.585l-2.292 2.293l-.083 .094a1 1 0 0 0 1.497 1.32l4 -4l.073 -.082l.074 -.104l.052 -.098l.044 -.11l.03 -.112l.017 -.126l.003 -.075l-.007 -.118l-.029 -.148l-.035 -.105l-.054 -.113l-.071 -.111a1.008 1.008 0 0 0 -.097 -.112l-4 -4z"/>
                     </svg>
                 </button>
-                <!-- ─────────────────────────────────────────────────────── -->
-
-                <!-- Send button — greyed out if text not yet validated -->
-                <svg
-                    @click="sendMessage"
-                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"
-                    class="icon icon-tabler icons-tabler-filled icon-tabler-square-arrow-right shrink-0 transition-opacity"
-                    :class="(selectedFile || !props.isResponse || validationStatus === true) ? 'cursor-pointer opacity-100' : 'opacity-25 cursor-not-allowed'"
-                >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M19 2a3 3 0 0 1 3 3v14a3 3 0 0 1 -3 3h-14a3 3 0 0 1 -3 -3v-14a3 3 0 0 1 3 -3zm-6.387 5.21a1 1 0 0 0 -1.32 .083l-.083 .094a1 1 0 0 0 .083 1.32l2.292 2.293h-5.585l-.117 .007a1 1 0 0 0 .117 1.993h5.585l-2.292 2.293l-.083 .094a1 1 0 0 0 1.497 1.32l4 -4l.073 -.082l.074 -.104l.052 -.098l.044 -.11l.03 -.112l.017 -.126l.003 -.075l-.007 -.118l-.029 -.148l-.035 -.105l-.054 -.113l-.071 -.111a1.008 1.008 0 0 0 -.097 -.112l-4 -4z"/>
-                </svg>
             </div>
         </div>
 

@@ -147,11 +147,15 @@ async function validateContent() {
 
 // ── Publish ───────────────────────────────────────────────────────────────────
 async function handleAction() {
-    if (!current.value.url || loading.value) return
+    if (!current.value.url || loading.value || validationLoading.value) return
 
-    if (!canPublish.value) {
-        emit('toast', { msg: 'Debes validar el contenido antes de publicar', type: 'error' })
-        return
+    // 1. Automate validation if not done yet or content changed
+    if (validationStatus.value !== true) {
+        await validateContent()
+        // If still not approved after validation, stop here
+        if (validationStatus.value !== true) {
+            return 
+        }
     }
 
     try {
@@ -187,91 +191,27 @@ async function handleAction() {
             @close="$emit('close')"
             @confirm="handleAction"
             :title="current.title"
-            :loading="loading"
+            :loading="loading || validationLoading"
             confirm-text="Publicar"
-            :confirm-disabled="!canPublish"
         >
             <GenericForm
                 v-model="form"
                 :fields="current.fields"
-                :loading="loading"
+                :loading="loading || validationLoading"
             />
 
-            <!-- ── Content Validator ─────────────────────────────────────── -->
-            <div class="flex flex-col items-center justify-center mt-3 space-y-2">
-
-                <!-- Validate button -->
-                <button
-                    type="button"
-                    :disabled="validationLoading || !form.content?.trim()"
-                    @click="validateContent"
-                    class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                    :class="{
-                        'bg-blue-600 hover:bg-blue-700 text-white':       validationStatus === null,
-                        'bg-green-600 hover:bg-green-700 text-white':     validationStatus === true,
-                        'bg-red-600   hover:bg-red-700   text-white':     validationStatus === false,
-                    }"
-                >
-                    <!-- Spinner while loading -->
-                    <svg v-if="validationLoading" class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path  class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                    </svg>
-                    <!-- Shield icon (idle / rejected) -->
-                    <svg v-else-if="validationStatus !== true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                    <!-- Check icon (approved) -->
-                    <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-
-                    <span>
-                        {{ validationLoading
-                            ? 'Validando...'
-                            : validationStatus === true
-                                ? 'Contenido aprobado'
-                                : validationStatus === false
-                                    ? 'Volver a validar'
-                                    : 'Verificar contenido' }}
-                    </span>
-                </button>
-
-                <!-- Feedback message (only shown after validation) -->
-                <div
-                    v-if="validationStatus !== null"
-                    class="flex items-start gap-2 rounded-lg px-3 py-2 text-sm"
-                    :class="{
-                        'bg-green-50 text-green-800 border border-green-200': validationStatus === true,
-                        'bg-red-50   text-red-800   border border-red-200':   validationStatus === false,
-                    }"
-                >
-                    <!-- Approved -->
-                    <template v-if="validationStatus === true">
-                        <svg class="mt-0.5 shrink-0" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        <span>Tu pregunta puede publicarse. Haz clic en <strong>Publicar</strong>.</span>
-                    </template>
-
-                    <!-- Rejected -->
-                    <template v-else>
-                        <svg class="mt-0.5 shrink-0" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                        </svg>
-                        <div>
-                            <p>{{ validationMessage || 'El contenido no es apropiado para el foro.' }}</p>
-                            <p v-if="validationWords.length" class="mt-1">
-                                Palabras detectadas:
-                                <span class="font-semibold">{{ validationWords.join(', ') }}</span>
-                            </p>
-                        </div>
-                    </template>
+            <!-- ── Error Feedback (only if rejected) ──────────────────────── -->
+            <div v-if="validationStatus === false" class="mt-4 flex items-start gap-2 rounded-xl px-4 py-3 text-sm bg-red-500/10 text-red-200 border border-red-500/20 shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
+                <svg class="mt-0.5 shrink-0 text-red-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <div class="space-y-1">
+                    <p class="font-bold uppercase tracking-tight text-[11px]">{{ validationMessage || 'Contenido inapropiado' }}</p>
+                    <p v-if="validationWords.length" class="opacity-70 uppercase text-[11px]">
+                        Detectado: <span class="font-mono text-red-400 text-[12px]">{{ validationWords.join(', ') }}</span>
+                    </p>
                 </div>
-
             </div>
-            <!-- ─────────────────────────────────────────────────────────── -->
-
         </BaseModal>
     </div>
 </template>
