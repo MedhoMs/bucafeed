@@ -147,59 +147,23 @@
     <div class="h-screen overflow-hidden">
         <NavBar ref="navBarRef" hide-hamburger></NavBar>
         
-        <main class="lg:pl-75 flex w-full h-full overflow-hidden">
-            
-            <div class="w-full lg:w-90 border-r border-white/5 flex flex-col bg-accent-normal z-10 shrink-0" :class="{ 'hidden lg:flex': mobileShowChat }">
-                <div class="p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <button @click="openNavMenu" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
-                            <span class="material-symbols-outlined !text-3xl">menu</span>
-                        </button>
-                        <h2 class="text-2xl font-bold text-white">Chat Privado</h2>
-                    </div>
-                    <p class="text-xs text-white opacity-50 uppercase font-bold tracking-widest">
-                        {{ (authUser?.role?.toLowerCase() === 'student' || authUser?.role?.toLowerCase() === 'alumno') ? 'Profesores' : 'Estudiantes' }}
-                    </p>
-                </div>
-
-                <div class="flex-1 overflow-y-auto custom-scrollbar">
-                    <div v-if="loadingContacts" class="px-6 space-y-4">
-                        <div v-for="i in 3" :key="i" class="w-full h-16 skeleton"></div>
-                    </div>
-
-                    <div 
-                        v-else
-                        v-for="contact in contacts" 
-                        :key="contact.id"
-                        @click="selectContact(contact.id)"
-                        class="px-6 py-4 flex items-center gap-3 cursor-pointer transition-colors border-b border-white/5"
-                        :class="[Number(selectedContactId) === Number(contact.id) ? 'bg-white/10' : 'hover:bg-white/5']"
-                    >
-                        <UserAvatar :user="contact" size="w-10 h-10" />
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-sm font-bold text-white truncate">{{ contact.name }} {{ contact.last_name }}</h3>
-                            <p class="text-[10px] text-white opacity-40 uppercase">{{ contact.role_name || 'Contacto' }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <main class="lg:pl-75 flex w-full h-full overflow-hidden">     
             
             <div class="flex-1 flex-col overflow-hidden relative" :class="mobileShowChat ? 'flex' : 'hidden lg:flex'">
                 <template v-if="selectedContact">
-                    <div class="px-6 py-4 border-b border-white/5 flex items-center gap-3 bg-white/5 backdrop-blur-md z-20 shrink-0">
+                    <div class="px-6 py-4 border-b border-white/5 flex justify-between items-center gap-3 bg-white/5 backdrop-blur-md z-20 shrink-0">
                         <button @click="openNavMenu" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
                             <span class="material-symbols-outlined !text-3xl">menu</span>
                         </button>
-                        <button @click="goBack" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/></svg>
-                        </button>
-                        <UserAvatar :user="selectedContact" size="w-10 h-10" />
-                        <div>
-                            <h3 class="text-lg font-bold text-white leading-none mb-1">{{ selectedContact.name }} {{ selectedContact.last_name }}</h3>
-                            <p class="text-xs text-white opacity-60 font-medium">
-                                {{ (authUser?.role?.toLowerCase() === 'student' || authUser?.role?.toLowerCase() === 'alumno') ? 'Chat de Tutoría' : 'Chat con Estudiante' }}
-                            </p>
+                        <div class="flex items-center gap-4">
+                            <UserAvatar :user="selectedContact" size="w-10 h-10" />
+                            <div>
+                                <h3 class="text-lg font-bold text-white leading-none mb-1">{{ selectedContact.name }} {{ selectedContact.last_name }}</h3>
+                            </div>
                         </div>
+                        <button @click="goBack" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="32px" width="32px" viewBox="0 -960 960 960" fill="#e3e3e3"><path d="M680-240v-80h200v80H680Zm-80-200v-80h280v80H600Zm-80-200v-80h360v80H520ZM235-515q-35-35-35-85t35-85q35-35 85-35t85 35q35 35 35 85t-35 85q-35 35-85 35t-85-35ZM80-240v-76q0-21 10-40t28-30q45-27 95.5-40.5T320-440q56 0 106.5 13.5T522-386q18 11 28 30t10 40v76H80Zm160-110q-39 10-74 30h308q-35-20-74-30t-80-10q-41 0-80 10Zm108.5-221.5Q360-583 360-600t-11.5-28.5Q337-640 320-640t-28.5 11.5Q280-617 280-600t11.5 28.5Q303-560 320-560t28.5-11.5ZM320-600Zm0 280Z"/></svg>
+                        </button>
                     </div>
                     <div ref="chatContainer" class="flex-1 overflow-y-auto p-6 flex flex-col space-y-4 custom-scrollbar">
                         <div v-if="loadingMessages" class="flex-1 flex items-center justify-center">
@@ -246,6 +210,41 @@
                     <p class="text-xs font-bold uppercase tracking-widest max-w-xs leading-loose">
                         {{ t.privateChat.selectToStart }}
                     </p>
+                </div>
+            </div>
+
+            <div class="w-full lg:w-90 border-r border-white/5 flex flex-col bg-accent-normal z-10 shrink-0" :class="{ 'hidden lg:flex': mobileShowChat }">
+                <div class="p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <button @click="openNavMenu" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
+                            <span class="material-symbols-outlined !text-3xl">menu</span>
+                        </button>
+                        <h2 class="text-2xl font-bold text-white">Chat Privado</h2>
+                    </div>
+                    <p class="text-xs text-white opacity-50 uppercase font-bold tracking-widest">
+                        {{ (authUser?.role?.toLowerCase() === 'student' || authUser?.role?.toLowerCase() === 'alumno') ? 'Profesores' : 'Estudiantes' }}
+                    </p>
+                </div>
+
+                <div class="flex-1 overflow-y-auto custom-scrollbar">
+                    <div v-if="loadingContacts" class="px-6 space-y-4">
+                        <div v-for="i in 3" :key="i" class="w-full h-16 skeleton"></div>
+                    </div>
+
+                    <div 
+                        v-else
+                        v-for="contact in contacts" 
+                        :key="contact.id"
+                        @click="selectContact(contact.id)"
+                        class="px-6 py-4 flex items-center gap-3 cursor-pointer transition-colors border-b border-white/5"
+                        :class="[Number(selectedContactId) === Number(contact.id) ? 'bg-white/10' : 'hover:bg-white/5']"
+                    >
+                        <UserAvatar :user="contact" size="w-10 h-10" />
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-bold text-white truncate">{{ contact.name }} {{ contact.last_name }}</h3>
+                            <p class="text-[10px] text-white opacity-40 uppercase">{{ contact.role_name || 'Contacto' }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
