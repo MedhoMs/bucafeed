@@ -1,8 +1,11 @@
 <script setup>
     import NavBar from '../../components/NavBar/NavBar.vue';
-    import SearchBar from '../../components/SearchBar.vue';
+
     import SideBar from '../../components/SideBar.vue';
     import UserAvatar from '../../components/common/UserAvatar.vue';
+    import EmojiPicker from '../../components/common/EmojiPicker.vue';
+
+    import BaseModal from '@/components/modals/BaseModal.vue';
     import PageHeader from '@/components/common/PageHeader.vue';
     import Pagination from '../../components/common/Pagination.vue';
     import TextChatBar from '@/components/TextChatBar.vue';
@@ -36,6 +39,39 @@
     const loading = ref(true);
     const loadingAnswers = ref(false);
     const submitting = ref(false);
+    const isExpanded = ref(false);
+    const newAnswer = ref("");
+    const newImage = ref(null);
+    const showConfirmModal = ref(false);
+    const idToDelete = ref(null);
+    const typeToDelete = ref(null);
+    const showEmojiPicker = ref(false);
+
+    const triggerDelete = (type, id) => {
+        typeToDelete.value = type;
+        idToDelete.value = id;
+        showConfirmModal.value = true;
+    };
+
+    const confirmDelete = async () => {
+        if (!idToDelete.value || !typeToDelete.value) return;
+        await handleDelete(typeToDelete.value, idToDelete.value);
+        showConfirmModal.value = false;
+        idToDelete.value = null;
+        typeToDelete.value = null;
+    };
+
+    const onSelectEmoji = (emoji) => {
+        newAnswer.value += emoji.i;
+    };
+
+    watch(newAnswer, () => {
+        const el = textareaRef.value;
+        if (el) {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        }
+    });
 
     const loadQuestion = async (id) => {
         try {
@@ -148,33 +184,10 @@
 <template>
     <div class="min-h-screen">
         <NavBar></NavBar>
-        <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen justify-between relative">
-            <PageHeader noMargin>
-                <template #left v-if="!loading && question">
-                    <!-- Botón Volver -->
-                    <router-link to="/foro" class="inline-flex items-center gap-2 text-white hover:bg-accent-normal-hover transition-colors bg-accent-normal px-6 py-3 rounded-xl text-sm font-bold w-full md:w-auto justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
-                        {{ t.forum.backToForum }}
-                    </router-link>
-                </template>
-                <template #search>
-                    <SearchBar class="w-full"></SearchBar>
-                </template>
-                <template #bottom>
-                    <div class="py-2">
-                        <Pagination 
-                            :current-page="pagination.currentPage" 
-                            :last-page="pagination.lastPage" 
-                            @change="handlePageChange"
-                            class="mt-0!"
-                        />
-                    </div>
-                </template>
-            </PageHeader>
+        <main class="lg:pl-75 pt-20 lg:pt-8 flex flex-col min-h-screen relative">
+            <section class="text-white w-full px-4 lg:px-14 flex-1 flex flex-col">
     
-            <section class="text-white w-full px-4 lg:px-14 mb-4 pb-28">
-    
-                <div id="mainTrending" class="flex flex-col items-center mt-6 min-h-screen w-full">
+                <div id="mainTrending" class="flex flex-col items-center w-full flex-1">
                     
                     <div v-if="apiLoading && !question" class="text-white/40 italic py-10 mt-20">{{ t.forum.loadingThread }}</div>
                     
@@ -196,7 +209,7 @@
                                 <!-- Botón Eliminar Question (Admin) -->
                                 <button 
                                     v-if="user?.role?.toLowerCase() === 'admin'"
-                                    @click="handleDelete('question', question.id)"
+                                    @click="triggerDelete('question', question.id)"
                                     class="ml-auto p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
                                     :title="t.forum.deleteQuestion"
                                 >
@@ -249,7 +262,7 @@
                                             <!-- Botón Eliminar Answer (Admin) -->
                                             <button 
                                                 v-if="user?.role?.toLowerCase() === 'admin'"
-                                                @click="handleDelete('answer', ans.id)"
+                                                @click="triggerDelete('answer', ans.id)"
                                                 class="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
                                                 :title="t.forum.deleteAnswer"
                                             >
@@ -266,6 +279,26 @@
                         </div>
                     </div>
                 </div>
+
+                <div v-if="!loading && question" class="w-full pb-32 mt-auto pt-12">
+                    <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-6 pt-8 border-t border-white/5 w-full">
+                        <div class="flex justify-center md:justify-start">
+                            <router-link to="/foro" class="inline-flex items-center gap-2 text-white hover:bg-accent-normal-hover transition-colors bg-accent-normal px-8 py-3 rounded-xl text-sm font-bold w-full md:w-auto justify-center shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
+                                {{ t.forum.backToForum }}
+                            </router-link>
+                        </div>
+                        <div class="flex justify-center">
+                            <Pagination 
+                                :current-page="pagination.currentPage" 
+                                :last-page="pagination.lastPage" 
+                                @change="handlePageChange"
+                                class="mt-0!"
+                            />
+                        </div>
+                        <div class="hidden md:block"></div>
+                    </div>
+                </div>
             </section>
             <!-- El Formulario ahora usa TextChatBar con validación de Groq -->
             <div class="fixed bottom-0 right-0 left-0 lg:left-75 bg-[#0f2828] border-t border-white/10 px-4 lg:px-8 py-3 z-50">
@@ -275,6 +308,18 @@
             </div>
         </main>
     </div>
+    <BaseModal 
+        v-if="showConfirmModal"
+        :title="t.forum.confirmDeleteTitle"
+        :confirmText="t.forum.confirm"
+        :cancelText="t.forum.cancel"
+        @close="showConfirmModal = false"
+        @confirm="confirmDelete"
+    >
+        <p class="text-white/70 text-sm leading-relaxed">
+            {{ t.forum.confirmDeleteMessage }}
+        </p>
+    </BaseModal>
 </template>
 
 <style scoped>

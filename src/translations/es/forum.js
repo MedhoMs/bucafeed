@@ -18,5 +18,9 @@ export const forum = {
     user: "Usuario",
     student: "Estudiante",
     admin: "ADMINISTRADOR",
-    teacher: "PROFESOR"
+    teacher: "PROFESOR",
+    confirmDeleteTitle: "¿Estás seguro?",
+    confirmDeleteMessage: "Esta acción no se puede deshacer. La pregunta y todas sus respuestas serán eliminadas permanentemente.",
+    confirm: "Confirmar",
+    cancel: "Cancelar"
 };

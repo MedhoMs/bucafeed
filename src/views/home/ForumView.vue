@@ -10,7 +10,7 @@
     import { useRouter } from 'vue-router';
     import { useApi } from '../../composables/useApi';
     import Pagination from '../../components/common/Pagination.vue';
-
+    import BaseModal from '@/components/modals/BaseModal.vue';
     import { useTranslations } from '../../composables/useTranslations'
 
     const { t } = useTranslations()
@@ -24,6 +24,8 @@
         lastPage: 1
     });
     const activeModal = ref(null); // 'question' | null
+    const showConfirmModal = ref(false);
+    const idToDelete = ref(null);
     const toast = ref({ show: false, msg: '', type: 'success' });
 
     const showToast = ({ msg, type = 'success' }) => {
@@ -31,14 +33,26 @@
         setTimeout(() => toast.value.show = false, 3000)
     }
 
-    const deleteQuestion = async (id) => {
+    const triggerDelete = (id) => {
+        idToDelete.value = id;
+        showConfirmModal.value = true;
+    };
+
+    const confirmDelete = async () => {
+        if (!idToDelete.value) return;
+        
+        const id = idToDelete.value;
         questions.value = questions.value.filter(q => q.id != id);
         rawQuestions.value = rawQuestions.value.filter(q => q.id != id);
+        
         try {
             await del(`questions/${id}`);
             showToast({ msg: t.value.forum.deleted });
         } catch (e) {
-            showToast({ msg: t.value.forum.errorDelete, type: 'error' });
+            console.error("Error al eliminar pregunta:", e);
+        } finally {
+            showConfirmModal.value = false;
+            idToDelete.value = null;
         }
     };
 
@@ -104,19 +118,11 @@
                     />
                 </template>
 
-                <template #bottom>
-                    <Pagination 
-                        :currentPage="pagination.currentPage" 
-                        :lastPage="pagination.lastPage"
-                        @change="loadQuestions"
-                        class="mt-0!"
-                    />
-                </template>
             </PageHeader>
 
     
-            <section class="text-white w-full px-6 lg:px-14 mb-20">
-                <div id="mainBody" class="flex flex-col gap-6 w-full">
+            <section class="text-white w-full px-6 lg:px-14 flex-1 flex flex-col">
+                <div id="mainBody" class="flex flex-col gap-6 w-full flex-1">
                     <div v-if="apiLoading && questions.length === 0" class="text-white/40 italic py-10">{{ t.forum.loading }}</div>
     
                     <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">
@@ -150,7 +156,7 @@
     
                             <button 
                                 v-if="user?.role?.toLowerCase() === 'admin'"
-                                @click.stop="deleteQuestion(q.id)"
+                                @click.stop="triggerDelete(q.id)"
                                 class="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
                                 :title="t.forum.delete"
                             >
@@ -158,12 +164,32 @@
                             </button>
                         </div>
                     </div>
+                </div>
 
-
-            </div>
-        </section>
+                <div class="mt-auto py-8 flex justify-center w-full">
+                    <Pagination 
+                        :currentPage="pagination.currentPage" 
+                        :lastPage="pagination.lastPage"
+                        @change="handlePageChange"
+                        class="mt-0!"
+                    />
+                </div>
+            </section>
         </main>
     </div>
+
+    <BaseModal 
+        v-if="showConfirmModal"
+        :title="t.forum.confirmDeleteTitle"
+        :confirmText="t.forum.confirm"
+        :cancelText="t.forum.cancel"
+        @close="showConfirmModal = false"
+        @confirm="confirmDelete"
+    >
+        <p class="text-white/70 text-sm leading-relaxed">
+            {{ t.forum.confirmDeleteMessage }}
+        </p>
+    </BaseModal>
 
     <!-- Modal Unificado para el Foro -->
     <ForumManagerCore 

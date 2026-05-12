@@ -166,7 +166,7 @@
                 <template v-if="selectedContact">
                     <div class="px-6 py-4 border-b border-white/5 flex justify-between items-center gap-3 bg-white/5 backdrop-blur-md z-20 shrink-0">
                         <button @click="openNavMenu" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
-                            <span class="material-symbols-outlined !text-3xl">menu</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
                         </button>
                         <div class="flex items-center gap-4">
                             <UserAvatar :user="selectedContact" size="w-10 h-10" />
@@ -230,7 +230,7 @@
                 <div class="p-6">
                     <div class="flex items-center gap-3 mb-4">
                         <button @click="openNavMenu" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
-                            <span class="material-symbols-outlined !text-3xl">menu</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
                         </button>
                         <h2 class="text-2xl font-bold text-white">Chat Privado</h2>
                     </div>

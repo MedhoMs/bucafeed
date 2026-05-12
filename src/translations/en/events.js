@@ -9,5 +9,9 @@ export const events = {
     cardJoined: "{count} students have joined",
     noDate: "No date",
     timeLabel: "Time",
-    viewDetails: "View Details"
+    viewDetails: "View Details",
+    deleteTitle: "Delete event?",
+    deleteConfirm: "Delete",
+    deleteWarning: "This action cannot be undone. Are you sure you want to delete this event?",
+    deleted: "Event deleted successfully"
 };
