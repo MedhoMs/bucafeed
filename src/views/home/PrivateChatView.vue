@@ -196,7 +196,7 @@
                                 <div :class="[Number(msg.sender) === Number(authUser?.id) ? 'bg-secondary-normal rounded-tr-none' : 'bg-forum-card rounded-tl-none', 'rounded-2xl p-3 text-white shadow-sm w-fit']">
                                     <p v-if="msg.type === 'text'" class="break-words whitespace-pre-wrap text-sm leading-relaxed">{{ msg.content }}</p>
                                     
-                                    <img v-else-if="msg.type === 'image'" :src="msg.content" class="max-w-full rounded-lg cursor-pointer" @click="window.open(msg.content, '_blank')" />
+                                    <img v-else-if="msg.type === 'image'" :src="msg.content" class="w-full max-w-80 max-h-64 object-contain rounded-lg cursor-pointer bg-black/20" @click="window.open(msg.content, '_blank')" />
                                     
                                     <a v-else-if="msg.type === 'pdf'" :href="msg.content" target="_blank" class="flex items-center gap-3 bg-black/20 p-3 rounded-xl no-underline text-white border border-white/5">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--error-normal)" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/></svg>
