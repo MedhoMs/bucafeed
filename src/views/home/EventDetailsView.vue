@@ -85,7 +85,7 @@
                     <button @click="handleJoin" 
                         :class="['flex justify-center items-center gap-2 p-4 cursor-pointer rounded-2xl duration-300 ease-in shadow-xl min-w-[180px] w-full md:w-auto font-black uppercase tracking-widest text-[10px]', 
                                  eventDetails?.joined ? 'bg-success-normal hover:bg-success-normal-hover text-white' : 'bg-accent-normal hover:bg-accent-normal-hover text-white']">
-                        <span class="material-symbols-outlined !text-3xl text-white">{{ eventDetails?.joined ? 'check_circle' : 'local_activity' }}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m368-320 112-84 110 84-42-136 112-88H524l-44-136-44 136H300l110 88-42 136ZM160-160q-33 0-56.5-23.5T80-240v-135q0-11 7-19t18-10q24-8 39.5-29t15.5-47q0-26-15.5-47T105-556q-11-2-18-10t-7-19v-135q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v135q0 11-7 19t-18 10q-24 8-39.5 29T800-480q0 26 15.5 47t39.5 29q11 2 18 10t7 19v135q0 33-23.5 56.5T800-160H160Zm0-80h640v-102q-37-22-58.5-58.5T720-480q0-43 21.5-79.5T800-618v-102H160v102q37 22 58.5 58.5T240-480q0 43-21.5 79.5T160-342v102Zm320-240Z"/></svg>
                         {{ eventDetails?.joined ? 'Anotado / Dentro' : 'Participar' }}
                     </button>
                 </template>
@@ -94,14 +94,14 @@
             <section class="flex flex-col gap-8 text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20">
                 <div class="flex flex-col sm:flex-row gap-8 sm:gap-14 w-fit mt-4">
                     <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined bg-accent-normal py-2 px-3 !text-3xl rounded-2xl text-white">school</span>
+                        <svg class="bg-accent-normal p-3 rounded-2xl" xmlns="http://www.w3.org/2000/svg" height="56px" viewBox="0 -960 960 960" width="56px" fill="#e3e3e3"><path d="M480-144 216-276v-240L48-600l432-216 432 216v312h-72v-276l-96 48v240L480-144Zm0-321 271-135-271-135-271 135 271 135Zm0 240 192-96v-159l-192 96-192-96v159l192 96Zm0-240Zm0 81Zm0 0Z"/></svg>
                         <div>
                             <p class="font-bold text-xs">Institución educativa</p>
                             <p>{{ eventDetails?.center_name || 'Desconocido' }}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined bg-accent-normal py-2 px-3 !text-3xl rounded-2xl text-white">schedule</span>
+                        <svg class="bg-accent-normal p-3 rounded-2xl" xmlns="http://www.w3.org/2000/svg" height="56px" viewBox="0 -960 960 960" width="56px" fill="#e3e3e3"><path d="m627-287 45-45-159-160v-201h-60v225l174 181ZM480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-82 31.5-155t86-127.5Q252-817 325-848.5T480-880q82 0 155 31.5t127.5 86Q817-708 848.5-635T880-480q0 82-31.5 155t-86 127.5Q708-143 635-111.5T480-80Zm0-400Zm0 340q140 0 240-100t100-240q0-140-100-240T480-820q-140 0-240 100T140-480q0 140 100 240t240 100Z"/></svg>
                         <div>
                             <p class="font-bold text-xs">Hora inicio - Hora fin</p>
                             <p>{{ eventDetails?.start_time?.substring(0,5) || '--:--' }} - {{ eventDetails?.end_time?.substring(0,5) || '--:--' }}</p>
@@ -112,7 +112,7 @@
                 <div class="flex flex-col lg:flex-row gap-8 bg-white/5 border border-white/10 rounded-3xl p-6 md:p-10">
                     <img v-if="eventDetails?.image_url" :src="eventDetails.image_url" class="w-full lg:w-2/5 rounded-3xl object-cover" alt="Event Image">
                     <div v-else class="w-full lg:w-2/5 rounded-3xl bg-secondary-normal/20 flex items-center justify-center border border-secondary-normal/30 min-h-[200px]">
-                        <span class="material-symbols-outlined text-6xl text-white/30">image</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#B7B7B7"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z"/></svg>
                     </div>
                     <div class="flex flex-col gap-8 flex-1">
                         <div class="flex flex-col gap-4">
@@ -121,14 +121,14 @@
                         </div>
                         <div class="flex flex-col sm:flex-row gap-8 sm:gap-12">
                             <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined bg-[#0f2828] py-2 px-3 !text-3xl rounded-2xl text-white">groups</span>
+                                <svg class="bg-accent-normal p-3 rounded-2xl" xmlns="http://www.w3.org/2000/svg" height="56px" viewBox="0 -960 960 960" width="56px" fill="#e3e3e3"><path d="M0-240v-53q0-38.57 41.5-62.78Q83-380 150.38-380q12.16 0 23.39.5t22.23 2.15q-8 17.35-12 35.17-4 17.81-4 37.18v65H0Zm240 0v-65q0-32 17.5-58.5T307-410q32-20 76.5-30t96.5-10q53 0 97.5 10t76.5 30q32 20 49 46.5t17 58.5v65H240Zm540 0v-65q0-19.86-3.5-37.43T765-377.27q11-1.73 22.17-2.23 11.17-.5 22.83-.5 67.5 0 108.75 23.77T960-293v53H780Zm-480-60h360v-6q0-37-50.5-60.5T480-390q-79 0-129.5 23.5T300-305v5ZM149.57-410q-28.57 0-49.07-20.56Q80-451.13 80-480q0-29 20.56-49.5Q121.13-550 150-550q29 0 49.5 20.5t20.5 49.93q0 28.57-20.5 49.07T149.57-410Zm660 0q-28.57 0-49.07-20.56Q740-451.13 740-480q0-29 20.56-49.5Q781.13-550 810-550q29 0 49.5 20.5t20.5 49.93q0 28.57-20.5 49.07T809.57-410ZM480-480q-50 0-85-35t-35-85q0-51 35-85.5t85-34.5q51 0 85.5 34.5T600-600q0 50-34.5 85T480-480Zm.35-60Q506-540 523-557.35t17-43Q540-626 522.85-643t-42.5-17q-25.35 0-42.85 17.15t-17.5 42.5q0 25.35 17.35 42.85t43 17.5ZM480-300Zm0-300Z"/></svg>
                                 <div>
                                     <p class="font-bold text-xs">Participantes</p>
                                     <p>{{ eventDetails?.participants_count || 0 }} admitidos</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined bg-[#0f2828] py-2 px-3 !text-3xl rounded-2xl text-white">location_on</span>
+                                <svg class="bg-accent-normal p-3 rounded-2xl" xmlns="http://www.w3.org/2000/svg" height="56px" viewBox="0 -960 960 960" width="56px" fill="#e3e3e3"><path d="M529.5-510.5Q550-531 550-560t-20.5-49.5Q509-630 480-630t-49.5 20.5Q410-589 410-560t20.5 49.5Q451-490 480-490t49.5-20.5ZM480-159q133-121 196.5-219.5T740-552q0-118-75.5-193T480-820q-109 0-184.5 75T220-552q0 75 65 173.5T480-159Zm0 79Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/></svg>
                                 <div>
                                     <p class="font-bold text-xs">Ubicación</p>
                                     <p>{{ eventDetails?.location || 'Ubicación no disponible' }}</p>
@@ -150,7 +150,7 @@
                 </div>
                 <div class="mt-4 flex justify-center md:justify-start">
                     <RouterLink to="/event" class="flex justify-center items-center gap-2 bg-accent-normal hover:bg-accent-normal-hover text-white px-8 py-3.5 cursor-pointer rounded-2xl duration-300 shadow-lg font-black uppercase tracking-widest text-[10px]">
-                        <span class="material-symbols-outlined !text-2xl text-white">arrow_back</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z"/></svg>
                         {{ t.nav.back }}
                     </RouterLink>
                 </div>

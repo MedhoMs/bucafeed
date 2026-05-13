@@ -123,7 +123,7 @@ watch(() => route.params.id, (newId) => {
                             <img :src="profileData.bannerUrl" alt="banner" class="w-full h-75 object-cover transition-opacity group-hover:opacity-80" />
                             <div v-if="profileData.isOwner" class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                                 <div class="bg-black/50 p-3 rounded-full backdrop-blur-sm">
-                                    <span class="material-symbols-outlined !text-2xl text-white">photo_camera</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M480-260q75 0 127.5-52.5T660-440q0-75-52.5-127.5T480-620q-75 0-127.5 52.5T300-440q0 75 52.5 127.5T480-260Zm0-80q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM160-120q-33 0-56.5-23.5T80-200v-480q0-33 23.5-56.5T160-760h126l74-80h240l74 80h126q33 0 56.5 23.5T880-680v480q0 33-23.5 56.5T800-120H160Zm0-80h640v-480H638l-73-80H395l-73 80H160v480Zm320-240Z"/></svg>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +131,7 @@ watch(() => route.params.id, (newId) => {
                             <img :src="profileData.iconoUrl" alt="icono" class="icono w-25 h-25 rounded-full border-4 border-background bg-background object-cover shadow-xl transition-opacity group-hover:opacity-80" :class="{'opacity-50 blur-sm': saving}"/>
                             <div v-if="profileData.isOwner && !saving" class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                                 <div class="bg-black/50 p-2 rounded-full backdrop-blur-sm">
-                                    <span class="material-symbols-outlined text-white !text-lg">add_a_photo</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M440-440ZM120-120q-33 0-56.5-23.5T40-200v-480q0-33 23.5-56.5T120-760h126l74-80h240v80H355l-73 80H120v480h640v-360h80v360q0 33-23.5 56.5T760-120H120Zm640-560v-80h-80v-80h80v-80h80v80h80v80h-80v80h-80ZM440-260q75 0 127.5-52.5T620-440q0-75-52.5-127.5T440-620q-75 0-127.5 52.5T260-440q0 75 52.5 127.5T440-260Zm0-80q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29Z"/></svg>
                                 </div>
                             </div>
                             <div v-if="saving" class="absolute inset-0 flex items-center justify-center">
@@ -144,7 +144,7 @@ watch(() => route.params.id, (newId) => {
                     <div class="flex justify-end items-center p-4 mt-0 gap-3">
                         <ButtonTemplate v-if="!profileData.isOwner" :texto="t.profile.follow" :accion="() => console.log('seguir usuario')" />
                         <router-link v-if="profileData.isOwner" to="/settings" class="p-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white" :title="t.profile.settings_tooltip">
-                            <span class="material-symbols-outlined">settings</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg>
                         </router-link>
                     </div>
     
@@ -152,7 +152,7 @@ watch(() => route.params.id, (newId) => {
                     <div class="px-5 pb-2.5 -mt-2">
                         <div class="flex items-center gap-2">
                             <h2 class="nombre text-2xl font-bold m-0 text-[#e7e9ea]">{{ profileData.name }}</h2>
-                            <span class="material-symbols-outlined text-primary-normal !text-xl" title="Verificado">verified</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#009dff"><path d="m344-60-76-128-144-32 14-148-98-112 98-112-14-148 144-32 76-128 136 58 136-58 76 128 144 32-14 148 98 112-98 112 14 148-144 32-76 128-136-58-136 58Zm34-102 102-44 104 44 56-96 110-26-10-112 74-84-74-86 10-112-110-24-58-96-102 44-104-44-56 96-110 24 10 112-74 86 74 84-10 114 110 24 58 96Zm102-318Zm-42 142 226-226-56-58-170 170-86-84-56 56 142 142Z"/></svg>
                         </div>
                         <p class="nombre-usuario text-[#8b98a5] text-base my-0.5 mx-0">{{ profileData.email }}</p>
                         <p class="text-white/50 text-xs font-mono uppercase mt-1">{{ profileData.role }}</p>
