@@ -34,3 +34,42 @@
 
 
 </x-admin.crud-form>
+
+<script>
+(function () {
+    const centerSelect = document.getElementById('ideducational_center_id');
+    const levelSelect = document.getElementById('ideducation_level');
+    const levelHidden = levelSelect ? levelSelect.parentElement.querySelector('input[type="hidden"][name="education_level"]') : null;
+
+    if (!centerSelect || !levelSelect) return;
+
+    // Leer el mapa de centro_id => tipo desde el data attribute
+    let centerTypes = {};
+    try {
+        centerTypes = JSON.parse(centerSelect.dataset.centerTypes || '{}');
+    } catch (e) {
+        console.error('Error parsing center types:', e);
+    }
+
+    const newCenterSelect = centerSelect.cloneNode(true);
+    if (centerSelect.parentNode) {
+        centerSelect.parentNode.replaceChild(newCenterSelect, centerSelect);
+    }
+
+    newCenterSelect.addEventListener('change', function () {
+        const centerId = this.value;
+        if (centerId && centerTypes[centerId]) {
+            levelSelect.value = centerTypes[centerId];
+            // Actualizar también el hidden input para que se envíe el valor
+            if (levelHidden) {
+                levelHidden.value = centerTypes[centerId];
+            }
+        } else {
+            levelSelect.value = '';
+            if (levelHidden) {
+                levelHidden.value = '';
+            }
+        }
+    });
+})();
+</script>

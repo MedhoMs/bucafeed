@@ -7,6 +7,7 @@
     'rows' => 4,
     'disabled' => '',
     'required' => false,
+    'data' => [],
 ])
 
 @php

@@ -121,7 +121,10 @@ async function validateContent() {
 
     try {
         // useApi's post() returns the response data directly
-        const data = await post('validate-content', { content: text })
+        const data = await post('validate-content', { 
+            title: form.value.title,
+            content: text 
+        })
 
         if (data.status === 'success') {
             validationStatus.value  = data.es_apropiado

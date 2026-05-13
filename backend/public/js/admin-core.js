@@ -197,18 +197,41 @@ document.addEventListener("DOMContentLoaded", function () {
                     ajaxLoad(window.location.href, mainContent, false, false);
                     toggleModal(false);
                 } else {
-                    modalBody.innerHTML = res.html;
-                    
-                    if (res.html.includes('bg-green-500') || res.html.includes('Operación completada con éxito')) {
-                        ajaxLoad(window.location.href, mainContent, false, false);
-                    }
+                    if (res.isJson) {
+                        let errorMsg = res.data.message || "Error desconocido";
+                        let errorList = "";
+                        if (res.data.errors) {
+                            errorList = `<ul class="list-disc list-inside mt-2 text-sm">`;
+                            for (let field in res.data.errors) {
+                                errorList += `<li>${res.data.errors[field][0]}</li>`;
+                            }
+                            errorList += `</ul>`;
+                        }
+                        
+                        if(submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = originalText; }
+                        
+                        const oldError = form.querySelector('.validation-error-alert');
+                        if (oldError) oldError.remove();
+                        
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = "validation-error-alert p-4 mb-4 text-red-400 bg-red-900/20 rounded-xl border border-red-500/30";
+                        errorDiv.innerHTML = `<strong>${errorMsg}</strong>${errorList}`;
+                        form.prepend(errorDiv);
+                        
+                    } else {
+                        modalBody.innerHTML = res.html;
+                        
+                        if (res.html.includes('bg-green-500') || res.html.includes('Operación completada con éxito')) {
+                            ajaxLoad(window.location.href, mainContent, false, false);
+                        }
 
-                    modalBody.querySelectorAll('script').forEach(oldScript => {
-                        const newScript = document.createElement('script');
-                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                        oldScript.parentNode.replaceChild(newScript, oldScript);
-                    });
+                        modalBody.querySelectorAll('script').forEach(oldScript => {
+                            const newScript = document.createElement('script');
+                            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                            oldScript.parentNode.replaceChild(newScript, oldScript);
+                        });
+                    }
                 }
             })
             .catch(err => {

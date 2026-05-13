@@ -4,7 +4,8 @@
     'options' => [],
     'selectedValue' => [],
     'disabled' => '',
-    'required' => false
+    'required' => false,
+    'data' => []
 ])
 
 @php

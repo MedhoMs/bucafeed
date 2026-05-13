@@ -1,5 +1,4 @@
 @props(['fields' => [], 'disabled' => ''])
-
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     @foreach($fields as $field)
         @php
@@ -17,6 +16,8 @@
             
             $isFull = $field['full'] ?? false;
             $colSpan = $isFull ? 'md:col-span-2' : '';
+            $fieldDisabled = $field['disabled'] ?? $disabled;
+            $fieldData = $field['data'] ?? [];
         @endphp
         
         <div class="{{ $colSpan }}">
@@ -35,9 +36,10 @@
                 :options="$field['options'] ?? []"
                 :selectedValue="$field['selectedValue'] ?? ''"
                 :rows="$field['rows'] ?? 4"
-                :disabled="$disabled"
+                :disabled="$fieldDisabled"
                 :required="$field['required'] ?? false"
                 :multiple="$field['multiple'] ?? false"
+                :data="$fieldData"
             />
         </div>
     @endforeach
