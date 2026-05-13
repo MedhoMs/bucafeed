@@ -21,5 +21,6 @@ export const nav = {
     logout: "Cerrar Sesión",
     selectLanguage: "Selecciona tu idioma",
     adminPanel: "Panel de administrador",
-    myCenter: "Mi Centro"
+    myCenter: "Mi Centro",
+    back: "Volver",
 };

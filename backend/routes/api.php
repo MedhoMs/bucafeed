@@ -20,6 +20,7 @@ use App\Http\Controllers\MeetingMessageController;
 use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\CycleController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ContentValidationController;
 
 Route::get('/health', function () {
     return response()->json([
@@ -257,11 +258,17 @@ Route::post('/meetings/{meeting}/mensajes', [MeetingMessageController::class, 's
 Route::get('/users/by-center', [UserController::class, 'apiStudentsByCenter']);
 Route::apiResource('users', UserController::class);
 
+// Endpoint para generar usuarios de prueba (solo admin)
+Route::post('/users/generate-test', [UserController::class, 'apiGenerateTestUsers'])->middleware('auth:sanctum');
+
 // Preguntas y Respuestas
 Route::apiResource('questions', QuestionController::class);
 Route::apiResource('answers', AnswerController::class);
 Route::apiResource('tags', TagController::class);
 Route::post('answers/{answer}/useful', [AnswerController::class, 'markAsUseful']);
+
+// Validación de contenido con IA (Groq)
+Route::post('/validate-content', [ContentValidationController::class, 'validate']);
 
 // ── Panel de Gestión de Centro (para usuarios EI) ──
 Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {

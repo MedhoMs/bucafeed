@@ -9,5 +9,9 @@ export const events = {
     cardJoined: "{count} participantes",
     viewDetails: "Ver Detalles",
     timeLabel: "Horario",
-    noDate: "Sin fecha"
+    noDate: "Sin fecha",
+    deleteTitle: "¿Eliminar evento?",
+    deleteConfirm: "Eliminar",
+    deleteWarning: "Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar este evento?",
+    deleted: "Evento eliminado correctamente"
 };

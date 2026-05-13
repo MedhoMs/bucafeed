@@ -19,6 +19,7 @@ const { get, post: apiPost, del: apiDelete, loading: apiLoading } = useApi();
 const meetings = ref([]);
 const centers = ref([]);
 const groups = ref([]);
+const userGroups = ref([]);
 
 const pagination = reactive({
     currentPage: 1,
@@ -48,13 +49,24 @@ const fetchGroups = async () => {
     }
 };
 
+// Get the groups the current user belongs to (for students)
+const fetchUserGroups = async () => {
+    if (!user.value) return;
+    const role = user.value.role?.toLowerCase();
+    if (role !== 'student' && role !== 'alumno' && role !== 'estudiante') return;
+    try {
+        const data = await get(`users/${user.value.id}`);
+        if (data && data.groups_as_student) {
+            userGroups.value = data.groups_as_student;
+        }
+    } catch (error) {
+        console.error('Error fetching user groups:', error);
+    }
+};
+
 const fetchMeetings = async (page = 1) => {
     try {
         let endpoint = `meetings?page=${page}`;
-        const role = user.value?.role?.toLowerCase();
-        if (user.value && role !== 'admin' && role !== 'administrador') {
-            endpoint += `&institution_name=${encodeURIComponent(user.value.institution_name)}`;
-        }
 
         const result = await get(endpoint);
         
@@ -65,7 +77,9 @@ const fetchMeetings = async (page = 1) => {
                 id: m.id,
                 name: m.name,
                 teacher: m.teacher ? m.teacher.name : (m.teacher_name || t.value.meetings.unknown),
-                group: m.educational_center ? m.educational_center.name : t.value.meetings.various,
+                group: m.group ? m.group.name : (m.educational_center ? m.educational_center.name : t.value.meetings.various),
+                group_id: m.group_id,
+                educational_center_id: m.educational_center_id,
                 schedule: m.schedule,
                 description: m.description
             }));
@@ -87,17 +101,31 @@ onMounted(() => {
     fetchMeetings();
     fetchCenters();
     fetchGroups();
+    fetchUserGroups();
 });
 
-// 1. Charlas disponibles para este usuario según su centro
+// 1. Charlas disponibles para este usuario según su grupo
 const availableMeetings = computed(() => {
     if (!user.value) return [];
     const role = user.value.role?.toLowerCase();
     if (role === 'admin' || role === 'administrador') return meetings.value;
-    return meetings.value.filter(m => 
-        m.group?.toLowerCase() === user.value.institution_name?.toLowerCase() || 
-        m.group?.toLowerCase() === 'varios'
-    );
+    
+    // Teachers/EI see meetings from their center
+    if (role === 'teacher' || role === 'profesor' || role === 'ei') {
+        return meetings.value.filter(m => 
+            m.educational_center_id === user.value.educational_center_id
+        );
+    }
+    
+    // Students see meetings from their groups
+    const userGroupIds = userGroups.value.map(g => g.id);
+    return meetings.value.filter(m => {
+        if (!m.group_id) {
+            // General meetings (no group) - show to students of same institution
+            return m.educational_center_id === user.value.educational_center_id;
+        }
+        return userGroupIds.includes(m.group_id);
+    });
 });
 
 // 2. Estado para los resultados filtrados por el buscador
@@ -129,6 +157,7 @@ const newMeeting = ref({
     name: '',
     teacher_name: '', // Nombre libre (editable)
     educational_center_id: null,
+    group_id: null,
     schedule: '',
     description: ''
 });
@@ -158,6 +187,18 @@ const meetingFields = computed(() => {
         });
     }
 
+    // Group selector
+    if (groups.value.length > 0) {
+        baseFields.push({
+            id: 'group_id',
+            type: 'select',
+            label: 'Grupo (opcional)',
+            placeholder: 'Seleccionar grupo...',
+            required: false,
+            options: [{ id: '', name: '-- Todos los grupos --' }, ...groups.value.map(g => ({ id: g.id, name: g.name }))]
+        });
+    }
+
     baseFields.push({ id: 'description', type: 'textarea', label: t.value.meetings.form.description, placeholder: t.value.meetings.form.descriptionPlaceholder, required: false });
 
     return baseFields;
@@ -169,6 +210,7 @@ const openModal = () => {
         name: '',
         teacher_name: user.value?.name || '',
         educational_center_id: user.value?.educational_center_id || null,
+        group_id: null,
         schedule: '',
         description: ''
     };
@@ -190,6 +232,7 @@ const saveMeeting = async () => {
                 teacher_id: user.value.id,
                 teacher_name: newMeeting.value.teacher_name,
                 educational_center_id: centerId ? Number(centerId) : null,
+                group_id: newMeeting.value.group_id ? Number(newMeeting.value.group_id) : null,
                 schedule: newMeeting.value.schedule,
                 description: newMeeting.value.description
             };
@@ -264,7 +307,7 @@ const deleteMeeting = async () => {
                 <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10">
                     <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
                         :teacher="meeting.teacher" :schedule="meeting.schedule" :group="meeting.group"
-                        :description="meeting.description" @delete="confirmDelete" />
+                        :group_id="meeting.group_id" :description="meeting.description" @delete="confirmDelete" />
                 </div>
 
                 <Pagination 

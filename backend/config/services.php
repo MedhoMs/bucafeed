@@ -41,4 +41,8 @@ return [
         'api_versions' => env('GEMINI_API_VERSIONS', 'v1,v1beta'),
     ],
 
+    'groq' => [
+        'api_key' => env('GROQ_API_KEY'),
+    ],
+
 ];

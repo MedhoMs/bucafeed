@@ -16,7 +16,7 @@
     
     <!-- Logo Area -->
     <div class="flex flex-row items-center gap-4 p-6 pt-8 mb-6">
-        <img class="w-14 h-14 object-contain" src="{{ asset('logoTelamon.png') }}" alt="Logo">
+        <img class="w-16.25 h-17.5 object-contain" src="{{ asset('logoTelamon.png') }}" alt="Logo">
         <h1 class="font-bold text-[22px] text-white tracking-wide">Telamo<span class="text-[#a0c4d4]">Net</span></h1>
     </div>
 

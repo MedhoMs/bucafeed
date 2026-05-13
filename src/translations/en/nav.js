@@ -20,5 +20,6 @@ export const nav = {
     logout: "Logout",
     selectLanguage: "Select your language",
     adminPanel: "Admin Panel",
-    myCenter: "My Center"
+    myCenter: "My Center",
+    back: "Go Back",
 };

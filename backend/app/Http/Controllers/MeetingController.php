@@ -11,7 +11,7 @@ class MeetingController extends TemplateController
 {
     protected $model = Meeting::class;
     protected $viewPath = 'meetings';
-    protected $with = ['teacher', 'educationalCenter'];
+    protected $with = ['teacher', 'educationalCenter', 'group'];
 
     protected function getFormFields($model = null)
     {

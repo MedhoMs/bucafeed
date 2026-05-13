@@ -7,6 +7,7 @@ const props = defineProps({
     name: String,
     teacher: String,
     group: String,
+    group_id: [Number, null],
     schedule: String,
     description: String
 })
@@ -80,7 +81,7 @@ const handleDelete = () => {
 
         <div class="mt-auto pt-6 flex justify-end relative z-10">
             <router-link
-                :to="{ name: 'meetingchat', params: { id: props.id, name: props.name, teacher: props.teacher, group: props.group } }"
+                :to="{ name: 'meetingchat', params: { id: props.id, name: props.name, teacher: props.teacher, group: props.group, groupId: props.group_id } }"
                 class="bg-[#1a2d42] hover:bg-[#406071] text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-xl transition-all duration-300 active:scale-95 border border-white/5 shadow-lg shadow-black/20">
                 Entrar al Chat
             </router-link>
