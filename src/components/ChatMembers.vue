@@ -134,10 +134,16 @@
 
                 <div class="mr-auto w-full shrink-0">
                     <p class="text-lg lg:text-2xl font-bold self-start mb-2">Profesor</p>
-                    <div class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer transition-colors">
+                    <router-link v-if="props.meeting?.teacher_id || props.meeting?.teacher?.id" :to="'/profile/' + (props.meeting?.teacher_id || props.meeting?.teacher?.id)" class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer transition-colors no-underline text-white">
                         <UserAvatar :user="props.meeting?.teacher" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
                         <p class="text-base lg:text-xl truncate">
                             {{ props.meeting?.teacher ? `${props.meeting.teacher.name} ${props.meeting.teacher.last_name || ''}` : (meetingId ? meetingTeacherParam : 'Profesor') }}
+                        </p>
+                    </router-link>
+                    <div v-else class="flex items-center w-full rounded-3xl p-3 mb-5 bg-[#2a4a5a]/20">
+                        <UserAvatar size="w-10 h-10" class="border-2 border-white/20 shadow-xs mr-2 shrink-0" />
+                        <p class="text-base lg:text-xl truncate text-white/50">
+                            {{ meetingId ? meetingTeacherParam : 'Profesor' }}
                         </p>
                     </div>
                 </div>
@@ -148,17 +154,17 @@
 
                 <div class="flex flex-col mr-auto w-full flex-1 overflow-y-auto pb-4 pr-2 custom-scrollbar">
                     <!-- Estudiante Logueado (Yo) -->
-                    <div v-if="authUser && (['student', 'alumno', 'estudiante'].includes(authUser.role?.toLowerCase()))" class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors">
+                    <router-link v-if="authUser && (['student', 'alumno', 'estudiante'].includes(authUser.role?.toLowerCase()))" :to="'/profile/' + authUser.id" class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors no-underline text-white">
                         <UserAvatar :user="authUser" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
                         <p class="text-base lg:text-xl truncate">{{ authUser.name }} (Tú)</p>
-                    </div>
+                    </router-link>
 
                     <!-- Otros Estudiantes -->
-                    <div v-for="student in students.filter(s => s.id !== authUser?.id)" :key="student.id"
-                        class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors">
+                    <router-link v-for="student in students.filter(s => s.id !== authUser?.id)" :key="student.id" :to="'/profile/' + student.id"
+                        class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors no-underline text-white">
                         <UserAvatar :user="student" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
                         <p class="text-base lg:text-xl truncate">{{ student.name }} {{ student.last_name }}</p>
-                    </div>
+                    </router-link>
 
                     <p v-if="students.length === 0 && (!authUser || authUser.role !== 'Student')" class="text-sm text-white/40 italic">No hay otros alumnos</p>
                 </div>

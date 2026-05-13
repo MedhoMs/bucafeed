@@ -38,6 +38,10 @@ class MeetingController extends TemplateController
             $query->where('educational_center_id', $request->center_id);
         }
         
+        if ($request->filled('teacher_id')) {
+            $query->where('teacher_id', $request->teacher_id);
+        }
+        
         // Si el usuario pide por nombre de institución (desde el store de auth)
         if ($request->filled('institution_name')) {
             $query->whereHas('educationalCenter', function($q) use ($request) {

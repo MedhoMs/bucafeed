@@ -43,6 +43,9 @@ class QuestionController extends TemplateController
                 $q->where('tags.id', $request->tag);
             });
         }
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
         return $query;
     }
 

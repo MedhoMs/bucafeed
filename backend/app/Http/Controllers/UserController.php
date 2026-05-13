@@ -243,4 +243,59 @@ class UserController extends TemplateController
             'created' => $created
         ]);
     }
+    /**
+     * API: Obtener perfil de usuario detallado
+     */
+    public function show(Request $request, $id)
+    {
+        $authUser = $request->user();
+        $user = User::withCount(['followers', 'following'])
+            ->with($this->with)
+            ->findOrFail($id);
+
+        $userData = $user->toArray();
+        
+        // Añadir si el usuario autenticado sigue a este usuario
+        if ($authUser) {
+            $userData['is_following'] = $user->followers()->where('follower_id', $authUser->id)->exists();
+        } else {
+            $userData['is_following'] = false;
+        }
+
+        return response()->json($userData);
+    }
+
+    /**
+     * API: Seguir o dejar de seguir a un usuario
+     */
+    public function follow(Request $request, $id)
+    {
+        $follower = $request->user();
+        if (!$follower) return response()->json(['message' => 'No autenticado'], 401);
+        
+        if ($follower->id == $id) {
+            return response()->json(['message' => 'No puedes seguirte a ti mismo'], 400);
+        }
+
+        $userToFollow = User::findOrFail($id);
+        
+        // Toggle follow
+        $isFollowing = $userToFollow->followers()->where('follower_id', $follower->id)->exists();
+        
+        if ($isFollowing) {
+            $userToFollow->followers()->detach($follower->id);
+            $message = 'Has dejado de seguir a ' . $userToFollow->name;
+            $following = false;
+        } else {
+            $userToFollow->followers()->attach($follower->id);
+            $message = 'Ahora sigues a ' . $userToFollow->name;
+            $following = true;
+        }
+
+        return response()->json([
+            'is_following' => $following,
+            'followers_count' => $userToFollow->followers()->count(),
+            'message' => $message
+        ]);
+    }
 }
