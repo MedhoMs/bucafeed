@@ -6,6 +6,7 @@ const props = defineProps({
     id: Number,
     name: String,
     teacher: String,
+    teacher_id: Number,
     group: String,
     group_id: [Number, null],
     schedule: String,
@@ -57,7 +58,10 @@ const handleDelete = () => {
         <div class="grid grid-cols-2 gap-4 mb-6 relative z-10">
             <div>
                 <p class="text-[9px] font-black uppercase text-white/20 tracking-[0.2em] mb-1">Ponente</p>
-                <p class="text-xs font-bold text-white/80 truncate">{{ props.teacher }}</p>
+                <router-link v-if="props.teacher_id" :to="'/profile/' + props.teacher_id" class="text-xs font-bold text-white/80 truncate hover:text-primary-normal transition-colors">
+                    {{ props.teacher }}
+                </router-link>
+                <p v-else class="text-xs font-bold text-white/80 truncate">{{ props.teacher }}</p>
             </div>
             <div>
                 <p class="text-[9px] font-black uppercase text-white/20 tracking-[0.2em] mb-1">Horario</p>

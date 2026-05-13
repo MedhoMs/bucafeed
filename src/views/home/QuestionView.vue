@@ -199,12 +199,23 @@
                         <!-- Tarjeta de la Pregunta Principal -->
                         <div class="post-card text-left bg-linear-to-br from-white/5 to-white/2 border border-white/10 rounded-2xl p-7 relative mb-8">
                             <div class="flex gap-4 items-center mb-4 border-b border-white/5 pb-4">
+                                <router-link v-if="question.user?.id" :to="'/profile/' + question.user.id" class="flex gap-4 items-center hover:opacity-80 transition-opacity no-underline">
                                     <UserAvatar :user="question.user" size="w-12 h-12" class="shrink-0 shadow-lg bg-[#15202b]" />
-                                <div class="flex flex-col">
-                                    <span class="text-base font-bold text-white">
-                                        {{ question.user?.name ?? 'Usuario' }} <span v-if="question.user?.last_name">{{ question.user.last_name }}</span>
-                                    </span>
-                                    <span class="text-xs text-white/40 uppercase tracking-widest">{{ question.user?.role_name || question.user?.role || 'Estudiante' }}</span>
+                                    <div class="flex flex-col">
+                                        <span class="text-base font-bold text-white">
+                                            {{ question.user?.name ?? 'Usuario' }} <span v-if="question.user?.last_name">{{ question.user.last_name }}</span>
+                                        </span>
+                                        <span class="text-xs text-white/40 uppercase tracking-widest">{{ question.user?.role_name || question.user?.role || 'Estudiante' }}</span>
+                                    </div>
+                                </router-link>
+                                <div v-else class="flex gap-4 items-center">
+                                    <UserAvatar :user="question.user" size="w-12 h-12" class="shrink-0 shadow-lg bg-[#15202b]" />
+                                    <div class="flex flex-col">
+                                        <span class="text-base font-bold text-white">
+                                            {{ question.user?.name ?? 'Usuario' }} <span v-if="question.user?.last_name">{{ question.user.last_name }}</span>
+                                        </span>
+                                        <span class="text-xs text-white/40 uppercase tracking-widest">{{ question.user?.role_name || question.user?.role || 'Estudiante' }}</span>
+                                    </div>
                                 </div>
                                 <!-- Botón Eliminar Question (Admin) -->
                                 <button 
@@ -243,10 +254,24 @@
                             </div>
                             
                             <div v-for="ans in answers" :key="ans.id" class="bg-black/40 border border-white/5 rounded-xl p-5 flex gap-4 items-start relative hover:bg-black/60 transition-colors">
+                                <router-link v-if="ans.user?.id" :to="'/profile/' + ans.user.id" class="shrink-0 hover:opacity-80 transition-opacity">
                                     <UserAvatar :user="ans.user" class="shrink-0 shadow-sm bg-[#15202b]" />
+                                </router-link>
+                                <UserAvatar v-else :user="ans.user" class="shrink-0 shadow-sm bg-[#15202b]" />
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-center mb-2">
-                                        <div class="flex flex-col">
+                                        <router-link v-if="ans.user?.id" :to="'/profile/' + ans.user.id" class="flex flex-col hover:opacity-80 transition-opacity no-underline">
+                                            <span class="text-sm font-bold text-white">
+                                                {{ ans.user?.name ?? t.forum.user }} <span v-if="ans.user?.last_name">{{ ans.user.last_name }}</span>
+                                            </span>
+                                            <span class="text-[10px] text-white/30 uppercase tracking-widest mt-0.5">
+                                                {{ 
+                                                    ans.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                                    (ans.user?.role?.toLowerCase() === 'teacher' || ans.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
+                                                }}
+                                            </span>
+                                        </router-link>
+                                        <div v-else class="flex flex-col">
                                             <span class="text-sm font-bold text-white">
                                                 {{ ans.user?.name ?? t.forum.user }} <span v-if="ans.user?.last_name">{{ ans.user.last_name }}</span>
                                             </span>

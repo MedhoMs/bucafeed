@@ -62,17 +62,91 @@ const onFileChange = async (event, type) => {
 
 // El usuario de perfil que se mapea a la vista
 const profileData = ref({
+   id: null,
    name: 'Cargando...',
    email: '...',
    role: 'Estudiante',
+   roleCode: 'Student',
    seguidores: '0',
    siguiendo: '0',
    bannerUrl: 'https://estaticos-cdn.prensaiberica.es/clip/3bffd319-f839-4e57-9ccb-b95ec474f104_source-aspect-ratio_default_0.jpg',
    iconoUrl: defaultLogo,
-   isOwner: false
+   isOwner: false,
+   isFollowing: false,
+   description: ''
 });
 
+const activeTab = ref('');
+const tabContent = ref([]);
+const loadingContent = ref(false);
+
+const setTab = (tab) => {
+    activeTab.value = tab;
+    fetchTabContent(tab);
+}
+
+const fetchTabContent = async (tab) => {
+    if (!profileData.value.id) return;
+    loadingContent.value = true;
+    tabContent.value = [];
+    
+    try {
+        let endpoint = '';
+        let params = {};
+
+        switch (tab) {
+            case 'questions':
+                endpoint = 'questions';
+                params = { user_id: profileData.value.id };
+                break;
+            case 'answers':
+                endpoint = 'answers';
+                params = { user_id: profileData.value.id };
+                break;
+            case 'events_participated':
+                endpoint = 'events';
+                params = { participant_id: profileData.value.id };
+                break;
+            case 'events_created':
+                endpoint = 'events';
+                params = { center_id: profileData.value.educational_center_id || profileData.value.id };
+                break;
+            case 'talks':
+                endpoint = 'meetings';
+                params = { teacher_id: profileData.value.id };
+                break;
+        }
+
+        if (endpoint) {
+            const query = new URLSearchParams(params).toString();
+            const response = await get(`${endpoint}?${query}`);
+            if (response && response.data) {
+                tabContent.value = response.data;
+            }
+        }
+    } catch (e) {
+
+    } finally {
+        loadingContent.value = false;
+    }
+}
+
+const toggleFollow = async () => {
+    if (!profileData.value.id || profileData.value.isOwner) return;
+    
+    try {
+        const response = await post(`users/${profileData.value.id}/follow`, {});
+        if (response) {
+            profileData.value.isFollowing = response.is_following;
+            profileData.value.seguidores = response.followers_count;
+        }
+    } catch (e) {
+
+    }
+}
+
 const loadProfile = async (id) => {
+    if (!id) return;
     try {
         const data = await get(`users/${id}?t=${new Date().getTime()}`);
         if (data) {
@@ -82,32 +156,46 @@ const loadProfile = async (id) => {
             }
 
             profileData.value = {
+                id: data.id,
                 name: data.name + (data.last_name ? ' ' + data.last_name : ''),
                 email: data.email,
-                role: data.role,
-                seguidores: '12',
-                siguiendo: '5',
+                role: data.role_name || data.role,
+                roleCode: data.role,
+                educational_center_id: data.educational_center_id,
+                seguidores: data.followers_count || 0,
+                siguiendo: data.following_count || 0,
                 bannerUrl: getImageUrl(data.banner) || 'https://estaticos-cdn.prensaiberica.es/clip/3bffd319-f839-4e57-9ccb-b95ec474f104_source-aspect-ratio_default_0.jpg',
                 iconoUrl: getImageUrl(data.profile_picture) || defaultLogo,
-                isOwner: authUser.value && authUser.value.id === data.id
+                isOwner: authUser.value && authUser.value.id === data.id,
+                isFollowing: data.is_following || false,
+                description: data.description || ''
             };
+
+            const role = data.role?.toLowerCase();
+            if (role === 'student') {
+                setTab('questions');
+            } else if (role === 'teacher') {
+                setTab('talks');
+            } else if (role === 'ei') {
+                setTab('events_created');
+            } else {
+                activeTab.value = '';
+                tabContent.value = [];
+            }
         }
     } catch (e) {
-        console.error("Error cargando el perfil", e);
+
     }
 }
 
 onMounted(() => {
-    if (route.params.id) {
-        loadProfile(route.params.id);
-    } else if (authUser.value) {
-        // Forzamos la carga desde la API para tener los datos frescos de la BD
-        loadProfile(authUser.value.id);
-    }
+    const id = route.params.id || authUser.value?.id;
+    if (id) loadProfile(id);
 })
 
 watch(() => route.params.id, (newId) => {
-    if (newId) loadProfile(newId);
+    const id = newId || authUser.value?.id;
+    if (id) loadProfile(id);
 })
 
 </script>
@@ -142,7 +230,11 @@ watch(() => route.params.id, (newId) => {
     
                     <!-- Botón de configuración -->
                     <div class="flex justify-end items-center p-4 mt-0 gap-3">
-                        <ButtonTemplate v-if="!profileData.isOwner" :texto="t.profile.follow" :accion="() => console.log('seguir usuario')" />
+                        <ButtonTemplate 
+                            v-if="!profileData.isOwner && profileData.roleCode.toLowerCase() !== 'admin'" 
+                            :texto="profileData.isFollowing ? t.profile.unfollow : t.profile.follow" 
+                            :accion="toggleFollow" 
+                        />
                         <router-link v-if="profileData.isOwner" to="/settings" class="p-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white" :title="t.profile.settings_tooltip">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg>
                         </router-link>
@@ -156,24 +248,99 @@ watch(() => route.params.id, (newId) => {
                         </div>
                         <p class="nombre-usuario text-[#8b98a5] text-base my-0.5 mx-0">{{ profileData.email }}</p>
                         <p class="text-white/50 text-xs font-mono uppercase mt-1">{{ profileData.role }}</p>
-                        <p class="seguidores text-[#8b98a5] text-sm mt-2">
+                        
+                        <div v-if="profileData.roleCode.toLowerCase() !== 'admin'" class="seguidores text-[#8b98a5] text-sm mt-2">
                             <span class="numero font-bold text-[#e7e9ea]">{{ profileData.seguidores }}</span> 
-                            {{ t.profile.followers }} · 
-                            <span class="numero font-bold text-[#e7e9ea]">{{ profileData.siguiendo }}</span>
-                            {{ t.profile.following }}
-                        </p>
+                            {{ t.profile.followers }}
+                            <template v-if="profileData.roleCode.toLowerCase() !== 'ei'">
+                                · 
+                                <span class="numero font-bold text-[#e7e9ea]">{{ profileData.siguiendo }}</span>
+                                {{ t.profile.following }}
+                            </template>
+                        </div>
+                        
+                        <p v-if="profileData.description" class="text-[#e7e9ea] mt-3 text-sm italic">{{ profileData.description }}</p>
                     </div>
     
-                    <!-- Pestañas -->
-                    <div class="pestanas flex justify-around border-t border-b border-[#2a4a5a] py-2.5 mt-2">
-                        <span class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-white/5 text-[#8b98a5]">{{ t.profile.posts }}</span>
-                        <span class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-white/5 text-[#8b98a5]">{{ t.profile.events }}</span>
-                        <span class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-white/5 text-[#8b98a5]">{{ t.profile.likes }}</span>
+                    <!-- Pestañas dinámicas -->
+                    <div v-if="profileData.roleCode.toLowerCase() !== 'admin'" class="pestanas flex justify-around border-t border-b border-[#2a4a5a] py-2.5 mt-2 overflow-x-auto">
+                        <!-- Estudiante -->
+                        <template v-if="profileData.roleCode.toLowerCase() === 'student'">
+                            <span @click="setTab('questions')" :class="{'text-white border-b-2 border-white': activeTab === 'questions'}" class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-white/5 text-[#8b98a5]">{{ t.profile.questions }}</span>
+                            <span @click="setTab('answers')" :class="{'text-white border-b-2 border-white': activeTab === 'answers'}" class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-white/5 text-[#8b98a5]">{{ t.profile.answers }}</span>
+                            <span @click="setTab('events_participated')" :class="{'text-white border-b-2 border-white': activeTab === 'events_participated'}" class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-white/5 text-[#8b98a5]">{{ t.profile.events_participated }}</span>
+                        </template>
+
+                        <!-- Profesor -->
+                        <template v-if="profileData.roleCode.toLowerCase() === 'teacher'">
+                            <span @click="setTab('talks')" :class="{'text-white border-b-2 border-white': activeTab === 'talks'}" class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-white/5 text-[#8b98a5]">{{ t.profile.talks }}</span>
+                            <span @click="setTab('events_participated')" :class="{'text-white border-b-2 border-white': activeTab === 'events_participated'}" class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-white/5 text-[#8b98a5]">{{ t.profile.events_participated }}</span>
+                        </template>
+
+                        <!-- Centro Educativo -->
+                        <template v-if="profileData.roleCode.toLowerCase() === 'ei'">
+                            <span @click="setTab('events_created')" :class="{'text-white border-b-2 border-white': activeTab === 'events_created'}" class="cursor-pointer px-3 py-2 rounded-sm transition-colors hover:bg-white/5 text-[#8b98a5]">{{ t.profile.events_created }}</span>
+                        </template>
                     </div>
     
                     <!-- Contenido de publicaciones -->
-                    <div class="publicaciones px-5 py-2.5">
-                        <p class="text-[#8b98a5]">{{ t.profile.userContent }}</p>
+                    <div class="min-h-dvh py-5 px-5 lg:px-10">
+                        <div v-if="loadingContent" class="flex justify-center py-10">
+                            <div class="w-8 h-8 border-4 border-primary-normal/30 border-t-primary-normal rounded-full animate-spin"></div>
+                        </div>
+                        
+                        <div v-else-if="tabContent.length > 0" class="flex flex-col gap-4">
+                            <div v-for="item in tabContent" :key="item.id" class="bg-white/5 p-4 rounded-xl border border-white/10 hover:bg-white/10 transition-colors">
+                                <!-- Renderizado según tipo de contenido -->
+                                <template v-if="activeTab === 'questions'">
+                                    <router-link :to="'/question/' + item.id" class="block">
+                                        <h3 class="text-lg font-bold text-white mb-1">{{ item.title }}</h3>
+                                        <p class="text-[#8b98a5] line-clamp-2 text-sm">{{ item.content }}</p>
+                                        <span class="text-primary-normal text-xs mt-2 inline-block">Ver pregunta original</span>
+                                    </router-link>
+                                </template>
+
+                                <template v-else-if="activeTab === 'answers'">
+                                    <router-link :to="'/question/' + item.question_id" class="block">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="bg-primary-normal/20 text-primary-normal text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">Respuesta</span>
+                                            <span class="text-[#8b98a5] text-xs">En: {{ item.question?.title }}</span>
+                                        </div>
+                                        <p class="text-[#e7e9ea] line-clamp-3 text-sm">{{ item.content }}</p>
+                                        <span class="text-primary-normal text-xs mt-2 inline-block">Ir a la conversación</span>
+                                    </router-link>
+                                </template>
+
+                                <template v-else-if="activeTab === 'events_participated' || activeTab === 'events_created'">
+                                    <router-link :to="'/event-details/' + item.id" class="block">
+                                        <div class="flex gap-4">
+                                            <img v-if="item.image" :src="getImageUrl(item.image)" class="w-20 h-20 rounded-lg object-cover" />
+                                            <div class="flex-1">
+                                                <h3 class="text-lg font-bold text-white">{{ item.title }}</h3>
+                                                <p class="text-[#8b98a5] text-xs">{{ item.date }} · {{ item.location }}</p>
+                                                <p class="text-[#8b98a5] line-clamp-1 text-sm mt-1">{{ item.description }}</p>
+                                            </div>
+                                        </div>
+                                    </router-link>
+                                </template>
+
+                                <template v-else-if="activeTab === 'talks'">
+                                    <router-link :to="'/meetingchat/' + item.id" class="block">
+                                        <h3 class="text-lg font-bold text-white">{{ item.name }}</h3>
+                                        <p class="text-[#8b98a5] text-sm">{{ item.schedule }}</p>
+                                        <p class="text-[#8b98a5] line-clamp-2 text-sm mt-1">{{ item.description }}</p>
+                                    </router-link>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div v-else-if="activeTab" class="text-center py-10">
+                            <p class="text-[#8b98a5]">{{ t.profile.noContent || 'No hay contenido disponible por el momento.' }}</p>
+                        </div>
+                        
+                        <div v-else-if="profileData.roleCode.toLowerCase() === 'admin'" class="text-center py-10">
+                            <p class="text-[#8b98a5]">Los administradores no tienen contenido público visible.</p>
+                        </div>
                     </div>
                 </section>
             </div>

@@ -126,7 +126,21 @@
                     <div v-if="apiLoading && questions.length === 0" class="text-white/40 italic py-10">{{ t.forum.loading }}</div>
     
                     <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">
-                        <div class="flex gap-4 items-center mb-4">
+                        <router-link v-if="q.user?.id" :to="'/profile/' + q.user.id" class="flex gap-4 items-center mb-4 hover:opacity-80 transition-opacity w-fit no-underline">
+                            <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-white">
+                                    {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
+                                </span>
+                                <span class="text-xs text-white/40 uppercase tracking-widest">
+                                    {{ 
+                                        q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                        (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
+                                    }}
+                                </span>
+                            </div>
+                        </router-link>
+                        <div v-else class="flex gap-4 items-center mb-4">
                             <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
                             <div class="flex flex-col">
                                 <span class="text-sm font-bold text-white">

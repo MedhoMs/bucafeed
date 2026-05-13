@@ -20,11 +20,19 @@ class EventController extends TemplateController
         if ($request->filled('center')) {
             $query->where('educational_center_id', $request->center);
         }
+        if ($request->filled('center_id')) {
+            $query->where('educational_center_id', $request->center_id);
+        }
         if ($request->filled('role')) {
             $query->where('target_role', $request->role);
         }
         if ($request->filled('date')) {
             $query->whereDate('date', $request->date);
+        }
+        if ($request->filled('participant_id')) {
+            $query->whereHas('participants', function($q) use ($request) {
+                $q->where('users.id', $request->participant_id);
+            });
         }
         return $query;
     }

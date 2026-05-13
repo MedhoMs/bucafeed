@@ -16,6 +16,9 @@ class AnswerController extends TemplateController
         if ($request->filled('question_id')) {
             $query->where('question_id', $request->question_id);
         }
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
         return $query;
     }
 
