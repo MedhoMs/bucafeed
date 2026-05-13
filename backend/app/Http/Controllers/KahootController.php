@@ -81,12 +81,25 @@ class KahootController extends Controller
                 ],
             ];
         } else {
-            $errMsg = 'No se pudo extraer texto del PDF. El archivo puede ser un documento escaneado (imagen) sin texto seleccionable. Usa un PDF con texto real o copia el contenido manualmente.';
-            Log::warning("Kahoot: PDF sin texto extraible");
-            return response()->json([
-                'error' => $errMsg,
-                'message' => $errMsg,
-            ], 422);
+            // Fallback: send PDF as inline_data (multimodal) for scanned/image-based PDFs
+            Log::info("Kahoot: PDF sin texto extraible, intentando envio multimodal...");
+            $payload = [
+                'contents' => [[
+                    'parts' => [
+                        [
+                            'inline_data' => [
+                                'mime_type' => 'application/pdf',
+                                'data' => $pdfBase64,
+                            ],
+                        ],
+                        ['text' => $prompt],
+                    ],
+                ]],
+                'generationConfig' => [
+                    'temperature' => 0.4,
+                    'maxOutputTokens' => 8192,
+                ],
+            ];
         }
 
         $attempts = [];

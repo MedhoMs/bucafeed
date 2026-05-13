@@ -258,6 +258,9 @@ Route::post('/meetings/{meeting}/mensajes', [MeetingMessageController::class, 's
 Route::get('/users/by-center', [UserController::class, 'apiStudentsByCenter']);
 Route::apiResource('users', UserController::class);
 
+// Endpoint para generar usuarios de prueba (solo admin)
+Route::post('/users/generate-test', [UserController::class, 'apiGenerateTestUsers'])->middleware('auth:sanctum');
+
 // Preguntas y Respuestas
 Route::apiResource('questions', QuestionController::class);
 Route::apiResource('answers', AnswerController::class);

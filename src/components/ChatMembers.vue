@@ -23,6 +23,7 @@
     const meetingId = computed(() => route.params.id);
     const meetingTeacherParam = computed(() => route.params.teacher);
     const groupName = computed(() => route.params.group);
+    const groupIdParam = computed(() => route.params.groupId);
 
     const isMenuOpen = ref(false)
     const isDesktop = ref(window.innerWidth >= 1024)
@@ -30,7 +31,7 @@
     const fetchStudents = async () => {
         const centerId = props.meeting?.educational_center_id;
         const centerName = props.meeting?.educational_center?.name || groupName.value;
-        const groupId = props.meeting?.group_id;
+        const groupId = props.meeting?.group_id || groupIdParam.value;
         
         if (centerId || centerName || groupId) {
             try {
@@ -51,6 +52,26 @@
         }
     }
 
+    // Also try to get meeting details if meeting prop is incomplete
+    const fetchMeetingDetails = async () => {
+        const meetingId = route.params.id;
+        if (!meetingId) return;
+        if (props.meeting?.group_id) return; // already have the info
+        try {
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+            const response = await fetch(`${apiBase}/meetings/${meetingId}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.group_id && !groupIdParam.value) {
+                    const groupResponse = await get(`users/by-center?group_id=${data.group_id}`);
+                    students.value = groupResponse || [];
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching meeting details:', error);
+        }
+    }
+
     onMounted(async () => {
         const handleResize = () => {
             isDesktop.value = window.innerWidth >= 1024
@@ -59,6 +80,7 @@
         window.addEventListener('resize', handleResize)
 
         await fetchStudents();
+        await fetchMeetingDetails();
     });
 
     // Re-fetch si cambia el meeting (pasado por prop) o el nombre del grupo

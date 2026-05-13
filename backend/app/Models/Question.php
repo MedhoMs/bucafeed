@@ -15,6 +15,7 @@ class Question extends TemplateModel
         'content',
         'user_id',
         'image',
+        'answer_count',
     ];
 
     /**
