@@ -7,6 +7,7 @@
     'placeholder' => '',
     'disabled' => '',
     'required' => false,
+    'data' => [],
 ])
 
 @php
