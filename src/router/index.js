@@ -17,6 +17,7 @@ import ForumView from "../views/home/ForumView.vue";
 import SettingsView from "../views/SettingsView.vue";
 import EventDetailsView from "../views/home/EventDetailsView.vue";
 import PrivateChatView from "../views/home/PrivateChatView.vue";
+import ErrorPageView from "../views/ErrorPageView.vue";
 import { user } from "@/stores/auth";
 
 const router = createRouter({
@@ -112,6 +113,11 @@ const router = createRouter({
             name: 'settings',
             component: SettingsView
         },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'ErrorPageView',
+            component: ErrorPageView
+        }
     ]
 })
 
