@@ -24,119 +24,28 @@ class ContentValidationController extends Controller
     public function validate(Request $request)
     {
         $request->validate([
+            'title'   => 'nullable|string|min:3|max:200',
             'content' => 'required|string|min:3|max:5000',
         ]);
 
+        $title   = $request->input('title');
         $content = $request->input('content');
 
         try {
-            // 1. Primero checkear lista de palabras guardadas en BD (sin gastar tokens)
-            $bannedWords = Cache::remember('banned_words', 3600, fn() =>
-                BannedWord::pluck('word')->toArray()
-            );
-
-            $contentLower = mb_strtolower($content);
-            $foundBanned = array_filter($bannedWords, fn($word) =>
-                str_contains($contentLower, mb_strtolower($word))
-            );
-
-            if (!empty($foundBanned)) {
-                return response()->json([
-                    'status'             => 'success',
-                    'es_apropiado'       => false,
-                    'palabras_detectadas' => array_values($foundBanned),
-                    'motivo'             => 'Contiene palabras previamente marcadas como inapropiadas.',
-                    'fuente'             => 'cache_local',
-                ]);
-            }
-
-            // 2. Si pasa el filtro local, consultar Groq con prompt mejorado
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . config('services.groq.api_key'),
-                'Content-Type'  => 'application/json',
-            ])->post('https://api.groq.com/openai/v1/chat/completions', [
-                'model'       => 'llama-3.3-70b-versatile',
-                'temperature' => 0.1,
-                'max_tokens'  => 300,
-                'messages'    => [
-                    [
-                        'role'    => 'system',
-                        'content' => <<<SYSTEM
-        Eres un moderador experto de un foro educativo (estudiantes y profesores de todas las edades).
-        Tu única función es detectar contenido GENUINAMENTE inapropiado.
-
-        REGLA FUNDAMENTAL: Analiza siempre la INTENCIÓN y el CONTEXTO COMPLETO, nunca palabras sueltas.
-
-        RECHAZA solo si el texto tiene intención claramente maliciosa:
-        - Insultos o groserías dirigidas a personas reales ("eres un idiota", "me cago en...")
-        - Acoso, amenazas o humillación hacia alguien
-        - Contenido sexual explícito
-        - Discurso de odio (racismo, xenofobia, etc.)
-        - Spam o publicidad sin relación educativa
-
-        APRUEBA aunque contenga palabras que en otro contexto serían ofensivas, si:
-        - Son objeto de estudio lingüístico ("analiza el adjetivo 'guapo'", "¿es 'tonto' un sustantivo?")
-        - Se citan para corregirlas ("¿está mal decir 'me se olvidó'?")
-        - Aparecen en ejercicios, frases de ejemplo o textos literarios
-        - Son términos técnicos o científicos (anatomía, medicina, etc.)
-        - Describen personajes ficticios o situaciones hipotéticas
-
-        EJEMPLOS DE APROBACIÓN OBLIGATORIA:
-        - "¿Es 'guapo' un adjetivo calificativo?" → APROPIADO (análisis gramatical)
-        - "Identifica el insulto en esta frase del libro" → APROPIADO (ejercicio literario)
-        - "¿Por qué 'matar' es un verbo transitivo?" → APROPIADO (gramática)
-        - "El antagonista era cruel y violento" → APROPIADO (análisis literario)
-        SYSTEM
-                    ],
-                    [
-                        'role'    => 'user',
-                        'content' => <<<PROMPT
-        Texto a moderar en el foro educativo:
-
-        "{$content}"
-
-        Responde SOLO con JSON válido sin markdown ni texto adicional:
-        {
-        "es_apropiado": true/false,
-        "palabras_detectadas": ["solo palabras con intención maliciosa real, array vacío si no hay"],
-        "motivo": "explicación en una frase de la decisión tomada"
-        }
-        PROMPT
-                    ]
-                ],
-            ]);
-
-            $result = $response->json();
-            $decoded = json_decode(
-                $result['choices'][0]['message']['content'] ?? '{}',
-                true
-            );
-
-            // Asegurar valores por defecto por si la respuesta de la IA es incompleta
-            $decoded = array_merge([
-                'es_apropiado' => true,
-                'palabras_detectadas' => [],
-                'motivo' => 'Análisis completado.'
-            ], is_array($decoded) ? $decoded : []);
-
-            // 3. Si detectó palabras nuevas problemáticas, guardarlas en BD para futuras consultas
-            if (!empty($decoded['palabras_detectadas'])) {
-                foreach ($decoded['palabras_detectadas'] as $word) {
-                    BannedWord::firstOrCreate(
-                        ['word' => mb_strtolower(trim($word))],
-                        ['detected_at' => now(), 'context' => $content]
-                    );
+            // 1. Validar Título (si existe)
+            if ($title) {
+                $titleResult = $this->moderateText($title, 'Título');
+                if (!$titleResult['es_apropiado']) {
+                    return response()->json(array_merge($titleResult, ['status' => 'success']));
                 }
             }
 
-            return response()->json(array_merge($decoded, [
-                'status' => 'success',
-                'fuente' => 'groq'
-            ]));
+            // 2. Validar Contenido
+            $contentResult = $this->moderateText($content, 'Contenido');
+            return response()->json(array_merge($contentResult, ['status' => 'success']));
 
         } catch (\Exception $e) {
             Log::error('Moderación fallida: ' . $e->getMessage());
-            // Fail-open: ante error técnico, dejar pasar y loguear
             return response()->json([
                 'status'             => 'success',
                 'es_apropiado'       => true,
@@ -145,5 +54,104 @@ class ContentValidationController extends Controller
                 'fuente'             => 'error_fallback',
             ]);
         }
+    }
+
+    /**
+     * Helper para moderar un texto (Local + IA)
+     */
+    private function moderateText($text, $fieldName)
+    {
+        // ── 1. Filtro Local (Banned Words Cache) ──
+        $bannedWords = Cache::remember('banned_words', 3600, fn() =>
+            BannedWord::pluck('word')->toArray()
+        );
+
+        $textLower = mb_strtolower($text);
+        $foundBanned = array_filter($bannedWords, fn($word) =>
+            str_contains($textLower, mb_strtolower($word))
+        );
+
+        if (!empty($foundBanned)) {
+            return [
+                'es_apropiado'       => false,
+                'palabras_detectadas' => array_values($foundBanned),
+                'motivo'             => "El campo $fieldName contiene palabras inapropiadas.",
+                'fuente'             => 'cache_local',
+            ];
+        }
+
+        // ── 2. Filtro IA (Groq) ──
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.groq.api_key'),
+            'Content-Type'  => 'application/json',
+        ])->post('https://api.groq.com/openai/v1/chat/completions', [
+            'model'       => 'llama-3.3-70b-versatile',
+            'temperature' => 0.1,
+            'max_tokens'  => 300,
+            'messages'    => [
+                [
+                    'role'    => 'system',
+                    'content' => <<<SYSTEM
+            Eres un moderador experto de un foro educativo (estudiantes y profesores).
+            Tu función es detectar contenido GENUINAMENTE inapropiado analizando la INTENCIÓN y el CONTEXTO.
+
+            RECHAZA (es_apropiado: false) solo si:
+            - Insultos o groserías dirigidas a personas.
+            - Acoso, amenazas, humillación o odio.
+            - Contenido sexual o spam.
+
+            APRUEBA (es_apropiado: true) si el lenguaje se usa para:
+            - Análisis lingüístico o gramatical ("¿es 'tonto' un adjetivo?").
+            - Citas literarias, ejercicios académicos o términos científicos.
+            - Expresiones coloquiales sin intención de ofender.
+
+            Responde siempre en formato JSON.
+            SYSTEM
+                            ],
+                            [
+                                'role'    => 'user',
+                                'content' => <<<PROMPT
+            Analiza este texto ($fieldName) para el foro:
+            "{$text}"
+
+            Responde SOLO con este formato JSON:
+            {
+            "es_apropiado": boolean,
+            "palabras_detectadas": ["solo palabras realmente maliciosas"],
+            "motivo": "una frase explicando la decisión"
+            }
+            PROMPT
+                ]
+            ],
+        ]);
+
+        if (!$response->successful()) {
+            throw new \Exception('Error en la API de Groq: ' . $response->status());
+        }
+
+        $result = $response->json();
+        $rawContent = $result['choices'][0]['message']['content'] ?? '{}';
+        
+        // Limpiar posibles bloques markdown
+        $cleanJson = preg_replace('/```json|```/', '', $rawContent);
+        $decoded = json_decode(trim($cleanJson), true);
+
+        $decoded = array_merge([
+            'es_apropiado' => true,
+            'palabras_detectadas' => [],
+            'motivo' => 'Análisis completado.'
+        ], is_array($decoded) ? $decoded : []);
+
+        // Guardar nuevas palabras detectadas
+        if (!empty($decoded['palabras_detectadas'])) {
+            foreach ($decoded['palabras_detectadas'] as $word) {
+                BannedWord::firstOrCreate(
+                    ['word' => mb_strtolower(trim($word))],
+                    ['detected_at' => now(), 'context' => $text]
+                );
+            }
+        }
+
+        return array_merge($decoded, ['fuente' => 'groq']);
     }
 }
