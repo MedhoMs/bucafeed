@@ -248,21 +248,25 @@ class UserController extends TemplateController
      */
     public function show(Request $request, $id)
     {
-        $authUser = $request->user();
         $user = User::withCount(['followers', 'following'])
             ->with($this->with)
             ->findOrFail($id);
 
-        $userData = $user->toArray();
-        
-        // Añadir si el usuario autenticado sigue a este usuario
-        if ($authUser) {
-            $userData['is_following'] = $user->followers()->where('follower_id', $authUser->id)->exists();
-        } else {
-            $userData['is_following'] = false;
-        }
+        if ($request->is('api/*') || ($request->expectsJson() && !$request->ajax())) {
+            $authUser = $request->user();
+            $userData = $user->toArray();
+            
+            // Añadir si el usuario autenticado sigue a este usuario
+            if ($authUser) {
+                $userData['is_following'] = $user->followers()->where('follower_id', $authUser->id)->exists();
+            } else {
+                $userData['is_following'] = false;
+            }
 
-        return response()->json($userData);
+            return response()->json($userData);
+        }
+        
+        return $this->renderForm($user, 'show', 'disabled');
     }
 
     /**
