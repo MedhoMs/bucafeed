@@ -238,7 +238,7 @@
                                                 {{ question.user?.reputation ?? 0 }} pts
                                             </span>
                                         </span>
-                                        <span class="text-xs text-white/40 uppercase tracking-widest">{{ question.user?.role_name || question.user?.role || 'Estudiante' }}</span>
+                                        <span class="text-xs text-white/40 uppercase tracking-normal">{{ question.user?.role_name || question.user?.role || 'Estudiante' }}</span>
                                     </div>
                                 </router-link>
                                 <div v-else class="flex gap-4 items-center">
@@ -260,7 +260,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                                 </button>
                             </div>
-                            <h1 class="text-4xl lg:text-5xl font-black text-white mb-4 tracking-tighter">{{ question.title }}</h1>
+                            <h1 class="text-4xl lg:text-5xl font-black text-white mb-4 tracking-normal">{{ question.title }}</h1>
                             <p class="text-white/80 text-base leading-relaxed whitespace-pre-wrap">{{ question.content }}</p>
                             
                             <div v-if="question.image" class="mt-6 rounded-2xl overflow-hidden border border-white/10 bg-black/20 flex items-center justify-center">
@@ -300,7 +300,7 @@
                                                     {{ ans.user?.reputation ?? 0 }} pts
                                                 </span>
                                             </span>
-                                            <span class="text-[10px] text-white/30 uppercase tracking-widest mt-0.5">
+                                            <span class="text-[10px] text-white/30 uppercase tracking-normal mt-0.5">
                                                 {{ 
                                                     ans.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
                                                     (ans.user?.role?.toLowerCase() === 'teacher' || ans.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
@@ -314,7 +314,7 @@
                                                     {{ ans.user?.reputation ?? 0 }} pts
                                                 </span>
                                             </span>
-                                            <span class="text-[10px] text-white/30 uppercase tracking-widest mt-0.5">
+                                            <span class="text-[10px] text-white/30 uppercase tracking-normal mt-0.5">
                                                 {{ 
                                                     ans.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
                                                     (ans.user?.role?.toLowerCase() === 'teacher' || ans.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)

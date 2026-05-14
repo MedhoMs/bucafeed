@@ -14,7 +14,7 @@ export function useSocket() {
             return;
         }
 
-        const socketUrl = import.meta.env.VITE_SOCKET_URL || `//${window.location.hostname}:3000`;
+        const socketUrl = import.meta.env.VITE_SOCKET_URL || `${location.protocol === 'https:' ? 'wss:' : 'http:'}//${window.location.hostname}:3000`;
         socket.value = io(socketUrl);
 
         socket.value.on('connect', () => {
