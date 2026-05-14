@@ -7,6 +7,7 @@
           :srcObject.prop="stream.stream" 
           autoplay 
           playsinline 
+          :muted="stream.id === 'me'"
           class="w-full h-64 bg-black rounded-lg object-cover border-2 border-[#2a4a5a]"
         ></video>
       </div>
@@ -47,17 +48,19 @@ onMounted(async () => {
   // 1. Obtener media local
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    // Añadir mi propio video a la lista
-    remoteStreams.value.push({ id: 'me', stream: localStream });
+    // Añadir mi propio video a la lista sin audio (no escucharse a sí mismo)
+    const localWithoutAudio = localStream.clone();
+    localWithoutAudio.getAudioTracks().forEach(t => t.enabled = false);
+    remoteStreams.value.push({ id: 'me', stream: localWithoutAudio });
   } catch (err) {
     console.warn('Cámara no encontrada:', err);
     cameraError.value = "No se pudo activar la cámara. Si estás en el móvil, necesitas usar HTTPS o activar las flags de Chrome.";
   }
 
   // 2. Conectar a Socket.io (servidor de señales)
-  // Usamos el host actual para que funcione desde el móvil
-  const host = window.location.hostname;
-  socket = io(`http://${host}:3000`);
+  const schema = location.protocol === 'https:' ? 'wss:' : 'http:';
+  const socketUrl = import.meta.env.VITE_SOCKET_URL || `${schema}//${window.location.hostname}:3000`;
+  socket = io(socketUrl);
 
   // 3. Configurar PeerJS
   myPeer = new Peer();

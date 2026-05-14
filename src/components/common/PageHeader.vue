@@ -25,7 +25,7 @@ onUnmounted(() => {
 <template>
     <div v-if="title || subtitle" class="w-full px-6 lg:px-14 max-w-screen-2xl mx-auto pt-12 md:pt-20 mb-4 transition-all duration-500 text-white flex flex-col md:flex-row md:items-center justify-between gap-8">
         <div class="flex-1">
-            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter">{{ title }}</h1>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-normal">{{ title }}</h1>
             <p class="text-white/60 text-base md:text-xl font-medium mt-2 max-w-2xl">{{ subtitle }}</p>
         </div>
         <div v-if="$slots.headerActions" class="shrink-0 flex items-center gap-4">
