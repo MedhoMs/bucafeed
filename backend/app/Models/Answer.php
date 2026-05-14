@@ -18,6 +18,10 @@ class Answer extends Model
         'image',
     ];
 
+    protected $casts = [
+        'is_useful' => 'boolean',
+    ];
+
     public function question()
     {
         return $this->belongsTo(Question::class);
@@ -33,5 +37,3 @@ class Answer extends Model
         return $this->hasMany(AnswerVote::class);
     }
 }
-
-

@@ -26,15 +26,18 @@
         }
     })
 
-    const emit = defineEmits(['sendMessage'])
+    const emit = defineEmits(['sendMessage', 'typing'])
 
-    // Reset validation whenever the user edits the message after validating
-    watch(message, (newVal) => {
+    let typingTimer = null
+    watch(message, (newVal, oldVal) => {
         if (validationStatus.value !== null && newVal !== validatedText.value) {
             validationStatus.value  = null
             validationMessage.value = ''
             validatedText.value     = ''
         }
+        emit('typing')
+        clearTimeout(typingTimer)
+        typingTimer = setTimeout(() => emit('typing-stop'), 2000)
     })
 
     // ── File handling ─────────────────────────────────────────────────────────

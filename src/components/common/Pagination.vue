@@ -53,7 +53,7 @@ const changePage = (page) => {
 </script>
 
 <template>
-    <nav role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-center gap-1 sm:gap-2 mt-8">
+    <nav role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-center gap-1 sm:gap-2">
         <!-- Previous Page Link -->
         <button 
             @click="changePage(currentPage - 1)"

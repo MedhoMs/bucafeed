@@ -172,7 +172,16 @@ class UserController extends TemplateController
         } elseif ($centerName && strtolower($centerName) !== 'varios') {
             $query->whereRaw('LOWER(institution_name) = ?', [strtolower($centerName)]);
         }
-        $students = $query->whereIn('role', ['Student', 'student', 'Alumno', 'alumno', 'Estudiante', 'estudiante', 'estudiantes'])
+        $roles = ['Student', 'student', 'Alumno', 'alumno', 'Estudiante', 'estudiante', 'estudiantes'];
+        
+        // If it's the admin center, include admins as "students" for the chat list
+        $isAdminCenter = ($centerId && $centerId == 40) || ($centerName && strtolower($centerName) === 'administración telamonet');
+        if ($isAdminCenter) {
+            $roles[] = 'Admin';
+            $roles[] = 'admin';
+        }
+
+        $students = $query->whereIn('role', $roles)
             ->limit(100)
             ->get(['id', 'name', 'last_name', 'profile_picture']);
         return response()->json($students);
@@ -242,5 +251,144 @@ class UserController extends TemplateController
             'message' => "{$created} usuarios creados correctamente en {$center->name}",
             'created' => $created
         ]);
+    }
+    /**
+     * API: Obtener perfil de usuario detallado
+     * También soporta la vista Admin (Blade) mediante herencia
+     */
+    public function show(Request $request, $id)
+    {
+        $user = User::withCount(['followers', 'following'])
+            ->with($this->with)
+            ->findOrFail($id);
+
+        // Si la petición espera JSON o es de la API, devolvemos JSON (para el perfil en Vue)
+        if ($request->is('api/*') || ($request->expectsJson() && !$request->ajax())) {
+            $authUser = $request->user();
+            $userData = $user->toArray();
+            
+            // Añadir si el usuario autenticado sigue a este usuario
+            if ($authUser) {
+                $userData['is_following'] = $user->followers()->where('follower_id', $authUser->id)->exists();
+            } else {
+                $userData['is_following'] = false;
+            }
+
+            return response()->json($userData);
+        }
+
+        // Si es una petición web (Admin), usamos la lógica de la plantilla (TemplateController)
+        return $this->renderForm($user, 'show', 'disabled');
+    }
+
+    /**
+     * API: Seguir o dejar de seguir a un usuario
+     */
+    public function follow(Request $request, $id)
+    {
+        $follower = $request->user();
+        if (!$follower) return response()->json(['message' => 'No autenticado'], 401);
+        
+        if ($follower->id == $id) {
+            return response()->json(['message' => 'No puedes seguirte a ti mismo'], 400);
+        }
+
+        $userToFollow = User::findOrFail($id);
+        
+        // Toggle follow
+        $isFollowing = $userToFollow->followers()->where('follower_id', $follower->id)->exists();
+        
+        if ($isFollowing) {
+            $userToFollow->followers()->detach($follower->id);
+            $message = 'Has dejado de seguir a ' . $userToFollow->name;
+            $following = false;
+        } else {
+            $userToFollow->followers()->attach($follower->id);
+            $message = 'Ahora sigues a ' . $userToFollow->name;
+            $following = true;
+        }
+
+        return response()->json([
+            'is_following' => $following,
+            'followers_count' => $userToFollow->followers()->count(),
+            'message' => $message
+        ]);
+    }
+
+    /**
+     * API: Buscar tutor por DNI
+     */
+    public function findTutorByDni(Request $request)
+    {
+        $dni = $request->query('dni');
+        if (!$dni) return response()->json(['message' => 'DNI requerido'], 400);
+
+        $tutor = User::where('dni', $dni)
+            ->where('role', 'EU')
+            ->first(['id', 'name', 'last_name', 'dni', 'profile_picture']);
+
+        if (!$tutor) {
+            return response()->json(['message' => 'Tutor no encontrado o no tiene el rol de Usuario Externo'], 404);
+        }
+
+        return response()->json($tutor);
+    }
+
+    /**
+     * API: Añadir tutor legal
+     */
+    public function addTutor(Request $request)
+    {
+        $student = $request->user();
+        if (!$student) return response()->json(['message' => 'No autenticado'], 401);
+
+        $tutorId = $request->input('tutor_id');
+        $tutor = User::where('id', $tutorId)->where('role', 'EU')->first();
+
+        if (!$tutor) {
+            return response()->json(['message' => 'Tutor no válido'], 404);
+        }
+
+        $student->tutors()->syncWithoutDetaching([$tutorId]);
+
+        return response()->json([
+            'message' => 'Tutor añadido correctamente',
+            'tutors' => $student->tutors()->get(['users.id', 'name', 'last_name', 'profile_picture', 'dni'])
+        ]);
+    }
+
+    /**
+     * API: Eliminar tutor legal
+     */
+    public function removeTutor(Request $request, $tutorId)
+    {
+        $student = $request->user();
+        if (!$student) return response()->json(['message' => 'No autenticado'], 401);
+
+        $student->tutors()->detach($tutorId);
+
+        return response()->json(['message' => 'Tutor eliminado correctamente']);
+    }
+
+    /**
+     * API: Obtener tutores de un usuario
+     */
+    public function getTutors(Request $request, $userId)
+    {
+        $authUser = $request->user();
+        if (!$authUser) return response()->json(['message' => 'No autenticado'], 401);
+
+        $role = strtolower($authUser->role);
+        $canView = $authUser->id == $userId 
+            || in_array($role, ['teacher', 'ei', 'admin', 'profesor', 'institución educativa', 'administrador']);
+
+        if (!$canView) {
+            return response()->json(['message' => 'No tienes permiso para ver esta información'], 403);
+        }
+
+        $user = User::findOrFail($userId);
+        $tutors = $user->tutors()->get(['users.id', 'name', 'last_name', 'profile_picture', 'dni']);
+
+        return response()->json($tutors);
     }
 }

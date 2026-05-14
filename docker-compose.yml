@@ -27,6 +27,12 @@ services:
       - backend_storage:/var/www/storage
       - backend_bootstrap_cache:/var/www/bootstrap/cache
       - ./backend/entrypoint.sh:/usr/local/bin/entrypoint.sh
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    extra_hosts:
+      - "api.resend.com:104.20.29.242"
+      - "api.resend.com:172.66.165.132"
     environment:
       - APP_ENV=${APP_ENV:-local}
       - APP_DEBUG=${APP_DEBUG:-true}

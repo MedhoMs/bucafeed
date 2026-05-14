@@ -1,14 +1,27 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { loadAnalytics } from '@/utils/analytics';
-import { refreshUser } from '@/stores/auth';
+import { refreshUser, user } from '@/stores/auth';
+import { unreadCount } from '@/stores/notifications';
+import { useSocket } from '@/composables/useSocket';
 import CookieBanner from '@/components/CookieBanner.vue';
 import ScrollToTop from '@/components/common/ScrollToTop.vue';
 
+const { socket, connect, on } = useSocket();
+
 onMounted(() => {
     loadAnalytics();
-    refreshUser(); // Sincroniza rol y datos del usuario con la BD al arrancar
+    refreshUser();
 });
+
+watch(() => user?.value?.id, (userId) => {
+    if (userId) {
+        connect(`user:${userId}`);
+        on('notification', (notif) => {
+            unreadCount.value++;
+        });
+    }
+}, { immediate: true });
 </script>
 
 <!--Desde la App se maneja todo lo que se va a ver, usando <router-view /> es lo que me permite elegir que vista va a ver el usuario-->

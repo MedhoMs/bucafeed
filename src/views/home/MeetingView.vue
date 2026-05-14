@@ -67,6 +67,15 @@ const fetchUserGroups = async () => {
 const fetchMeetings = async (page = 1) => {
     try {
         let endpoint = `meetings?page=${page}`;
+        
+        if (user.value) {
+            const role = user.value.role?.toLowerCase();
+            if (role === 'student' || role === 'alumno' || role === 'estudiante') {
+                endpoint += `&student_id=${user.value.id}`;
+            } else if (role === 'teacher' || role === 'profesor' || role === 'ei') {
+                endpoint += `&center_id=${user.value.educational_center_id}`;
+            }
+        }
 
         const result = await get(endpoint);
         
@@ -77,6 +86,7 @@ const fetchMeetings = async (page = 1) => {
                 id: m.id,
                 name: m.name,
                 teacher: m.teacher ? m.teacher.name : (m.teacher_name || t.value.meetings.unknown),
+                teacher_id: m.teacher_id,
                 group: m.group ? m.group.name : (m.educational_center ? m.educational_center.name : t.value.meetings.various),
                 group_id: m.group_id,
                 educational_center_id: m.educational_center_id,
@@ -104,29 +114,8 @@ onMounted(() => {
     fetchUserGroups();
 });
 
-// 1. Charlas disponibles para este usuario según su grupo
-const availableMeetings = computed(() => {
-    if (!user.value) return [];
-    const role = user.value.role?.toLowerCase();
-    if (role === 'admin' || role === 'administrador') return meetings.value;
-    
-    // Teachers/EI see meetings from their center
-    if (role === 'teacher' || role === 'profesor' || role === 'ei') {
-        return meetings.value.filter(m => 
-            m.educational_center_id === user.value.educational_center_id
-        );
-    }
-    
-    // Students see meetings from their groups
-    const userGroupIds = userGroups.value.map(g => g.id);
-    return meetings.value.filter(m => {
-        if (!m.group_id) {
-            // General meetings (no group) - show to students of same institution
-            return m.educational_center_id === user.value.educational_center_id;
-        }
-        return userGroupIds.includes(m.group_id);
-    });
-});
+// Now we rely on server-side filtering
+const availableMeetings = computed(() => meetings.value);
 
 // 2. Estado para los resultados filtrados por el buscador
 const filteredMeetings = ref([]);
@@ -296,26 +285,30 @@ const deleteMeeting = async () => {
                 <template #actions>
                     <PrimaryButton v-if="canCreateMeeting" :text="t.meetings.newMeeting" icon="plus" @click="openModal" />
                 </template>
+
             </PageHeader>
     
             <section 
                 :class="[
-                    'text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 flex flex-col',
-                    filteredMeetings.length === 0 ? 'flex-1 justify-center pb-32' : 'mb-20'
+                    'text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 flex flex-col flex-1',
+                    filteredMeetings.length === 0 ? 'justify-center pb-32' : 'mb-20'
                 ]"
             >
-                <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10">
+                <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1">
                     <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
-                        :teacher="meeting.teacher" :schedule="meeting.schedule" :group="meeting.group"
+                        :teacher="meeting.teacher" :teacher_id="meeting.teacher_id" :schedule="meeting.schedule" :group="meeting.group"
                         :group_id="meeting.group_id" :description="meeting.description" @delete="confirmDelete" />
                 </div>
 
-                <Pagination 
-                    v-if="meetings.length > 0 && filteredMeetings.length > 0"
-                    :current-page="pagination.currentPage" 
-                    :last-page="pagination.lastPage" 
-                    @change="handlePageChange"
-                />
+                <div v-if="pagination.lastPage > 1" class="mt-12 mb-10 flex justify-center w-full">
+                    <Pagination
+                        :current-page="pagination.currentPage"
+                        :last-page="pagination.lastPage"
+                        @change="handlePageChange"
+                    />
+                </div>
+
+
     
                 <div v-if="filteredMeetings.length === 0"
                     class="w-fit bg-white/5 backdrop-blur-md p-10 mx-auto rounded-3xl shadow-xl border border-white/10 text-center">

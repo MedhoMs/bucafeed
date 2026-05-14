@@ -126,7 +126,21 @@
                     <div v-if="apiLoading && questions.length === 0" class="text-white/40 italic py-10">{{ t.forum.loading }}</div>
     
                     <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">
-                        <div class="flex gap-4 items-center mb-4">
+                        <router-link v-if="q.user?.id" :to="'/profile/' + q.user.id" class="flex gap-4 items-center mb-4 hover:opacity-80 transition-opacity w-full pr-14 no-underline">
+                            <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-white">
+                                    {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
+                                </span>
+                                <span class="text-xs text-white/40 uppercase tracking-widest">
+                                    {{ 
+                                        q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                        (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
+                                    }}
+                                </span>
+                            </div>
+                        </router-link>
+                        <div v-else class="flex gap-4 items-center mb-4 w-full pr-14">
                             <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
                             <div class="flex flex-col">
                                 <span class="text-sm font-bold text-white">
@@ -157,7 +171,7 @@
                             <button 
                                 v-if="user?.role?.toLowerCase() === 'admin'"
                                 @click.stop="triggerDelete(q.id)"
-                                class="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
+                                class="absolute top-7 right-7 p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 z-10"
                                 :title="t.forum.delete"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
@@ -222,7 +236,8 @@
     }
 
     .post-title {
-        font-size: 20px;
-        font-weight: bold;
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: -0.02em;
     }
 </style>

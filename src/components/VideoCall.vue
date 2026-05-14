@@ -29,7 +29,11 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { io } from 'socket.io-client';
 import { Peer } from 'peerjs';
 
-const roomId = ref('sala-general'); // Podrías sacarlo de route.params
+const props = defineProps({
+    roomId: { type: String, default: 'sala-general' }
+});
+
+const roomId = ref(props.roomId);
 const myPeerId = ref('');
 const cameraError = ref('');
 const remoteStreams = ref([]); // Lista de {id, stream}

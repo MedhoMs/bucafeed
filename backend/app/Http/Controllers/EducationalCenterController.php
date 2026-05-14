@@ -54,6 +54,10 @@ class EducationalCenterController extends TemplateController
         if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
+        $isAdmin = $request->user() && strtolower($request->user()->role) === 'admin';
+        if (!$isAdmin) {
+            $query->where('type', '!=', 'TM');
+        }
         return $query;
     }
 
@@ -239,15 +243,21 @@ class EducationalCenterController extends TemplateController
     public function addUsers($id)
     {
         $center = EducationalCenter::findOrFail($id);
-        $availableStudents = User::where('role', 'Student')
-            ->where(function($q) use ($id) {
-                $q->whereNull('educational_center_id')->orWhere('educational_center_id', '!=', $id);
-            })->orderBy('name')->get();
+        
+        $studentRoles = ['Student'];
+        if ($center->name === 'Administración TelamoNet') {
+            $studentRoles[] = 'Admin';
+        }
+
+        $availableStudents = User::whereIn('role', $studentRoles)
+            ->whereNull('educational_center_id')
+            ->where('institution_name', $center->name)
+            ->orderBy('name')->get();
             
         $availableTeachers = User::where('role', 'Teacher')
-            ->where(function($q) use ($id) {
-                $q->whereNull('educational_center_id')->orWhere('educational_center_id', '!=', $id);
-            })->orderBy('name')->get();
+            ->whereNull('educational_center_id')
+            ->where('institution_name', $center->name)
+            ->orderBy('name')->get();
 
         return view('educational_centers.add_users', compact('center', 'availableStudents', 'availableTeachers'));
     }
@@ -438,12 +448,27 @@ class EducationalCenterController extends TemplateController
     public function apiSearchUsers(Request $request)
     {
         $search = $request->query('q');
-        $role = $request->query('role'); // Student or Teacher
+        $role = $request->query('role');
 
-        $query = User::whereNull('educational_center_id');
+        $authUser = $request->user();
+        if (!$authUser || !$authUser->educational_center_id) {
+            return response()->json([]);
+        }
+
+        $center = $authUser->educationalCenter;
+        if (!$center) {
+            return response()->json([]);
+        }
+
+        $query = User::whereNull('educational_center_id')
+            ->where('institution_name', $center->name);
 
         if ($role) {
-            $query->where('role', $role);
+            if ($role === 'Student' && $center->name === 'Administración TelamoNet') {
+                $query->whereIn('role', ['Student', 'Admin']);
+            } else {
+                $query->where('role', $role);
+            }
         }
 
         if ($search) {
@@ -465,13 +490,17 @@ class EducationalCenterController extends TemplateController
         }
 
         $validated = $request->validate([
-            'user_ids' => 'required|array',
-            'user_ids.*' => 'exists:users,id'
+            'user_ids' => 'required_without:ids|array',
+            'user_ids.*' => 'exists:users,id',
+            'ids' => 'required_without:user_ids|array',
+            'ids.*' => 'exists:users,id',
         ]);
+
+        $userIds = $validated['user_ids'] ?? $validated['ids'];
 
         $center = EducationalCenter::findOrFail($user->educational_center_id);
 
-        User::whereIn('id', $validated['user_ids'])->update([
+        User::whereIn('id', $userIds)->update([
             'educational_center_id' => $center->id,
             'institution_name' => $center->name
         ]);
