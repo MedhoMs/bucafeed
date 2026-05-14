@@ -223,6 +223,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/chats/find-or-create', [ChatController::class, 'findOrCreate']);
     Route::get('/chats/{chat}/messages', [ChatController::class, 'getMessages']);
     Route::post('/chats/{chat}/messages', [ChatController::class, 'sendMessage']);
+
+    // Preguntas y Respuestas (Acciones protegidas)
+    Route::post('answers/{answer}/useful', [AnswerController::class, 'markAsUseful']);
+    Route::delete('answers/{answer}/useful', [AnswerController::class, 'unmarkAsUseful']);
 });
 
 // Serve uploaded files (no auth required for images/PDFs to display)
@@ -270,7 +274,6 @@ Route::post('/users/generate-test', [UserController::class, 'apiGenerateTestUser
 Route::apiResource('questions', QuestionController::class);
 Route::apiResource('answers', AnswerController::class);
 Route::apiResource('tags', TagController::class);
-Route::post('answers/{answer}/useful', [AnswerController::class, 'markAsUseful']);
 
 // Validación de contenido con IA (Groq)
 Route::post('/validate-content', [ContentValidationController::class, 'validate']);
