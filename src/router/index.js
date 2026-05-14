@@ -34,6 +34,11 @@ const router = createRouter({
             component: VideoCallView
         },
         {
+            path: '/video-call/:roomId',
+            name: 'video-call-room',
+            component: VideoCallView
+        },
+        {
             path: '/home',
             name: 'home',
             component: HomeView

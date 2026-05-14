@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Answer;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class AnswerController extends TemplateController
@@ -43,6 +44,43 @@ class AnswerController extends TemplateController
         ];
     }
 
+    public function store(Request $request)
+    {
+        $result = parent::store($request);
+
+        if ($request->expectsJson() && $result instanceof Answer) {
+            $this->createAnswerNotification($result);
+        }
+
+        return $result;
+    }
+
+    private function createAnswerNotification(Answer $answer): void
+    {
+        $question = $answer->question;
+        $authorId = $question->user_id;
+
+        if ((int) $authorId === (int) $answer->user_id) {
+            return;
+        }
+
+        $snippet = mb_substr(strip_tags($answer->content ?? ''), 0, 100);
+
+        $notification = Notification::create([
+            'user_id' => $authorId,
+            'type' => 'answer',
+            'data' => [
+                'question_id' => $question->id,
+                'question_title' => $question->title,
+                'answer_id' => $answer->id,
+                'answer_snippet' => $snippet,
+                'user_name' => $answer->user->name . ' ' . ($answer->user->last_name ?? ''),
+            ],
+        ]);
+
+        $this->broadcastNotification($authorId, $notification->toArray());
+    }
+
     public function markAsUseful(Answer $answer)
     {
         $question = $answer->question;
@@ -67,10 +105,27 @@ class AnswerController extends TemplateController
         // Incrementamos la reputación de la respuesta para destacar que fue útil
         $answer->reputation += 50;
         $answer->save();
-        
-        // Incrementar reputación del autor de la respuesta en 50 puntos
+
+        // Incrementar reputación del autor de la respuesta
         $answer->user->increment('reputation', 50);
-        
+
+        // Notificar al autor de la respuesta
+        $answerAuthorId = $answer->user_id;
+        if ((int) $answerAuthorId !== (int) $question->user_id) {
+            $answer->load('user');
+            $notification = Notification::create([
+                'user_id' => $answerAuthorId,
+                'type' => 'answer_useful',
+                'data' => [
+                    'question_id' => $question->id,
+                    'question_title' => $question->title,
+                    'answer_id' => $answer->id,
+                    'user_name' => $question->user->name . ' ' . ($question->user->last_name ?? ''),
+                ],
+            ]);
+
+            $this->broadcastNotification($answerAuthorId, $notification->toArray());
+        }       
         return response()->json([
             'message' => 'Reputación otorgada correctamente',
             'answer' => $answer->load('user')

@@ -3,8 +3,19 @@ export const notifications = {
     subtitle: "Mantente al día con lo que sucede en TelamoNet.",
     filterAll: "Todo",
     filterMeetings: "Charlas",
-    filterPending: "Preguntas Pendientes",
+    filterPending: "Respuestas",
+    filterPrivate: "Mensajes Privados",
     answered: "HAN RESPONDIDO A TU PREGUNTA",
     meetingAlert: "AVISO CHARLA PROGRAMADA",
-    schedule: "Horario"
+    answerUseful: "TU RESPUESTA FUE MARCADA COMO ÚTIL",
+    privateMessage: "NUEVO MENSAJE PRIVADO",
+    meetingMessage: "NUEVO MENSAJE EN CHARLA",
+    groupMessage: "NUEVO MENSAJE EN GRUPO",
+    schedule: "Horario",
+    markAsRead: "Marcar como leída",
+    markAllAsRead: "Marcar todo como leído",
+    noNotifications: "No tienes notificaciones",
+    emptyMessage: "Cuando recibas notificaciones, aparecerán aquí.",
+    newNotification: "Nueva notificación",
+    from: "de"
 };

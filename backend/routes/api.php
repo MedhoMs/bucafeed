@@ -21,6 +21,7 @@ use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\CycleController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ContentValidationController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/health', function () {
     return response()->json([
@@ -145,6 +146,13 @@ Route::get('/test-gemini', function (\Illuminate\Http\Request $request) {
     }
 });
 Route::middleware('auth:sanctum')->group(function () {
+    // Notificaciones
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
+
     Route::post('/meetings/{meeting}/kahoot', [KahootController::class, 'createSession']);
     Route::get('/meetings/{meeting}/kahoot/active', [KahootController::class, 'getActiveSession']);
     Route::post('/kahoot/{session}/start', [KahootController::class, 'startSession']);
@@ -194,7 +202,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/meetings/{meeting}/messages', function (\Illuminate\Http\Request $request, \App\Models\Meeting $meeting) {
         $validated = $request->validate([
             'content' => 'nullable|string',
-            'type' => 'required|string|in:text,image,pdf,kahoot',
+            'type' => 'required|string|in:text,image,pdf,kahoot,call',
             'file_name' => 'nullable|string|max:255',
             'metadata' => 'nullable|array',
         ]);
@@ -207,6 +215,47 @@ Route::middleware('auth:sanctum')->group(function () {
             'metadata' => $validated['metadata'] ?? null,
         ]);
         $message->load('user');
+
+        $recipients = collect();
+        if ($meeting->group) {
+            $meeting->group->load('students');
+            $recipients = $meeting->group->students->pluck('id');
+            if ($meeting->group->tutor_id) {
+                $recipients->push($meeting->group->tutor_id);
+            }
+        }
+        if ($recipients->isEmpty()) {
+            $recipients = \App\Models\Message::where('meeting_id', $meeting->id)
+                ->distinct()->pluck('user_id');
+        }
+        $recipients->push($meeting->teacher_id);
+        $recipients = $recipients->unique()->filter(fn($id) => (int)$id !== (int)$request->user()->id);
+
+        $snippet = $message->content;
+        if ($validated['type'] === 'call') {
+            $snippet = 'Te ha invitado a una videollamada grupal';
+        } else if ($validated['type'] === 'image') {
+            $snippet = '[Imagen]';
+        } else if ($validated['type'] === 'pdf') {
+            $snippet = '[Archivo PDF]';
+        }
+
+        $senderName = $message->user->name . ' ' . ($message->user->last_name ?? '');
+        foreach ($recipients as $rid) {
+            $notif = \App\Models\Notification::create([
+                'user_id' => $rid,
+                'type' => 'meeting_message',
+                'data' => [
+                    'meeting_id' => $meeting->id,
+                    'meeting_name' => $meeting->name,
+                    'message_id' => $message->id,
+                    'sender_name' => $senderName,
+                    'snippet' => mb_substr($snippet, 0, 100),
+                ],
+            ]);
+            \App\Models\Notification::broadcast($rid, $notif->toArray());
+        }
+
         return response()->json([
             'id' => $message->id,
             'type' => $message->message_type,

@@ -236,7 +236,8 @@
     }
 
     .post-title {
-        font-size: 20px;
-        font-weight: bold;
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: -0.02em;
     }
 </style>
