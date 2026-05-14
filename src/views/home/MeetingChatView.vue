@@ -14,20 +14,8 @@ const meetingId = route.params.id;
 const meetingGroup = route.params.group;
 const meeting = ref(null);
 
-// Security check: only redirect if it's a specific group and doesn't match
 onMounted(() => {
     fetchMeeting();
-    
-    if (authUser.value) {
-        const role = authUser.value.role?.toLowerCase();
-        const userInstitution = authUser.value.institution_name?.toLowerCase();
-        const targetGroup = meetingGroup?.toLowerCase();
-
-        if ((role === 'student' || role === 'alumno') && targetGroup && targetGroup !== 'varios' && userInstitution !== targetGroup) {
-            console.warn('Access denied: Institution mismatch', { userInstitution, targetGroup });
-            router.push({ name: 'meeting' });
-        }
-    }
 });
 const fetchMeeting = async () => {
     if (!meetingId) return;

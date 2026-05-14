@@ -48,7 +48,17 @@ class MeetingController extends TemplateController
             $student = \App\Models\User::find($request->student_id);
             if ($student) {
                 $groupIds = $student->groupsAsStudent()->pluck('groups.id')->toArray();
-                $query->whereIn('group_id', $groupIds);
+                $centerId = $student->educational_center_id;
+                
+                $query->where(function($q) use ($groupIds, $centerId) {
+                    $q->whereIn('group_id', $groupIds);
+                    if ($centerId) {
+                        $q->orWhere(function($sub) use ($centerId) {
+                            $sub->whereNull('group_id')
+                                ->where('educational_center_id', $centerId);
+                        });
+                    }
+                });
             }
         }
         

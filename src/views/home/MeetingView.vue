@@ -67,6 +67,15 @@ const fetchUserGroups = async () => {
 const fetchMeetings = async (page = 1) => {
     try {
         let endpoint = `meetings?page=${page}`;
+        
+        if (user.value) {
+            const role = user.value.role?.toLowerCase();
+            if (role === 'student' || role === 'alumno' || role === 'estudiante') {
+                endpoint += `&student_id=${user.value.id}`;
+            } else if (role === 'teacher' || role === 'profesor' || role === 'ei') {
+                endpoint += `&center_id=${user.value.educational_center_id}`;
+            }
+        }
 
         const result = await get(endpoint);
         
@@ -105,29 +114,8 @@ onMounted(() => {
     fetchUserGroups();
 });
 
-// 1. Charlas disponibles para este usuario según su grupo
-const availableMeetings = computed(() => {
-    if (!user.value) return [];
-    const role = user.value.role?.toLowerCase();
-    if (role === 'admin' || role === 'administrador') return meetings.value;
-    
-    // Teachers/EI see meetings from their center
-    if (role === 'teacher' || role === 'profesor' || role === 'ei') {
-        return meetings.value.filter(m => 
-            m.educational_center_id === user.value.educational_center_id
-        );
-    }
-    
-    // Students see meetings from their groups
-    const userGroupIds = userGroups.value.map(g => g.id);
-    return meetings.value.filter(m => {
-        if (!m.group_id) {
-            // General meetings (no group) - show to students of same institution
-            return m.educational_center_id === user.value.educational_center_id;
-        }
-        return userGroupIds.includes(m.group_id);
-    });
-});
+// Now we rely on server-side filtering
+const availableMeetings = computed(() => meetings.value);
 
 // 2. Estado para los resultados filtrados por el buscador
 const filteredMeetings = ref([]);

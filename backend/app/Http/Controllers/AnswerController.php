@@ -125,8 +125,7 @@ class AnswerController extends TemplateController
             ]);
 
             $this->broadcastNotification($answerAuthorId, $notification->toArray());
-        }
-        
+        }       
         return response()->json([
             'message' => 'Reputación otorgada correctamente',
             'answer' => $answer->load('user')
