@@ -234,7 +234,7 @@
                                     <div class="flex flex-col">
                                         <span class="text-base font-bold text-white flex items-center gap-2">
                                             {{ question.user?.name ?? 'Usuario' }} <span v-if="question.user?.last_name">{{ question.user.last_name }}</span>
-                                            <span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-black border border-amber-500/20">
+                                            <span class="px-2 py-0.5 rounded-full bg-accent-normal text-amber-300 text-[10px] font-black border border-white/60">
                                                 {{ question.user?.reputation ?? 0 }} pts
                                             </span>
                                         </span>
@@ -326,7 +326,7 @@
                                             <button 
                                                 v-if="user?.id === question?.user_id && ans.user_id !== user?.id && !ans.is_useful"
                                                 @click="likeAnswer(ans)"
-                                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white transition-all active:scale-95 text-xs font-bold"
+                                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white transition-all active:scale-95 text-xs font-bold cursor-pointer"
                                                 title="Otorgar +50 puntos de reputación"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.74-1c.22-.4.45-.83.71-1.31.49-1 .81-2.22 1.2-2.83a4 4 0 0 1 4.59-2.22c1.4.3 1 2.09.81 3.25z"/></svg>

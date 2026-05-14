@@ -91,10 +91,15 @@ class AnswerController extends TemplateController
         }
 
         $answer->is_useful = false;
-        $answer->reputation -= 50;
+        
+        // Evitar que la reputación de la respuesta baje de 0
+        $answer->reputation = max(0, $answer->reputation - 50);
         $answer->save();
         
-        $answer->user->decrement('reputation', 50);
+        // Evitar que la reputación del usuario baje de 0
+        $user = $answer->user;
+        $user->reputation = max(0, $user->reputation - 50);
+        $user->save();
         
         return response()->json([
             'message' => 'Reputación retirada correctamente',

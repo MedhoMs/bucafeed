@@ -264,7 +264,7 @@ watch(() => route.params.id, (newId) => {
                                 </div>
                             </template>
                             <div class="w-1 h-1 rounded-full bg-white/20 hidden sm:block"></div>
-                            <div class="px-2 py-0.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-bold flex items-center gap-1">
+                            <div class="px-2 py-0.5 rounded-lg bg-accent-normal border border-white/60 text-amber-300 text-xs font-bold flex items-center gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
                                 {{ profileData.reputation }} pts
                             </div>
