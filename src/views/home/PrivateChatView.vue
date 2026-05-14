@@ -12,7 +12,7 @@
 
     const { t } = useTranslations();
     const { get, post } = useApi();
-    const { connect: connectSocket, joinRoom, leaveRoom, emit: emitSocket, on: onSocket, disconnect: disconnectSocket } = useSocket();
+    const { socket: socketRef, connect: connectSocket, joinRoom, leaveRoom, emit: emitSocket, on: onSocket, disconnect: disconnectSocket } = useSocket();
     const route = useRoute();
     const router = useRouter();
     
@@ -26,6 +26,9 @@
     const chatContainer = ref(null);
     const currentRoomId = ref(null);
     const activeCallRoomId = ref(null);
+    const contactTyping = ref(false);
+    const contactOnline = ref(false);
+    let typingStopTimer = null;
 
     const selectedContact = computed(() => {
         if (!selectedContactId.value) return null;
@@ -88,9 +91,12 @@
 
     const selectContact = async (id) => {
         selectedContactId.value = id;
+        contactOnline.value = false;
+        contactTyping.value = false;
         messages.value = [];
         activeCallRoomId.value = null; 
         loadingMessages.value = true;
+        socketRef.value?.emit('get-user-status', String(id));
         mobileShowChat.value = true;
         currentChat.value = null;
 
@@ -204,6 +210,26 @@
             }
         });
 
+        onSocket('user-typing', (data) => {
+            if (data && Number(data.userId) === Number(selectedContactId.value) && Number(data.userId) !== Number(authUser.value?.id)) {
+                contactTyping.value = true;
+                clearTimeout(typingStopTimer);
+                typingStopTimer = setTimeout(() => { contactTyping.value = false; }, 3000);
+            }
+        });
+
+        onSocket('user-typing-stop', (data) => {
+            if (data && Number(data.userId) === Number(selectedContactId.value)) {
+                contactTyping.value = false;
+            }
+        });
+
+        onSocket('user-status', (data) => {
+            if (data && Number(data.userId) === Number(selectedContactId.value)) {
+                contactOnline.value = data.online;
+            }
+        });
+
         await fetchContacts();
 
         const userId = route.query.user;
@@ -230,13 +256,19 @@
                 <template v-if="selectedContact">
                     <div class="px-6 py-4 border-b border-white/5 flex justify-between items-center gap-3 bg-white/5 backdrop-blur-md z-20 shrink-0">
                         <button @click="openNavMenu" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="-960 -240 720 80" width="24px" fill="#FFFFFF"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
                         </button>
                         <router-link :to="'/profile/' + selectedContact.id" class="flex items-center gap-4 hover:opacity-80 transition-opacity no-underline">
                             <UserAvatar :user="selectedContact" size="w-10 h-10" />
                             <div>
                                 <h3 class="text-lg font-bold text-white leading-none mb-1">{{ selectedContact.name }} {{ selectedContact.last_name }}</h3>
                                 <p class="text-[10px] text-white/50 uppercase font-bold tracking-wider mb-1">{{ selectedContact.role_name || 'Ver Perfil' }}</p>
+                                <div class="flex items-center gap-2">
+                                    <span v-if="contactOnline" class="flex items-center gap-1 text-[9px] text-emerald-400 font-black uppercase tracking-widest">
+                                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> En línea
+                                    </span>
+                                    <span v-if="contactTyping" class="text-[9px] text-accent-normal font-black uppercase tracking-widest animate-pulse">Escribiendo...</span>
+                                </div>
                                 <div v-if="isCallActiveInChat" class="flex items-center gap-1.5">
                                     <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
                                     <span class="text-[9px] text-emerald-400 font-black uppercase tracking-widest">Llamada en curso</span>
@@ -322,7 +354,7 @@
                     </div>
 
                     <div class="px-6 pb-4">
-                        <TextChatBar @sendMessage="handleSendMessage" />
+                        <TextChatBar @sendMessage="handleSendMessage" @typing="emitSocket('user-typing', currentRoomId, { userId: authUser?.id })" @typing-stop="emitSocket('user-typing-stop', currentRoomId, { userId: authUser?.id })" />
                     </div>
                 </template>
 
@@ -339,7 +371,7 @@
                 <div class="p-6">
                     <div class="flex items-center gap-3 mb-4">
                         <button @click="openNavMenu" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="-960 -240 720 80" width="24px" fill="#FFFFFF"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
                         </button>
                         <h2 class="text-2xl font-bold text-white">Chat Privado</h2>
                     </div>

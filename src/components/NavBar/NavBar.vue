@@ -202,11 +202,6 @@ Enter
                     </template>
                 </NavBarLinks>
  
-                <NavBarLinks to="/video-call" :title=t.nav.videoCall>
-                    <template #icon>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z" /><path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z" /></svg>
-                    </template>
-                </NavBarLinks>
  
                 <router-link
                     class="relative flex items-center gap-2.5 mb-5 mr-4 mt-auto rounded-xl text-base font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-secondary-normal hover:cursor-pointer active:bg-secondary-normal active:font-bold"

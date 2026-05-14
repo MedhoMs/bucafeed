@@ -9,14 +9,45 @@ const io = require('socket.io')(server, {
   }
 });
 
+const onlineUsers = new Map(); // userId → Set<socketId>
+
 io.on('connection', socket => {
   console.log('New client connected:', socket.id);
 
-  socket.on('join-room', (roomId, userData = null) => {
-    console.log(`Socket ${socket.id} joining room: ${roomId}`);
+  socket.on('join-room', (roomId, userId) => {
+    console.log(`User ${userId} joined room: ${roomId}`);
     socket.join(roomId);
-    if (userData) {
-      socket.to(roomId).emit('user-connected', userData.userId || userData);
+    socket.to(roomId).emit('user-connected', userId);
+  });
+
+  socket.on('leave-room', (roomId) => {
+    console.log(`Client ${socket.id} left room: ${roomId}`);
+    socket.leave(roomId);
+  });
+
+  socket.on('user-online', (userId) => {
+    if (!onlineUsers.has(userId)) onlineUsers.set(userId, new Set());
+    onlineUsers.get(userId).add(socket.id);
+    socket.userId = userId;
+    socket.broadcast.emit('user-status', { userId, online: true });
+  });
+
+  socket.on('send-message', (data) => {
+    console.log(`Message in ${data.roomId} from ${data.userId}: ${data.message}`);
+    io.to(data.roomId).emit('receive-message', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+    if (socket.userId) {
+      const sockets = onlineUsers.get(socket.userId);
+      if (sockets) {
+        sockets.delete(socket.id);
+        if (sockets.size === 0) {
+          onlineUsers.delete(socket.userId);
+          socket.broadcast.emit('user-status', { userId: socket.userId, online: false });
+        }
+      }
     }
   });
 
@@ -32,6 +63,21 @@ io.on('connection', socket => {
 
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
+  });
+
+  // Online status query
+  socket.on('get-user-status', (userId) => {
+    const isOnline = onlineUsers.has(userId) && onlineUsers.get(userId).size > 0;
+    socket.emit('user-status', { userId, online: isOnline });
+  });
+
+  // Typing indicators
+  socket.on('user-typing', (roomId, data) => {
+    socket.to(roomId).emit('user-typing', data);
+  });
+
+  socket.on('user-typing-stop', (roomId, data) => {
+    socket.to(roomId).emit('user-typing-stop', data);
   });
 
   // Chat events

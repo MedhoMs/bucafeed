@@ -7,7 +7,11 @@ import VideoCall from '../../components/VideoCall.vue';
 import { useTranslations } from '../../composables/useTranslations'
 import { user as authUser } from '../../stores/auth';
 import { ref, onMounted, computed } from 'vue';
+import { useApi } from '../../composables/useApi';
+import { useSocket } from '../../composables/useSocket';
 const { t } = useTranslations()
+const { get, post: apiPost } = useApi();
+const { emit: emitSocket } = useSocket();
 const route = useRoute();
 const router = useRouter();
 
@@ -53,19 +57,17 @@ async function startMeetingCall() {
     
     // Notification for other members could be a special message
     try {
-        const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-        await fetch(`${apiBase}/meetings/${meetingId}/messages`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({
-                message_type: 'call',
-                content: roomId,
-                file_name: 'Sesión de video iniciada'
-            })
+        const savedMsg = await apiPost(`meetings/${meetingId}/messages`, {
+            type: 'call',
+            content: roomId,
+            file_name: 'Sesión de video iniciada'
         });
+
+        if (savedMsg) {
+            const currentRoomId = `meeting-${meetingId}`;
+            const normalizedMsg = { ...savedMsg, type: savedMsg.message_type || savedMsg.type };
+            emitSocket('chat:message', currentRoomId, normalizedMsg);
+        }
     } catch (e) {
         console.error('Error starting meeting call:', e);
     }

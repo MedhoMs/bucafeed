@@ -201,7 +201,10 @@ function setupSocket() {
     })
 }
 
-onMounted(async () => { await loadMessages(); setupSocket() })
+onMounted(async () => { 
+    setupSocket();
+    await loadMessages(); 
+})
 onUnmounted(() => disconnectSocket())
 </script>
 
