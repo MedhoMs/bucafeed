@@ -249,13 +249,13 @@ class UserController extends TemplateController
      */
     public function show(Request $request, $id)
     {
-        // Si la petición espera JSON o es de la API, devolvemos JSON (para el perfil en Vue)
-        if ($request->expectsJson() || $request->is('api/*')) {
-            $authUser = $request->user();
-            $user = User::withCount(['followers', 'following'])
-                ->with($this->with)
-                ->findOrFail($id);
+        $user = User::withCount(['followers', 'following'])
+            ->with($this->with)
+            ->findOrFail($id);
 
+        // Si la petición espera JSON o es de la API, devolvemos JSON (para el perfil en Vue)
+        if ($request->is('api/*') || ($request->expectsJson() && !$request->ajax())) {
+            $authUser = $request->user();
             $userData = $user->toArray();
             
             // Añadir si el usuario autenticado sigue a este usuario
@@ -269,7 +269,7 @@ class UserController extends TemplateController
         }
 
         // Si es una petición web (Admin), usamos la lógica de la plantilla (TemplateController)
-        return parent::show($request, $id);
+        return $this->renderForm($user, 'show', 'disabled');
     }
 
     /**

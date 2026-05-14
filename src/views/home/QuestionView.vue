@@ -198,7 +198,7 @@
                     <div v-else class="w-full">
                         <!-- Tarjeta de la Pregunta Principal -->
                         <div class="post-card text-left bg-linear-to-br from-white/5 to-white/2 border border-white/10 rounded-2xl p-7 relative mb-8">
-                            <div class="flex gap-4 items-center mb-4 border-b border-white/5 pb-4">
+                            <div class="flex gap-4 items-center mb-4 border-b border-white/5 pb-4 pr-14">
                                 <router-link v-if="question.user?.id" :to="'/profile/' + question.user.id" class="flex gap-4 items-center hover:opacity-80 transition-opacity no-underline">
                                     <UserAvatar :user="question.user" size="w-12 h-12" class="shrink-0 shadow-lg bg-[#15202b]" />
                                     <div class="flex flex-col">
@@ -221,7 +221,7 @@
                                 <button 
                                     v-if="user?.role?.toLowerCase() === 'admin'"
                                     @click="triggerDelete('question', question.id)"
-                                    class="ml-auto p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
+                                    class="absolute top-7 right-7 p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 z-10"
                                     :title="t.forum.deleteQuestion"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
@@ -259,7 +259,7 @@
                                 </router-link>
                                 <UserAvatar v-else :user="ans.user" class="shrink-0 shadow-sm bg-[#15202b]" />
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex justify-between items-center mb-2">
+                                    <div class="flex justify-between items-center mb-2 pr-10">
                                         <router-link v-if="ans.user?.id" :to="'/profile/' + ans.user.id" class="flex flex-col hover:opacity-80 transition-opacity no-underline">
                                             <span class="text-sm font-bold text-white">
                                                 {{ ans.user?.name ?? t.forum.user }} <span v-if="ans.user?.last_name">{{ ans.user.last_name }}</span>
@@ -288,7 +288,7 @@
                                             <button 
                                                 v-if="user?.role?.toLowerCase() === 'admin'"
                                                 @click="triggerDelete('answer', ans.id)"
-                                                class="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90"
+                                                class="absolute top-5 right-5 p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 z-10"
                                                 :title="t.forum.deleteAnswer"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
