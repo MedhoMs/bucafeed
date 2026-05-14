@@ -70,7 +70,7 @@ const handleDelete = () => {
         </div>
 
         <div class="mb-6 relative z-10">
-            <p class="text-[9px] font-black uppercase text-white/20 tracking-[0.2em] mb-1">Grupo / Institución</p>
+            <p class="text-[9px] font-black uppercase text-white/20 tracking-[0.2em] mb-1">Grupo</p>
             <div class="flex items-center gap-2">
                 <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></span>
                 <p class="text-xs font-bold text-white/80 truncate">{{ props.group }}</p>
