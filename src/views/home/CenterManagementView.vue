@@ -24,6 +24,7 @@ const center = ref(null)
 const groups = ref([])
 const teachers = ref([])
 const students = ref([])
+const pendingStudents = ref([])
 const admins = ref([])
 const cycles = ref([])
 const events = ref([])
@@ -57,14 +58,30 @@ const openModal = (type, item = null) =>{
 async function loadAll() {
     loading.value = true
     try {
-        const fetchs = ['my-center', 'my-center/groups', 'my-center/teachers', 'my-center/students', 'my-center/admins', 'my-center/cycles', 'my-center/events']
+        const fetchs = ['my-center', 'my-center/groups', 'my-center/teachers', 'my-center/students', 'my-center/students/pending', 'my-center/admins', 'my-center/cycles', 'my-center/events']
         const results = await Promise.all(fetchs.map(p => fetch(`${apiBase}/${p}`, { headers: headers.value }).then(r => r.json())));
-        [center.value, groups.value, teachers.value, students.value, admins.value, cycles.value, events.value] = results;
+        [center.value, groups.value, teachers.value, students.value, pendingStudents.value, admins.value, cycles.value, events.value] = results;
     } catch (e) { showToast({ msg: 'Error de servidor', type: 'error' }) }
     loading.value = false
 }
 
 onMounted(loadAll)
+
+async function verifyStudent(userId) {
+    try {
+        const res = await fetch(`${apiBase}/my-center/students/${userId}/verify`, {
+            method: 'POST',
+            headers: headers.value
+        })
+        const data = await res.json()
+        if (res.ok) {
+            showToast({ msg: 'Estudiante verificado correctamente' })
+            await loadAll()
+        } else {
+            showToast({ msg: data.message || 'Error al verificar', type: 'error' })
+        }
+    } catch (e) { showToast({ msg: 'Error de servidor', type: 'error' }) }
+}
 
 async function deleteItem(type, item, itemId = null) {
     const config = {
@@ -134,7 +151,9 @@ const getTeacherName = (id) => {
                 :admins="admins" 
                 :teachers="teachers" 
                 :students="students" 
+                :pendingStudents="pendingStudents"
                 @openModal="openModal"
+                @verifyStudent="verifyStudent"
             />
 
             <CyclesTab 

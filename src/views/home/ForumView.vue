@@ -5,7 +5,8 @@
     import ForumManagerCore from '../../components/forum/ForumManagerCore.vue';
     import PageHeader from '@/components/common/PageHeader.vue';
     import PrimaryButton from '@/components/common/PrimaryButton.vue';
-    import { ref, onMounted, reactive} from 'vue';
+    import UnverifiedBanner from '@/components/common/UnverifiedBanner.vue';
+    import { ref, onMounted, reactive, computed } from 'vue';
     import { user } from '@/stores/auth';
     import { useRouter } from 'vue-router';
     import { useApi } from '../../composables/useApi';
@@ -16,6 +17,9 @@
     const { t } = useTranslations()
     const router = useRouter();
     const { get, del, loading: apiLoading } = useApi();
+
+    // Un alumno está no verificado si su rol es Student y is_verified es false
+    const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
     
     const rawQuestions = ref([]);
     const questions = ref([]);
@@ -112,6 +116,7 @@
 
                 <template #actions>
                     <PrimaryButton 
+                        v-if="!isUnverified"
                         :text="t.forum.newQuestion"
                         icon="plus"
                         @click="activeModal = 'question'"
@@ -122,7 +127,13 @@
 
     
             <section class="text-white w-full px-6 lg:px-14 flex-1 flex flex-col">
-                <div id="mainBody" class="flex flex-col gap-6 w-full flex-1">
+                <!-- Banner para alumnos no verificados -->
+                <UnverifiedBanner 
+                    v-if="isUnverified"
+                    message="Tu cuenta todavía no ha sido verificada por tu centro educativo. No puedes crear preguntas ni responder hasta que el centro valide tu identidad."
+                />
+
+                <div v-else id="mainBody" class="flex flex-col gap-6 w-full flex-1">
                     <div v-if="apiLoading && questions.length === 0" class="text-white/40 italic py-10">{{ t.forum.loading }}</div>
     
                     <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">
@@ -180,7 +191,7 @@
                     </div>
                 </div>
 
-                <div class="mt-auto py-8 flex justify-center w-full">
+                <div v-if="!isUnverified" class="mt-auto py-8 flex justify-center w-full">
                     <Pagination 
                         :currentPage="pagination.currentPage" 
                         :lastPage="pagination.lastPage"

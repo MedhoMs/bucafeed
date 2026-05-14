@@ -14,6 +14,11 @@ class Student extends Model
         'educational_center_id',
         'cycle_id',
         'course',
+        'verified',
+    ];
+
+    protected $casts = [
+        'verified' => 'boolean',
     ];
 
     public function cycle()

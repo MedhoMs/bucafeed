@@ -9,6 +9,7 @@
     import Pagination from '@/components/common/Pagination.vue';
     import PrimaryButton from '@/components/common/PrimaryButton.vue';
     import BaseModal from '@/components/modals/BaseModal.vue';
+    import UnverifiedBanner from '@/components/common/UnverifiedBanner.vue';
 
     import { useTranslations } from '@/composables/useTranslations'
     import { useApi } from '@/composables/useApi';
@@ -17,6 +18,8 @@
 
     // Importamos directamente las variables reactivas del auth.js
     import { user as authUser, token as authToken } from '@/stores/auth'
+
+    const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
 
     const rawEvents = ref([]);
     const events = ref([]);
@@ -84,6 +87,11 @@
     const handleJoin = async (event) => {
         if (!token.value) {
             showToast({ msg: t.value.events.loginRequired, type: 'error' });
+            return;
+        }
+        // Block unverified students from joining
+        if (isUnverified.value) {
+            showToast({ msg: 'Tu cuenta está pendiente de verificación. No puedes unirte a eventos.', type: 'error' });
             return;
         }
         try {
@@ -160,6 +168,10 @@
             <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20 flex-1 flex flex-col">
     
                 <div id="mainBody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center pb-20 flex-1">
+                    <!-- Banner para alumnos no verificados -->
+                    <div v-if="isUnverified" class="col-span-full">
+                        <UnverifiedBanner message="Tu cuenta todavía no ha sido verificada por tu centro educativo. No puedes apuntarte a eventos hasta que el centro valide tu identidad." />
+                    </div>
                     <EventCard 
                         v-for="event in events" 
                         :key="event.id" 

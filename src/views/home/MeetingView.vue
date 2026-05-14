@@ -9,12 +9,15 @@ import PrimaryButton from '@/components/common/PrimaryButton.vue';
 import BaseModal from '@/components/modals/BaseModal.vue';
 import GenericForm from '@/components/common/forms/GenericForm.vue';
 import Pagination from '../../components/common/Pagination.vue';
+import UnverifiedBanner from '@/components/common/UnverifiedBanner.vue';
 import { useTranslations } from '../../composables/useTranslations'
 import { user } from '../../stores/auth';
 import { useApi } from '../../composables/useApi';
 
 const { t } = useTranslations()
 const { get, post: apiPost, del: apiDelete, loading: apiLoading } = useApi();
+
+const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
 
 const meetings = ref([]);
 const centers = ref([]);
@@ -294,6 +297,13 @@ const deleteMeeting = async () => {
                     filteredMeetings.length === 0 ? 'justify-center pb-32' : 'mb-20'
                 ]"
             >
+                <!-- Banner para alumnos no verificados -->
+                <UnverifiedBanner 
+                    v-if="isUnverified"
+                    message="Tu cuenta todavía no ha sido verificada por tu centro educativo. No puedes unirte a charlas hasta que el centro valide tu identidad."
+                />
+
+                <template v-else>
                 <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1">
                     <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
                         :teacher="meeting.teacher" :teacher_id="meeting.teacher_id" :schedule="meeting.schedule" :group="meeting.group"
@@ -315,6 +325,7 @@ const deleteMeeting = async () => {
                     <h3 class="text-2xl font-bold text-white mb-2">{{ t.meetings.noMeetings || 'No se han encontrado reuniones' }}</h3>
                     <p v-if="!user" class="text-white/60">{{ t.meetings.loginRequired || 'Debes iniciar sesión para ver tus charlas.' }}</p>
                 </div>
+                </template>
             </section>
     
             <!-- Modal de Creación -->

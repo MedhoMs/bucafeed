@@ -9,7 +9,8 @@
     import PageHeader from '@/components/common/PageHeader.vue';
     import Pagination from '../../components/common/Pagination.vue';
     import TextChatBar from '@/components/TextChatBar.vue';
-    import { ref, onMounted, watch, reactive } from 'vue';
+    import UnverifiedBanner from '@/components/common/UnverifiedBanner.vue';
+    import { ref, onMounted, watch, reactive, computed } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { user } from '@/stores/auth';
 
@@ -18,6 +19,8 @@
     const { t } = useTranslations()
     const { get, post, del, loading: apiLoading } = useApi();
     const router = useRouter();
+
+    const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
 
     const getImageUrl = (path) => {
         if (!path) return null;
@@ -386,9 +389,21 @@
                 </div>
             </section>
             <!-- El Formulario ahora usa TextChatBar con validación de Groq -->
-            <div class="fixed bottom-0 right-0 left-0 lg:left-75 bg-[#0f2828] border-t border-white/10 px-4 lg:px-8 py-3 z-50">
+            <div v-if="!isUnverified" class="fixed bottom-0 right-0 left-0 lg:left-75 bg-[#0f2828] border-t border-white/10 px-4 lg:px-8 py-3 z-50">
                 <div class="w-full max-w-7xl mx-auto">
                     <TextChatBar is-response @sendMessage="handleSendMessage" />
+                </div>
+            </div>
+            <!-- Banner para no verificados -->
+            <div v-else class="fixed bottom-0 right-0 left-0 lg:left-75 bg-amber-500/8 border-t border-amber-500/20 px-4 lg:px-8 py-4 z-50">
+                <div class="w-full max-w-7xl mx-auto flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-400 shrink-0">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <p class="text-amber-300/70 text-xs font-bold uppercase tracking-widest">
+                        Tu cuenta está pendiente de verificación. No puedes responder preguntas hasta que tu centro te valide.
+                    </p>
                 </div>
             </div>
         </main>

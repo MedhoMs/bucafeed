@@ -12,9 +12,9 @@
         <div class="caustics" />
 
         <section class="relative flex justify-center w-120 z-10 mb-30">
-            <img class="absolute -top-50 left-1/2 -translate-x-1/2 rotate-180 shark" width="220px" src="/public/tiburon.webp" alt="">
-            <img class="absolute top-30 -left-12 rotate-45 shark" width="220px" src="/public/tiburon.webp" alt="">
-            <img class="absolute top-30 -right-12 -rotate-45 shark" width="220px" src="/public/tiburon.webp" alt="">
+            <img class="absolute -top-50 left-1/2 -translate-x-1/2 rotate-180 shark" width="220px" src="/tiburon.webp" alt="">
+            <img class="absolute top-30 -left-12 rotate-45 shark" width="220px" src="/tiburon.webp" alt="">
+            <img class="absolute top-30 -right-12 -rotate-45 shark" width="220px" src="/tiburon.webp" alt="">
 
             <p class="four-o-four text-8xl font-bold tracking-[8px]">404</p>
             <p class="absolute -bottom-65 text-3xl subtitle">Esta página se ha perdido en el océano</p>

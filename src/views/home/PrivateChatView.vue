@@ -3,6 +3,7 @@
     import NavBar from '@/components/NavBar/NavBar.vue';
     import { useTranslations } from '@/composables/useTranslations';
     import UserAvatar from '@/components/common/UserAvatar.vue';
+    import UnverifiedBanner from '@/components/common/UnverifiedBanner.vue';
     import { useApi } from '@/composables/useApi';
     import { user as authUser } from '@/stores/auth';
     import { useSocket } from '@/composables/useSocket';
@@ -12,6 +13,8 @@
     const { t } = useTranslations();
     const { get, post } = useApi();
     const { setupSocket, emitSocket, onlineUsers, connected, on: onSocket } = useSocket();
+
+    const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
     
     const contacts = ref([]);
     const loadingContacts = ref(false);
@@ -178,7 +181,12 @@
     <div class="h-screen overflow-hidden">
         <NavBar ref="navBarRef" hide-hamburger></NavBar>
         
-        <main class="lg:pl-75 flex w-full h-full overflow-hidden">     
+        <!-- Banner pantalla completa para alumnos no verificados -->
+        <main v-if="isUnverified" class="lg:pl-75 flex w-full h-full overflow-hidden items-center justify-center">
+            <UnverifiedBanner message="Tu cuenta todavía no ha sido verificada por tu centro educativo. No puedes enviar mensajes privados hasta que el centro valide tu identidad." />
+        </main>
+
+        <main v-else class="lg:pl-75 flex w-full h-full overflow-hidden">     
             
             <div class="flex-1 flex flex-col overflow-hidden relative" :class="mobileShowChat ? 'flex' : 'hidden lg:flex'">
                 <template v-if="selectedContact">
