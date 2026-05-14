@@ -9,10 +9,30 @@ const io = require('socket.io')(server, {
   }
 });
 
-const onlineUsers = new Map(); // userId → Set<socketId>
+// userId → { userData, sockets: Set<socketId> }
+const onlineUsers = new Map();
 
 io.on('connection', socket => {
   console.log('New client connected:', socket.id);
+
+  socket.on('user:online', (userData) => {
+    if (!userData || !userData.id) return;
+    
+    const userId = Number(userData.id);
+    if (!onlineUsers.has(userId)) {
+        onlineUsers.set(userId, {
+            userData: userData,
+            sockets: new Set()
+        });
+    }
+    onlineUsers.get(userId).sockets.add(socket.id);
+    socket.userId = userId;
+    
+    console.log(`User ${userData.name} is now online (Sockets: ${onlineUsers.get(userId).sockets.size})`);
+    
+    // Notificar a todos la lista actualizada
+    broadcastUserList();
+  });
 
   socket.on('join-room', (roomId, userId) => {
     console.log(`User ${userId} joined room: ${roomId}`);
@@ -25,59 +45,17 @@ io.on('connection', socket => {
     socket.leave(roomId);
   });
 
-  socket.on('user-online', (userId) => {
-    if (!onlineUsers.has(userId)) onlineUsers.set(userId, new Set());
-    onlineUsers.get(userId).add(socket.id);
-    socket.userId = userId;
-    socket.broadcast.emit('user-status', { userId, online: true });
-  });
-
-  socket.on('send-message', (data) => {
-    console.log(`Message in ${data.roomId} from ${data.userId}: ${data.message}`);
-    io.to(data.roomId).emit('receive-message', data);
-  });
-
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
-    if (socket.userId) {
-      const sockets = onlineUsers.get(socket.userId);
-      if (sockets) {
-        sockets.delete(socket.id);
-        if (sockets.size === 0) {
-          onlineUsers.delete(socket.userId);
-          socket.broadcast.emit('user-status', { userId: socket.userId, online: false });
-        }
+    if (socket.userId && onlineUsers.has(socket.userId)) {
+      const userEntry = onlineUsers.get(socket.userId);
+      userEntry.sockets.delete(socket.id);
+      
+      if (userEntry.sockets.size === 0) {
+        onlineUsers.delete(socket.userId);
       }
+      broadcastUserList();
     }
-  });
-
-  socket.on('leave-room', (roomId) => {
-    console.log(`Client ${socket.id} left room: ${roomId}`);
-    socket.leave(roomId);
-  });
-
-  socket.on('send-message', (data) => {
-    console.log(`Message in ${data.roomId} from ${data.userId}: ${data.message}`);
-    io.to(data.roomId).emit('receive-message', data);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
-  });
-
-  // Online status query
-  socket.on('get-user-status', (userId) => {
-    const isOnline = onlineUsers.has(userId) && onlineUsers.get(userId).size > 0;
-    socket.emit('user-status', { userId, online: isOnline });
-  });
-
-  // Typing indicators
-  socket.on('user-typing', (roomId, data) => {
-    socket.to(roomId).emit('user-typing', data);
-  });
-
-  socket.on('user-typing-stop', (roomId, data) => {
-    socket.to(roomId).emit('user-typing-stop', data);
   });
 
   // Chat events
@@ -116,14 +94,27 @@ io.on('connection', socket => {
   });
 });
 
+function broadcastUserList() {
+    const list = Array.from(onlineUsers.values()).map(entry => entry.userData);
+    io.emit('update-user-list', list);
+}
+
 // Endpoint para notificaciones en tiempo real (llamado desde Laravel)
 app.post('/notify', (req, res) => {
   const { userId, notification } = req.body;
   if (!userId || !notification) {
     return res.status(400).json({ error: 'Missing userId or notification' });
   }
-  io.to(`user:${userId}`).emit('notification', notification);
-  res.json({ ok: true });
+  
+  const userEntry = onlineUsers.get(Number(userId));
+  if (userEntry) {
+      userEntry.sockets.forEach(socketId => {
+          io.to(socketId).emit('notification', notification);
+      });
+      res.json({ ok: true, delivered: userEntry.sockets.size });
+  } else {
+      res.status(404).json({ ok: false, message: 'User not online' });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
