@@ -296,16 +296,7 @@ const deleteMeeting = async () => {
                 <template #actions>
                     <PrimaryButton v-if="canCreateMeeting" :text="t.meetings.newMeeting" icon="plus" @click="openModal" />
                 </template>
-                <template #bottom>
-                    <div v-if="meetings.length > 0 && filteredMeetings.length > 0" class="w-full flex justify-center py-4">
-                        <Pagination 
-                            v-if="pagination.lastPage > 1"
-                            :current-page="pagination.currentPage" 
-                            :last-page="pagination.lastPage" 
-                            @change="handlePageChange"
-                        />
-                    </div>
-                </template>
+
             </PageHeader>
     
             <section 
