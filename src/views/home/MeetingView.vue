@@ -77,6 +77,7 @@ const fetchMeetings = async (page = 1) => {
                 id: m.id,
                 name: m.name,
                 teacher: m.teacher ? m.teacher.name : (m.teacher_name || t.value.meetings.unknown),
+                teacher_id: m.teacher_id,
                 group: m.group ? m.group.name : (m.educational_center ? m.educational_center.name : t.value.meetings.various),
                 group_id: m.group_id,
                 educational_center_id: m.educational_center_id,
@@ -307,7 +308,7 @@ const deleteMeeting = async () => {
             >
                 <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1">
                     <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
-                        :teacher="meeting.teacher" :schedule="meeting.schedule" :group="meeting.group"
+                        :teacher="meeting.teacher" :teacher_id="meeting.teacher_id" :schedule="meeting.schedule" :group="meeting.group"
                         :group_id="meeting.group_id" :description="meeting.description" @delete="confirmDelete" />
                 </div>
 
