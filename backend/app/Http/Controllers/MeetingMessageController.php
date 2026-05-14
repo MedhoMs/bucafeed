@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use App\Models\Meeting;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -23,6 +24,37 @@ class MeetingMessageController extends Controller
         ]);
 
         $message->load('user:id,name,last_name,profile_picture,role');
+
+        $recipients = collect();
+        if ($meeting->group) {
+            $meeting->group->load('students');
+            $recipients = $meeting->group->students->pluck('id');
+            if ($meeting->group->tutor_id) {
+                $recipients->push($meeting->group->tutor_id);
+            }
+        }
+        if ($recipients->isEmpty()) {
+            $recipients = \App\Models\Message::where('meeting_id', $meeting->id)
+                ->distinct()->pluck('user_id');
+        }
+        $recipients->push($meeting->teacher_id);
+        $recipients = $recipients->unique()->filter(fn($id) => (int)$id !== (int)$message->user_id);
+
+        $senderName = $message->user->name . ' ' . ($message->user->last_name ?? '');
+        foreach ($recipients as $rid) {
+            $notif = Notification::create([
+                'user_id' => $rid,
+                'type' => 'meeting_message',
+                'data' => [
+                    'meeting_id' => $meeting->id,
+                    'meeting_name' => $meeting->name,
+                    'message_id' => $message->id,
+                    'sender_name' => $senderName,
+                    'snippet' => mb_substr($message->content ?? '[Archivo]', 0, 100),
+                ],
+            ]);
+            Notification::broadcast($rid, $notif->toArray());
+        }
 
         return response()->json([
             'message' => 'Mensaje guardado correctamente.',

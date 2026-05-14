@@ -13,7 +13,8 @@ class NotificationController extends Controller
             ->orderBy('created_at', 'desc');
 
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $types = explode(',', $request->type);
+            $query->whereIn('type', $types);
         }
 
         $notifications = $query->paginate(15);

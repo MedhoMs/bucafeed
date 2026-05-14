@@ -215,6 +215,38 @@ Route::middleware('auth:sanctum')->group(function () {
             'metadata' => $validated['metadata'] ?? null,
         ]);
         $message->load('user');
+
+        $recipients = collect();
+        if ($meeting->group) {
+            $meeting->group->load('students');
+            $recipients = $meeting->group->students->pluck('id');
+            if ($meeting->group->tutor_id) {
+                $recipients->push($meeting->group->tutor_id);
+            }
+        }
+        if ($recipients->isEmpty()) {
+            $recipients = \App\Models\Message::where('meeting_id', $meeting->id)
+                ->distinct()->pluck('user_id');
+        }
+        $recipients->push($meeting->teacher_id);
+        $recipients = $recipients->unique()->filter(fn($id) => (int)$id !== (int)$request->user()->id);
+
+        $senderName = $message->user->name . ' ' . ($message->user->last_name ?? '');
+        foreach ($recipients as $rid) {
+            $notif = \App\Models\Notification::create([
+                'user_id' => $rid,
+                'type' => 'meeting_message',
+                'data' => [
+                    'meeting_id' => $meeting->id,
+                    'meeting_name' => $meeting->name,
+                    'message_id' => $message->id,
+                    'sender_name' => $senderName,
+                    'snippet' => mb_substr($message->content ?? ($validated['type'] === 'image' ? '[Imagen]' : '[Archivo]'), 0, 100),
+                ],
+            ]);
+            \App\Models\Notification::broadcast($rid, $notif->toArray());
+        }
+
         return response()->json([
             'id' => $message->id,
             'type' => $message->message_type,

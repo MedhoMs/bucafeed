@@ -93,5 +93,18 @@ class CentersSeeder extends Seeder
             $admin->update(['educational_center_id' => $center->id]);
             $center->cycles()->sync($data['cycles']);
         }
+
+        // Centro oculto de administración (solo visible para admins)
+        $adminCenter = EducationalCenter::updateOrCreate(['name' => 'Administración TelamoNet'], [
+            'type' => 'TM',
+            'category' => 'Administración',
+            'location' => 'TelamoNet',
+        ]);
+
+        // Vincular a todos los administradores a este centro por defecto
+        User::where('role', 'Admin')->update([
+            'educational_center_id' => $adminCenter->id,
+            'institution_name' => 'Administración TelamoNet'
+        ]);
     }
 }

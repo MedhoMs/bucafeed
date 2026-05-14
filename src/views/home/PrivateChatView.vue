@@ -1,5 +1,6 @@
 <script setup>
     import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+    import { useRoute } from 'vue-router';
     import NavBar from '@/components/NavBar/NavBar.vue';
     import { useTranslations } from '@/composables/useTranslations';
     import UserAvatar from '@/components/common/UserAvatar.vue';
@@ -11,6 +12,7 @@
     const { t } = useTranslations();
     const { get, post } = useApi();
     const { connect: connectSocket, joinRoom, leaveRoom, emit: emitSocket, on: onSocket, disconnect: disconnectSocket } = useSocket();
+    const route = useRoute();
     
     const contacts = ref([]);
     const loadingContacts = ref(false);
@@ -40,9 +42,15 @@
         loadingContacts.value = true;
         try {
             const role = authUser.value.role?.toLowerCase();
-            const endpoint = (role === 'student' || role === 'alumno') 
-                ? 'my-center/teachers' 
-                : 'my-center/students';
+            let endpoint = 'my-center/students';
+            
+            if (role === 'student' || role === 'alumno') {
+                endpoint = 'my-center/teachers';
+            } else if (role === 'admin' || role === 'administrador') {
+                endpoint = 'my-center/admins';
+            } else if (role === 'teacher' || role === 'profesor' || role === 'ei') {
+                endpoint = 'my-center/students';
+            }
                 
             const data = await get(endpoint);
             contacts.value = Array.isArray(data) ? data : [];
@@ -137,6 +145,14 @@
 
     onMounted(async () => {
         await fetchContacts();
+
+        const userId = route.query.user;
+        if (userId && contacts.value.length > 0) {
+            const contact = contacts.value.find(c => Number(c.id) === Number(userId));
+            if (contact) {
+                await selectContact(contact.id);
+            }
+        }
 
         connectSocket();
 
@@ -235,7 +251,10 @@
                         <h2 class="text-2xl font-bold text-white">Chat Privado</h2>
                     </div>
                     <p class="text-xs text-white opacity-50 uppercase font-bold tracking-widest">
-                        {{ (authUser?.role?.toLowerCase() === 'student' || authUser?.role?.toLowerCase() === 'alumno') ? 'Profesores' : 'Estudiantes' }}
+                        {{ 
+                            (authUser?.role?.toLowerCase() === 'student' || authUser?.role?.toLowerCase() === 'alumno') ? 'Profesores' : 
+                            ((authUser?.role?.toLowerCase() === 'admin' || authUser?.role?.toLowerCase() === 'administrador') ? 'Administradores' : 'Estudiantes')
+                        }}
                     </p>
                 </div>
 

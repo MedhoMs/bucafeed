@@ -60,7 +60,7 @@ class AnswerController extends TemplateController
 
         $snippet = mb_substr(strip_tags($answer->content ?? ''), 0, 100);
 
-        Notification::create([
+        $notification = Notification::create([
             'user_id' => $authorId,
             'type' => 'answer',
             'data' => [
@@ -71,6 +71,8 @@ class AnswerController extends TemplateController
                 'user_name' => $answer->user->name . ' ' . ($answer->user->last_name ?? ''),
             ],
         ]);
+
+        $this->broadcastNotification($authorId, $notification->toArray());
     }
 
     public function markAsUseful(Answer $answer)
@@ -101,7 +103,7 @@ class AnswerController extends TemplateController
         $answerAuthorId = $answer->user_id;
         if ((int) $answerAuthorId !== (int) $question->user_id) {
             $answer->load('user');
-            Notification::create([
+            $notification = Notification::create([
                 'user_id' => $answerAuthorId,
                 'type' => 'answer_useful',
                 'data' => [
@@ -111,6 +113,8 @@ class AnswerController extends TemplateController
                     'user_name' => $question->user->name . ' ' . ($question->user->last_name ?? ''),
                 ],
             ]);
+
+            $this->broadcastNotification($answerAuthorId, $notification->toArray());
         }
         
         return response()->json([

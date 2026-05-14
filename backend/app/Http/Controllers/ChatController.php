@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Chat;
 use App\Models\Message;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -92,6 +93,22 @@ class ChatController extends Controller
         ]);
 
         $message->load('user');
+
+        $otherUser = $chat->users()->where('users.id', '!=', $request->user()->id)->first();
+        if ($otherUser) {
+            $notif = Notification::create([
+                'user_id' => $otherUser->id,
+                'type' => 'private_message',
+                'data' => [
+                    'chat_id' => $chat->id,
+                    'message_id' => $message->id,
+                    'sender_id' => $message->user_id,
+                    'sender_name' => $message->user->name . ' ' . ($message->user->last_name ?? ''),
+                    'snippet' => mb_substr($message->content ?? ($validated['type'] === 'image' ? '[Imagen]' : '[Archivo]'), 0, 100),
+                ],
+            ]);
+            Notification::broadcast($otherUser->id, $notif->toArray());
+        }
 
         return response()->json([
             'id' => $message->id,

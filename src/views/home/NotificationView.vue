@@ -1,11 +1,13 @@
 <script setup>
     import { ref, onMounted, watch } from 'vue';
+    import { useRouter } from 'vue-router';
     import NavBar from '../../components/NavBar/NavBar.vue';
     import PageHeader from '@/components/common/PageHeader.vue';
     import Pagination from '../../components/common/Pagination.vue';
 
     import { useTranslations } from '../../composables/useTranslations'
     const { t } = useTranslations()
+    const router = useRouter()
 
     import {
         notifications,
@@ -21,15 +23,16 @@
 
     const activeFilter = ref(null)
 
-    const filterMap = {
-        Todo: null,
-        Charlas: 'meeting',
-        'Preguntas Pendientes': 'answer',
-    }
+    const filterTabs = [
+        { label: 'Todo', type: null, icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></svg>' },
+        { label: 'Charlas', type: 'meeting,meeting_message', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>' },
+        { label: 'Mensajes Privados', type: 'private_message', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8z"/><path d="M3 7l9 6l9 -6"/></svg>' },
+        { label: 'Respuestas', type: 'answer,answer_useful', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M15 18h-2l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5"/><path d="M19 16v3"/><path d="M19 22v.01"/></svg>' },
+    ]
 
-    const setFilter = (label) => {
-        activeFilter.value = label
-        fetchNotifications(1, filterMap[label])
+    const setFilter = (tab) => {
+        activeFilter.value = tab.label
+        fetchNotifications(1, tab.type)
     }
 
     const handlePageChange = (page) => {
@@ -40,6 +43,13 @@
     const handleClick = async (notification) => {
         if (!notification.read) {
             await markAsRead(notification)
+        }
+        if (notification.type === 'private_message' && notification.data?.sender_id) {
+            router.push(`/private-chat?user=${notification.data.sender_id}`)
+        } else if (notification.type === 'meeting_message' && notification.data?.meeting_id) {
+            router.push(`/meetingchat/${notification.data.meeting_id}`)
+        } else if (notification.type === 'group_message' && notification.data?.group_id) {
+            router.push(`/group-chat/${notification.data.group_id}`)
         }
     }
 
@@ -55,8 +65,14 @@
         if (type === 'answer_useful') {
             return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-star"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1.002l3.086 -6.253l3.086 6.253l6.9 1.002l-5 4.867l1.179 6.873z" /></svg>'
         }
-        if (type === 'meeting') {
+        if (type === 'meeting' || type === 'meeting_message') {
             return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-stats"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" /><path d="M18 14v4h4" /><path d="M14 18a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M15 3v4" /><path d="M7 3v4" /><path d="M3 11h16" /></svg>'
+        }
+        if (type === 'private_message') {
+            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-message"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" /></svg>'
+        }
+        if (type === 'group_message') {
+            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-users"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>'
         }
         return ''
     }
@@ -84,19 +100,26 @@
         <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen items-center w-full">
             <PageHeader :title="t.notifications.title" :subtitle="t.notifications.subtitle">
                 <template #search>
-                    <div id="notificationFilter" class="text-white flex lg:justify-between justify-end gap-5 items-start lg:text-4xl">
+                    <div id="notificationFilter" class="text-white flex flex-wrap justify-center gap-3 items-center">
                         <span
-                            v-for="(val, key) in { Todo: null, Charlas: 'meeting', 'Preguntas Pendientes': 'answer' }"
-                            :key="key"
+                            v-for="tab in filterTabs"
+                            :key="tab.label"
                             :class="[
-                                'py-3 px-6 rounded-3xl text-center cursor-pointer duration-500 font-bold',
-                                activeFilter === key || (!activeFilter && key === 'Todo')
-                                    ? 'bg-secondary-normal text-white shadow-lg'
-                                    : 'hover:bg-secondary-normal text-white/70 hover:text-white'
+                                'inline-flex items-center gap-3 py-4 px-8 rounded-full cursor-pointer duration-500 font-black text-base uppercase tracking-wider',
+                                activeFilter === tab.label || (!activeFilter && tab.label === 'Todo')
+                                    ? 'bg-secondary-normal text-white shadow-2xl scale-105'
+                                    : 'hover:bg-white/5 text-white/60 hover:text-white'
                             ]"
-                            @click="setFilter(key)"
+                            @click="setFilter(tab)"
                         >
-                            {{ key === 'Todo' ? t.notifications.filterAll : key === 'Charlas' ? t.notifications.filterMeetings : t.notifications.filterPending }}
+                            <span v-html="tab.icon" class="[&>svg]:w-6 [&>svg]:h-6 shrink-0 opacity-80"></span>
+                            {{
+                                tab.label === 'Todo' ? t.notifications.filterAll :
+                                tab.label === 'Charlas' ? t.notifications.filterMeetings :
+                                tab.label === 'Mensajes Privados' ? t.notifications.filterPrivate :
+                                tab.label === 'Respuestas' ? t.notifications.filterPending :
+                                tab.label
+                            }}
                         </span>
                     </div>
                 </template>
@@ -152,7 +175,11 @@
                                         {{
                                             notification.type === 'answer' ? t.notifications.answered :
                                             notification.type === 'answer_useful' ? t.notifications.answerUseful :
-                                            t.notifications.meetingAlert
+                                            notification.type === 'meeting' ? t.notifications.meetingAlert :
+                                            notification.type === 'private_message' ? t.notifications.privateMessage :
+                                            notification.type === 'meeting_message' ? t.notifications.meetingMessage :
+                                            notification.type === 'group_message' ? t.notifications.groupMessage :
+                                            ''
                                         }}
                                     </span>
                                     <span v-if="!notification.read" class="w-2 h-2 bg-accent-normal rounded-full inline-block ml-2"></span>
@@ -194,6 +221,33 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div v-if="notification.type === 'private_message' || notification.type === 'meeting_message' || notification.type === 'group_message'" class="mt-3 ml-14">
+                            <h2 v-if="notification.type === 'private_message'" class="notification-title text-base">
+                                {{ notification.data?.sender_name || '' }}
+                            </h2>
+                            <h2 v-if="notification.type === 'meeting_message'" class="notification-title text-base uppercase">
+                                {{ notification.data?.meeting_name || '' }}
+                            </h2>
+                            <h2 v-if="notification.type === 'group_message'" class="notification-title text-base uppercase">
+                                {{ notification.data?.group_name || '' }}
+                            </h2>
+                            <p v-if="notification.data?.sender_name" class="text-white/30 text-xs mt-1">
+                                {{ t.notifications.from }} <span class="text-white/50 font-medium">{{ notification.data.sender_name }}</span>
+                            </p>
+                            <p v-if="notification.data?.snippet" class="text-white/50 text-sm mt-1 truncate">
+                                {{ notification.data.snippet }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Paginación Inferior -->
+                    <div v-if="lastPage > 1" class="mt-12 mb-10 flex justify-center w-full">
+                        <Pagination
+                            :current-page="currentPage"
+                            :last-page="lastPage"
+                            @change="handlePageChange"
+                        />
                     </div>
                 </div>
             </section>
@@ -236,8 +290,8 @@
     }
 
     .notification-title {
-        font-size: 20px;
-        font-weight: bold;
+        font-size: 24px;
+        font-weight: 900;
     }
 
     .responses-badge {

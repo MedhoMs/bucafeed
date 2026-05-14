@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Message;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\Group;
 use Illuminate\Http\Request;
@@ -38,6 +39,29 @@ class MensajeController extends Controller
         ]);
 
         $mensaje->load('user:id,name,last_name,profile_picture,role');
+
+        $group->load('students');
+        $recipients = $group->students->pluck('id');
+        if ($group->tutor_id) {
+            $recipients->push($group->tutor_id);
+        }
+        $recipients = $recipients->unique()->filter(fn($id) => (int)$id !== (int)$mensaje->user_id);
+
+        $senderName = $mensaje->user->name . ' ' . ($mensaje->user->last_name ?? '');
+        foreach ($recipients as $rid) {
+            $notif = Notification::create([
+                'user_id' => $rid,
+                'type' => 'group_message',
+                'data' => [
+                    'group_id' => $group->id,
+                    'group_name' => $group->name,
+                    'message_id' => $mensaje->id,
+                    'sender_name' => $senderName,
+                    'snippet' => mb_substr($mensaje->content ?? '[Archivo]', 0, 100),
+                ],
+            ]);
+            Notification::broadcast($rid, $notif->toArray());
+        }
 
         return response()->json([
             'message' => 'Mensaje guardado correctamente.',

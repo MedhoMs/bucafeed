@@ -14,7 +14,7 @@ export function useSocket() {
         socket.value.on('connect', () => {
             connected.value = true;
             if (roomId) {
-                socket.value.emit('kahoot:join-room', roomId, userData);
+                socket.value.emit('join-room', roomId);
             }
         });
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Meeting;
 use App\Models\Notification;
 use App\Models\EducationalCenter;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -76,6 +77,11 @@ class MeetingController extends TemplateController
             if ($group && $group->students) {
                 $students = $group->students;
             }
+        } else {
+            // General meeting: notify all students of the center
+            $students = User::where('educational_center_id', $meeting->educational_center_id)
+                            ->whereIn('role', ['Student', 'Admin']) // Include Admins for the admin center context
+                            ->get();
         }
 
         $teacherName = $meeting->teacher->name . ' ' . ($meeting->teacher->last_name ?? '');
@@ -88,11 +94,13 @@ class MeetingController extends TemplateController
         ];
 
         foreach ($students as $student) {
-            Notification::create([
+            $notification = Notification::create([
                 'user_id' => $student->id,
                 'type' => 'meeting',
                 'data' => $data,
             ]);
+
+            $this->broadcastNotification($student->id, $notification->toArray());
         }
     }
 

@@ -320,6 +320,14 @@ const deleteMeeting = async () => {
                         :group_id="meeting.group_id" :description="meeting.description" @delete="confirmDelete" />
                 </div>
 
+                <div v-if="pagination.lastPage > 1" class="mt-12 mb-10 flex justify-center w-full">
+                    <Pagination
+                        :current-page="pagination.currentPage"
+                        :last-page="pagination.lastPage"
+                        @change="handlePageChange"
+                    />
+                </div>
+
 
     
                 <div v-if="filteredMeetings.length === 0"

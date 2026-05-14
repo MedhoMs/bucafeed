@@ -172,7 +172,16 @@ class UserController extends TemplateController
         } elseif ($centerName && strtolower($centerName) !== 'varios') {
             $query->whereRaw('LOWER(institution_name) = ?', [strtolower($centerName)]);
         }
-        $students = $query->whereIn('role', ['Student', 'student', 'Alumno', 'alumno', 'Estudiante', 'estudiante', 'estudiantes'])
+        $roles = ['Student', 'student', 'Alumno', 'alumno', 'Estudiante', 'estudiante', 'estudiantes'];
+        
+        // If it's the admin center, include admins as "students" for the chat list
+        $isAdminCenter = ($centerId && $centerId == 40) || ($centerName && strtolower($centerName) === 'administración telamonet');
+        if ($isAdminCenter) {
+            $roles[] = 'Admin';
+            $roles[] = 'admin';
+        }
+
+        $students = $query->whereIn('role', $roles)
             ->limit(100)
             ->get(['id', 'name', 'last_name', 'profile_picture']);
         return response()->json($students);

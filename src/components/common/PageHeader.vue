@@ -23,10 +23,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div v-if="title || subtitle" class="w-full px-6 lg:px-14 max-w-screen-2xl mx-auto pt-8 md:pt-12 mb-2 transition-all duration-500 text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div v-if="title || subtitle" class="w-full px-6 lg:px-14 max-w-screen-2xl mx-auto pt-12 md:pt-20 mb-4 transition-all duration-500 text-white flex flex-col md:flex-row md:items-center justify-between gap-8">
         <div class="flex-1">
-            <h1 class="text-3xl md:text-4xl font-black tracking-tight">{{ title }}</h1>
-            <p class="text-dimmed text-sm md:text-base font-medium mt-1">{{ subtitle }}</p>
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter">{{ title }}</h1>
+            <p class="text-white/60 text-base md:text-xl font-medium mt-2 max-w-2xl">{{ subtitle }}</p>
         </div>
         <div v-if="$slots.headerActions" class="shrink-0 flex items-center gap-4">
             <slot name="headerActions"></slot>
@@ -40,11 +40,11 @@ onUnmounted(() => {
             isScrolled 
                 ? 'bg-[#326465]/95 border-b border-white/10 shadow-xl' 
                 : 'bg-transparent',
-            noMargin ? '' : 'mb-6'
+            noMargin ? '' : 'mb-8'
         ]"
     >
-        <div class="w-full px-6 lg:px-14 max-w-screen-2xl mx-auto flex flex-col gap-4 py-4">
-            <div class="flex flex-col md:flex-row gap-4 items-center w-full">
+        <div class="w-full px-6 lg:px-14 max-w-screen-2xl mx-auto flex flex-col gap-6 py-6">
+            <div class="flex flex-col md:flex-row gap-6 items-center w-full">
                 <div v-if="$slots.left" class="shrink-0">
                     <slot name="left"></slot>
                 </div>

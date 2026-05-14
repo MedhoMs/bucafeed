@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+app.use(express.json());
 const server = require('http').Server(app);
 const io = require('socket.io')(server, {
   cors: {
@@ -65,6 +66,16 @@ io.on('connection', socket => {
   socket.on('kahoot:next-question', (roomId, data) => {
     socket.to(roomId).emit('kahoot:next-question', data);
   });
+});
+
+// Endpoint para notificaciones en tiempo real (llamado desde Laravel)
+app.post('/notify', (req, res) => {
+  const { userId, notification } = req.body;
+  if (!userId || !notification) {
+    return res.status(400).json({ error: 'Missing userId or notification' });
+  }
+  io.to(`user:${userId}`).emit('notification', notification);
+  res.json({ ok: true });
 });
 
 const PORT = process.env.PORT || 3000;
