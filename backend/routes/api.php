@@ -257,6 +257,10 @@ Route::post('/meetings/{meeting}/mensajes', [MeetingMessageController::class, 's
 // Usuarios
 Route::get('/users/by-center', [UserController::class, 'apiStudentsByCenter']);
 Route::post('/users/{id}/follow', [UserController::class, 'follow'])->middleware('auth:sanctum');
+Route::get('/users/find-tutor', [UserController::class, 'findTutorByDni'])->middleware('auth:sanctum');
+Route::post('/users/tutors', [UserController::class, 'addTutor'])->middleware('auth:sanctum');
+Route::delete('/users/tutors/{tutorId}', [UserController::class, 'removeTutor'])->middleware('auth:sanctum');
+Route::get('/users/{userId}/tutors', [UserController::class, 'getTutors'])->middleware('auth:sanctum');
 Route::apiResource('users', UserController::class);
 
 // Endpoint para generar usuarios de prueba (solo admin)

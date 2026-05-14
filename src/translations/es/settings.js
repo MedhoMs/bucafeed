@@ -21,6 +21,10 @@ export const settings = {
         notifications: {
             label: 'Notificaciones',
             desc: 'Alertas y avisos'
+        },
+        tutors: {
+            label: 'Tutores Legales',
+            desc: 'Vínculos familiares'
         }
     },
     account: {
@@ -28,6 +32,22 @@ export const settings = {
         email_label: 'Email',
         status_label: 'Estado',
         status_active: 'Activa'
+    },
+    tutors: {
+        title: 'Tutores Legales',
+        dni_placeholder: 'Introduce el DNI del tutor',
+        add_button: 'Buscar y Añadir',
+        no_tutors: 'No tienes tutores vinculados.',
+        tutor_name: 'Nombre del tutor',
+        remove_confirm: '¿Estás seguro de eliminar este tutor?',
+        search_error: 'No se encontró ningún tutor con ese DNI o no es un tutor válido.',
+        add_success: 'Tutor añadido correctamente.',
+        remove_modal: {
+            title: '¿Eliminar tutor?',
+            description: 'Esta acción desvinculará a este tutor de tu cuenta de forma permanente.',
+            confirm: 'Eliminar',
+            cancel: 'Cancelar'
+        }
     },
     privacy: {
         title: 'Privacidad',
