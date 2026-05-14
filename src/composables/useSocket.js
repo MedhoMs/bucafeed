@@ -4,6 +4,8 @@ import { ref, onUnmounted } from 'vue';
 export function useSocket() {
     const socket = ref(null);
     const connected = ref(false);
+    const pendingListeners = ref([]);
+    const pendingEmissions = ref([]);
 
     function connect(roomId, userData = null) {
         if (socket.value?.connected) return;
@@ -13,9 +15,23 @@ export function useSocket() {
 
         socket.value.on('connect', () => {
             connected.value = true;
+            console.log('Socket connected to:', socketUrl);
+            
             if (roomId) {
                 socket.value.emit('join-room', roomId);
             }
+            
+            // Attach pending listeners
+            pendingListeners.value.forEach(({ event, callback }) => {
+                socket.value.on(event, callback);
+            });
+            pendingListeners.value = [];
+
+            // Process pending emissions
+            pendingEmissions.value.forEach(({ event, roomId, data }) => {
+                socket.value.emit(event, roomId, data);
+            });
+            pendingEmissions.value = [];
         });
 
         socket.value.on('disconnect', () => {
@@ -25,7 +41,11 @@ export function useSocket() {
 
     function joinRoom(roomId, userData = null) {
         if (socket.value?.connected) {
+            socket.value.emit('join-room', roomId, userData);
             socket.value.emit('kahoot:join-room', roomId, userData);
+        } else {
+            // Si no está conectado, lo conectamos con esta sala
+            connect(roomId, userData);
         }
     }
 
@@ -38,12 +58,16 @@ export function useSocket() {
     function emit(event, roomId, data = {}) {
         if (socket.value?.connected) {
             socket.value.emit(event, roomId, data);
+        } else {
+            pendingEmissions.value.push({ event, roomId, data });
         }
     }
 
     function on(event, callback) {
-        if (socket.value) {
+        if (socket.value?.connected) {
             socket.value.on(event, callback);
+        } else {
+            pendingListeners.value.push({ event, callback });
         }
     }
 

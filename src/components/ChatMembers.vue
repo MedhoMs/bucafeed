@@ -1,6 +1,6 @@
 <script setup>
     import { useTranslations } from "../composables/useTranslations";
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import { ref, computed, onMounted, watch } from 'vue';
     import { user as authUser } from '../stores/auth';
     import { useApi } from "../composables/useApi";
@@ -11,7 +11,12 @@
 
     const { t } = useTranslations();
     const route = useRoute();
+    const router = useRouter();
     const students = ref([]);
+
+    function openPrivateChat(userId) {
+        router.push(`/private-chat?user=${userId}`);
+    }
 
     const props = defineProps({
         meeting: {
@@ -136,9 +141,12 @@
                     <p class="text-lg lg:text-2xl font-bold self-start mb-2">Profesor</p>
                     <router-link v-if="props.meeting?.teacher_id || props.meeting?.teacher?.id" :to="'/profile/' + (props.meeting?.teacher_id || props.meeting?.teacher?.id)" class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer transition-colors no-underline text-white">
                         <UserAvatar :user="props.meeting?.teacher" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
-                        <p class="text-base lg:text-xl truncate">
+                        <p class="text-base lg:text-xl truncate flex-1">
                             {{ props.meeting?.teacher ? `${props.meeting.teacher.name} ${props.meeting.teacher.last_name || ''}` : (meetingId ? meetingTeacherParam : 'Profesor') }}
                         </p>
+                        <button v-if="props.meeting?.teacher_id && Number(props.meeting.teacher_id) !== Number(authUser?.id)" @click.prevent="openPrivateChat(props.meeting.teacher_id)" class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2" title="Mensaje">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8z"/><path d="M3 7l9 6l9 -6"/></svg>
+                        </button>
                     </router-link>
                     <div v-else class="flex items-center w-full rounded-3xl p-3 mb-5 bg-[#2a4a5a]/20">
                         <UserAvatar size="w-10 h-10" class="border-2 border-white/20 shadow-xs mr-2 shrink-0" />
@@ -160,11 +168,15 @@
                     </router-link>
 
                     <!-- Otros Estudiantes -->
-                    <router-link v-for="student in students.filter(s => s.id !== authUser?.id)" :key="student.id" :to="'/profile/' + student.id"
-                        class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors no-underline text-white">
+                    <div v-for="student in students.filter(s => s.id !== authUser?.id)" :key="student.id"
+                        class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors no-underline text-white"
+                        @click="router.push('/profile/' + student.id)">
                         <UserAvatar :user="student" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
-                        <p class="text-base lg:text-xl truncate">{{ student.name }} {{ student.last_name }}</p>
-                    </router-link>
+                        <p class="text-base lg:text-xl truncate flex-1">{{ student.name }} {{ student.last_name }}</p>
+                        <button v-if="!['student', 'alumno', 'estudiante'].includes(authUser?.role?.toLowerCase())" @click.stop="openPrivateChat(student.id)" class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2" title="Mensaje">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8z"/><path d="M3 7l9 6l9 -6"/></svg>
+                        </button>
+                    </div>
 
                     <p v-if="students.length === 0 && (!authUser || authUser.role !== 'Student')" class="text-sm text-white/40 italic">No hay otros alumnos</p>
                 </div>

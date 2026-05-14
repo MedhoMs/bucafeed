@@ -79,7 +79,7 @@ class ChatController extends Controller
     {
         $validated = $request->validate([
             'content' => 'nullable|string',
-            'type' => 'required|string|in:text,image,pdf',
+            'type' => 'required|string|in:text,image,pdf,call',
             'file_name' => 'nullable|string|max:255',
             'metadata' => 'nullable|array',
         ]);
@@ -96,6 +96,15 @@ class ChatController extends Controller
 
         $otherUser = $chat->users()->where('users.id', '!=', $request->user()->id)->first();
         if ($otherUser) {
+            $snippet = $message->content;
+            if ($validated['type'] === 'call') {
+                $snippet = 'Te ha invitado a una videollamada';
+            } else if ($validated['type'] === 'image') {
+                $snippet = '[Imagen]';
+            } else if ($validated['type'] === 'pdf') {
+                $snippet = '[Archivo PDF]';
+            }
+
             $notif = Notification::create([
                 'user_id' => $otherUser->id,
                 'type' => 'private_message',
@@ -104,10 +113,31 @@ class ChatController extends Controller
                     'message_id' => $message->id,
                     'sender_id' => $message->user_id,
                     'sender_name' => $message->user->name . ' ' . ($message->user->last_name ?? ''),
-                    'snippet' => mb_substr($message->content ?? ($validated['type'] === 'image' ? '[Imagen]' : '[Archivo]'), 0, 100),
+                    'snippet' => mb_substr($snippet, 0, 100),
                 ],
             ]);
             Notification::broadcast($otherUser->id, $notif->toArray());
+
+            // Enviar correo si es una llamada
+            if ($validated['type'] === 'call' && $otherUser->email) {
+                try {
+                    \Illuminate\Support\Facades\Mail::send([], [], function ($message) use ($otherUser, $notif) {
+                        $message->to($otherUser->email)
+                            ->subject('Invitación a Videollamada - TelamoNet')
+                            ->html("
+                                <div style='font-family: sans-serif; padding: 20px; color: #333;'>
+                                    <h2>¡Hola, {$otherUser->name}!</h2>
+                                    <p><b>{$notif->data['sender_name']}</b> te ha invitado a una videollamada en TelamoNet.</p>
+                                    <p>Entra en la plataforma para unirte a la sesión.</p>
+                                    <br>
+                                    <p style='font-size: 12px; color: #666;'>Este es un mensaje automático, por favor no respondas.</p>
+                                </div>
+                            ");
+                    });
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Error enviando correo de videollamada: ' . $e->getMessage());
+                }
+            }
         }
 
         return response()->json([

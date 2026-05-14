@@ -12,10 +12,12 @@ const io = require('socket.io')(server, {
 io.on('connection', socket => {
   console.log('New client connected:', socket.id);
 
-  socket.on('join-room', (roomId, userId) => {
-    console.log(`User ${userId} joined room: ${roomId}`);
+  socket.on('join-room', (roomId, userData = null) => {
+    console.log(`Socket ${socket.id} joining room: ${roomId}`);
     socket.join(roomId);
-    socket.to(roomId).emit('user-connected', userId);
+    if (userData) {
+      socket.to(roomId).emit('user-connected', userData.userId || userData);
+    }
   });
 
   socket.on('leave-room', (roomId) => {

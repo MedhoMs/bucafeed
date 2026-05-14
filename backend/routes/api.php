@@ -202,7 +202,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/meetings/{meeting}/messages', function (\Illuminate\Http\Request $request, \App\Models\Meeting $meeting) {
         $validated = $request->validate([
             'content' => 'nullable|string',
-            'type' => 'required|string|in:text,image,pdf,kahoot',
+            'type' => 'required|string|in:text,image,pdf,kahoot,call',
             'file_name' => 'nullable|string|max:255',
             'metadata' => 'nullable|array',
         ]);
@@ -231,6 +231,15 @@ Route::middleware('auth:sanctum')->group(function () {
         $recipients->push($meeting->teacher_id);
         $recipients = $recipients->unique()->filter(fn($id) => (int)$id !== (int)$request->user()->id);
 
+        $snippet = $message->content;
+        if ($validated['type'] === 'call') {
+            $snippet = 'Te ha invitado a una videollamada grupal';
+        } else if ($validated['type'] === 'image') {
+            $snippet = '[Imagen]';
+        } else if ($validated['type'] === 'pdf') {
+            $snippet = '[Archivo PDF]';
+        }
+
         $senderName = $message->user->name . ' ' . ($message->user->last_name ?? '');
         foreach ($recipients as $rid) {
             $notif = \App\Models\Notification::create([
@@ -241,7 +250,7 @@ Route::middleware('auth:sanctum')->group(function () {
                     'meeting_name' => $meeting->name,
                     'message_id' => $message->id,
                     'sender_name' => $senderName,
-                    'snippet' => mb_substr($message->content ?? ($validated['type'] === 'image' ? '[Imagen]' : '[Archivo]'), 0, 100),
+                    'snippet' => mb_substr($snippet, 0, 100),
                 ],
             ]);
             \App\Models\Notification::broadcast($rid, $notif->toArray());

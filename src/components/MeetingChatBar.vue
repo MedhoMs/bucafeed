@@ -13,8 +13,11 @@ const route = useRoute()
 const chatContainer = ref(null)
 
 const props = defineProps({
-    meeting: { type: Object, default: null }
+    meeting: { type: Object, default: null },
+    activeCallId: { type: String, default: null }
 });
+
+const emit = defineEmits(['joinCall']);
 
 const meetingId = computed(() => route.params.id);
 const canCreateKahoot = computed(() => authUser.value && ['Teacher', 'Admin', 'EI'].includes(authUser.value.role));
@@ -33,7 +36,7 @@ async function loadMessages() {
         const data = await get(`meetings/${meetingId.value}/messages`)
         const loaded = (data || []).map(m => ({
             id: m.id,
-            type: m.type,
+            type: m.message_type || m.type,
             content: m.content,
             file_name: m.file_name,
             metadata: m.metadata,
@@ -61,10 +64,10 @@ async function loadMessages() {
 
 async function saveMessage(type, content, extra = {}) {
     try {
-        const payload = { type, content: content || '', file_name: extra.fileName || null, metadata: extra.metadata || null }
+        const payload = { type: type, content: content || '', file_name: extra.fileName || null, metadata: extra.metadata || null }
         const result = await post(`meetings/${meetingId.value}/messages`, payload)
         const msg = {
-            id: result.id, type: result.type || type, content: result.content || content,
+            id: result.id, type: result.message_type || result.type || type, content: result.content || content,
             file_name: result.file_name || extra.fileName || null, metadata: result.metadata || extra.metadata || null,
             sender: result.sender, userName: result.user_name || authUser.value?.name || 'Yo',
             status: extra.metadata?.status || 'pending', sessionId: extra.metadata?.session_id,
@@ -176,7 +179,9 @@ function setupSocket() {
 
     onSocket('chat:message', (data) => {
         if (data.sender !== authUser.value?.id && !messages.value.find(m => m.id === data.id)) {
-            messages.value.push(data); scrollToBottom()
+            // Normalize message type for frontend
+            const normalizedData = { ...data, type: data.message_type || data.type };
+            messages.value.push(normalizedData); scrollToBottom()
         }
     })
     onSocket('kahoot:started', (data) => {
@@ -234,6 +239,22 @@ onUnmounted(() => disconnectSocket())
                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4444" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/></svg>
                                 <span class="text-sm truncate">{{ msg.file_name || 'PDF' }}</span>
                             </a>
+
+                            <div v-else-if="msg.type === 'call'" class="flex flex-col gap-3 p-1">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"/><path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"/></svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold">{{ Number(msg.sender) === Number(authUser?.id) ? 'Has iniciado una llamada grupal' : 'Sesión de video disponible' }}</p>
+                                        <p class="text-[10px] opacity-60">¿Deseas entrar a la reunión de video?</p>
+                                    </div>
+                                </div>
+                                <button @click="emit('joinCall', msg.content)" class="w-full py-3 px-6 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>
+                                    Unirse a la sesión
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </template>
