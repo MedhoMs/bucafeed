@@ -21,6 +21,7 @@ use App\Http\Controllers\MensajeController;
 use App\Http\Controllers\CycleController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ContentValidationController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/health', function () {
     return response()->json([
@@ -145,6 +146,13 @@ Route::get('/test-gemini', function (\Illuminate\Http\Request $request) {
     }
 });
 Route::middleware('auth:sanctum')->group(function () {
+    // Notificaciones
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
+
     Route::post('/meetings/{meeting}/kahoot', [KahootController::class, 'createSession']);
     Route::get('/meetings/{meeting}/kahoot/active', [KahootController::class, 'getActiveSession']);
     Route::post('/kahoot/{session}/start', [KahootController::class, 'startSession']);

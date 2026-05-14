@@ -6,5 +6,12 @@ export const notifications = {
     filterPending: "Pending Questions",
     answered: "THEY HAVE REPLIED TO YOUR QUESTION",
     meetingAlert: "SCHEDULED MEETING ALERT",
-    schedule: "Schedule"
+    answerUseful: "YOUR ANSWER WAS MARKED AS USEFUL",
+    schedule: "Schedule",
+    markAsRead: "Mark as read",
+    markAllAsRead: "Mark all as read",
+    noNotifications: "You have no notifications",
+    emptyMessage: "When you receive notifications, they will appear here.",
+    newNotification: "New notification",
+    from: "by"
 };

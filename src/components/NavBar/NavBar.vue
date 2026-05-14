@@ -16,6 +16,7 @@
     const { t } = useTranslations() //Variable para llamar al archivo de traduccion
 
     import { user, logout } from '@/stores/auth' //Import que contiene toda la info del usuario logueado
+    import { unreadCount, fetchUnreadCount } from '@/stores/notifications'
     import { useRouter } from 'vue-router'
 
     const router = useRouter()
@@ -58,13 +59,18 @@
     //Y destruyo en onmounted para que no se duplique infinitamente una vez se haya llamado
     onUnmounted(() => {
         document.removeEventListener("click", hidePopup);
+        if (unreadInterval) clearInterval(unreadInterval);
     });
 
     const menu = ref(false)
     const isDesktop = ref(window.innerWidth >= 1024)
  
+    let unreadInterval = null
+
     onMounted(() => {
         checkDbConnection()
+        fetchUnreadCount()
+        unreadInterval = setInterval(fetchUnreadCount, 30000)
         const handleResize = () => {
             isDesktop.value = window.innerWidth >= 1024
             if (isDesktop.value) menu.value = false
@@ -152,9 +158,14 @@ Enter
                     </template>
                 </NavBarLinks>
  
-                <NavBarLinks to="/notification" :title=t.nav.notification>
+                <NavBarLinks to="/notification" :title="t.nav.notification">
                     <template #icon>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg>
+                        <div class="relative inline-flex">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6" /><path d="M9 17v1a3 3 0 0 0 6 0v-1" /></svg>
+                            <span v-if="unreadCount > 0" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg">
+                                {{ unreadCount > 99 ? '99+' : unreadCount }}
+                            </span>
+                        </div>
                     </template>
                 </NavBarLinks>
  

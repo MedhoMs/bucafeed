@@ -6,5 +6,12 @@ export const notifications = {
     filterPending: "Preguntas Pendientes",
     answered: "HAN RESPONDIDO A TU PREGUNTA",
     meetingAlert: "AVISO CHARLA PROGRAMADA",
-    schedule: "Horario"
+    answerUseful: "TU RESPUESTA FUE MARCADA COMO ÚTIL",
+    schedule: "Horario",
+    markAsRead: "Marcar como leída",
+    markAllAsRead: "Marcar todo como leído",
+    noNotifications: "No tienes notificaciones",
+    emptyMessage: "Cuando recibas notificaciones, aparecerán aquí.",
+    newNotification: "Nueva notificación",
+    from: "de"
 };
