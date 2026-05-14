@@ -181,14 +181,14 @@
     <div class="h-screen overflow-hidden">
         <NavBar ref="navBarRef" hide-hamburger></NavBar>
         
-        <!-- Banner pantalla completa para alumnos no verificados -->
-        <main v-if="isUnverified" class="lg:pl-75 flex w-full h-full overflow-hidden items-center justify-center">
-            <UnverifiedBanner message="Tu cuenta todavía no ha sido verificada por tu centro educativo. No puedes enviar mensajes privados hasta que el centro valide tu identidad." />
-        </main>
-
-        <main v-else class="lg:pl-75 flex w-full h-full overflow-hidden">     
+        <main class="lg:pl-75 flex w-full h-full overflow-hidden relative">     
             
             <div class="flex-1 flex flex-col overflow-hidden relative" :class="mobileShowChat ? 'flex' : 'hidden lg:flex'">
+                <!-- Banner compacto si no está verificado -->
+                <div class="px-6 pt-4 shrink-0" v-if="isUnverified">
+                    <UnverifiedBanner compact message="Puedes ver tus chats, pero no podrás enviar mensajes ni iniciar llamadas hasta que el centro verifique tu identidad." />
+                </div>
+
                 <template v-if="selectedContact">
                     <div class="px-6 py-4 border-b border-white/5 flex justify-between items-center gap-3 bg-white/5 backdrop-blur-md z-20 shrink-0">
                         <div class="flex items-center gap-3">
@@ -209,11 +209,13 @@
 
                         <div class="flex items-center gap-4">
                             <button 
-                                @click="startVideoCall"
-                                class="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-emerald-500/20 hover:border-emerald-500/30 transition-all active:scale-95 shadow-lg group"
+                                @click="isUnverified ? null : startVideoCall()"
+                                :disabled="isUnverified"
+                                :class="['p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 transition-all shadow-lg group', 
+                                         isUnverified ? 'opacity-20 cursor-not-allowed' : 'hover:text-white hover:bg-emerald-500/20 hover:border-emerald-500/30 active:scale-95']"
                                 title="Iniciar Videollamada"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:text-emerald-400"><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"/><rect x="3" y="6" width="12" height="12" rx="2"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="isUnverified ? '' : 'group-hover:text-emerald-400'"><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"/><rect x="3" y="6" width="12" height="12" rx="2"/></svg>
                             </button>
                             <button @click="goBack" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" height="32px" width="32px" viewBox="0 -960 960 960" fill="#e3e3e3"><path d="M680-240v-80h200v80H680Zm-80-200v-80h280v80H600Zm-80-200v-80h360v80H520ZM235-515q-35-35-35-85t35-85q35-35 85-35t85 35q35 35 35 85t-35 85q-35 35-85 35t-85-35ZM80-240v-76q0-21 10-40t28-30q45-27 95.5-40.5T320-440q56 0 106.5 13.5T522-386q18 11 28 30t10 40v76H80Zm160-110q-39 10-74 30h308q-35-20-74-30t-80-10q-41 0-80 10Zm108.5-221.5Q360-583 360-600t-11.5-28.5Q337-640 320-640t-28.5 11.5Q280-617 280-600t11.5 28.5Q303-560 320-560t28.5-11.5ZM320-600Zm0 280Z"/></svg>
@@ -286,7 +288,10 @@
                     </div>
 
                     <div class="px-6 pb-4">
-                        <TextChatBar @sendMessage="handleSendMessage" />
+                        <TextChatBar :disabled="isUnverified" @sendMessage="handleSendMessage" />
+                        <p v-if="isUnverified" class="text-[9px] text-amber-400/60 font-black uppercase tracking-widest text-center mt-2">
+                            Interacción deshabilitada - Pendiente de verificación
+                        </p>
                     </div>
                 </template>
 
@@ -324,9 +329,12 @@
                         v-else
                         v-for="contact in contacts" 
                         :key="contact.id"
-                        @click="selectContact(contact.id)"
-                        class="px-6 py-4 flex items-center gap-3 cursor-pointer transition-colors border-b border-white/5"
-                        :class="[Number(selectedContactId) === Number(contact.id) ? 'bg-white/10' : 'hover:bg-white/5']"
+                        @click="isUnverified ? null : selectContact(contact.id)"
+                        class="px-6 py-4 flex items-center gap-3 transition-colors border-b border-white/5"
+                        :class="[
+                            isUnverified ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+                            Number(selectedContactId) === Number(contact.id) ? 'bg-white/10' : (isUnverified ? '' : 'hover:bg-white/5')
+                        ]"
                     >
                         <div class="relative">
                             <UserAvatar :user="contact" size="w-10 h-10" />

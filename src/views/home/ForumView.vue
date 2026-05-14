@@ -116,10 +116,11 @@
 
                 <template #actions>
                     <PrimaryButton 
-                        v-if="!isUnverified"
                         :text="t.forum.newQuestion"
                         icon="plus"
-                        @click="activeModal = 'question'"
+                        :disabled="isUnverified"
+                        :class="{'opacity-50 cursor-not-allowed': isUnverified}"
+                        @click="isUnverified ? null : activeModal = 'question'"
                     />
                 </template>
 
@@ -127,13 +128,14 @@
 
     
             <section class="text-white w-full px-6 lg:px-14 flex-1 flex flex-col">
-                <!-- Banner para alumnos no verificados -->
+                <!-- Banner compacto para alumnos no verificados -->
                 <UnverifiedBanner 
                     v-if="isUnverified"
-                    message="Tu cuenta todavía no ha sido verificada por tu centro educativo. No puedes crear preguntas ni responder hasta que el centro valide tu identidad."
+                    compact
+                    message="Puedes leer las preguntas, pero no podrás crear hilos ni responder hasta que tu centro verifique tu cuenta."
                 />
 
-                <div v-else id="mainBody" class="flex flex-col gap-6 w-full flex-1">
+                <div id="mainBody" class="flex flex-col gap-6 w-full flex-1">
                     <div v-if="apiLoading && questions.length === 0" class="text-white/40 italic py-10">{{ t.forum.loading }}</div>
     
                     <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">

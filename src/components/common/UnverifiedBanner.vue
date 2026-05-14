@@ -5,12 +5,38 @@ defineProps({
     message: {
         type: String,
         default: null
+    },
+    /** Compact mode for top banners */
+    compact: {
+        type: Boolean,
+        default: false
     }
 })
 </script>
 
 <template>
-    <div class="flex flex-col items-center justify-center flex-1 py-24 px-6">
+    <!-- Modo Compacto (Banner superior) -->
+    <div v-if="compact" class="w-full bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 mb-6 flex items-center gap-4 backdrop-blur-sm">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-400">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+        </div>
+        <div class="flex-1">
+            <p class="text-xs font-black text-white uppercase tracking-wider mb-0.5">Cuenta pendiente de verificación</p>
+            <p class="text-[10px] text-white/50 leading-tight">
+                {{ message || 'No puedes interactuar hasta que el centro valide tu identidad.' }}
+            </p>
+        </div>
+        <div class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center gap-1.5 shrink-0 hidden sm:flex">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span class="text-[9px] font-black text-amber-400/80 uppercase tracking-widest">Esperando</span>
+        </div>
+    </div>
+
+    <!-- Modo Pantalla Completa (Bloqueo) -->
+    <div v-else class="flex flex-col items-center justify-center flex-1 py-24 px-6">
         <div class="max-w-md w-full bg-amber-500/8 border border-amber-500/25 rounded-2xl p-8 text-center backdrop-blur-sm shadow-xl">
             <!-- Icono de candado -->
             <div class="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/25 flex items-center justify-center mx-auto mb-5">

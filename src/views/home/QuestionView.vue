@@ -217,7 +217,15 @@
 <template>
     <div class="min-h-screen">
         <NavBar></NavBar>
-        <main class="lg:pl-75 pt-20 lg:pt-8 flex flex-col min-h-screen relative">
+        <main class="lg:pl-75 pt-20 lg:pt-8 flex flex-col min-h-screen relative pb-32">
+            <!-- Banner compacto superior si no está verificado -->
+            <div class="px-4 lg:px-14 pt-6" v-if="isUnverified">
+                <UnverifiedBanner 
+                    compact 
+                    message="Puedes leer el hilo, pero no podrás responder hasta que tu centro verifique tu identidad."
+                />
+            </div>
+
             <section class="text-white w-full px-4 lg:px-14 flex-1 flex flex-col">
     
                 <div id="mainTrending" class="flex flex-col items-center w-full flex-1">
@@ -388,21 +396,17 @@
                     </div>
                 </div>
             </section>
-            <!-- El Formulario ahora usa TextChatBar con validación de Groq -->
-            <div v-if="!isUnverified" class="fixed bottom-0 right-0 left-0 lg:left-75 bg-[#0f2828] border-t border-white/10 px-4 lg:px-8 py-3 z-50">
-                <div class="w-full max-w-7xl mx-auto">
-                    <TextChatBar is-response @sendMessage="handleSendMessage" />
-                </div>
-            </div>
-            <!-- Banner para no verificados -->
-            <div v-else class="fixed bottom-0 right-0 left-0 lg:left-75 bg-amber-500/8 border-t border-amber-500/20 px-4 lg:px-8 py-4 z-50">
-                <div class="w-full max-w-7xl mx-auto flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-400 shrink-0">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    <p class="text-amber-300/70 text-xs font-bold uppercase tracking-widest">
-                        Tu cuenta está pendiente de verificación. No puedes responder preguntas hasta que tu centro te valide.
+            <!-- El Formulario ahora siempre visible pero deshabilitado si no está verificado -->
+            <div class="fixed bottom-0 right-0 left-0 lg:left-75 bg-[#0f2828] border-t border-white/10 px-4 lg:px-8 py-3 z-50">
+                <div class="w-full max-w-7xl mx-auto flex flex-col gap-1">
+                    <TextChatBar 
+                        :disabled="isUnverified" 
+                        is-response 
+                        @sendMessage="handleSendMessage" 
+                    />
+                    <!-- Pequeño aviso inferior -->
+                    <p v-if="isUnverified" class="text-[9px] text-amber-400/60 font-black uppercase tracking-widest text-center mt-1">
+                        Cuenta pendiente de verificación - Interacción deshabilitada
                     </p>
                 </div>
             </div>

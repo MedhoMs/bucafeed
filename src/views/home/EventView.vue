@@ -165,13 +165,15 @@
                 </template>
             </PageHeader>
     
-            <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20 flex-1 flex flex-col">
-    
+            <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 mb-20 flex-1 flex flex-col pt-6">
+                <!-- Banner compacto superior si no está verificado -->
+                <UnverifiedBanner 
+                    v-if="isUnverified"
+                    compact
+                    message="Puedes ver los eventos disponibles, pero no podrás inscribirte hasta que tu centro verifique tu identidad."
+                />
+
                 <div id="mainBody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center pb-20 flex-1">
-                    <!-- Banner para alumnos no verificados -->
-                    <div v-if="isUnverified" class="col-span-full">
-                        <UnverifiedBanner message="Tu cuenta todavía no ha sido verificada por tu centro educativo. No puedes apuntarte a eventos hasta que el centro valide tu identidad." />
-                    </div>
                     <EventCard 
                         v-for="event in events" 
                         :key="event.id" 
