@@ -18,6 +18,9 @@
     import { user, logout } from '@/stores/auth' //Import que contiene toda la info del usuario logueado
     import { unreadCount, fetchUnreadCount } from '@/stores/notifications'
     import { useRouter } from 'vue-router'
+    import { useSocket } from '@/composables/useSocket'
+
+    const { setupSocket } = useSocket()
 
     const router = useRouter()
 
@@ -69,6 +72,7 @@
 
     onMounted(() => {
         checkDbConnection()
+        setupSocket(user.value) // Iniciar socket global
         fetchUnreadCount()
         unreadInterval = setInterval(fetchUnreadCount, 30000)
         const handleResize = () => {
