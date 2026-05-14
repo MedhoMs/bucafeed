@@ -1,15 +1,133 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import NavBar from '@/components/NavBar/NavBar.vue'
 import { useTranslations } from '@/composables/useTranslations'
 import { useAnalytics } from '@/composables/useAnalytics'
+import { user, token } from '@/stores/auth'
+import BaseModal from '@/components/modals/BaseModal.vue'
 
 import { SETTINGS_SECTIONS } from '@/constants/settings'
 
 const { t, locale, setLocale } = useTranslations()
 const { isTrackingEnabled, toggleTracking } = useAnalytics()
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+
 const activeSection = ref('account')
+const tutorDni = ref('')
+const tutorsList = ref([])
+const searching = ref(false)
+const errorMessage = ref('')
+const successMessage = ref('')
+const showDeleteModal = ref(false)
+const tutorToDelete = ref(null)
+
+const filteredSections = computed(() => {
+    return SETTINGS_SECTIONS.filter(section => {
+        if (section.id === 'tutors') {
+            return user.value && ['Student', 'student', 'Alumno', 'alumno'].includes(user.value.role)
+        }
+        return true
+    })
+})
+
+const fetchTutors = async () => {
+    if (!user.value || !token.value) return
+    try {
+        const res = await fetch(`${API_BASE}/users/${user.value.id}/tutors`, {
+            headers: {
+                'Authorization': `Bearer ${token.value}`,
+                'Accept': 'application/json'
+            }
+        })
+        if (res.ok) {
+            tutorsList.value = await res.json()
+        }
+    } catch (e) {
+        console.error('Error fetching tutors:', e)
+    }
+}
+
+const addTutor = async () => {
+    if (!tutorDni.value) return
+    searching.value = true
+    errorMessage.value = ''
+    successMessage.value = ''
+    
+    try {
+        const findRes = await fetch(`${API_BASE}/users/find-tutor?dni=${tutorDni.value}`, {
+            headers: {
+                'Authorization': `Bearer ${token.value}`,
+                'Accept': 'application/json'
+            }
+        })
+        
+        if (!findRes.ok) {
+            errorMessage.value = t.value.settings.tutors.search_error
+            searching.value = false
+            return
+        }
+        
+        const tutor = await findRes.json()
+        
+        const addRes = await fetch(`${API_BASE}/users/tutors`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token.value}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ tutor_id: tutor.id })
+        })
+        
+        if (addRes.ok) {
+            successMessage.value = t.value.settings.tutors.add_success
+            tutorDni.value = ''
+            await fetchTutors()
+        } else {
+            const data = await addRes.json()
+            errorMessage.value = data.message || 'Error al añadir tutor'
+        }
+    } catch (e) {
+        errorMessage.value = 'Error de conexión'
+    } finally {
+        searching.value = false
+    }
+}
+
+const openDeleteModal = (tutorId) => {
+    tutorToDelete.value = tutorId
+    showDeleteModal.value = true
+}
+
+const confirmRemoveTutor = async () => {
+    if (!tutorToDelete.value) return
+    
+    try {
+        const res = await fetch(`${API_BASE}/users/tutors/${tutorToDelete.value}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token.value}`,
+                'Accept': 'application/json'
+            }
+        })
+        
+        if (res.ok) {
+            await fetchTutors()
+        }
+    } catch (e) {
+        console.error('Error removing tutor:', e)
+    } finally {
+        showDeleteModal.value = false
+        tutorToDelete.value = null
+    }
+}
+
+onMounted(() => {
+    if (user.value && ['Student', 'student', 'Alumno', 'alumno'].includes(user.value.role)) {
+        fetchTutors()
+    }
+})
 </script>
 
 <template>
@@ -26,7 +144,7 @@ const activeSection = ref('account')
                     <!-- Navigation -->
                     <nav class="lg:col-span-4 space-y-2">
                         <button 
-                            v-for="section in SETTINGS_SECTIONS" 
+                            v-for="section in filteredSections" 
                             :key="section.id"
                             @click="activeSection = section.id"
                             :class="[
@@ -63,8 +181,90 @@ const activeSection = ref('account')
                                     <h2 class="text-3xl font-black uppercase tracking-tighter">{{ t.settings.account.title }}</h2>
                                     <div class="h-px flex-1 bg-brand-net/20"></div>
                                 </div>
+                                <div class="bg-black/20 rounded-2xl p-6 border border-white/5 space-y-4">
+                                    <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                                        <span class="text-white/40 text-sm font-bold uppercase tracking-wider">{{ t.settings.account.email_label }}</span>
+                                        <span class="text-white font-medium">{{ user?.email }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white/40 text-sm font-bold uppercase tracking-wider">{{ t.settings.account.status_label }}</span>
+                                        <div class="flex items-center gap-2 text-emerald-400">
+                                            <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                                            <span class="text-sm font-bold uppercase tracking-widest">{{ t.settings.account.status_active }}</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </section>
     
+                            <!-- Tutors Section -->
+                            <section v-if="activeSection === 'tutors'" class="space-y-8">
+                                <div class="flex items-center gap-4 mb-10">
+                                    <h2 class="text-3xl font-black uppercase tracking-tighter">{{ t.settings.tutors.title }}</h2>
+                                    <div class="h-px flex-1 bg-brand-net/20"></div>
+                                </div>
+
+                                <!-- Add Tutor Form -->
+                                <div class="bg-black/20 rounded-2xl p-6 border border-white/5 space-y-4">
+                                    <div class="flex gap-4">
+                                        <input 
+                                            v-model="tutorDni"
+                                            type="text" 
+                                            :placeholder="t.settings.tutors.dni_placeholder"
+                                            class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-net transition-all"
+                                            @keyup.enter="addTutor"
+                                            maxlength="9"
+                                        >
+                                        <button 
+                                            @click="addTutor"
+                                            :disabled="searching || !tutorDni"
+                                            class="bg-brand-net hover:bg-brand-net/80 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <span v-if="searching" class="material-symbols-outlined animate-spin">sync</span>
+                                            <span v-else class="material-symbols-outlined">person_add</span>
+                                            {{ t.settings.tutors.add_button }}
+                                        </button>
+                                    </div>
+                                    <p v-if="errorMessage" class="text-red-400 text-sm flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-base">error</span>
+                                        {{ errorMessage }}
+                                    </p>
+                                    <p v-if="successMessage" class="text-emerald-400 text-sm flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-base">check_circle</span>
+                                        {{ successMessage }}
+                                    </p>
+                                </div>
+
+                                <!-- Tutors List -->
+                                <div class="space-y-4">
+                                    <div v-if="tutorsList.length === 0" class="text-center py-12 bg-white/5 rounded-2xl border border-dashed border-white/10">
+                                        <span class="material-symbols-outlined text-4xl text-white/10 mb-2">family_restroom</span>
+                                        <p class="text-white/40">{{ t.settings.tutors.no_tutors }}</p>
+                                    </div>
+                                    <div 
+                                        v-for="tutor in tutorsList" 
+                                        :key="tutor.id"
+                                        class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 group hover:border-brand-net/30 transition-all"
+                                    >
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 rounded-full bg-brand-net/10 flex items-center justify-center overflow-hidden border border-brand-net/20">
+                                                <img v-if="tutor.profile_picture" :src="tutor.profile_picture" class="w-full h-full object-cover">
+                                                <span v-else class="material-symbols-outlined text-brand-net">person</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-white">{{ tutor.name }} {{ tutor.last_name }}</p>
+                                                <p class="text-xs text-white/40 tracking-wider uppercase font-mono">{{ tutor.dni }}</p>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            @click="openDeleteModal(tutor.id)"
+                                            class="w-10 h-10 rounded-xl bg-white/5 hover:bg-red-500/20 text-white/40 hover:text-red-400 flex items-center justify-center transition-all cursor-pointer"
+                                        >
+                                            <span class="material-symbols-outlined text-xl">delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
+
                             <!-- Privacy Section -->
                             <section v-if="activeSection === 'privacy'" class="space-y-8">
                                 <div class="flex items-center gap-4 mb-10">
@@ -170,6 +370,20 @@ const activeSection = ref('account')
                 </div>
             </div>
         </main>
+
+        <!-- Delete Tutor Confirmation Modal -->
+        <BaseModal
+            v-if="showDeleteModal"
+            :title="t.settings.tutors.remove_modal.title"
+            :confirmText="t.settings.tutors.remove_modal.confirm"
+            :cancelText="t.settings.tutors.remove_modal.cancel"
+            @close="showDeleteModal = false"
+            @confirm="confirmRemoveTutor"
+        >
+            <p class="text-white/60 text-sm leading-relaxed">
+                {{ t.settings.tutors.remove_modal.description }}
+            </p>
+        </BaseModal>
     </div>
 </template>
 

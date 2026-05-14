@@ -36,7 +36,8 @@ class User extends Authenticatable
             'Admin' => 'Administrador',
             'EI' => 'Institución Educativa',
             'Teacher' => 'Profesor',
-            'Student' => 'Alumno'
+            'Student' => 'Alumno',
+            'EU' => 'Usuario Externo'
         ];
         return $roles[$this->role] ?? $this->role;
     }
@@ -101,6 +102,16 @@ class User extends Authenticatable
     public function following()
     {
         return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id')->withTimestamps();
+    }
+
+    public function tutors()
+    {
+        return $this->belongsToMany(User::class, 'tutor_student', 'student_id', 'tutor_id')->withTimestamps();
+    }
+
+    public function studentsOfTutor()
+    {
+        return $this->belongsToMany(User::class, 'tutor_student', 'tutor_id', 'student_id')->withTimestamps();
     }
 
     /**
