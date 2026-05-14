@@ -5,6 +5,7 @@
     import { user as authUser } from '../stores/auth';
     import { useApi } from "../composables/useApi";
     import UserAvatar from './common/UserAvatar.vue';
+    import { useSocket } from '../composables/useSocket';
     import defaultLogo from '../assets/logo/logoTelamon.png';
 
     const { get } = useApi();
@@ -77,6 +78,13 @@
         }
     }
 
+    const { onlineUsers } = useSocket();
+
+    // Verificar si un usuario está online
+    const isUserOnline = (userId) => {
+        return onlineUsers.value.some(u => Number(u.id) === Number(userId));
+    };
+
     onMounted(async () => {
         const handleResize = () => {
             isDesktop.value = window.innerWidth >= 1024
@@ -140,7 +148,10 @@
                 <div class="mr-auto w-full shrink-0">
                     <p class="text-lg lg:text-2xl font-bold self-start mb-2">Profesor</p>
                     <router-link v-if="props.meeting?.teacher_id || props.meeting?.teacher?.id" :to="'/profile/' + (props.meeting?.teacher_id || props.meeting?.teacher?.id)" class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer transition-colors no-underline text-white">
-                        <UserAvatar :user="props.meeting?.teacher" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
+                        <div class="relative mr-2">
+                            <UserAvatar :user="props.meeting?.teacher" size="w-10 h-10" class="border-2 border-white shadow-xs shrink-0" />
+                            <span v-if="isUserOnline(props.meeting?.teacher_id || props.meeting?.teacher?.id)" class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1f5252] rounded-full"></span>
+                        </div>
                         <p class="text-base lg:text-xl truncate flex-1">
                             {{ props.meeting?.teacher ? `${props.meeting.teacher.name} ${props.meeting.teacher.last_name || ''}` : (meetingId ? meetingTeacherParam : 'Profesor') }}
                         </p>
@@ -163,20 +174,25 @@
                 <div class="flex flex-col mr-auto w-full flex-1 overflow-y-auto pb-4 pr-2 custom-scrollbar">
                     <!-- Estudiante Logueado (Yo) -->
                     <router-link v-if="authUser && (['student', 'alumno', 'estudiante'].includes(authUser.role?.toLowerCase()))" :to="'/profile/' + authUser.id" class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors no-underline text-white">
-                        <UserAvatar :user="authUser" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
+                        <div class="relative mr-2">
+                            <UserAvatar :user="authUser" size="w-10 h-10" class="border-2 border-white shadow-xs shrink-0" />
+                            <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1f5252] rounded-full"></span>
+                        </div>
                         <p class="text-base lg:text-xl truncate">{{ authUser.name }} (Tú)</p>
                     </router-link>
 
                     <!-- Otros Estudiantes -->
-                    <div v-for="student in students.filter(s => s.id !== authUser?.id)" :key="student.id"
-                        class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors no-underline text-white"
-                        @click="router.push('/profile/' + student.id)">
-                        <UserAvatar :user="student" size="w-10 h-10" class="border-2 border-white shadow-xs mr-2 shrink-0" />
+                    <router-link v-for="student in students.filter(s => s.id !== authUser?.id)" :key="student.id" :to="'/profile/' + student.id"
+                        class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors no-underline text-white">
+                        <div class="relative mr-2">
+                            <UserAvatar :user="student" size="w-10 h-10" class="border-2 border-white shadow-xs shrink-0" />
+                            <span v-if="isUserOnline(student.id)" class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1f5252] rounded-full"></span>
+                        </div>
                         <p class="text-base lg:text-xl truncate flex-1">{{ student.name }} {{ student.last_name }}</p>
                         <button v-if="!['student', 'alumno', 'estudiante'].includes(authUser?.role?.toLowerCase())" @click.stop="openPrivateChat(student.id)" class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2" title="Mensaje">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8z"/><path d="M3 7l9 6l9 -6"/></svg>
                         </button>
-                    </div>
+                    </router-link>
 
                     <p v-if="students.length === 0 && (!authUser || authUser.role !== 'Student')" class="text-sm text-white/40 italic">No hay otros alumnos</p>
                 </div>

@@ -1,109 +1,89 @@
 import { io } from 'socket.io-client';
 import { ref } from 'vue';
 
-const socket = ref(null);
+// Patrón Singleton para mantener una única conexión estable
+let socketInstance = null;
 const connected = ref(false);
-const pendingListeners = ref([]);
-const pendingEmissions = ref([]);
+const onlineUsers = ref([]);
 
 export function useSocket() {
-
-    function connect(roomId, userData = null) {
-        if (socket.value?.connected) {
-            if (roomId) joinRoom(roomId, userData);
-            return;
-        }
-
-        const socketUrl = import.meta.env.VITE_SOCKET_URL || `${location.protocol === 'https:' ? 'wss:' : 'http:'}//${window.location.hostname}:3000`;
-        socket.value = io(socketUrl);
-
-        socket.value.on('connect', () => {
-            connected.value = true;
-            console.log('Socket connected to:', socketUrl);
-            
-            if (roomId) {
-                socket.value.emit('join-room', roomId, userData);
-                const userId = typeof roomId === 'string' && roomId.startsWith('user:') ? roomId.slice(5) : null;
-                if (userId) {
-                    socket.value.emit('user-online', userId);
-                }
+    
+    function setupSocket(userData = null) {
+        if (socketInstance?.connected) {
+            // Si ya estamos conectados pero no hemos enviado el user:online (ej. tras login)
+            if (userData && socketInstance.userId !== userData.id) {
+                socketInstance.emit('user:online', userData);
+                socketInstance.userId = userData.id;
             }
+            return socketInstance;
+        }
+
+        // Detección de protocolo para producción (HTTPS -> WSS)
+        const isProd = window.location.protocol === 'https:';
+        const socketUrl = import.meta.env.VITE_SOCKET_URL || (isProd ? `//${window.location.hostname}` : `//${window.location.hostname}:3000`);
+        
+        console.log('Connecting to socket:', socketUrl);
+        
+        socketInstance = io(socketUrl, {
+            transports: ['websocket', 'polling'],
+            reconnection: true,
+            reconnectionAttempts: 10
+        });
+
+        socketInstance.on('connect', () => {
+            console.log('Socket connected:', socketInstance.id);
+            connected.value = true;
             
-            // Attach pending listeners
-            pendingListeners.value.forEach(({ event, callback }) => {
-                socket.value.on(event, callback);
-            });
-            pendingListeners.value = [];
-
-            // Process pending emissions
-            pendingEmissions.value.forEach(({ event, roomId, data }) => {
-                socket.value.emit(event, roomId, data);
-            });
-            pendingEmissions.value = [];
+            if (userData) {
+                socketInstance.emit('user:online', userData);
+                socketInstance.userId = userData.id;
+            }
         });
 
-        socket.value.on('disconnect', () => {
+        socketInstance.on('disconnect', () => {
+            console.log('Socket disconnected');
             connected.value = false;
         });
+
+        socketInstance.on('update-user-list', (users) => {
+            console.log('Online users updated:', users.length);
+            onlineUsers.value = users;
+        });
+
+        // Bridge para eventos genéricos
+        socketInstance.onAny((event, ...args) => {
+            // console.log(`Socket Event: ${event}`, args);
+        });
+
+        return socketInstance;
     }
 
-    function joinRoom(roomId, userData = null) {
-        if (socket.value?.connected) {
-            socket.value.emit('join-room', roomId, userData);
-            socket.value.emit('kahoot:join-room', roomId, userData);
+    function emitSocket(event, roomId, data = {}) {
+        if (socketInstance?.connected) {
+            socketInstance.emit(event, roomId, data);
         } else {
-            // Si no está conectado, lo conectamos con esta sala
-            connect(roomId, userData);
+            console.warn('Cannot emit: socket not connected', event);
         }
     }
 
-    function leaveRoom(roomId) {
-        if (socket.value?.connected) {
-            socket.value.emit('leave-room', roomId);
-        }
+    function onSocket(event, callback) {
+        if (!socketInstance) setupSocket();
+        socketInstance.on(event, callback);
     }
 
-    function emit(event, roomId, data = {}) {
-        if (socket.value?.connected) {
-            socket.value.emit(event, roomId, data);
-        } else {
-            pendingEmissions.value.push({ event, roomId, data });
-        }
-    }
-
-    function on(event, callback) {
-        if (socket.value?.connected) {
-            socket.value.on(event, callback);
-        } else {
-            pendingListeners.value.push({ event, callback });
-        }
-    }
-
-    function off(event, callback) {
-        if (socket.value) {
-            socket.value.off(event, callback);
-        }
-    }
-
-    function disconnect() {
-        // En modo singleton solemos no desconectar automáticamente al desmontar
-        // pero podemos exponer la función para cierres manuales si es necesario.
-        if (socket.value) {
-            socket.value.disconnect();
-            socket.value = null;
-            connected.value = false;
+    function offSocket(event, callback) {
+        if (socketInstance) {
+            socketInstance.off(event, callback);
         }
     }
 
     return {
-        socket,
+        socket: socketInstance,
         connected,
-        connect,
-        joinRoom,
-        leaveRoom,
-        emit,
-        on,
-        off,
-        disconnect,
+        onlineUsers,
+        setupSocket,
+        emitSocket,
+        on: onSocket,
+        off: offSocket
     };
 }
