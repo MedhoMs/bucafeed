@@ -132,7 +132,7 @@
                                 <span class="text-sm font-bold text-white">
                                     {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
                                 </span>
-                                <span class="text-xs text-white/40 uppercase tracking-widest">
+                                <span class="text-xs text-white/40 uppercase tracking-normal">
                                     {{ 
                                         q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
                                         (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
@@ -146,7 +146,7 @@
                                 <span class="text-sm font-bold text-white">
                                     {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
                                 </span>
-                                <span class="text-xs text-white/40 uppercase tracking-widest">
+                                <span class="text-xs text-white/40 uppercase tracking-normal">
                                     {{ 
                                         q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
                                         (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
@@ -238,6 +238,6 @@
     .post-title {
         font-size: 28px;
         font-weight: 900;
-        letter-spacing: -0.02em;
+        letter-spacing: normal;
     }
 </style>

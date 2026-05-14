@@ -94,7 +94,7 @@ async function startMeetingCall() {
                         <span class="hidden xl:inline text-sm font-medium">Volver</span>
                     </button>
 
-                    <p class="text-xl lg:text-4xl text-center font-bold truncate px-2 flex-1">
+                    <p class="text-xl lg:text-4xl text-center font-bold truncate px-2 flex-1 tracking-normal">
                         {{ meetingId ? `${meetingName}` : 'Chat de Reunión' }}
                     </p>
 
