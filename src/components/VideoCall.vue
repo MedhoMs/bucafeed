@@ -275,18 +275,14 @@ onMounted(async () => {
     debugInfo.value = 'Conectado al servidor. Uniéndose a la sala de video...';
 
     // Unirse a la sala de VIDEO (separada de la de chat)
+    // IMPORTANTE: NO creamos ofertas aquí. Solo el que ya estaba en la sala
+    // crea la oferta (via evento 'user-joined'). Esto evita que ambos lados
+    // creen ofertas simultáneas que se cancelen mutuamente (glare condition).
     socket.emit('join-room', videoRoomId, (existingClients) => {
       console.log('[VideoCall] Joined room. Existing clients:', existingClients);
       debugInfo.value = existingClients?.length
-        ? `Encontrados ${existingClients.length} participante(s). Conectando...`
+        ? `Encontrados ${existingClients.length} participante(s). Esperando conexión...`
         : 'Esperando a que otro participante se una...';
-
-      // Crear ofertas a todos los que ya están en la sala
-      if (existingClients && existingClients.length > 0) {
-        existingClients.forEach(clientId => {
-          createOffer(clientId);
-        });
-      }
     });
   });
 
