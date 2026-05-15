@@ -34,8 +34,15 @@ const avatarUrl = computed(() => {
 
 <template>
     <img 
+        v-if="user?.role === 'Student' && user?.is_verified === false"
         :src="avatarUrl" 
-        :class="[size, 'rounded-full border border-white/20 object-cover shrink-0', className]" 
+        :class="[size, 'rounded-full border-2 border-amber-300 object-cover shrink-0', className]" 
+        :alt="user?.name || 'User'"
+    >
+    <img 
+        v-else
+        :src="avatarUrl" 
+        :class="[size, 'rounded-full border-2 border-white/20 object-cover shrink-0', className]" 
         :alt="user?.name || 'User'"
     >
 </template>

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Group;
+use App\Models\Student;
 use App\Models\EducationalCenter;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -134,13 +135,21 @@ class UsersAndGroupsSeeder extends Seeder
                         }
                         $existingEmails[] = $email;
 
-                        User::updateOrCreate(['email' => $email], [
+                        $user = User::updateOrCreate(['email' => $email], [
                             'name' => $stuName, 'last_name' => $stuSurname, 'password' => Hash::make('12345678'),
                             'role' => 'Student', 'educational_center_id' => $center->id,
                             'dni' => $dni,
                             'institution_name' => $center->name, 'education_level' => $center->type
                         ]);
-                        $group->students()->syncWithoutDetaching([User::where('email', $email)->first()->id]);
+
+                        Student::updateOrCreate(['user_id' => $user->id], [
+                            'educational_center_id' => $center->id,
+                            'cycle_id' => $cycle->id,
+                            'course' => 1,
+                            'verified' => true,
+                        ]);
+
+                        $group->students()->syncWithoutDetaching([$user->id]);
                         $totalStudents++;
                     }
                     $globalCounter++;

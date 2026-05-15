@@ -2,13 +2,21 @@
 import ManagementSection from '@/components/layouts/ManagementSection.vue'
 import ManagementCard from '@/components/layouts/ManagementCard.vue'
 import PrimaryButton from '@/components/common/PrimaryButton.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 defineProps({
     admins: { type: Array, required: true },
     teachers: { type: Array, required: true },
-    students: { type: Array, required: true }
+    students: { type: Array, required: true },
+    pendingStudents: { type: Array, default: () => [] }
 })
-defineEmits(['openModal'])
+const emit = defineEmits(['openModal', 'verifyStudent'])
+
+const goToProfile = (id) => {
+    router.push(`/profile/${id}`)
+}
 </script>
 
 <template>
@@ -20,6 +28,87 @@ defineEmits(['openModal'])
                 @click="$emit('openModal', 'enroll_users')" 
             />
         </div>
+
+        <!-- ── Sección: Pendientes de Verificación ── -->
+        <div v-if="pendingStudents && pendingStudents.length > 0" class="mb-12">
+            <ManagementSection :title="`Pendientes de Verificación | ${pendingStudents.length}`" />
+
+            <!-- Banner informativo -->
+            <div class="flex items-center gap-3 mb-5 bg-amber-500/10 border border-amber-500/25 rounded-xl px-5 py-3.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-amber-400 shrink-0">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <p class="text-amber-300/80 text-xs font-bold uppercase tracking-wider">
+                    Estos alumnos han solicitado acceso y esperan verificación. Accede a su perfil para comprobar su identidad antes de validarlos.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <ManagementCard 
+                    v-for="item in pendingStudents" 
+                    :key="item.id" 
+                    class="p-5 border border-amber-500/20 bg-amber-500/5 hover:bg-amber-500/10 transition-colors relative overflow-hidden"
+                >
+                    <!-- Indicador de pendiente -->
+                    <div class="absolute top-3 right-3">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[9px] font-black uppercase tracking-widest">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                            Pendiente
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-4 mb-4">
+                        <!-- Avatar -->
+                        <button 
+                            @click="goToProfile(item.id)"
+                            class="w-11 h-11 rounded-full flex items-center justify-center text-sm font-black text-white/90 bg-amber-500/20 border-2 border-amber-500/30 hover:border-amber-400 transition-all shrink-0 cursor-pointer"
+                            :title="`Ver perfil de ${item.name}`"
+                        >
+                            {{ item.name?.charAt(0) }}{{ item.last_name?.charAt(0) }}
+                        </button>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-black text-xs text-white/90 uppercase tracking-tight truncate">
+                                {{ item.name }} {{ item.last_name || '' }}
+                            </p>
+                            <p class="text-[9px] text-amber-400/70 font-black uppercase tracking-tighter mt-0.5">
+                                {{ item.institution_name || 'Sin centro asignado' }}
+                            </p>
+                            <p class="text-[9px] text-white/20 font-bold uppercase tracking-tighter mt-0.5 truncate">
+                                {{ item.email }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 mt-3 pt-3 border-t border-white/5">
+                        <!-- Ver perfil -->
+                        <button 
+                            @click="goToProfile(item.id)"
+                            class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Ver Perfil
+                        </button>
+                        <!-- Verificar -->
+                        <button 
+                            @click="$emit('verifyStudent', item.id)"
+                            class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/25 hover:border-emerald-400/50 text-emerald-400 hover:text-emerald-300 transition-all text-[10px] font-black uppercase tracking-widest active:scale-95"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 6 9 17l-5-5"/>
+                            </svg>
+                            Verificar
+                        </button>
+                    </div>
+                </ManagementCard>
+            </div>
+        </div>
+
+        <!-- ── Secciones normales: Dirección, Cuerpo Docente, Alumnado ── -->
         <div v-for="sect in [{t:'Dirección', d:admins}, {t:'Cuerpo Docente', d:teachers}, {t:'Alumnado', d:students}]" :key="sect.t" class="mb-12">
             
             <ManagementSection :title="`${sect.t} | ${sect.d.length}`" />

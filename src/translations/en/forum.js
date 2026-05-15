@@ -22,5 +22,7 @@ export const forum = {
     confirmDeleteTitle: "Are you sure?",
     confirmDeleteMessage: "This action cannot be undone. The question and all its replies will be permanently deleted.",
     confirm: "Confirm",
-    cancel: "Cancel"
+    cancel: "Cancel",
+    unverifiedMessage: "You cannot view questions or interact in the forum until your center verifies your account.",
+    unverifiedThreadMessage: "You cannot view this thread until your center verifies your identity."
 };

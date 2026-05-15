@@ -21,6 +21,7 @@ const emit = defineEmits(['joinCall']);
 
 const meetingId = computed(() => route.params.id);
 const canCreateKahoot = computed(() => authUser.value && ['Teacher', 'Admin', 'EI'].includes(authUser.value.role));
+const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
 
 const { connect: connectSocket, emit: emitSocket, on: onSocket, off: offSocket, disconnect: disconnectSocket } = useSocket()
 const messages = ref([])
@@ -178,8 +179,7 @@ function setupSocket() {
     connectSocket(roomId, userData)
 
     onSocket('chat:message', (data) => {
-        if (data.sender !== authUser.value?.id && !messages.value.find(m => m.id === data.id)) {
-            // Normalize message type for frontend
+        if (!messages.value.find(m => m.id === data.id)) {
             const normalizedData = { ...data, type: data.message_type || data.type };
             messages.value.push(normalizedData); scrollToBottom()
         }
@@ -206,6 +206,8 @@ onMounted(async () => {
     await loadMessages(); 
 })
 onUnmounted(() => disconnectSocket())
+
+defineExpose({ loadMessages })
 </script>
 
 <template>
@@ -253,9 +255,12 @@ onUnmounted(() => disconnectSocket())
                                         <p class="text-[10px] opacity-60">¿Deseas entrar a la reunión de video?</p>
                                     </div>
                                 </div>
-                                <button @click="emit('joinCall', msg.content)" class="w-full py-3 px-6 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                <button @click="isUnverified ? null : emit('joinCall', msg.content)" 
+                                    :disabled="isUnverified"
+                                    :class="['w-full py-3 px-6 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2', 
+                                             isUnverified ? 'bg-amber-500/20 text-amber-500/50 cursor-not-allowed border border-amber-500/20' : 'bg-emerald-500 hover:bg-emerald-600 cursor-pointer']">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>
-                                    Unirse a la sesión
+                                    {{ isUnverified ? 'Bloqueado (Sin verificar)' : 'Unirse a la sesión' }}
                                 </button>
                             </div>
                         </div>
@@ -320,7 +325,10 @@ onUnmounted(() => disconnectSocket())
                     {{ showKahootCreator ? 'Cerrar' : 'Kahoot' }}
                 </button>
             </div>
-            <TextChatBar @sendMessage="handleSendMessage" />
+            <TextChatBar :disabled="isUnverified" @sendMessage="handleSendMessage" />
+            <p v-if="isUnverified" class="text-[9px] text-amber-400/60 font-black uppercase tracking-widest text-center mt-2">
+                Interacción deshabilitada - Pendiente de verificación
+            </p>
         </div>
     </div>
 </template>

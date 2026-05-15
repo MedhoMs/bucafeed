@@ -7,7 +7,7 @@ import { useSocket } from '@/composables/useSocket';
 import CookieBanner from '@/components/CookieBanner.vue';
 import ScrollToTop from '@/components/common/ScrollToTop.vue';
 
-const { socket, connect, on } = useSocket();
+const { socket, setupSocket, on } = useSocket();
 
 onMounted(() => {
     loadAnalytics();
@@ -16,7 +16,7 @@ onMounted(() => {
 
 watch(() => user?.value?.id, (userId) => {
     if (userId) {
-        connect(`user:${userId}`);
+        setupSocket(user.value);
         on('notification', (notif) => {
             unreadCount.value++;
         });

@@ -22,8 +22,6 @@ export function useSocket() {
         const isProd = window.location.protocol === 'https:';
         const socketUrl = import.meta.env.VITE_SOCKET_URL || (isProd ? `//${window.location.hostname}` : `//${window.location.hostname}:3000`);
         
-        console.log('Connecting to socket:', socketUrl);
-        
         socketInstance = io(socketUrl, {
             transports: ['websocket', 'polling'],
             reconnection: true,
@@ -31,7 +29,6 @@ export function useSocket() {
         });
 
         socketInstance.on('connect', () => {
-            console.log('Socket connected:', socketInstance.id);
             connected.value = true;
             
             if (userData) {
@@ -41,19 +38,14 @@ export function useSocket() {
         });
 
         socketInstance.on('disconnect', () => {
-            console.log('Socket disconnected');
             connected.value = false;
         });
 
         socketInstance.on('update-user-list', (users) => {
-            console.log('Online users updated:', users.length);
             onlineUsers.value = users;
         });
 
-        // Bridge para eventos genéricos
-        socketInstance.onAny((event, ...args) => {
-            // console.log(`Socket Event: ${event}`, args);
-        });
+        socketInstance.onAny(() => {});
 
         return socketInstance;
     }
@@ -77,12 +69,23 @@ export function useSocket() {
         }
     }
 
+    function disconnectSocket() {
+        if (socketInstance) {
+            socketInstance.disconnect();
+            socketInstance = null;
+            connected.value = false;
+        }
+    }
+
     return {
         socket: socketInstance,
         connected,
         onlineUsers,
         setupSocket,
+        connect: setupSocket,
+        disconnect: disconnectSocket,
         emitSocket,
+        emit: emitSocket,
         on: onSocket,
         off: offSocket
     };

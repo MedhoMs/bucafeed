@@ -9,12 +9,15 @@ import PrimaryButton from '@/components/common/PrimaryButton.vue';
 import BaseModal from '@/components/modals/BaseModal.vue';
 import GenericForm from '@/components/common/forms/GenericForm.vue';
 import Pagination from '../../components/common/Pagination.vue';
+import UnverifiedBanner from '@/components/common/UnverifiedBanner.vue';
 import { useTranslations } from '../../composables/useTranslations'
 import { user } from '../../stores/auth';
 import { useApi } from '../../composables/useApi';
 
 const { t } = useTranslations()
 const { get, post: apiPost, del: apiDelete, loading: apiLoading } = useApi();
+
+const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
 
 const meetings = ref([]);
 const centers = ref([]);
@@ -290,31 +293,39 @@ const deleteMeeting = async () => {
     
             <section 
                 :class="[
-                    'text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 flex flex-col flex-1',
-                    filteredMeetings.length === 0 ? 'justify-center pb-32' : 'mb-20'
+                    'text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 flex flex-col flex-1 pt-6',
+                    (filteredMeetings.length === 0 || isUnverified) ? 'justify-center pb-32' : 'mb-20'
                 ]"
             >
-                <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1">
-                    <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
-                        :teacher="meeting.teacher" :teacher_id="meeting.teacher_id" :schedule="meeting.schedule" :group="meeting.group"
-                        :group_id="meeting.group_id" :description="meeting.description" @delete="confirmDelete" />
-                </div>
+                <!-- Banner para alumnos no verificados (Centrado y bloqueante) -->
+                <UnverifiedBanner 
+                    v-if="isUnverified"
+                    :message="t.meetings.unverifiedMessage || 'No puedes visualizar las charlas programadas hasta que tu centro verifique tu identidad.'"
+                />
 
-                <div v-if="pagination.lastPage > 1" class="mt-12 mb-10 flex justify-center w-full">
-                    <Pagination
-                        :current-page="pagination.currentPage"
-                        :last-page="pagination.lastPage"
-                        @change="handlePageChange"
-                    />
-                </div>
+                <template v-else>
+                    <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1">
+                        <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
+                            :teacher="meeting.teacher" :teacher_id="meeting.teacher_id" :schedule="meeting.schedule" :group="meeting.group"
+                            :group_id="meeting.group_id" :description="meeting.description" 
+                            :disabled="isUnverified"
+                            @delete="confirmDelete" />
+                    </div>
 
-
+                    <div v-if="pagination.lastPage > 1" class="mt-12 mb-10 flex justify-center w-full">
+                        <Pagination
+                            :current-page="pagination.currentPage"
+                            :last-page="pagination.lastPage"
+                            @change="handlePageChange"
+                        />
+                    </div>
     
-                <div v-if="filteredMeetings.length === 0"
-                    class="w-fit bg-white/5 backdrop-blur-md p-10 mx-auto rounded-3xl shadow-xl border border-white/10 text-center">
-                    <h3 class="text-2xl font-bold text-white mb-2">{{ t.meetings.noMeetings || 'No se han encontrado reuniones' }}</h3>
-                    <p v-if="!user" class="text-white/60">{{ t.meetings.loginRequired || 'Debes iniciar sesión para ver tus charlas.' }}</p>
-                </div>
+                    <div v-if="filteredMeetings.length === 0"
+                        class="w-fit bg-white/5 backdrop-blur-md p-10 mx-auto rounded-3xl shadow-xl border border-white/10 text-center">
+                        <h3 class="text-2xl font-bold text-white mb-2">{{ t.meetings.noMeetings || 'No se han encontrado reuniones' }}</h3>
+                        <p v-if="!user" class="text-white/60">{{ t.meetings.loginRequired || 'Debes iniciar sesión para ver tus charlas.' }}</p>
+                    </div>
+                </template>
             </section>
     
             <!-- Modal de Creación -->

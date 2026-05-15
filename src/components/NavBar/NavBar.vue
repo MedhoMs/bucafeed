@@ -1,7 +1,7 @@
 <!--Componente de barra de navegacion-->
 <script setup>
     import NavBarLinks from './NavBarLinks.vue'
-    import { onMounted, onUnmounted, ref } from 'vue'
+    import { onMounted, onUnmounted, ref, computed } from 'vue'
     import { useTranslations } from '@/composables/useTranslations'
     import UserAvatar from '@/components/common/UserAvatar.vue'
     import defaultLogo from '@/assets/logo/logoTelamon.png'
@@ -100,6 +100,8 @@
     }
 
     defineExpose({ activeMenu })
+
+    const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
 </script>
  
 <template>
@@ -207,13 +209,19 @@ Enter
                 </NavBarLinks>
  
  
-                <router-link
-                    class="relative flex items-center gap-2.5 mb-5 mr-4 mt-auto rounded-xl text-base font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-secondary-normal hover:cursor-pointer active:bg-secondary-normal active:font-bold"
-                    id="profile" to="/profile">
-                    <UserAvatar :user="user" size="w-10 h-10" class="border-2 border-white shadow-xs" />
-                    <p>{{ user ? user.name : 'Usuario' }}</p>
-                    <svg id="dots" @click.stop.prevent="toggleDotsPopup" class="absolute right-4 w-6 h-6 z-10 rounded-xl hover:bg-secondary-normal-hover transition-colors duration-200 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
-                </router-link>
+                    <router-link
+                        class="relative flex items-center gap-2.5 mb-5 mr-4 mt-auto rounded-xl text-base font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-secondary-normal hover:cursor-pointer active:bg-secondary-normal active:font-bold"
+                        id="profile" to="/profile">
+                        <UserAvatar :user="user" size="w-10 h-10" class="border-2 shadow-xs" />
+                        <div class="flex flex-col min-w-0">
+                            <!-- Indicador de pendiente de verificación -->
+                            <span v-if="isUnverified" class="text-amber-300">
+                                <p class="truncate">{{ user ? user.name : 'Usuario' }}</p>
+                            </span>
+                            <p v-else class="truncate">{{ user ? user.name : 'Usuario' }}</p>
+                        </div>
+                        <svg id="dots" @click.stop.prevent="toggleDotsPopup" class="absolute right-4 w-6 h-6 z-10 rounded-xl hover:bg-secondary-normal-hover transition-colors duration-200 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /><path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /></svg>
+                    </router-link>
  
                 <Transition
                     enter-active-class="transition-all duration-200 ease-out"

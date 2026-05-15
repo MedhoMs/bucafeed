@@ -5,7 +5,8 @@
     import ForumManagerCore from '../../components/forum/ForumManagerCore.vue';
     import PageHeader from '@/components/common/PageHeader.vue';
     import PrimaryButton from '@/components/common/PrimaryButton.vue';
-    import { ref, onMounted, reactive} from 'vue';
+    import UnverifiedBanner from '@/components/common/UnverifiedBanner.vue';
+    import { ref, onMounted, reactive, computed } from 'vue';
     import { user } from '@/stores/auth';
     import { useRouter } from 'vue-router';
     import { useApi } from '../../composables/useApi';
@@ -16,6 +17,9 @@
     const { t } = useTranslations()
     const router = useRouter();
     const { get, del, loading: apiLoading } = useApi();
+
+    // Un alumno está no verificado si su rol es Student y is_verified es false
+    const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
     
     const rawQuestions = ref([]);
     const questions = ref([]);
@@ -114,7 +118,9 @@
                     <PrimaryButton 
                         :text="t.forum.newQuestion"
                         icon="plus"
-                        @click="activeModal = 'question'"
+                        :disabled="isUnverified"
+                        :class="{'opacity-50 cursor-not-allowed': isUnverified}"
+                        @click="isUnverified ? null : activeModal = 'question'"
                     />
                 </template>
 
@@ -122,72 +128,80 @@
 
     
             <section class="text-white w-full px-6 lg:px-14 flex-1 flex flex-col">
-                <div id="mainBody" class="flex flex-col gap-6 w-full flex-1">
-                    <div v-if="apiLoading && questions.length === 0" class="text-white/40 italic py-10">{{ t.forum.loading }}</div>
-    
-                    <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">
-                        <router-link v-if="q.user?.id" :to="'/profile/' + q.user.id" class="flex gap-4 items-center mb-4 hover:opacity-80 transition-opacity w-full pr-14 no-underline">
-                            <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
-                            <div class="flex flex-col">
-                                <span class="text-sm font-bold text-white">
-                                    {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
-                                </span>
-                                <span class="text-xs text-white/40 uppercase tracking-normal">
-                                    {{ 
-                                        q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
-                                        (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
-                                    }}
-                                </span>
-                            </div>
-                        </router-link>
-                        <div v-else class="flex gap-4 items-center mb-4 w-full pr-14">
-                            <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
-                            <div class="flex flex-col">
-                                <span class="text-sm font-bold text-white">
-                                    {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
-                                </span>
-                                <span class="text-xs text-white/40 uppercase tracking-normal">
-                                    {{ 
-                                        q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
-                                        (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
-                                    }}
-                                </span>
-                            </div>
-                        </div>
-                        <h2 class="post-title text-white">{{ q.title }}</h2>
-                        <p class="text-white/80 mt-2 text-sm line-clamp-3 leading-relaxed">{{ q.content }}</p>
-                        
-                        <!-- Preview de Imagen -->
-                        <div v-if="q.image" class="mt-4 rounded-xl overflow-hidden border border-white/5 bg-black/40 aspect-video w-full max-w-lg flex items-center justify-center">
-                            <img :src="getImageUrl(q.image)" alt="Preview" class="w-full h-full object-contain" />
-                        </div>
-                        <div class="post-footer mt-4 flex items-center justify-between">
-                            <router-link :to="'/question/' + q.id" class="responses-badge bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95 px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 select-none group" :title="t.forum.viewThread">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-dimmed group-hover:text-success-normal transition-colors"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
-                                <span class="response-count text-sm text-white/80 font-bold">{{ q.answers ? q.answers.length : 0 }} {{ t.forum.responses }}</span>
-                                <span class="text-xs text-success-normal font-black uppercase ml-2 opacity-0 group-hover:opacity-100 transition-opacity">{{ t.forum.viewThread }}</span>
+                <!-- Banner para alumnos no verificados (Centrado y bloqueante) -->
+                <UnverifiedBanner 
+                    v-if="isUnverified"
+                    :message="t.forum.unverifiedMessage || 'No puedes visualizar las preguntas ni interactuar en el foro hasta que tu centro verifique tu cuenta.'"
+                />
+
+                <template v-else>
+                    <div id="mainBody" class="flex flex-col gap-6 w-full flex-1">
+                        <div v-if="apiLoading && questions.length === 0" class="text-white/40 italic py-10">{{ t.forum.loading }}</div>
+        
+                        <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">
+                            <router-link v-if="q.user?.id" :to="'/profile/' + q.user.id" class="flex gap-4 items-center mb-4 hover:opacity-80 transition-opacity w-full pr-14 no-underline">
+                                <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-bold text-white">
+                                        {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
+                                    </span>
+                                    <span class="text-xs text-white/40 uppercase tracking-normal">
+                                        {{ 
+                                            q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                            (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
+                                        }}
+                                    </span>
+                                </div>
                             </router-link>
-    
-                            <button 
-                                v-if="user?.role?.toLowerCase() === 'admin'"
-                                @click.stop="triggerDelete(q.id)"
-                                class="absolute top-7 right-7 p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 z-10"
-                                :title="t.forum.delete"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                            </button>
+                            <div v-else class="flex gap-4 items-center mb-4 w-full pr-14">
+                                <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-bold text-white">
+                                        {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
+                                    </span>
+                                    <span class="text-xs text-white/40 uppercase tracking-normal">
+                                        {{ 
+                                            q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                            (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
+                                        }}
+                                    </span>
+                                </div>
+                            </div>
+                            <h2 class="post-title text-white">{{ q.title }}</h2>
+                            <p class="text-white/80 mt-2 text-sm line-clamp-3 leading-relaxed">{{ q.content }}</p>
+                            
+                            <!-- Preview de Imagen -->
+                            <div v-if="q.image" class="mt-4 rounded-xl overflow-hidden border border-white/5 bg-black/40 aspect-video w-full max-w-lg flex items-center justify-center">
+                                <img :src="getImageUrl(q.image)" alt="Preview" class="w-full h-full object-contain" />
+                            </div>
+                            <div class="post-footer mt-4 flex items-center justify-between">
+                                <router-link :to="'/question/' + q.id" class="responses-badge bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95 px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 select-none group" :title="t.forum.viewThread">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-dimmed group-hover:text-success-normal transition-colors"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+                                    <span class="response-count text-sm text-white/80 font-bold">{{ q.answers ? q.answers.length : 0 }} {{ t.forum.responses }}</span>
+                                    <span class="text-xs text-success-normal font-black uppercase ml-2 opacity-0 group-hover:opacity-100 transition-opacity">{{ t.forum.viewThread }}</span>
+                                </router-link>
+        
+                                <button 
+                                    v-if="user?.role?.toLowerCase() === 'admin'"
+                                    @click.stop="triggerDelete(q.id)"
+                                    class="absolute top-7 right-7 p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 z-10"
+                                    :title="t.forum.delete"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="mt-auto py-8 flex justify-center w-full">
-                    <Pagination 
-                        :currentPage="pagination.currentPage" 
-                        :lastPage="pagination.lastPage"
-                        @change="handlePageChange"
-                        class="mt-0!"
-                    />
-                </div>
+                    <div class="mt-auto py-8 flex justify-center w-full">
+                        <Pagination 
+                            :currentPage="pagination.currentPage" 
+                            :lastPage="pagination.lastPage"
+                            @change="handlePageChange"
+                            class="mt-0!"
+                        />
+                    </div>
+                </template>
             </section>
         </main>
     </div>

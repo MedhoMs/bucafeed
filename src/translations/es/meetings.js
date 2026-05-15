@@ -21,5 +21,6 @@ export const meetings = {
         description: "Descripción",
         descriptionPlaceholder: "Describe brevemente de qué trata la charla...",
         success: "Charla creada correctamente"
-    }
+    },
+    unverifiedMessage: "No puedes visualizar las charlas programadas hasta que tu centro verifique tu identidad."
 };
