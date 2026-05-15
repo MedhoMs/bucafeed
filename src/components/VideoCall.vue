@@ -3,15 +3,19 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div v-for="entry in remoteStreams" :key="entry.id" class="relative">
         <video
-          :ref="el => setVideoRef(el, entry.id)"
+          :srcObject.prop="entry.stream"
           autoplay
           playsinline
           muted
+          @loadedmetadata="handleVideoPlay"
           :class="[
             'w-full h-64 bg-black rounded-lg object-cover border-2 border-[#2a4a5a]',
             entry.id === 'me' ? 'mirror' : ''
           ]"
         ></video>
+        <p v-if="entry.id !== 'me'" class="absolute bottom-2 left-2 text-xs bg-black/60 px-2 py-0.5 rounded-full">
+          Conectado
+        </p>
       </div>
     </div>
 
@@ -20,8 +24,8 @@
     </div>
 
     <div class="mt-4 text-white text-center">
-      <p class="bg-[#1d2b38] inline-block px-4 py-2 rounded-full font-mono">
-        Sala: {{ roomId }} | Conectados: {{ remoteStreams.length - 1 }}
+      <p class="bg-[#1d2b38] inline-block px-4 py-2 rounded-full font-mono text-xs">
+        Sala: {{ roomId }} | Participantes: {{ remoteStreams.length }}
       </p>
     </div>
   </div>
@@ -39,7 +43,6 @@ const roomId = ref(props.roomId);
 const cameraError = ref('');
 const remoteStreams = ref([]);
 const peerConnections = {};
-const videoElements = {};
 
 let socket = null;
 let localStream = null;
@@ -51,15 +54,8 @@ const iceServers = {
   ]
 };
 
-function setVideoRef(el, id) {
-  if (el) {
-    videoElements[id] = el;
-    const entry = remoteStreams.value.find(e => e.id === id);
-    if (entry && el.srcObject !== entry.stream) {
-      el.srcObject = entry.stream;
-      el.play().catch(() => {});
-    }
-  }
+function handleVideoPlay(e) {
+  e.target.play().catch(() => {});
 }
 
 function createPeerConnection(targetId, isInitiator) {
@@ -176,14 +172,8 @@ onMounted(async () => {
   }
 
   const schema = location.protocol === 'https:' ? 'wss:' : 'http:';
-  const socketUrl = import.meta.env.VITE_SOCKET_URL || `${schema}//${window.location.hostname}:3000`;
+  const socketUrl = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_SIGNALING_URL || `${schema}//${window.location.hostname}:3000`;
   socket = io(socketUrl);
-
-  socket.emit('join-room', roomId.value, existingClients => {
-    (existingClients || []).forEach(clientId => {
-      createOffer(clientId);
-    });
-  });
 
   socket.on('user-joined', clientId => {
     createOffer(clientId);
@@ -204,6 +194,8 @@ onMounted(async () => {
   socket.on('user-disconnected', clientId => {
     cleanupPeerConnection(clientId);
   });
+
+  socket.emit('join-room', roomId.value);
 });
 
 onUnmounted(() => {
