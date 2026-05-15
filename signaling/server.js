@@ -62,6 +62,27 @@ io.on('connection', socket => {
     socket.to(to).emit('ice-candidate', { from: socket.id, candidate });
   });
 
+  // Compartir información de usuario (nombre, avatar)
+  socket.on('user-info', (data) => {
+    if (data.roomId) {
+      socket.to(data.roomId).emit('user-info', {
+        from: socket.id,
+        name: data.name,
+        avatar: data.avatar
+      });
+    }
+  });
+
+  // Notificar cambios de estado (micro silenciado, etc)
+  socket.on('media-state-changed', (data) => {
+    if (data.roomId) {
+      socket.to(data.roomId).emit('media-state-changed', {
+        from: socket.id,
+        audioMuted: data.audioMuted
+      });
+    }
+  });
+
   socket.on('disconnect', () => {
     for (const room of socket.rooms) {
       if (room !== socket.id) {

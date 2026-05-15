@@ -34,7 +34,7 @@
             @include('components.navbar')
             
             <!-- Contenido Principal -->
-            <div id="main-content-area" class="content-wrapper flex-1 relative z-0">
+            <div id="main-content-area" class="content-wrapper flex-1 min-w-0 relative z-0 overflow-x-hidden">
 @endif
                 @yield('content')
 @if(!request()->ajax())

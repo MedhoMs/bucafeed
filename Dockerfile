@@ -1,19 +1,50 @@
-FROM mirror.gcr.io/library/node:20-alpine
+# ═══════════════════════════════════════════════════════════════════════
+# TelamoNet - Unified Dockerfile
+#
+# Stages:
+#   development  →  npm run dev (Vite HMR)  — usado por docker-compose
+#   production   →  npm build + Nginx       — usado por Railway
+#
+# Uso local (docker-compose usa `target: development` automáticamente):
+#   docker-compose up
+#
+# Uso Railway (builds el último stage = production):
+#   Configura las VITE_* como Build Variables en Railway Settings
+# ═══════════════════════════════════════════════════════════════════════
+
+# ── Stage 0: Dependencias compartidas ────────────────────────────────
+FROM mirror.gcr.io/library/node:20-alpine AS base
 WORKDIR /app
-
-# Instalar dependencias del sistema necesarias para compilar paquetes nativos
 RUN apk add --no-cache python3 make g++
-
-# Copiar solo los manifiestos primero → Docker cachea la capa de deps
-# si el código cambia pero package.json no, no reinstala nada
 COPY package*.json ./
 RUN npm install
 
-# Copiar el resto del código
+# ── Stage 1: Desarrollo con HMR (docker-compose) ─────────────────────
+FROM base AS development
 COPY . .
-
-# Exponer puerto de Vite
 EXPOSE 5173
-
-# Comando de inicio para desarrollo con HMR habilitado
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+# ── Stage 2: Builder de producción ───────────────────────────────────
+FROM base AS builder
+# Las variables VITE_* se compilan dentro del bundle en build time.
+# En Railway: Settings → Variables → Add as Build Variables
+ARG VITE_API_URL
+ARG VITE_SOCKET_URL
+ARG VITE_BACKEND_URL
+ARG VITE_UMAMI_ID
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+ENV VITE_UMAMI_ID=$VITE_UMAMI_ID
+COPY . .
+RUN npm run build
+
+# ── Stage 3: Producción con Nginx (Railway usa este por defecto) ──────
+FROM mirror.gcr.io/library/nginx:stable-alpine AS production
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.railway.conf /etc/nginx/templates/default.conf.template
+EXPOSE ${PORT:-8080}
+# SIGNALING_URL → URL pública del servicio de signaling en Railway
+# PORT          → Railway lo inyecta automáticamente
+CMD ["sh", "-c", "envsubst '${PORT} ${SIGNALING_URL}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]

@@ -4,17 +4,23 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: development       
     container_name: telamonet_frontend
     ports:
-      - "${FRONTEND_PORT:-5173}:${FRONTEND_PORT:-5173}"
+      - "${FRONTEND_PORT:-5173}:5173"
     volumes:
       - .:/app
       - frontend_node_modules:/app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCH_INTERVAL=500
+      # Permite que el browser sepa dónde está el signaling en local
+      - VITE_SOCKET_URL=http://localhost:${SIGNALING_PORT:-3000}
     depends_on:
       - backend
+      - signaling
+    networks:
+      - app-network
 
   # Backend - Laravel
   backend:
