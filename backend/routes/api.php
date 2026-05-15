@@ -146,24 +146,44 @@ Route::get('/test-gemini', function (\Illuminate\Http\Request $request) {
     }
 });
 Route::middleware('auth:sanctum')->group(function () {
-    // ICE / TURN credentials (API key nunca sale al frontend)
     Route::get('/ice-servers', function () {
-        $apiKey = config('services.metered.api_key');
-        $baseUrl = config('services.metered.base_url', 'https://telamonet.metered.live');
+        return response()->json([]);
+    });
 
-        if (!$apiKey) {
-            return response()->json([]); // sin TURN, solo STUN en el frontend
+    // LiveKit Token Generation
+    Route::post('/livekit/token', function (\Illuminate\Http\Request $request) {
+        $request->validate([
+            'room' => 'required|string',
+        ]);
+
+        $user = $request->user();
+        $roomName = $request->input('room');
+        $apiKey = config('services.livekit.api_key', env('LIVEKIT_API_KEY'));
+        $apiSecret = config('services.livekit.api_secret', env('LIVEKIT_API_SECRET'));
+
+        if (!$apiKey || !$apiSecret) {
+            return response()->json(['error' => 'LiveKit API key or secret not configured'], 500);
         }
 
-        try {
-            $client = new \GuzzleHttp\Client(['timeout' => 5]);
-            $response = $client->get("{$baseUrl}/api/v1/turn/credentials?apiKey={$apiKey}");
-            $servers = json_decode($response->getBody(), true);
-            return response()->json(is_array($servers) ? $servers : []);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('TURN fetch failed: ' . $e->getMessage());
-            return response()->json([]); // fallback a STUN
-        }
+        $tokenOptions = (new \Agence104\LiveKit\AccessTokenOptions())
+            ->setIdentity((string)$user->id)
+            ->setName($user->name . ' ' . $user->last_name)
+            ->setMetadata(json_encode([
+                'avatar' => $user->profile_picture ? (str_starts_with($user->profile_picture, 'http') ? $user->profile_picture : env('APP_URL') . '/' . ltrim($user->profile_picture, '/')) : null
+            ]));
+
+        $videoGrant = (new \Agence104\LiveKit\VideoGrant())
+            ->setRoomJoin(true)
+            ->setRoomName($roomName);
+
+        $token = (new \Agence104\LiveKit\AccessToken($apiKey, $apiSecret))
+            ->init($tokenOptions)
+            ->setGrant($videoGrant)
+            ->toJwt();
+
+        return response()->json([
+            'token' => $token
+        ]);
     });
 
     // Notificaciones
