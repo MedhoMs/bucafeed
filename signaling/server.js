@@ -34,10 +34,14 @@ io.on('connection', socket => {
     broadcastUserList();
   });
 
-  socket.on('join-room', (roomId, userId) => {
-    console.log(`User ${userId} joined room: ${roomId}`);
+  socket.on('join-room', (roomId, callback) => {
     socket.join(roomId);
-    socket.to(roomId).emit('user-connected', userId);
+    const room = io.sockets.adapter.rooms.get(roomId);
+    const existingClients = room ? Array.from(room).filter(id => id !== socket.id) : [];
+    socket.to(roomId).emit('user-joined', socket.id);
+    if (typeof callback === 'function') {
+      callback(existingClients);
+    }
   });
 
   socket.on('leave-room', (roomId) => {
@@ -45,8 +49,25 @@ io.on('connection', socket => {
     socket.leave(roomId);
   });
 
+  // WebRTC signaling
+  socket.on('offer', ({ to, offer }) => {
+    socket.to(to).emit('offer', { from: socket.id, offer });
+  });
+
+  socket.on('answer', ({ to, answer }) => {
+    socket.to(to).emit('answer', { from: socket.id, answer });
+  });
+
+  socket.on('ice-candidate', ({ to, candidate }) => {
+    socket.to(to).emit('ice-candidate', { from: socket.id, candidate });
+  });
+
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+    for (const room of socket.rooms) {
+      if (room !== socket.id) {
+        socket.to(room).emit('user-disconnected', socket.id);
+      }
+    }
     if (socket.userId && onlineUsers.has(socket.userId)) {
       const userEntry = onlineUsers.get(socket.userId);
       userEntry.sockets.delete(socket.id);

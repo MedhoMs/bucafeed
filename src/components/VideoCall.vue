@@ -21,7 +21,7 @@
 
     <div class="mt-4 text-white text-center">
       <p class="bg-[#1d2b38] inline-block px-4 py-2 rounded-full font-mono">
-        Sala: {{ roomId }} | Mi Peer ID: {{ myPeerId }}
+        Sala: {{ roomId }} | Conectados: {{ remoteStreams.length - 1 }}
       </p>
     </div>
   </div>
@@ -30,23 +30,26 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { io } from 'socket.io-client';
-import { Peer } from 'peerjs';
 
 const props = defineProps({
     roomId: { type: String, default: 'sala-general' }
 });
 
 const roomId = ref(props.roomId);
-const myPeerId = ref('');
 const cameraError = ref('');
 const remoteStreams = ref([]);
-const peers = {};
+const peerConnections = {};
+const videoElements = {};
 
 let socket = null;
-let myPeer = null;
 let localStream = null;
 
-const videoElements = {};
+const iceServers = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+  ]
+};
 
 function setVideoRef(el, id) {
   if (el) {
@@ -57,6 +60,111 @@ function setVideoRef(el, id) {
       el.play().catch(() => {});
     }
   }
+}
+
+function createPeerConnection(targetId, isInitiator) {
+  if (peerConnections[targetId]) {
+    peerConnections[targetId].close();
+    delete peerConnections[targetId];
+  }
+
+  const pc = new RTCPeerConnection(iceServers);
+  peerConnections[targetId] = pc;
+
+  if (localStream) {
+    localStream.getTracks().forEach(track => {
+      pc.addTrack(track, localStream);
+    });
+  }
+
+  pc.addEventListener('track', event => {
+    const [remoteStream] = event.streams;
+    if (remoteStream && !remoteStreams.value.find(s => s.id === targetId)) {
+      remoteStreams.value.push({ id: targetId, stream: remoteStream });
+    }
+  });
+
+  pc.addEventListener('ice-candidate', event => {
+    if (event.candidate && socket) {
+      socket.emit('ice-candidate', {
+        to: targetId,
+        candidate: event.candidate
+      });
+    }
+  });
+
+  pc.addEventListener('ice-connection-statechange', () => {
+    if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
+      cleanupPeerConnection(targetId);
+    }
+  });
+
+  return pc;
+}
+
+async function createOffer(targetId) {
+  try {
+    const pc = createPeerConnection(targetId, true);
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    if (socket) {
+      socket.emit('offer', { to: targetId, offer: pc.localDescription });
+    }
+  } catch (err) {
+    console.error('Error creating offer:', err);
+  }
+}
+
+async function handleOffer(from, offer) {
+  try {
+    const pc = createPeerConnection(from, false);
+    await pc.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    if (socket) {
+      socket.emit('answer', { to: from, answer: pc.localDescription });
+    }
+  } catch (err) {
+    console.error('Error handling offer:', err);
+  }
+}
+
+async function handleAnswer(from, answer) {
+  try {
+    const pc = peerConnections[from];
+    if (pc && pc.signalingState === 'have-local-offer') {
+      await pc.setRemoteDescription(new RTCSessionDescription(answer));
+    }
+  } catch (err) {
+    console.error('Error handling answer:', err);
+  }
+}
+
+async function handleIceCandidate(from, candidate) {
+  try {
+    const pc = peerConnections[from];
+    if (pc) {
+      await pc.addIceCandidate(new RTCIceCandidate(candidate));
+    }
+  } catch (err) {
+    console.error('Error handling ICE candidate:', err);
+  }
+}
+
+function cleanupPeerConnection(id) {
+  if (peerConnections[id]) {
+    peerConnections[id].close();
+    delete peerConnections[id];
+  }
+  remoteStreams.value = remoteStreams.value.filter(s => s.id !== id);
+}
+
+function cleanupAll() {
+  Object.keys(peerConnections).forEach(id => {
+    peerConnections[id].close();
+    delete peerConnections[id];
+  });
+  remoteStreams.value = remoteStreams.value.filter(s => s.id === 'me');
 }
 
 onMounted(async () => {
@@ -71,56 +179,36 @@ onMounted(async () => {
   const socketUrl = import.meta.env.VITE_SOCKET_URL || `${schema}//${window.location.hostname}:3000`;
   socket = io(socketUrl);
 
-  myPeer = new Peer();
-
-  myPeer.on('open', id => {
-    myPeerId.value = id;
-    socket.emit('join-room', roomId.value, id);
-  });
-
-  myPeer.on('call', call => {
-    if (localStream) {
-      call.answer(localStream);
-    }
-    call.on('stream', userVideoStream => {
-      addVideoStream(call.peer, userVideoStream);
+  socket.emit('join-room', roomId.value, existingClients => {
+    (existingClients || []).forEach(clientId => {
+      createOffer(clientId);
     });
   });
 
-  socket.on('user-connected', userId => {
-    if (localStream) {
-      connectToNewUser(userId, localStream);
-    }
+  socket.on('user-joined', clientId => {
+    createOffer(clientId);
   });
 
-  socket.on('user-disconnected', userId => {
-    if (peers[userId]) {
-      peers[userId].close();
-      remoteStreams.value = remoteStreams.value.filter(s => s.id !== userId);
-    }
+  socket.on('offer', ({ from, offer }) => {
+    handleOffer(from, offer);
+  });
+
+  socket.on('answer', ({ from, answer }) => {
+    handleAnswer(from, answer);
+  });
+
+  socket.on('ice-candidate', ({ from, candidate }) => {
+    handleIceCandidate(from, candidate);
+  });
+
+  socket.on('user-disconnected', clientId => {
+    cleanupPeerConnection(clientId);
   });
 });
 
-function connectToNewUser(userId, stream) {
-  const call = myPeer.call(userId, stream);
-  call.on('stream', userVideoStream => {
-    addVideoStream(userId, userVideoStream);
-  });
-  call.on('close', () => {
-    remoteStreams.value = remoteStreams.value.filter(s => s.id !== userId);
-  });
-  peers[userId] = call;
-}
-
-function addVideoStream(userId, stream) {
-  if (!remoteStreams.value.find(s => s.id === userId)) {
-    remoteStreams.value.push({ id: userId, stream });
-  }
-}
-
 onUnmounted(() => {
+  cleanupAll();
   if (socket) socket.disconnect();
-  if (myPeer) myPeer.destroy();
   if (localStream) {
     localStream.getTracks().forEach(track => track.stop());
   }
