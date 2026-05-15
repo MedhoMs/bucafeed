@@ -5,11 +5,12 @@ import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
+  root: './', // Asegura que el escaneo sea relativo a la raíz definida
   build: {
     outDir: './dist',
     emptyOutDir: true,
-    sourcemap: false,        // sin .map en JS
-    cssSourceMap: false,     // sin .map en CSS
+    sourcemap: false,
+    cssSourceMap: false,
     rollupOptions: {
       output: {
         chunkFileNames: 'assets/[hash].js',
@@ -21,11 +22,23 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    allowedHosts: ['telamonet.com', '.up.railway.app', 'localhost'],
+    hmr: {
+      clientPort: 5173,
+    },
+    allowedHosts: ['telamonet.com', '.up.railway.app', 'localhost', '127.0.0.1'],
     watch: {
-      usePolling: true,
-      interval: 1000,
-      ignored: ['**/node_modules/**', '**/backend/vendor/**', '**/backend/storage/**']
+      usePolling: false,
+      ignored: [
+        '**/backend/**',
+        '**/signaling/**',
+        '**/node_modules/**',
+        '**/.git/**',
+        '**/dist/**',
+        '**/public/**',
+        '**/docker/**',
+        '**/docker-compose.yml',
+        '**/Dockerfile'
+      ]
     }
   },
   resolve: {
@@ -34,7 +47,7 @@ export default defineConfig({
     }
   },
   css: {
-    devSourcemap: false,     // sin source maps de CSS en dev
+    devSourcemap: false,
     preprocessorOptions: {
       scss: {}
     }
