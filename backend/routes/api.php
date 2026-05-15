@@ -146,6 +146,26 @@ Route::get('/test-gemini', function (\Illuminate\Http\Request $request) {
     }
 });
 Route::middleware('auth:sanctum')->group(function () {
+    // ICE / TURN credentials (API key nunca sale al frontend)
+    Route::get('/ice-servers', function () {
+        $apiKey = config('services.metered.api_key');
+        $baseUrl = config('services.metered.base_url', 'https://telamonet.metered.live');
+
+        if (!$apiKey) {
+            return response()->json([]); // sin TURN, solo STUN en el frontend
+        }
+
+        try {
+            $client = new \GuzzleHttp\Client(['timeout' => 5]);
+            $response = $client->get("{$baseUrl}/api/v1/turn/credentials?apiKey={$apiKey}");
+            $servers = json_decode($response->getBody(), true);
+            return response()->json(is_array($servers) ? $servers : []);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('TURN fetch failed: ' . $e->getMessage());
+            return response()->json([]); // fallback a STUN
+        }
+    });
+
     // Notificaciones
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);

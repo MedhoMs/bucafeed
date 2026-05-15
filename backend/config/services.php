@@ -45,4 +45,9 @@ return [
         'api_key' => env('GROQ_API_KEY'),
     ],
 
+    'metered' => [
+        'api_key' => env('METERED_API_KEY'),
+        'base_url' => env('METERED_BASE_URL', 'https://telamonet.metered.live'),
+    ],
+
 ];
