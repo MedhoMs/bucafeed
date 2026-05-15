@@ -13,7 +13,7 @@
         <div v-for="entry in allStreams" :key="entry.id" class="relative group min-h-[200px]">
           <!-- Video activo -->
           <video
-            v-if="!entry.noCamera && entry.stream && entry.stream.getVideoTracks().some(t => t.enabled)"
+            v-show="!entry.noCamera"
             :ref="el => setVideoRef(entry.id, el)"
             autoplay
             playsinline
@@ -25,7 +25,7 @@
 
           <!-- Avatar de fallback (sin cámara o cargando) -->
           <div
-            v-else
+            v-show="entry.noCamera"
             class="w-full h-full bg-gradient-to-br from-[#1a2e3a] to-[#0d181f] rounded-2xl border-2 border-white/5 flex flex-col items-center justify-center gap-4 shadow-2xl overflow-hidden relative"
           >
             <img 
@@ -119,7 +119,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import { io } from 'socket.io-client';
+import { Room, RoomEvent, VideoPresets, createLocalTracks } from 'livekit-client';
 import { user as authUser } from '@/stores/auth';
 import { useApi } from '@/composables/useApi';
 
@@ -127,35 +127,22 @@ const props = defineProps({
     roomId: { type: String, default: 'sala-general' }
 });
 
-defineEmits(['close']);
+const emit = defineEmits(['close']);
 
-const { get } = useApi();
+const { post } = useApi();
 const videoRoomId = `video-${props.roomId}`;
 
 const cameraError = ref('');
-const debugInfo = ref('');
-const connectionStatus = ref('Esperando...');
+const connectionStatus = ref('Conectando...');
 const allStreams = ref([]);
-const peerConnections = {};
 const videoRefs = {};
-const mySocketId = ref('');
-const usingTurn = ref(false);
-const pendingUserInfo = {};
+const usingTurn = ref(false); // Mantener para compatibilidad visual si se requiere, aunque LiveKit usa TURN automáticamente
 
 const isMicOn = ref(true);
 const isCameraOn = ref(true);
 
-let localStream = null;
-let socket = null;
-let turnServers = null;
-
-const stunOnlyServers = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' },
-  { urls: 'stun:stun2.l.google.com:19302' },
-  { urls: 'stun:stun3.l.google.com:19302' },
-  { urls: 'stun:stun4.l.google.com:19302' },
-];
+let currentRoom = null;
+let localTracks = [];
 
 function getAvatarFullUrl(path) {
     if (!path) return null;
@@ -164,311 +151,209 @@ function getAvatarFullUrl(path) {
     return baseSrc + (path.startsWith('/') ? '' : '/') + path;
 }
 
-async function loadTurnServers() {
-  if (turnServers !== null) return turnServers;
-  try {
-    const data = await get('ice-servers');
-    turnServers = Array.isArray(data) && data.length > 0 ? [...stunOnlyServers, ...data] : stunOnlyServers;
-  } catch (err) {
-    turnServers = stunOnlyServers;
-  }
-  return turnServers;
-}
-
 function setVideoRef(id, el) {
   if (el) {
     videoRefs[id] = el;
-    const entry = allStreams.value.find(s => s.id === id);
-    if (entry && entry.stream && el.srcObject !== entry.stream) {
-      el.srcObject = entry.stream;
+    // Si la referencia del DOM acaba de montarse, forzamos que LiveKit asigne los tracks correspondientes
+    if (currentRoom) {
+        const isMe = id === 'me';
+        if (isMe) {
+            localTracks.forEach(t => t.attach(el));
+        } else {
+            const participant = currentRoom.remoteParticipants.get(id);
+            if (participant) {
+                participant.trackPublications.forEach(p => {
+                    if (p.track) p.track.attach(el);
+                });
+            }
+        }
     }
   }
 }
 
 function handleVideoPlay(e) { e.target.play().catch(() => {}); }
 
-function toggleMic() {
-    if (!localStream) return;
+async function toggleMic() {
     isMicOn.value = !isMicOn.value;
-    localStream.getAudioTracks().forEach(track => track.enabled = isMicOn.value);
-    
-    // Notificar a otros (vía socket) que hemos silenciado
-    if (socket) {
-        socket.emit('media-state-changed', { 
-            roomId: videoRoomId, 
-            audioMuted: !isMicOn.value 
-        });
+    if (currentRoom && currentRoom.localParticipant) {
+        await currentRoom.localParticipant.setMicrophoneEnabled(isMicOn.value);
     }
-    
-    // Actualizar mi propia entrada
     const me = allStreams.value.find(s => s.id === 'me');
     if (me) me.audioMuted = !isMicOn.value;
 }
 
-function toggleCamera() {
-    if (!localStream) return;
+async function toggleCamera() {
     isCameraOn.value = !isCameraOn.value;
-    localStream.getVideoTracks().forEach(track => track.enabled = isCameraOn.value);
-    
-    if (socket) {
-        socket.emit('media-state-changed', { 
-            roomId: videoRoomId, 
-            cameraOff: !isCameraOn.value 
-        });
+    if (currentRoom && currentRoom.localParticipant) {
+        await currentRoom.localParticipant.setCameraEnabled(isCameraOn.value);
     }
-    
     const me = allStreams.value.find(s => s.id === 'me');
     if (me) me.noCamera = !isCameraOn.value;
 }
 
-function createPeerConnection(targetId, iceServerList) {
-  if (peerConnections[targetId]) {
-    peerConnections[targetId].close();
-    delete peerConnections[targetId];
-  }
-
-  const pc = new RTCPeerConnection({ iceServers: iceServerList });
-  peerConnections[targetId] = pc;
-
-  if (localStream) {
-    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-  }
-
-  pc.addEventListener('track', event => {
-    const [remoteStream] = event.streams;
-    if (remoteStream) {
-      const hasVideo = remoteStream.getVideoTracks().some(t => t.enabled && t.readyState === 'live');
-      const existing = allStreams.value.find(s => s.id === targetId);
-      if (existing) {
-        existing.stream = remoteStream;
-        existing.noCamera = !hasVideo;
-      } else {
-        const info = pendingUserInfo[targetId];
-        allStreams.value.push({ 
-            id: targetId, 
-            stream: remoteStream, 
-            noCamera: !hasVideo, 
-            label: info?.name || 'Participante',
-            avatarUrl: info?.avatar || null
-        });
-      }
-      connectionStatus.value = 'Conectado';
-      // Forzar la asignación del video element
-      nextTick(() => {
-        const el = videoRefs[targetId];
-        if (el && el.srcObject !== remoteStream) {
-          el.srcObject = remoteStream;
-          el.play().catch(() => {});
-        }
-      });
-    }
-  });
-
-  pc.addEventListener('icecandidate', event => {
-    if (event.candidate && socket) {
-      socket.emit('ice-candidate', { to: targetId, candidate: event.candidate });
-    }
-  });
-
-  pc.addEventListener('iceconnectionstatechange', async () => {
-    console.log(`[WebRTC] ICE state for ${targetId}: ${pc.iceConnectionState}`);
+function updateParticipantState(participant) {
+    const isMe = participant.isLocal;
+    const id = isMe ? 'me' : participant.identity;
     
-    if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
-      pc.getStats().then(stats => {
-        stats.forEach(report => {
-          if (report.type === 'candidate-pair' && report.state === 'succeeded') {
-            const localId = report.localCandidateId;
-            const remoteId = report.remoteCandidateId;
-            stats.forEach(s => {
-              if (s.id === localId || s.id === remoteId) {
-                console.log(`[WebRTC] Candidato ${s.id}: tipo=${s.candidateType}, protocolo=${s.protocol}, ip=${s.address || s.ip}`);
-              }
-            });
-            const isRelay = Array.from(stats.values()).some(s => 
-              (s.id === localId || s.id === remoteId) && s.candidateType === 'relay'
-            );
-            console.log(`[WebRTC] \u2705 Conexi\u00f3n establecida: ${isRelay ? '\ud83d\udd04 TURN (relay)' : '\ud83d\udd17 P2P directo (STUN)'}`);
-            usingTurn.value = isRelay;
-          }
-        });
-      });
-    }
-    
-    if (pc.iceConnectionState === 'disconnected') {
-      console.log('[WebRTC] \u26a0\ufe0f Conexi\u00f3n desconectada, esperando 5s para reconectar...');
-      setTimeout(async () => {
-        if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
-          console.log('[WebRTC] \u274c Timeout - reiniciando ICE con TURN...');
-          const fullServers = await loadTurnServers();
-          usingTurn.value = true;
-          const newPc = createPeerConnection(targetId, fullServers);
-          try {
-            const offer = await newPc.createOffer({ iceRestart: true });
-            await newPc.setLocalDescription(offer);
-            if (socket) socket.emit('offer', { to: targetId, offer: newPc.localDescription });
-          } catch(e) { console.error('[WebRTC] Error en ICE restart:', e); }
-        }
-      }, 5000);
-    }
-    
-    if (pc.iceConnectionState === 'failed') {
-      console.log('[WebRTC] \u274c Conexi\u00f3n P2P fall\u00f3, intentando con TURN...');
-      const fullServers = await loadTurnServers();
-      const hasTurn = fullServers.some(s => s.urls?.toString().includes('turn:'));
-      if (!hasTurn) {
-        console.log('[WebRTC] \u26a0\ufe0f No hay servidores TURN disponibles');
-        cleanupPeerConnection(targetId);
-        return;
-      }
-      usingTurn.value = true;
-      const newPc = createPeerConnection(targetId, fullServers);
-      const offer = await newPc.createOffer({ iceRestart: true });
-      await newPc.setLocalDescription(offer);
-      if (socket) socket.emit('offer', { to: targetId, offer: newPc.localDescription });
-    }
-  });
-
-  return pc;
-}
-
-function isIceConnected(id) {
-    const pc = peerConnections[id];
-    return pc && (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed');
-}
-
-onMounted(async () => {
-  const myLabel = authUser.value ? `${authUser.value.name || ''} ${authUser.value.last_name || ''}`.trim() : 'Yo';
-  const myAvatar = getAvatarFullUrl(authUser.value?.profile_picture);
-
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    isCameraOn.value = true;
-    isMicOn.value = true;
-  } catch (err) {
+    let avatarUrl = null;
     try {
-      localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-    } catch {
-      localStream = null;
+        if (participant.metadata) {
+            const meta = JSON.parse(participant.metadata);
+            avatarUrl = meta.avatar;
+        }
+    } catch (e) {}
+
+    const existing = allStreams.value.find(s => s.id === id);
+    
+    const audioMuted = !participant.isMicrophoneEnabled;
+    const noCamera = !participant.isCameraEnabled;
+
+    if (existing) {
+        existing.label = participant.name || existing.label;
+        if (avatarUrl) existing.avatarUrl = avatarUrl;
+        existing.noCamera = noCamera;
+        existing.audioMuted = audioMuted;
+    } else {
+        allStreams.value.push({
+            id,
+            stream: null,
+            noCamera,
+            label: participant.name || (isMe ? 'Tú' : 'Participante'),
+            avatarUrl: avatarUrl || (isMe ? getAvatarFullUrl(authUser.value?.profile_picture) : null),
+            audioMuted
+        });
     }
-    cameraError.value = 'Sin acceso a cámara';
-    isCameraOn.value = false;
-  }
 
-  allStreams.value.push({ 
-    id: 'me', 
-    stream: localStream, 
-    noCamera: !isCameraOn.value, 
-    label: myLabel,
-    avatarUrl: myAvatar,
-    audioMuted: false
-  });
-
-  const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
-  console.log('[WebRTC] Conectando socket a:', socketUrl);
-  socket = io(socketUrl, { 
-      transports: ['websocket', 'polling'], 
-      forceNew: true,
-      path: '/socket.io/' 
-  });
-
-  // Pre-cargar TURN servers ANTES de unirse a la sala
-  const iceServers = await loadTurnServers();
-  const hasTurn = iceServers.some(s => s.urls?.toString().includes('turn:'));
-  console.log(`[WebRTC] ICE servers cargados: ${iceServers.length} servidores (TURN: ${hasTurn ? 'SI' : 'NO'})`);
-
-  socket.on('connect', async () => {
-    console.log('[WebRTC] Socket conectado:', socket.id);
-    mySocketId.value = socket.id;
-    socket.emit('join-room', videoRoomId, async (existingClients) => {
-        console.log('[WebRTC] Sala unida. Clientes existentes:', existingClients?.length || 0);
-        socket.emit('user-info', { roomId: videoRoomId, name: myLabel, avatar: myAvatar });
-        for (const clientId of existingClients) {
-            if (!allStreams.value.find(s => s.id === clientId)) {
-                allStreams.value.push({ id: clientId, stream: null, noCamera: true, label: 'Cargando...', avatarUrl: null });
+    nextTick(() => {
+        const el = videoRefs[id];
+        if (el) {
+            if (isMe) {
+                localTracks.forEach(t => {
+                    t.attach(el);
+                });
+            } else {
+                participant.trackPublications.forEach(publication => {
+                    if (publication.track) {
+                        publication.track.attach(el);
+                    }
+                });
             }
         }
     });
-  });
-
-  socket.on('connect_error', (err) => {
-    console.error('[WebRTC] Error de conexi\u00f3n socket:', err.message);
-  });
-
-  socket.on('media-state-changed', (data) => {
-      const entry = allStreams.value.find(s => s.id === data.from);
-      if (entry) {
-          if (data.audioMuted !== undefined) entry.audioMuted = data.audioMuted;
-          if (data.cameraOff !== undefined) entry.noCamera = data.cameraOff;
-      }
-  });
-
-  socket.on('user-joined', async (clientId) => {
-    console.log('[WebRTC] Nuevo usuario unido:', clientId);
-    if (!allStreams.value.find(s => s.id === clientId)) {
-      allStreams.value.push({ id: clientId, stream: null, noCamera: true, label: 'Cargando...', avatarUrl: null });
-    }
-    socket.emit('user-info', { roomId: videoRoomId, name: myLabel, avatar: myAvatar });
-    const pc = createPeerConnection(clientId, iceServers);
-    pc.createOffer().then(offer => pc.setLocalDescription(offer)).then(() => {
-        console.log('[WebRTC] Oferta enviada a:', clientId);
-        socket.emit('offer', { to: clientId, offer: pc.localDescription });
-    });
-  });
-
-  socket.on('offer', async ({ from, offer }) => {
-    console.log('[WebRTC] Oferta recibida de:', from);
-    if (!allStreams.value.find(s => s.id === from)) {
-        const info = pendingUserInfo[from];
-        allStreams.value.push({ id: from, stream: null, noCamera: true, label: info?.name || 'Participante', avatarUrl: info?.avatar || null });
-    }
-    const pc = createPeerConnection(from, iceServers);
-    await pc.setRemoteDescription(new RTCSessionDescription(offer));
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    socket.emit('answer', { to: from, answer: pc.localDescription });
-    socket.emit('user-info', { roomId: videoRoomId, name: myLabel, avatar: myAvatar });
-    console.log('[WebRTC] Respuesta enviada a:', from);
-  });
-
-  socket.on('user-info', (data) => {
-      // Guardar siempre para uso futuro
-      pendingUserInfo[data.from] = { name: data.name, avatar: data.avatar };
-      const entry = allStreams.value.find(s => s.id === data.from);
-      if (entry) {
-          entry.label = data.name || entry.label;
-          entry.avatarUrl = data.avatar || entry.avatarUrl;
-      }
-  });
-
-  socket.on('answer', ({ from, answer }) => {
-    const pc = peerConnections[from];
-    if (pc) pc.setRemoteDescription(new RTCSessionDescription(answer));
-  });
-
-  socket.on('ice-candidate', ({ from, candidate }) => {
-    const pc = peerConnections[from];
-    if (pc) pc.addIceCandidate(new RTCIceCandidate(candidate));
-  });
-
-  socket.on('user-disconnected', (clientId) => cleanupPeerConnection(clientId));
-});
-
-function cleanupPeerConnection(id) {
-  if (peerConnections[id]) peerConnections[id].close();
-  delete peerConnections[id];
-  allStreams.value = allStreams.value.filter(s => s.id !== id);
 }
 
+function isIceConnected(id) {
+    if (id === 'me') return true;
+    return currentRoom && currentRoom.state === 'connected';
+}
+
+onMounted(async () => {
+    const myLabel = authUser.value ? `${authUser.value.name || ''} ${authUser.value.last_name || ''}`.trim() : 'Yo';
+    const myAvatar = getAvatarFullUrl(authUser.value?.profile_picture);
+
+    allStreams.value.push({ 
+        id: 'me', 
+        stream: null, 
+        noCamera: false, 
+        label: myLabel,
+        avatarUrl: myAvatar,
+        audioMuted: false
+    });
+
+    try {
+        localTracks = await createLocalTracks({
+            audio: true,
+            video: { resolution: VideoPresets.h720.resolution }
+        });
+        const stream = new MediaStream(localTracks.map(t => t.mediaStreamTrack));
+        const me = allStreams.value.find(s => s.id === 'me');
+        if (me) me.stream = stream;
+    } catch (err) {
+        console.error("Camera error:", err);
+        cameraError.value = 'Sin acceso a cámara';
+        isCameraOn.value = false;
+        try {
+            localTracks = await createLocalTracks({ audio: true, video: false });
+            const stream = new MediaStream(localTracks.map(t => t.mediaStreamTrack));
+            const me = allStreams.value.find(s => s.id === 'me');
+            if (me) {
+                me.stream = stream;
+                me.noCamera = true;
+            }
+        } catch (e) {
+            console.error("Mic error:", e);
+        }
+    }
+
+    try {
+        const { token } = await post('livekit/token', { room: videoRoomId });
+        const livekitUrl = import.meta.env.VITE_LIVEKIT_URL;
+
+        if (!livekitUrl || !token) {
+            throw new Error('Configuración de LiveKit faltante');
+        }
+
+        currentRoom = new Room({
+            adaptiveStream: true,
+            dynacast: true
+        });
+
+        currentRoom
+            .on(RoomEvent.Connected, () => {
+                connectionStatus.value = 'Conectado';
+                console.log('[LiveKit] Conectado a la sala');
+                usingTurn.value = false;
+            })
+            .on(RoomEvent.ParticipantConnected, (participant) => {
+                console.log('[LiveKit] Participante unido:', participant.identity);
+                updateParticipantState(participant);
+            })
+            .on(RoomEvent.ParticipantDisconnected, (participant) => {
+                console.log('[LiveKit] Participante desconectado:', participant.identity);
+                allStreams.value = allStreams.value.filter(s => s.id !== participant.identity);
+            })
+            .on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
+                updateParticipantState(participant);
+            })
+            .on(RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+                updateParticipantState(participant);
+            })
+            .on(RoomEvent.TrackMuted, (publication, participant) => {
+                updateParticipantState(participant);
+            })
+            .on(RoomEvent.TrackUnmuted, (publication, participant) => {
+                updateParticipantState(participant);
+            })
+            .on(RoomEvent.LocalTrackPublished, () => {
+                updateParticipantState(currentRoom.localParticipant);
+            })
+            .on(RoomEvent.Disconnected, () => {
+                console.log('[LiveKit] Desconectado');
+                connectionStatus.value = 'Desconectado';
+            });
+
+        await currentRoom.connect(livekitUrl, token);
+        
+        for (const track of localTracks) {
+            await currentRoom.localParticipant.publishTrack(track);
+        }
+        
+        if (!isCameraOn.value) await currentRoom.localParticipant.setCameraEnabled(false);
+        if (!isMicOn.value) await currentRoom.localParticipant.setMicrophoneEnabled(false);
+
+    } catch (err) {
+        console.error('[LiveKit] Error:', err);
+        cameraError.value = 'Error al conectar a la llamada';
+    }
+});
+
 onUnmounted(() => {
-  Object.keys(peerConnections).forEach(cleanupPeerConnection);
-  if (socket) {
-    socket.emit('leave-room', videoRoomId);
-    socket.disconnect();
-  }
-  if (localStream) localStream.getTracks().forEach(t => t.stop());
+    if (currentRoom) {
+        currentRoom.disconnect();
+    }
+    localTracks.forEach(track => track.stop());
 });
 </script>
-
 <style scoped>
 .mirror { transform: scaleX(-1); }
 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
