@@ -1,22 +1,24 @@
 <template>
   <div class="p-6">
-    <div id="video-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <!-- Los videos se renderizan aquí dinámicamente -->
-      <div v-for="stream in remoteStreams" :key="stream.id" class="relative">
-        <video 
-          :srcObject.prop="stream.stream" 
-          autoplay 
-          playsinline 
-          :muted="stream.id === 'me'"
-          class="w-full h-64 bg-black rounded-lg object-cover border-2 border-[#2a4a5a]"
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div v-for="entry in remoteStreams" :key="entry.id" class="relative">
+        <video
+          :ref="el => setVideoRef(el, entry.id)"
+          autoplay
+          playsinline
+          muted
+          :class="[
+            'w-full h-64 bg-black rounded-lg object-cover border-2 border-[#2a4a5a]',
+            entry.id === 'me' ? 'mirror' : ''
+          ]"
         ></video>
       </div>
     </div>
 
     <div v-if="cameraError" class="mt-4 p-3 bg-red-500/20 border border-red-500 text-red-200 rounded-lg text-sm text-center">
-      ⚠️ {{ cameraError }}
+      {{ cameraError }}
     </div>
-    
+
     <div class="mt-4 text-white text-center">
       <p class="bg-[#1d2b38] inline-block px-4 py-2 rounded-full font-mono">
         Sala: {{ roomId }} | Mi Peer ID: {{ myPeerId }}
@@ -37,32 +39,38 @@ const props = defineProps({
 const roomId = ref(props.roomId);
 const myPeerId = ref('');
 const cameraError = ref('');
-const remoteStreams = ref([]); // Lista de {id, stream}
-const peers = {}; // Referencias a las llamadas activas
+const remoteStreams = ref([]);
+const peers = {};
 
 let socket = null;
 let myPeer = null;
 let localStream = null;
 
+const videoElements = {};
+
+function setVideoRef(el, id) {
+  if (el) {
+    videoElements[id] = el;
+    const entry = remoteStreams.value.find(e => e.id === id);
+    if (entry && el.srcObject !== entry.stream) {
+      el.srcObject = entry.stream;
+      el.play().catch(() => {});
+    }
+  }
+}
+
 onMounted(async () => {
-  // 1. Obtener media local
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    // Añadir mi propio video a la lista sin audio (no escucharse a sí mismo)
-    const localWithoutAudio = localStream.clone();
-    localWithoutAudio.getAudioTracks().forEach(t => t.enabled = false);
-    remoteStreams.value.push({ id: 'me', stream: localWithoutAudio });
+    remoteStreams.value.push({ id: 'me', stream: localStream });
   } catch (err) {
-    console.warn('Cámara no encontrada:', err);
     cameraError.value = "No se pudo activar la cámara. Si estás en el móvil, necesitas usar HTTPS o activar las flags de Chrome.";
   }
 
-  // 2. Conectar a Socket.io (servidor de señales)
   const schema = location.protocol === 'https:' ? 'wss:' : 'http:';
   const socketUrl = import.meta.env.VITE_SOCKET_URL || `${schema}//${window.location.hostname}:3000`;
   socket = io(socketUrl);
 
-  // 3. Configurar PeerJS
   myPeer = new Peer();
 
   myPeer.on('open', id => {
@@ -70,23 +78,22 @@ onMounted(async () => {
     socket.emit('join-room', roomId.value, id);
   });
 
-  // Responder llamadas entrantes
   myPeer.on('call', call => {
-    call.answer(localStream);
+    if (localStream) {
+      call.answer(localStream);
+    }
     call.on('stream', userVideoStream => {
       addVideoStream(call.peer, userVideoStream);
     });
   });
 
-  // Cuando un nuevo usuario se conecta
   socket.on('user-connected', userId => {
-    console.log('Usuario conectado:', userId);
-    connectToNewUser(userId, localStream);
+    if (localStream) {
+      connectToNewUser(userId, localStream);
+    }
   });
 
-  // Cuando un usuario se desconecta
   socket.on('user-disconnected', userId => {
-    console.log('Usuario desconectado:', userId);
     if (peers[userId]) {
       peers[userId].close();
       remoteStreams.value = remoteStreams.value.filter(s => s.id !== userId);
@@ -106,7 +113,6 @@ function connectToNewUser(userId, stream) {
 }
 
 function addVideoStream(userId, stream) {
-  // Evitar duplicados
   if (!remoteStreams.value.find(s => s.id === userId)) {
     remoteStreams.value.push({ id: userId, stream });
   }
@@ -122,9 +128,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.video-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.mirror {
+  transform: scaleX(-1);
 }
 </style>
