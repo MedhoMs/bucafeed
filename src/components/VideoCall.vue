@@ -288,9 +288,10 @@ onMounted(async () => {
     try {
         const { token } = await post('livekit/token', { room: videoRoomId });
         const livekitUrl = import.meta.env.VITE_LIVEKIT_URL;
+        console.log('[LiveKit] URL:', livekitUrl, 'Token:', token ? 'RECIBIDO' : 'VACIO');
 
         if (!livekitUrl || !token) {
-            throw new Error('Configuración de LiveKit faltante');
+            throw new Error(`Configuración de LiveKit faltante. URL presente: ${!!livekitUrl}, Token presente: ${!!token}`);
         }
 
         currentRoom = new Room({
