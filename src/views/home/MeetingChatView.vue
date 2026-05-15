@@ -111,18 +111,14 @@ async function startMeetingCall() {
                 </div>
 
                 <!-- Videollamada Embebida -->
-                <div v-if="activeCallRoomId" class="bg-black/40 border-b border-white/10 relative overflow-hidden transition-all duration-500 max-h-[60vh] rounded-2xl mb-4 shrink-0">
+                <div v-if="activeCallRoomId" class="bg-black/40 border-b border-white/10 relative overflow-hidden transition-all duration-500 max-h-[85vh] min-h-[400px] rounded-2xl mb-4 shrink-0 shadow-2xl">
                     <div class="flex items-center justify-between px-6 py-2 bg-black/60 backdrop-blur-sm z-30 relative">
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                             <span class="text-[10px] font-black uppercase tracking-widest text-white/80">Sesión de video grupal activa</span>
                         </div>
-                        <button @click="activeCallRoomId = null" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-red-400 transition-colors cursor-pointer flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
-                            Minimizar
-                        </button>
                     </div>
-                    <VideoCall :room-id="activeCallRoomId" />
+                    <VideoCall :room-id="activeCallRoomId" @close="activeCallRoomId = null" />
                 </div>
 
                 <MeetingChatBar ref="chatBarRef" :meeting="meeting" :active-call-id="activeCallRoomId" @joinCall="activeCallRoomId = $event" class="flex-1 overflow-hidden" />

@@ -14,7 +14,7 @@ const roomId = route.params.roomId || 'sala-general';
             <div class="mb-4 text-center text-white">
                 <h1 class="text-xl lg:text-2xl font-bold">{{ roomId }}</h1>
             </div>
-            <VideoCall :room-id="roomId" />
+            <VideoCall :room-id="roomId" @close="$router.back()" />
         </main>
     </div>
 </template>

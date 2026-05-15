@@ -8,7 +8,15 @@ export default defineConfig({
   build: {
     outDir: './dist',
     emptyOutDir: true,
-    sourcemap: false,
+    sourcemap: false,        // sin .map en JS
+    cssSourceMap: false,     // sin .map en CSS
+    rollupOptions: {
+      output: {
+        chunkFileNames: 'assets/[hash].js',
+        entryFileNames: 'assets/[hash].js',
+        assetFileNames: 'assets/[hash].[ext]',
+      },
+    },
   },
   server: {
     host: '0.0.0.0',
@@ -26,6 +34,7 @@ export default defineConfig({
     }
   },
   css: {
+    devSourcemap: false,     // sin source maps de CSS en dev
     preprocessorOptions: {
       scss: {}
     }
