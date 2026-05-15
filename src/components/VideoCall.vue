@@ -154,19 +154,9 @@ function getAvatarFullUrl(path) {
 function setVideoRef(id, el) {
   if (el) {
     videoRefs[id] = el;
-    // Si la referencia del DOM acaba de montarse, forzamos que LiveKit asigne los tracks correspondientes
-    if (currentRoom) {
-        const isMe = id === 'me';
-        if (isMe) {
-            localTracks.forEach(t => t.attach(el));
-        } else {
-            const participant = currentRoom.remoteParticipants.get(id);
-            if (participant) {
-                participant.trackPublications.forEach(p => {
-                    if (p.track) p.track.attach(el);
-                });
-            }
-        }
+    const entry = allStreams.value.find(s => s.id === id);
+    if (entry && entry.stream && el.srcObject !== entry.stream) {
+      el.srcObject = entry.stream;
     }
   }
 }
@@ -208,15 +198,28 @@ function updateParticipantState(participant) {
     const audioMuted = !participant.isMicrophoneEnabled;
     const noCamera = !participant.isCameraEnabled;
 
+    let stream = null;
+    if (isMe && localTracks.length > 0) {
+        stream = new MediaStream(localTracks.map(t => t.mediaStreamTrack).filter(Boolean));
+    } else if (participant.trackPublications) {
+        const tracks = Array.from(participant.trackPublications.values())
+            .map(p => p.track?.mediaStreamTrack)
+            .filter(Boolean);
+        if (tracks.length > 0) {
+            stream = new MediaStream(tracks);
+        }
+    }
+
     if (existing) {
         existing.label = participant.name || existing.label;
         if (avatarUrl) existing.avatarUrl = avatarUrl;
         existing.noCamera = noCamera;
         existing.audioMuted = audioMuted;
+        existing.stream = stream;
     } else {
         allStreams.value.push({
             id,
-            stream: null,
+            stream,
             noCamera,
             label: participant.name || (isMe ? 'Tú' : 'Participante'),
             avatarUrl: avatarUrl || (isMe ? getAvatarFullUrl(authUser.value?.profile_picture) : null),
@@ -226,18 +229,12 @@ function updateParticipantState(participant) {
 
     nextTick(() => {
         const el = videoRefs[id];
-        if (el) {
-            if (isMe) {
-                localTracks.forEach(t => {
-                    t.attach(el);
-                });
-            } else {
-                participant.trackPublications.forEach(publication => {
-                    if (publication.track) {
-                        publication.track.attach(el);
-                    }
-                });
+        const entry = allStreams.value.find(s => s.id === id);
+        if (el && entry && entry.stream) {
+            if (el.srcObject !== entry.stream) {
+                el.srcObject = entry.stream;
             }
+            el.play().catch(() => {});
         }
     });
 }
@@ -288,9 +285,10 @@ onMounted(async () => {
     try {
         const { token } = await post('livekit/token', { room: videoRoomId });
         const livekitUrl = import.meta.env.VITE_LIVEKIT_URL;
+        console.log('[LiveKit] URL:', livekitUrl, 'Token:', token ? 'RECIBIDO' : 'VACIO');
 
         if (!livekitUrl || !token) {
-            throw new Error('Configuración de LiveKit faltante');
+            throw new Error(`Configuración de LiveKit faltante. URL presente: ${!!livekitUrl}, Token presente: ${!!token}`);
         }
 
         currentRoom = new Room({
@@ -333,6 +331,11 @@ onMounted(async () => {
             });
 
         await currentRoom.connect(livekitUrl, token);
+        
+        // Cargar a los participantes que ya estaban en la sala antes de que entraras
+        currentRoom.remoteParticipants.forEach(participant => {
+            updateParticipantState(participant);
+        });
         
         for (const track of localTracks) {
             await currentRoom.localParticipant.publishTrack(track);
