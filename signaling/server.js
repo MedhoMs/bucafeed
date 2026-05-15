@@ -80,6 +80,10 @@ io.on('connection', socket => {
   });
 
   // Chat events
+  socket.on('chat:join', (roomId) => {
+    socket.join(roomId);
+  });
+
   socket.on('chat:message', (roomId, data) => {
     socket.to(roomId).emit('chat:message', data);
   });
