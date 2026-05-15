@@ -59,37 +59,29 @@ const videoRefs = {};
 let localStream = null;
 let socket = null;
 
-// ICE servers - STUN de Google + TURN gratuitos de Metered
-const iceConfig = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun2.l.google.com:19302' },
-    { urls: 'stun:stun3.l.google.com:19302' },
-    { urls: 'stun:stun4.l.google.com:19302' },
-    // TURN servers de Metered (free tier)
-    {
-      urls: 'turn:a.relay.metered.ca:80',
-      username: 'e8dd65b992da0a14e1ae4eb1',
-      credential: '5w2JKXAqfCHMqE/d',
-    },
-    {
-      urls: 'turn:a.relay.metered.ca:80?transport=tcp',
-      username: 'e8dd65b992da0a14e1ae4eb1',
-      credential: '5w2JKXAqfCHMqE/d',
-    },
-    {
-      urls: 'turn:a.relay.metered.ca:443',
-      username: 'e8dd65b992da0a14e1ae4eb1',
-      credential: '5w2JKXAqfCHMqE/d',
-    },
-    {
-      urls: 'turns:a.relay.metered.ca:443?transport=tcp',
-      username: 'e8dd65b992da0a14e1ae4eb1',
-      credential: '5w2JKXAqfCHMqE/d',
-    },
-  ]
-};
+// ICE servers - Empezamos con STUN de Google y luego cargaremos los TURN dinámicamente
+const iceServers = ref([
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' },
+  { urls: 'stun:stun3.l.google.com:19302' },
+  { urls: 'stun:stun4.l.google.com:19302' },
+]);
+
+async function fetchIceServers() {
+  try {
+    debugInfo.value = 'Obteniendo servidores de relevo (TURN)...';
+    const response = await fetch("https://telamonet.metered.live/api/v1/turn/credentials?apiKey=bfb10560b1d0a5864e549a33cda088c2f0fe");
+    const dynamicServers = await response.json();
+    if (Array.isArray(dynamicServers)) {
+        iceServers.value = [...iceServers.value, ...dynamicServers];
+        console.log('[VideoCall] TURN servers loaded:', dynamicServers.length);
+    }
+  } catch (err) {
+    console.error('[VideoCall] Error fetching TURN servers:', err);
+    debugInfo.value = 'Error cargando TURN: se usará conexión directa (STUN)';
+  }
+}
 
 function setVideoRef(id, el) {
   if (el) {
@@ -112,7 +104,7 @@ function createPeerConnection(targetId) {
   }
 
   console.log('[VideoCall] Creating peer connection to:', targetId);
-  const pc = new RTCPeerConnection(iceConfig);
+  const pc = new RTCPeerConnection({ iceServers: iceServers.value });
   peerConnections[targetId] = pc;
 
   if (localStream) {
@@ -244,6 +236,9 @@ function cleanupAll() {
 }
 
 onMounted(async () => {
+  // 0. Obtener servidores ICE (TURN)
+  await fetchIceServers();
+
   // 1. Obtener la cámara
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
