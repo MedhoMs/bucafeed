@@ -309,24 +309,23 @@ onMounted(async () => {
       path: '/socket.io/' 
   });
 
-  socket.on('connect', () => {
+  socket.on('connect', async () => {
     mySocketId.value = socket.id;
-    socket.emit('join-room', videoRoomId, (existingClients) => {
-        // Enviar mi info (nombre y avatar) al entrar
-        socket.emit('user-info', { 
-            roomId: videoRoomId, 
-            name: myLabel, 
-            avatar: myAvatar 
-        });
+    socket.emit('join-room', videoRoomId, async (existingClients) => {
+        socket.emit('user-info', { roomId: videoRoomId, name: myLabel, avatar: myAvatar });
+        const servers = await loadTurnServers();
+        for (const clientId of existingClients) {
+            if (!allStreams.value.find(s => s.id === clientId)) {
+                allStreams.value.push({ id: clientId, stream: null, noCamera: true, label: 'Cargando...', avatarUrl: null });
+            }
+            const pc = createPeerConnection(clientId, servers);
+            try {
+                const offer = await pc.createOffer({ iceRestart: true });
+                await pc.setLocalDescription(offer);
+                socket.emit('offer', { to: clientId, offer: pc.localDescription });
+            } catch {}
+        }
     });
-  });
-
-  socket.on('user-info', (data) => {
-      const entry = allStreams.value.find(s => s.id === data.from);
-      if (entry) {
-          entry.label = data.name;
-          entry.avatarUrl = data.avatar;
-      }
   });
 
   socket.on('media-state-changed', (data) => {
@@ -336,13 +335,14 @@ onMounted(async () => {
       }
   });
 
-  socket.on('user-joined', (clientId) => {
+  socket.on('user-joined', async (clientId) => {
     if (!allStreams.value.find(s => s.id === clientId)) {
       allStreams.value.push({ id: clientId, stream: null, noCamera: true, label: 'Cargando...', avatarUrl: null });
     }
     // Re-enviar mi info al nuevo que llega
     socket.emit('user-info', { roomId: videoRoomId, name: myLabel, avatar: myAvatar });
-    const pc = createPeerConnection(clientId, stunOnlyServers);
+    const servers = await loadTurnServers();
+    const pc = createPeerConnection(clientId, servers);
     pc.createOffer().then(offer => pc.setLocalDescription(offer)).then(() => {
         socket.emit('offer', { to: clientId, offer: pc.localDescription });
     });
@@ -352,11 +352,20 @@ onMounted(async () => {
     if (!allStreams.value.find(s => s.id === from)) {
         allStreams.value.push({ id: from, stream: null, noCamera: true, label: 'Participante', avatarUrl: null });
     }
-    const pc = createPeerConnection(from, stunOnlyServers);
+    const servers = await loadTurnServers();
+    const pc = createPeerConnection(from, servers);
     await pc.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
     socket.emit('answer', { to: from, answer: pc.localDescription });
+  });
+
+  socket.on('user-info', (data) => {
+      const entry = allStreams.value.find(s => s.id === data.from);
+      if (entry) {
+          entry.label = data.name || entry.label;
+          entry.avatarUrl = data.avatar || entry.avatarUrl;
+      }
   });
 
   socket.on('answer', ({ from, answer }) => {

@@ -48,4 +48,4 @@ COPY nginx.railway.conf /etc/nginx/templates/default.conf.template
 ENV SIGNALING_URL=http://localhost:3000
 EXPOSE ${PORT:-8080}
 
-CMD ["sh", "-c", "echo '=== RAILWAY PORT: '$PORT' ===' && envsubst '${PORT} ${SIGNALING_URL}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && echo '=== GENERATED CONFIG ===' && cat /etc/nginx/conf.d/default.conf && echo '=== TESTING NGINX ===' && nginx -t && echo '=== STARTING NGINX ===' && exec nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "envsubst '${PORT} ${SIGNALING_URL}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
