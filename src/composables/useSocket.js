@@ -77,12 +77,23 @@ export function useSocket() {
         }
     }
 
+    function disconnectSocket() {
+        if (socketInstance) {
+            socketInstance.disconnect();
+            socketInstance = null;
+            connected.value = false;
+        }
+    }
+
     return {
         socket: socketInstance,
         connected,
         onlineUsers,
         setupSocket,
+        connect: setupSocket,
+        disconnect: disconnectSocket,
         emitSocket,
+        emit: emitSocket,
         on: onSocket,
         off: offSocket
     };

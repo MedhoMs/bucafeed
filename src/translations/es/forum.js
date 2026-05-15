@@ -22,5 +22,7 @@ export const forum = {
     confirmDeleteTitle: "¿Estás seguro?",
     confirmDeleteMessage: "Esta acción no se puede deshacer. La pregunta y todas sus respuestas serán eliminadas permanentemente.",
     confirm: "Confirmar",
-    cancel: "Cancelar"
+    cancel: "Cancelar",
+    unverifiedMessage: "No puedes visualizar las preguntas ni interactuar en el foro hasta que tu centro verifique tu cuenta.",
+    unverifiedThreadMessage: "No puedes visualizar este hilo hasta que tu centro verifique tu identidad."
 };

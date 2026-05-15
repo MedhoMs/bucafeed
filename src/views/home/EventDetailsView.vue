@@ -2,8 +2,11 @@
     import NavBar from '../../components/NavBar/NavBar.vue';
     import PageHeader from '@/components/common/PageHeader.vue';
     import { ref, onMounted, computed } from 'vue'
-    import { token as authToken } from '@/stores/auth'
+    import { token as authToken, user } from '@/stores/auth'
     import { useTranslations } from '../../composables/useTranslations'
+    import UnverifiedBanner from '@/components/common/UnverifiedBanner.vue'
+
+    const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
 
     const eventDetails = ref(null)
     const direccion = ref('')
@@ -26,7 +29,7 @@
     }))
 
     const handleJoin = async () => {
-        if (!eventDetails.value) return;
+        if (!eventDetails.value || isUnverified.value) return;
         if (!token.value) {
             alert('Debes iniciar sesión para unirte a eventos');
             return;
@@ -76,17 +79,26 @@
     <div class="min-h-screen">
         <NavBar></NavBar>
         <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen">
+            <!-- Banner compacto superior si no está verificado -->
+            <div class="px-6 lg:px-14 pt-6" v-if="isUnverified">
+                <UnverifiedBanner 
+                    compact 
+                    message="Puedes ver la información del evento, pero no podrás inscribirte hasta que tu centro verifique tu identidad."
+                />
+            </div>
             <PageHeader 
                 :title="t.events.title"  
                 :subtitle="t.events.subtitle"
                 noMargin
             >
                 <template #headerActions>
-                    <button @click="handleJoin" 
-                        :class="['flex justify-center items-center gap-2 p-4 cursor-pointer rounded-2xl duration-300 ease-in shadow-xl min-w-[180px] w-full md:w-auto font-black uppercase tracking-widest text-[10px]', 
-                                 eventDetails?.joined ? 'bg-success-normal hover:bg-success-normal-hover text-white' : 'bg-accent-normal hover:bg-accent-normal-hover text-white']">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m368-320 112-84 110 84-42-136 112-88H524l-44-136-44 136H300l110 88-42 136ZM160-160q-33 0-56.5-23.5T80-240v-135q0-11 7-19t18-10q24-8 39.5-29t15.5-47q0-26-15.5-47T105-556q-11-2-18-10t-7-19v-135q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v135q0 11-7 19t-18 10q-24 8-39.5 29T800-480q0 26 15.5 47t39.5 29q11 2 18 10t7 19v135q0 33-23.5 56.5T800-160H160Zm0-80h640v-102q-37-22-58.5-58.5T720-480q0-43 21.5-79.5T800-618v-102H160v102q37 22 58.5 58.5T240-480q0 43-21.5 79.5T160-342v102Zm320-240Z"/></svg>
-                        {{ eventDetails?.joined ? 'Anotado / Dentro' : 'Participar' }}
+                    <button @click="isUnverified ? null : handleJoin()" 
+                        :disabled="isUnverified"
+                        :class="['flex justify-center items-center gap-2 p-4 duration-300 ease-in shadow-xl min-w-[180px] w-full md:w-auto font-black uppercase tracking-widest text-[10px]', 
+                                 isUnverified ? 'bg-amber-500/20 text-amber-500/50 cursor-not-allowed border border-amber-500/20' :
+                                 (eventDetails?.joined ? 'bg-success-normal hover:bg-success-normal-hover text-white cursor-pointer' : 'bg-accent-normal hover:bg-accent-normal-hover text-white cursor-pointer')]">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" :class="isUnverified ? 'text-amber-500/30' : 'text-white/80'"><path d="m368-320 112-84 110 84-42-136 112-88H524l-44-136-44 136H300l110 88-42 136ZM160-160q-33 0-56.5-23.5T80-240v-135q0-11 7-19t18-10q24-8 39.5-29t15.5-47q0-26-15.5-47T105-556q-11-2-18-10t-7-19v-135q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v135q0 11-7 19t-18 10q-24 8-39.5 29T800-480q0 26 15.5 47t39.5 29q11 2 18 10t7 19v135q0 33-23.5 56.5T800-160H160Zm0-80h640v-102q-37-22-58.5-58.5T720-480q0-43 21.5-79.5T800-618v-102H160v102q37 22 58.5 58.5T240-480q0 43-21.5 79.5T160-342v102Zm320-240Z"/></svg>
+                        {{ isUnverified ? 'Bloqueado (Sin verificar)' : (eventDetails?.joined ? 'Anotado / Dentro' : 'Participar') }}
                     </button>
                 </template>
             </PageHeader>

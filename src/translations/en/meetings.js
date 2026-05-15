@@ -20,5 +20,6 @@ export const meetings = {
         centerPlaceholder: "Select center...",
         description: "Description",
         descriptionPlaceholder: "Briefly describe what the meeting is about..."
-    }
+    },
+    unverifiedMessage: "You cannot view scheduled meetings until your center verifies your identity."
 };

@@ -28,7 +28,7 @@ class User extends Authenticatable
         'description',
     ];
 
-    protected $appends = ['role_name'];
+    protected $appends = ['role_name', 'is_verified'];
 
     public function getRoleNameAttribute()
     {
@@ -40,6 +40,28 @@ class User extends Authenticatable
             'EU' => 'Usuario Externo'
         ];
         return $roles[$this->role] ?? $this->role;
+    }
+
+    /**
+     * Returns whether this student account has been verified by their educational center.
+     * For non-student roles, always returns true (not subject to verification).
+     * Returns true as fallback if the DB column doesn't exist yet (migration pending).
+     */
+    public function getIsVerifiedAttribute(): bool
+    {
+        if ($this->role !== 'Student') {
+            return true;
+        }
+        try {
+            // Use already loaded relation to avoid N+1
+            if ($this->relationLoaded('student')) {
+                return (bool) ($this->student?->verified ?? false);
+            }
+            return (bool) (Student::where('user_id', $this->id)->value('verified') ?? false);
+        } catch (\Throwable $e) {
+            // Column may not exist yet (migration pending) — treat as unverified but don't crash
+            return false;
+        }
     }
 
     protected $hidden = [

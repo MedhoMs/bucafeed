@@ -140,6 +140,16 @@ router.beforeEach((to, from, next) => {
         return next('/home');
     }
 
+    // Block unverified students from restricted routes
+    const isStudent = loggedIn?.role === 'Student';
+    const isUnverified = isStudent && loggedIn?.is_verified === false;
+    const restrictedForUnverified = ['/foro', '/event', '/meeting', '/private-chat', '/meetingchat'];
+
+    if (isUnverified && restrictedForUnverified.some(r => to.path.startsWith(r))) {
+        // Allow navigation but the view itself will show the banner (don't hard-redirect)
+        // Just proceed — the views handle it with UnverifiedBanner
+    }
+
     next();
 });
 

@@ -10,7 +10,8 @@ const props = defineProps({
     group: String,
     group_id: [Number, null],
     schedule: String,
-    description: String
+    description: String,
+    disabled: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['delete']);
@@ -84,7 +85,12 @@ const handleDelete = () => {
         </div>
 
         <div class="mt-auto pt-6 flex justify-end relative z-10">
-            <router-link
+            <div v-if="disabled"
+                class="bg-[#1a2d42]/50 text-white/30 text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-xl border border-white/5 cursor-not-allowed opacity-50"
+            >
+                Entrar al Chat
+            </div>
+            <router-link v-else
                 :to="{ name: 'meetingchat', params: { id: props.id, name: props.name, teacher: props.teacher, group: props.group, groupId: props.group_id } }"
                 class="bg-[#1a2d42] hover:bg-[#406071] text-white text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-xl transition-all duration-300 active:scale-95 border border-white/5 shadow-lg shadow-black/20">
                 Entrar al Chat
