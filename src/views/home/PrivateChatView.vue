@@ -12,7 +12,7 @@
 
     const { t } = useTranslations();
     const { get, post } = useApi();
-    const { setupSocket, emitSocket, onlineUsers, connected, on: onSocket } = useSocket();
+    const { setupSocket, emitSocket, onlineUsers, connected, on: onSocket, joinRoom, leaveRoom } = useSocket();
 
     const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
     
@@ -83,6 +83,7 @@
         currentChat.value = null;
 
         if (currentRoomId.value) {
+            leaveRoom(currentRoomId.value);
             currentRoomId.value = null;
         }
         
@@ -96,6 +97,7 @@
                 scrollToBottom();
 
                 currentRoomId.value = `chat-${chatData.id}`;
+                joinRoom(currentRoomId.value);
             }
         } catch (error) {
             console.error("Error selecting contact:", error);

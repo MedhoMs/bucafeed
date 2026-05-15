@@ -71,12 +71,11 @@ export function useSocket() {
 
     function joinRoom(roomId) {
         if (socketInstance?.connected) {
-            socketInstance.emit('join-room', roomId);
+            socketInstance.emit('chat:join', roomId);
         } else {
-            // If not connected yet, wait for connection then join
             const waitAndJoin = () => {
                 if (socketInstance?.connected) {
-                    socketInstance.emit('join-room', roomId);
+                    socketInstance.emit('chat:join', roomId);
                     socketInstance.off('connect', waitAndJoin);
                 }
             };
