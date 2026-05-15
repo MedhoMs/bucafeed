@@ -287,19 +287,36 @@ function createPeerConnection(targetId, iceServerList) {
             const isRelay = Array.from(stats.values()).some(s => 
               (s.id === localId || s.id === remoteId) && s.candidateType === 'relay'
             );
-            console.log(`[WebRTC] ✅ Conexión establecida: ${isRelay ? '🔄 TURN (relay)' : '🔗 P2P directo (STUN)'}`);
+            console.log(`[WebRTC] \u2705 Conexi\u00f3n establecida: ${isRelay ? '\ud83d\udd04 TURN (relay)' : '\ud83d\udd17 P2P directo (STUN)'}`);
             usingTurn.value = isRelay;
           }
         });
       });
     }
     
+    if (pc.iceConnectionState === 'disconnected') {
+      console.log('[WebRTC] \u26a0\ufe0f Conexi\u00f3n desconectada, esperando 5s para reconectar...');
+      setTimeout(async () => {
+        if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
+          console.log('[WebRTC] \u274c Timeout - reiniciando ICE con TURN...');
+          const fullServers = await loadTurnServers();
+          usingTurn.value = true;
+          const newPc = createPeerConnection(targetId, fullServers);
+          try {
+            const offer = await newPc.createOffer({ iceRestart: true });
+            await newPc.setLocalDescription(offer);
+            if (socket) socket.emit('offer', { to: targetId, offer: newPc.localDescription });
+          } catch(e) { console.error('[WebRTC] Error en ICE restart:', e); }
+        }
+      }, 5000);
+    }
+    
     if (pc.iceConnectionState === 'failed') {
-      console.log('[WebRTC] ❌ Conexión P2P falló, intentando con TURN...');
+      console.log('[WebRTC] \u274c Conexi\u00f3n P2P fall\u00f3, intentando con TURN...');
       const fullServers = await loadTurnServers();
       const hasTurn = fullServers.some(s => s.urls?.toString().includes('turn:'));
       if (!hasTurn) {
-        console.log('[WebRTC] ⚠️ No hay servidores TURN disponibles');
+        console.log('[WebRTC] \u26a0\ufe0f No hay servidores TURN disponibles');
         cleanupPeerConnection(targetId);
         return;
       }
@@ -347,24 +364,34 @@ onMounted(async () => {
   });
 
   const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+  console.log('[WebRTC] Conectando socket a:', socketUrl);
   socket = io(socketUrl, { 
       transports: ['websocket', 'polling'], 
       forceNew: true,
       path: '/socket.io/' 
   });
 
+  // Pre-cargar TURN servers ANTES de unirse a la sala
+  const iceServers = await loadTurnServers();
+  const hasTurn = iceServers.some(s => s.urls?.toString().includes('turn:'));
+  console.log(`[WebRTC] ICE servers cargados: ${iceServers.length} servidores (TURN: ${hasTurn ? 'SI' : 'NO'})`);
+
   socket.on('connect', async () => {
+    console.log('[WebRTC] Socket conectado:', socket.id);
     mySocketId.value = socket.id;
     socket.emit('join-room', videoRoomId, async (existingClients) => {
+        console.log('[WebRTC] Sala unida. Clientes existentes:', existingClients?.length || 0);
         socket.emit('user-info', { roomId: videoRoomId, name: myLabel, avatar: myAvatar });
-        const servers = await loadTurnServers();
         for (const clientId of existingClients) {
             if (!allStreams.value.find(s => s.id === clientId)) {
                 allStreams.value.push({ id: clientId, stream: null, noCamera: true, label: 'Cargando...', avatarUrl: null });
             }
-            // No crear ofertas aquí — los usuarios existentes nos enviarán ofertas vía 'user-joined'
         }
     });
+  });
+
+  socket.on('connect_error', (err) => {
+    console.error('[WebRTC] Error de conexi\u00f3n socket:', err.message);
   });
 
   socket.on('media-state-changed', (data) => {
@@ -376,31 +403,31 @@ onMounted(async () => {
   });
 
   socket.on('user-joined', async (clientId) => {
+    console.log('[WebRTC] Nuevo usuario unido:', clientId);
     if (!allStreams.value.find(s => s.id === clientId)) {
       allStreams.value.push({ id: clientId, stream: null, noCamera: true, label: 'Cargando...', avatarUrl: null });
     }
-    // Re-enviar mi info al nuevo que llega
     socket.emit('user-info', { roomId: videoRoomId, name: myLabel, avatar: myAvatar });
-    const servers = await loadTurnServers();
-    const pc = createPeerConnection(clientId, servers);
+    const pc = createPeerConnection(clientId, iceServers);
     pc.createOffer().then(offer => pc.setLocalDescription(offer)).then(() => {
+        console.log('[WebRTC] Oferta enviada a:', clientId);
         socket.emit('offer', { to: clientId, offer: pc.localDescription });
     });
   });
 
   socket.on('offer', async ({ from, offer }) => {
+    console.log('[WebRTC] Oferta recibida de:', from);
     if (!allStreams.value.find(s => s.id === from)) {
         const info = pendingUserInfo[from];
         allStreams.value.push({ id: from, stream: null, noCamera: true, label: info?.name || 'Participante', avatarUrl: info?.avatar || null });
     }
-    const servers = await loadTurnServers();
-    const pc = createPeerConnection(from, servers);
+    const pc = createPeerConnection(from, iceServers);
     await pc.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
     socket.emit('answer', { to: from, answer: pc.localDescription });
-    // Enviar mi info al peer que me envió la oferta
     socket.emit('user-info', { roomId: videoRoomId, name: myLabel, avatar: myAvatar });
+    console.log('[WebRTC] Respuesta enviada a:', from);
   });
 
   socket.on('user-info', (data) => {
