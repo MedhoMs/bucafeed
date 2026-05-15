@@ -179,8 +179,7 @@ function setupSocket() {
     connectSocket(roomId, userData)
 
     onSocket('chat:message', (data) => {
-        if (data.sender !== authUser.value?.id && !messages.value.find(m => m.id === data.id)) {
-            // Normalize message type for frontend
+        if (!messages.value.find(m => m.id === data.id)) {
             const normalizedData = { ...data, type: data.message_type || data.type };
             messages.value.push(normalizedData); scrollToBottom()
         }
@@ -207,6 +206,8 @@ onMounted(async () => {
     await loadMessages(); 
 })
 onUnmounted(() => disconnectSocket())
+
+defineExpose({ loadMessages })
 </script>
 
 <template>

@@ -19,6 +19,7 @@ const meetingId = route.params.id;
 const meetingGroup = route.params.group;
 const meeting = ref(null);
 const activeCallRoomId = ref(null);
+const chatBarRef = ref(null);
 
 onMounted(() => {
     fetchMeeting();
@@ -67,6 +68,7 @@ async function startMeetingCall() {
             const currentRoomId = `meeting-${meetingId}`;
             const normalizedMsg = { ...savedMsg, type: savedMsg.message_type || savedMsg.type };
             emitSocket('chat:message', currentRoomId, normalizedMsg);
+            chatBarRef.value?.loadMessages();
         }
     } catch (e) {
         console.error('Error starting meeting call:', e);
@@ -123,7 +125,7 @@ async function startMeetingCall() {
                     <VideoCall :room-id="activeCallRoomId" />
                 </div>
 
-                <MeetingChatBar :meeting="meeting" :active-call-id="activeCallRoomId" @joinCall="activeCallRoomId = $event" class="flex-1 overflow-hidden" />
+                <MeetingChatBar ref="chatBarRef" :meeting="meeting" :active-call-id="activeCallRoomId" @joinCall="activeCallRoomId = $event" class="flex-1 overflow-hidden" />
             </div>
     
             <ChatMembers :meeting="meeting" />
