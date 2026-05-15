@@ -294,39 +294,38 @@ const deleteMeeting = async () => {
             <section 
                 :class="[
                     'text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 flex flex-col flex-1 pt-6',
-                    filteredMeetings.length === 0 ? 'justify-center pb-32' : 'mb-20'
+                    (filteredMeetings.length === 0 || isUnverified) ? 'justify-center pb-32' : 'mb-20'
                 ]"
             >
-                <!-- Banner compacto superior si no está verificado -->
+                <!-- Banner para alumnos no verificados (Centrado y bloqueante) -->
                 <UnverifiedBanner 
                     v-if="isUnverified"
-                    compact
-                    message="Puedes ver las charlas programadas, pero no podrás entrar al chat hasta que tu centro verifique tu identidad."
+                    :message="t.meetings.unverifiedMessage || 'No puedes visualizar las charlas programadas hasta que tu centro verifique tu identidad.'"
                 />
 
-                <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1">
-                    <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
-                        :teacher="meeting.teacher" :teacher_id="meeting.teacher_id" :schedule="meeting.schedule" :group="meeting.group"
-                        :group_id="meeting.group_id" :description="meeting.description" 
-                        :disabled="isUnverified"
-                        @delete="confirmDelete" />
-                </div>
+                <template v-else>
+                    <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1">
+                        <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
+                            :teacher="meeting.teacher" :teacher_id="meeting.teacher_id" :schedule="meeting.schedule" :group="meeting.group"
+                            :group_id="meeting.group_id" :description="meeting.description" 
+                            :disabled="isUnverified"
+                            @delete="confirmDelete" />
+                    </div>
 
-                <div v-if="pagination.lastPage > 1" class="mt-12 mb-10 flex justify-center w-full">
-                    <Pagination
-                        :current-page="pagination.currentPage"
-                        :last-page="pagination.lastPage"
-                        @change="handlePageChange"
-                    />
-                </div>
-
-
+                    <div v-if="pagination.lastPage > 1" class="mt-12 mb-10 flex justify-center w-full">
+                        <Pagination
+                            :current-page="pagination.currentPage"
+                            :last-page="pagination.lastPage"
+                            @change="handlePageChange"
+                        />
+                    </div>
     
-                <div v-if="filteredMeetings.length === 0"
-                    class="w-fit bg-white/5 backdrop-blur-md p-10 mx-auto rounded-3xl shadow-xl border border-white/10 text-center">
-                    <h3 class="text-2xl font-bold text-white mb-2">{{ t.meetings.noMeetings || 'No se han encontrado reuniones' }}</h3>
-                    <p v-if="!user" class="text-white/60">{{ t.meetings.loginRequired || 'Debes iniciar sesión para ver tus charlas.' }}</p>
-                </div>
+                    <div v-if="filteredMeetings.length === 0"
+                        class="w-fit bg-white/5 backdrop-blur-md p-10 mx-auto rounded-3xl shadow-xl border border-white/10 text-center">
+                        <h3 class="text-2xl font-bold text-white mb-2">{{ t.meetings.noMeetings || 'No se han encontrado reuniones' }}</h3>
+                        <p v-if="!user" class="text-white/60">{{ t.meetings.loginRequired || 'Debes iniciar sesión para ver tus charlas.' }}</p>
+                    </div>
+                </template>
             </section>
     
             <!-- Modal de Creación -->
