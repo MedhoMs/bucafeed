@@ -302,8 +302,12 @@ onMounted(async () => {
     audioMuted: false
   });
 
-  const socketUrl = import.meta.env.VITE_SOCKET_URL || (location.protocol === 'https:' ? `//${window.location.hostname}` : `//${window.location.hostname}:3000`);
-  socket = io(socketUrl, { transports: ['websocket', 'polling'], forceNew: true });
+  const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+  socket = io(socketUrl, { 
+      transports: ['websocket', 'polling'], 
+      forceNew: true,
+      path: '/socket.io/' 
+  });
 
   socket.on('connect', () => {
     mySocketId.value = socket.id;

@@ -44,7 +44,9 @@ RUN npm run build
 FROM mirror.gcr.io/library/nginx:stable-alpine AS production
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.railway.conf /etc/nginx/templates/default.conf.template
+
+ENV SIGNALING_URL=http://localhost:3000
+# PORT lo inyecta Railway
 EXPOSE ${PORT:-8080}
-# SIGNALING_URL → URL pública del servicio de signaling en Railway
-# PORT          → Railway lo inyecta automáticamente
+
 CMD ["sh", "-c", "envsubst '${PORT} ${SIGNALING_URL}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
