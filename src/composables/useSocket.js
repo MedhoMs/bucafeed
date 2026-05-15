@@ -69,6 +69,29 @@ export function useSocket() {
         }
     }
 
+    function joinRoom(roomId) {
+        if (socketInstance?.connected) {
+            socketInstance.emit('join-room', roomId);
+        } else {
+            // If not connected yet, wait for connection then join
+            const waitAndJoin = () => {
+                if (socketInstance?.connected) {
+                    socketInstance.emit('join-room', roomId);
+                    socketInstance.off('connect', waitAndJoin);
+                }
+            };
+            if (socketInstance) {
+                socketInstance.on('connect', waitAndJoin);
+            }
+        }
+    }
+
+    function leaveRoom(roomId) {
+        if (socketInstance?.connected) {
+            socketInstance.emit('leave-room', roomId);
+        }
+    }
+
     function disconnectSocket() {
         if (socketInstance) {
             socketInstance.disconnect();
@@ -83,6 +106,8 @@ export function useSocket() {
         onlineUsers,
         setupSocket,
         connect: setupSocket,
+        joinRoom,
+        leaveRoom,
         disconnect: disconnectSocket,
         emitSocket,
         emit: emitSocket,

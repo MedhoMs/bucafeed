@@ -1,19 +1,22 @@
 <template>
   <div class="p-6">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div v-for="entry in remoteStreams" :key="entry.id" class="relative">
+      <div v-for="entry in allStreams" :key="entry.id" class="relative">
         <video
-          :srcObject.prop="entry.stream"
+          :ref="el => setVideoRef(entry.id, el)"
           autoplay
           playsinline
-          muted
+          :muted="entry.id === 'me'"
           @loadedmetadata="handleVideoPlay"
           :class="[
             'w-full h-64 bg-black rounded-lg object-cover border-2 border-[#2a4a5a]',
             entry.id === 'me' ? 'mirror' : ''
           ]"
         ></video>
-        <p v-if="entry.id !== 'me'" class="absolute bottom-2 left-2 text-xs bg-black/60 px-2 py-0.5 rounded-full">
+        <p v-if="entry.id === 'me'" class="absolute bottom-2 left-2 text-xs bg-black/60 px-2 py-0.5 rounded-full text-white">
+          Tú
+        </p>
+        <p v-else class="absolute bottom-2 left-2 text-xs bg-black/60 px-2 py-0.5 rounded-full text-white">
           Conectado
         </p>
       </div>
@@ -25,46 +28,75 @@
 
     <div class="mt-4 text-white text-center">
       <p class="bg-[#1d2b38] inline-block px-4 py-2 rounded-full font-mono text-xs">
-        Sala: {{ roomId }} | Participantes: {{ remoteStreams.length }}
+        Sala: {{ roomId }} | Participantes: {{ allStreams.length }}
       </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { io } from 'socket.io-client';
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { useSocket } from '@/composables/useSocket';
 
 const props = defineProps({
     roomId: { type: String, default: 'sala-general' }
 });
 
-const roomId = ref(props.roomId);
+const { connect: connectSocket, on: onSocket, off: offSocket, joinRoom, leaveRoom } = useSocket();
+
 const cameraError = ref('');
-const remoteStreams = ref([]);
+const allStreams = ref([]);
 const peerConnections = {};
+const videoRefs = {};
 
-let socket = null;
 let localStream = null;
+let rawSocket = null;
 
-const iceServers = {
+// ICE servers con TURN para producción (STUN solo no funciona detrás de NAT restrictivos)
+const iceConfig = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
+    // TURN servers gratuitos de Open Relay (metered.ca)
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
   ]
 };
+
+function setVideoRef(id, el) {
+  if (el) {
+    videoRefs[id] = el;
+    const entry = allStreams.value.find(s => s.id === id);
+    if (entry && entry.stream && el.srcObject !== entry.stream) {
+      el.srcObject = entry.stream;
+    }
+  }
+}
 
 function handleVideoPlay(e) {
   e.target.play().catch(() => {});
 }
 
-function createPeerConnection(targetId, isInitiator) {
+function createPeerConnection(targetId) {
   if (peerConnections[targetId]) {
     peerConnections[targetId].close();
     delete peerConnections[targetId];
   }
 
-  const pc = new RTCPeerConnection(iceServers);
+  const pc = new RTCPeerConnection(iceConfig);
   peerConnections[targetId] = pc;
 
   if (localStream) {
@@ -75,21 +107,33 @@ function createPeerConnection(targetId, isInitiator) {
 
   pc.addEventListener('track', event => {
     const [remoteStream] = event.streams;
-    if (remoteStream && !remoteStreams.value.find(s => s.id === targetId)) {
-      remoteStreams.value.push({ id: targetId, stream: remoteStream });
+    if (remoteStream) {
+      const existing = allStreams.value.find(s => s.id === targetId);
+      if (existing) {
+        existing.stream = remoteStream;
+      } else {
+        allStreams.value.push({ id: targetId, stream: remoteStream });
+      }
+      // Asignar el stream al elemento de video
+      nextTick(() => {
+        const videoEl = videoRefs[targetId];
+        if (videoEl && videoEl.srcObject !== remoteStream) {
+          videoEl.srcObject = remoteStream;
+        }
+      });
     }
   });
 
-  pc.addEventListener('ice-candidate', event => {
-    if (event.candidate && socket) {
-      socket.emit('ice-candidate', {
+  pc.addEventListener('icecandidate', event => {
+    if (event.candidate && rawSocket) {
+      rawSocket.emit('ice-candidate', {
         to: targetId,
         candidate: event.candidate
       });
     }
   });
 
-  pc.addEventListener('ice-connection-statechange', () => {
+  pc.addEventListener('iceconnectionstatechange', () => {
     if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
       cleanupPeerConnection(targetId);
     }
@@ -100,11 +144,11 @@ function createPeerConnection(targetId, isInitiator) {
 
 async function createOffer(targetId) {
   try {
-    const pc = createPeerConnection(targetId, true);
+    const pc = createPeerConnection(targetId);
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
-    if (socket) {
-      socket.emit('offer', { to: targetId, offer: pc.localDescription });
+    if (rawSocket) {
+      rawSocket.emit('offer', { to: targetId, offer: pc.localDescription });
     }
   } catch (err) {
     console.error('Error creating offer:', err);
@@ -113,12 +157,12 @@ async function createOffer(targetId) {
 
 async function handleOffer(from, offer) {
   try {
-    const pc = createPeerConnection(from, false);
+    const pc = createPeerConnection(from);
     await pc.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
-    if (socket) {
-      socket.emit('answer', { to: from, answer: pc.localDescription });
+    if (rawSocket) {
+      rawSocket.emit('answer', { to: from, answer: pc.localDescription });
     }
   } catch (err) {
     console.error('Error handling offer:', err);
@@ -152,7 +196,8 @@ function cleanupPeerConnection(id) {
     peerConnections[id].close();
     delete peerConnections[id];
   }
-  remoteStreams.value = remoteStreams.value.filter(s => s.id !== id);
+  delete videoRefs[id];
+  allStreams.value = allStreams.value.filter(s => s.id !== id);
 }
 
 function cleanupAll() {
@@ -160,47 +205,65 @@ function cleanupAll() {
     peerConnections[id].close();
     delete peerConnections[id];
   });
-  remoteStreams.value = remoteStreams.value.filter(s => s.id === 'me');
+  allStreams.value = allStreams.value.filter(s => s.id === 'me');
+}
+
+// Event handlers for socket
+function onUserJoined(clientId) {
+  createOffer(clientId);
+}
+
+function onOffer({ from, offer }) {
+  handleOffer(from, offer);
+}
+
+function onAnswer({ from, answer }) {
+  handleAnswer(from, answer);
+}
+
+function onIceCandidate({ from, candidate }) {
+  handleIceCandidate(from, candidate);
+}
+
+function onUserDisconnected(clientId) {
+  cleanupPeerConnection(clientId);
 }
 
 onMounted(async () => {
+  // 1. Obtener la cámara
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    remoteStreams.value.push({ id: 'me', stream: localStream });
+    allStreams.value.push({ id: 'me', stream: localStream });
   } catch (err) {
     cameraError.value = "No se pudo activar la cámara. Si estás en el móvil, necesitas usar HTTPS o activar las flags de Chrome.";
   }
 
-  const schema = location.protocol === 'https:' ? 'wss:' : 'http:';
-  const socketUrl = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_SIGNALING_URL || `${schema}//${window.location.hostname}:3000`;
-  socket = io(socketUrl);
+  // 2. Conectar al socket (usa el singleton del composable)
+  rawSocket = connectSocket();
 
-  socket.on('user-joined', clientId => {
-    createOffer(clientId);
-  });
+  // 3. Registrar los listeners de WebRTC
+  onSocket('user-joined', onUserJoined);
+  onSocket('offer', onOffer);
+  onSocket('answer', onAnswer);
+  onSocket('ice-candidate', onIceCandidate);
+  onSocket('user-disconnected', onUserDisconnected);
 
-  socket.on('offer', ({ from, offer }) => {
-    handleOffer(from, offer);
-  });
-
-  socket.on('answer', ({ from, answer }) => {
-    handleAnswer(from, answer);
-  });
-
-  socket.on('ice-candidate', ({ from, candidate }) => {
-    handleIceCandidate(from, candidate);
-  });
-
-  socket.on('user-disconnected', clientId => {
-    cleanupPeerConnection(clientId);
-  });
-
-  socket.emit('join-room', roomId.value);
+  // 4. Unirse a la sala de videollamada
+  joinRoom(props.roomId);
 });
 
 onUnmounted(() => {
+  // Limpiar listeners
+  offSocket('user-joined', onUserJoined);
+  offSocket('offer', onOffer);
+  offSocket('answer', onAnswer);
+  offSocket('ice-candidate', onIceCandidate);
+  offSocket('user-disconnected', onUserDisconnected);
+
+  // Limpiar conexiones
   cleanupAll();
-  if (socket) socket.disconnect();
+  leaveRoom(props.roomId);
+
   if (localStream) {
     localStream.getTracks().forEach(track => track.stop());
   }

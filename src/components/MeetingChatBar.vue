@@ -23,7 +23,7 @@ const meetingId = computed(() => route.params.id);
 const canCreateKahoot = computed(() => authUser.value && ['Teacher', 'Admin', 'EI'].includes(authUser.value.role));
 const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
 
-const { connect: connectSocket, emit: emitSocket, on: onSocket, off: offSocket, disconnect: disconnectSocket } = useSocket()
+const { connect: connectSocket, emit: emitSocket, on: onSocket, off: offSocket, disconnect: disconnectSocket, joinRoom, leaveRoom } = useSocket()
 const messages = ref([])
 
 function scrollToBottom() {
@@ -175,8 +175,9 @@ async function nextQuestion(sessionId) {
 
 function setupSocket() {
     const roomId = `meeting-${meetingId.value}`
-    const userData = authUser.value ? { userId: authUser.value.id, username: authUser.value.name, role: authUser.value.role } : null
-    connectSocket(roomId, userData)
+    const userData = authUser.value ? { id: authUser.value.id, name: authUser.value.name, role: authUser.value.role } : null
+    connectSocket(userData)
+    joinRoom(roomId)
 
     onSocket('chat:message', (data) => {
         if (!messages.value.find(m => m.id === data.id)) {
@@ -205,7 +206,10 @@ onMounted(async () => {
     setupSocket();
     await loadMessages(); 
 })
-onUnmounted(() => disconnectSocket())
+onUnmounted(() => {
+    leaveRoom(`meeting-${meetingId.value}`)
+    disconnectSocket()
+})
 
 defineExpose({ loadMessages })
 </script>
