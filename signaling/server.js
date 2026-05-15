@@ -78,7 +78,8 @@ io.on('connection', socket => {
     if (data.roomId) {
       socket.to(data.roomId).emit('media-state-changed', {
         from: socket.id,
-        audioMuted: data.audioMuted
+        audioMuted: data.audioMuted,
+        cameraOff: data.cameraOff
       });
     }
   });
@@ -137,6 +138,11 @@ io.on('connection', socket => {
 
   socket.on('kahoot:next-question', (roomId, data) => {
     socket.to(roomId).emit('kahoot:next-question', data);
+  });
+
+  // Videocall: el profesor finaliza la llamada para todos
+  socket.on('call:ended', (roomId, data) => {
+    socket.to(roomId).emit('call:ended', data);
   });
 });
 

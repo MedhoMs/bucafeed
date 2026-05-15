@@ -13,7 +13,7 @@
         <div v-for="entry in allStreams" :key="entry.id" class="relative group min-h-[200px]">
           <!-- Video activo -->
           <video
-            v-if="!entry.noCamera && entry.stream && entry.stream.getVideoTracks().length > 0"
+            v-if="!entry.noCamera && entry.stream && entry.stream.getVideoTracks().some(t => t.enabled)"
             :ref="el => setVideoRef(entry.id, el)"
             autoplay
             playsinline
@@ -140,6 +140,7 @@ const peerConnections = {};
 const videoRefs = {};
 const mySocketId = ref('');
 const usingTurn = ref(false);
+const pendingUserInfo = {};
 
 const isMicOn = ref(true);
 const isCameraOn = ref(true);
@@ -209,6 +210,13 @@ function toggleCamera() {
     isCameraOn.value = !isCameraOn.value;
     localStream.getVideoTracks().forEach(track => track.enabled = isCameraOn.value);
     
+    if (socket) {
+        socket.emit('media-state-changed', { 
+            roomId: videoRoomId, 
+            cameraOff: !isCameraOn.value 
+        });
+    }
+    
     const me = allStreams.value.find(s => s.id === 'me');
     if (me) me.noCamera = !isCameraOn.value;
 }
@@ -229,19 +237,30 @@ function createPeerConnection(targetId, iceServerList) {
   pc.addEventListener('track', event => {
     const [remoteStream] = event.streams;
     if (remoteStream) {
+      const hasVideo = remoteStream.getVideoTracks().some(t => t.enabled && t.readyState === 'live');
       const existing = allStreams.value.find(s => s.id === targetId);
       if (existing) {
         existing.stream = remoteStream;
+        existing.noCamera = !hasVideo;
       } else {
+        const info = pendingUserInfo[targetId];
         allStreams.value.push({ 
             id: targetId, 
             stream: remoteStream, 
-            noCamera: remoteStream.getVideoTracks().length === 0, 
-            label: 'Participante',
-            avatarUrl: null
+            noCamera: !hasVideo, 
+            label: info?.name || 'Participante',
+            avatarUrl: info?.avatar || null
         });
       }
       connectionStatus.value = 'Conectado';
+      // Forzar la asignación del video element
+      nextTick(() => {
+        const el = videoRefs[targetId];
+        if (el && el.srcObject !== remoteStream) {
+          el.srcObject = remoteStream;
+          el.play().catch(() => {});
+        }
+      });
     }
   });
 
@@ -252,10 +271,35 @@ function createPeerConnection(targetId, iceServerList) {
   });
 
   pc.addEventListener('iceconnectionstatechange', async () => {
+    console.log(`[WebRTC] ICE state for ${targetId}: ${pc.iceConnectionState}`);
+    
+    if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+      pc.getStats().then(stats => {
+        stats.forEach(report => {
+          if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+            const localId = report.localCandidateId;
+            const remoteId = report.remoteCandidateId;
+            stats.forEach(s => {
+              if (s.id === localId || s.id === remoteId) {
+                console.log(`[WebRTC] Candidato ${s.id}: tipo=${s.candidateType}, protocolo=${s.protocol}, ip=${s.address || s.ip}`);
+              }
+            });
+            const isRelay = Array.from(stats.values()).some(s => 
+              (s.id === localId || s.id === remoteId) && s.candidateType === 'relay'
+            );
+            console.log(`[WebRTC] ✅ Conexión establecida: ${isRelay ? '🔄 TURN (relay)' : '🔗 P2P directo (STUN)'}`);
+            usingTurn.value = isRelay;
+          }
+        });
+      });
+    }
+    
     if (pc.iceConnectionState === 'failed') {
+      console.log('[WebRTC] ❌ Conexión P2P falló, intentando con TURN...');
       const fullServers = await loadTurnServers();
       const hasTurn = fullServers.some(s => s.urls?.toString().includes('turn:'));
       if (!hasTurn) {
+        console.log('[WebRTC] ⚠️ No hay servidores TURN disponibles');
         cleanupPeerConnection(targetId);
         return;
       }
@@ -318,12 +362,7 @@ onMounted(async () => {
             if (!allStreams.value.find(s => s.id === clientId)) {
                 allStreams.value.push({ id: clientId, stream: null, noCamera: true, label: 'Cargando...', avatarUrl: null });
             }
-            const pc = createPeerConnection(clientId, servers);
-            try {
-                const offer = await pc.createOffer({ iceRestart: true });
-                await pc.setLocalDescription(offer);
-                socket.emit('offer', { to: clientId, offer: pc.localDescription });
-            } catch {}
+            // No crear ofertas aquí — los usuarios existentes nos enviarán ofertas vía 'user-joined'
         }
     });
   });
@@ -331,7 +370,8 @@ onMounted(async () => {
   socket.on('media-state-changed', (data) => {
       const entry = allStreams.value.find(s => s.id === data.from);
       if (entry) {
-          entry.audioMuted = data.audioMuted;
+          if (data.audioMuted !== undefined) entry.audioMuted = data.audioMuted;
+          if (data.cameraOff !== undefined) entry.noCamera = data.cameraOff;
       }
   });
 
@@ -350,7 +390,8 @@ onMounted(async () => {
 
   socket.on('offer', async ({ from, offer }) => {
     if (!allStreams.value.find(s => s.id === from)) {
-        allStreams.value.push({ id: from, stream: null, noCamera: true, label: 'Participante', avatarUrl: null });
+        const info = pendingUserInfo[from];
+        allStreams.value.push({ id: from, stream: null, noCamera: true, label: info?.name || 'Participante', avatarUrl: info?.avatar || null });
     }
     const servers = await loadTurnServers();
     const pc = createPeerConnection(from, servers);
@@ -358,9 +399,13 @@ onMounted(async () => {
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
     socket.emit('answer', { to: from, answer: pc.localDescription });
+    // Enviar mi info al peer que me envió la oferta
+    socket.emit('user-info', { roomId: videoRoomId, name: myLabel, avatar: myAvatar });
   });
 
   socket.on('user-info', (data) => {
+      // Guardar siempre para uso futuro
+      pendingUserInfo[data.from] = { name: data.name, avatar: data.avatar };
       const entry = allStreams.value.find(s => s.id === data.from);
       if (entry) {
           entry.label = data.name || entry.label;

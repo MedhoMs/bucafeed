@@ -74,6 +74,17 @@ async function startMeetingCall() {
         console.error('Error starting meeting call:', e);
     }
 }
+
+function handleCallEnd() {
+    // Si es profesor/admin, finalizar la llamada para todos
+    if (canStartCall.value && activeCallRoomId.value) {
+        const meetingRoom = `meeting-${meetingId}`;
+        emitSocket('call:ended', meetingRoom, { roomId: activeCallRoomId.value });
+        // Marcar los mensajes locales del profesor también
+        chatBarRef.value?.markCallsEnded();
+    }
+    activeCallRoomId.value = null;
+}
 </script>
 
 <template>
@@ -118,10 +129,10 @@ async function startMeetingCall() {
                             <span class="text-[10px] font-black uppercase tracking-widest text-white/80">Sesión de video grupal activa</span>
                         </div>
                     </div>
-                    <VideoCall :room-id="activeCallRoomId" @close="activeCallRoomId = null" />
+                    <VideoCall :room-id="activeCallRoomId" @close="handleCallEnd" />
                 </div>
 
-                <MeetingChatBar ref="chatBarRef" :meeting="meeting" :active-call-id="activeCallRoomId" @joinCall="activeCallRoomId = $event" class="flex-1 overflow-hidden" />
+                <MeetingChatBar ref="chatBarRef" :meeting="meeting" :active-call-id="activeCallRoomId" @joinCall="activeCallRoomId = $event" @forceLeaveCall="activeCallRoomId = null" class="flex-1 overflow-hidden" />
             </div>
     
             <ChatMembers :meeting="meeting" />

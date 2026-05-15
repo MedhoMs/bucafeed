@@ -17,7 +17,7 @@ const props = defineProps({
     activeCallId: { type: String, default: null }
 });
 
-const emit = defineEmits(['joinCall']);
+const emit = defineEmits(['joinCall', 'forceLeaveCall']);
 
 const meetingId = computed(() => route.params.id);
 const canCreateKahoot = computed(() => authUser.value && ['Teacher', 'Admin', 'EI'].includes(authUser.value.role));
@@ -200,6 +200,16 @@ function setupSocket() {
     onSocket('kahoot:player-answered', (data) => {
         if (data.sessionId) { kahootAnsweredCount.value[data.sessionId] = (kahootAnsweredCount.value[data.sessionId] || 0) + 1 }
     })
+
+    // Cuando el profesor finaliza la llamada
+    onSocket('call:ended', (data) => {
+        messages.value.forEach(msg => {
+            if (msg.type === 'call') {
+                msg.callEnded = true;
+            }
+        });
+        emit('forceLeaveCall');
+    })
 }
 
 onMounted(async () => { 
@@ -211,7 +221,15 @@ onUnmounted(() => {
     disconnectSocket()
 })
 
-defineExpose({ loadMessages })
+function markCallsEnded() {
+    messages.value.forEach(msg => {
+        if (msg.type === 'call') {
+            msg.callEnded = true;
+        }
+    });
+}
+
+defineExpose({ loadMessages, markCallsEnded })
 </script>
 
 <template>
@@ -251,21 +269,29 @@ defineExpose({ loadMessages })
 
                             <div v-else-if="msg.type === 'call'" class="flex flex-col gap-3 p-1">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                    <div :class="['w-10 h-10 rounded-full flex items-center justify-center', msg.callEnded ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400']">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"/><path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"/></svg>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-bold">{{ Number(msg.sender) === Number(authUser?.id) ? 'Has iniciado una llamada grupal' : 'Sesión de video disponible' }}</p>
-                                        <p class="text-[10px] opacity-60">¿Deseas entrar a la reunión de video?</p>
+                                        <p class="text-sm font-bold">
+                                            {{ msg.callEnded ? 'Llamada finalizada' : (Number(msg.sender) === Number(authUser?.id) ? 'Has iniciado una llamada grupal' : 'Sesión de video disponible') }}
+                                        </p>
+                                        <p class="text-[10px] opacity-60">
+                                            {{ msg.callEnded ? 'La sesión de video ha terminado' : '¿Deseas entrar a la reunión de video?' }}
+                                        </p>
                                     </div>
                                 </div>
-                                <button @click="isUnverified ? null : emit('joinCall', msg.content)" 
+                                <button v-if="!msg.callEnded"
+                                    @click="isUnverified ? null : emit('joinCall', msg.content)" 
                                     :disabled="isUnverified"
                                     :class="['w-full py-3 px-6 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2', 
                                              isUnverified ? 'bg-amber-500/20 text-amber-500/50 cursor-not-allowed border border-amber-500/20' : 'bg-emerald-500 hover:bg-emerald-600 cursor-pointer']">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>
                                     {{ isUnverified ? 'Bloqueado (Sin verificar)' : 'Unirse a la sesión' }}
                                 </button>
+                                <div v-else class="w-full py-3 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest text-center bg-red-500/10 text-red-400/70 border border-red-500/20">
+                                    Sesión finalizada
+                                </div>
                             </div>
                         </div>
                     </div>
