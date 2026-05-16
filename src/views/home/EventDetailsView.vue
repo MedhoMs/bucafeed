@@ -122,8 +122,8 @@
                 </div>
 
                 <div class="flex flex-col lg:flex-row gap-8 bg-white/5 border border-white/10 rounded-3xl p-6 md:p-10">
-                    <img v-if="eventDetails?.image_url" :src="eventDetails.image_url" class="w-full lg:w-2/5 rounded-3xl object-cover" alt="Event Image">
-                    <div v-else class="w-full lg:w-2/5 rounded-3xl bg-secondary-normal/20 flex items-center justify-center border border-secondary-normal/30 min-h-[200px]">
+                    <img v-if="eventDetails?.image_url" :src="eventDetails.image_url" class="w-auto lg:max-w-[40%] max-h-[300px] rounded-3xl object-contain border border-white/10" alt="Event Image">
+                    <div v-else class="w-full lg:w-2/5 h-[300px] rounded-3xl bg-secondary-normal/20 flex items-center justify-center border border-secondary-normal/30">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#B7B7B7"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z"/></svg>
                     </div>
                     <div class="flex flex-col gap-8 flex-1">

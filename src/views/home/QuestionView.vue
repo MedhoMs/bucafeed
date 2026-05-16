@@ -273,9 +273,7 @@
                                 <h1 class="text-4xl lg:text-5xl font-black text-white mb-4 tracking-normal">{{ question.title }}</h1>
                                 <p class="text-white/80 text-base leading-relaxed whitespace-pre-wrap">{{ question.content }}</p>
                                 
-                                <div v-if="question.image" class="mt-6 rounded-2xl overflow-hidden border border-white/10 bg-black/20 flex items-center justify-center">
-                                    <img :src="getImageUrl(question.image)" alt="Imagen de apoyo" class="w-full h-auto max-h-[700px] object-contain hover:scale-[1.01] transition-transform duration-700" />
-                                </div>
+                                <img v-if="question.image" :src="getImageUrl(question.image)" alt="Imagen de apoyo" class="mt-6 max-h-[300px] w-auto max-w-full rounded-2xl border border-white/10 hover:scale-[1.01] transition-transform duration-700" />
                                 
                                 <div v-if="question.tags && question.tags.length" class="mt-6 pt-4 border-t border-white/5 flex flex-wrap gap-2">
                                     <div v-for="tag in question.tags" :key="tag.id" class="px-3 py-1 rounded-full bg-accent-normal text-white border border-white/10 text-xs font-bold shadow-xs">
@@ -366,9 +364,7 @@
                                             </div>
                                         </div>
                                         <p class="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">{{ ans.content }}</p>
-                                        <div v-if="ans.image" class="mt-4 rounded-xl overflow-hidden border border-white/10 inline-block w-full max-w-lg bg-black/20">
-                                            <img :src="getImageUrl(ans.image)" alt="Imagen adjunta" class="w-full h-auto max-h-[400px] object-contain hover:scale-[1.02] transition-transform duration-500 cursor-pointer" />
-                                        </div>
+                                        <img v-if="ans.image" :src="getImageUrl(ans.image)" alt="Imagen adjunta" class="mt-4 max-h-[300px] w-auto max-w-full rounded-xl border border-white/10 hover:scale-[1.02] transition-transform duration-500 cursor-pointer" />
                                     </div>
                                 </div>
                             </div>
