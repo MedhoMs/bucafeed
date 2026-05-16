@@ -82,7 +82,7 @@ const MODAL_MAP = computed(() => ({
         fields: [
             { id: 'title',   type: 'text',     label: 'Título de la duda',      placeholder: 'Ej: ¿Cómo configurar Docker?',       required: true },
             { id: 'content', type: 'textarea',  label: 'Explicación detallada',  placeholder: 'Describe tu problema o duda aquí...', required: true },
-            { id: 'image',   type: 'file',      label: 'Imagen de apoyo (opcional)', aspect: 'video' }
+            { id: 'image',   type: 'file',      label: 'Imagen de apoyo (opcional)', aspect: 'video', showModerationWarning: true }
         ]
     },
     edit_question: {
@@ -93,7 +93,7 @@ const MODAL_MAP = computed(() => ({
         fields: [
             { id: 'title',   type: 'text',     label: 'Título de la duda',      placeholder: 'Ej: ¿Cómo configurar Docker?',       required: true },
             { id: 'content', type: 'textarea',  label: 'Explicación detallada',  placeholder: 'Describe tu problema o duda aquí...', required: true },
-            { id: 'image',   type: 'file',      label: 'Nueva imagen (opcional)', aspect: 'video' }
+            { id: 'image',   type: 'file',      label: 'Nueva imagen (opcional)', aspect: 'video', showModerationWarning: true }
         ]
     }
 }))
