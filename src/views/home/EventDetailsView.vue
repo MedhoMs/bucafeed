@@ -73,6 +73,16 @@
         const searchQuery = direccion.value.includes(',') ? direccion.value : `${direccion.value}, Lanzarote`;
         mapaUrl.value = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}&output=embed`
     }
+
+    const downloadPDF = () => {
+        console.log('Generando PDF para el evento:', eventDetails.value?.id);
+        if (!eventDetails.value) {
+            console.error('No hay detalles del evento cargados');
+            return;
+        }
+        const url = `${apiBase}/events/${eventDetails.value.id}/pdf`;
+        window.open(url, '_blank');
+    }
 </script>
 
 <template>
@@ -94,7 +104,7 @@
                 <template #headerActions>
                     <button @click="isUnverified ? null : handleJoin()" 
                         :disabled="isUnverified"
-                        :class="['flex justify-center items-center gap-2 p-4 duration-300 ease-in shadow-xl min-w-[180px] w-full md:w-auto font-black uppercase tracking-widest text-[10px]', 
+                        :class="['flex justify-center items-center gap-2 p-4 duration-300 ease-in shadow-xl min-w-[180px] w-full md:w-auto font-black uppercase tracking-widest text-[10px] rounded-2xl', 
                                  isUnverified ? 'bg-amber-500/20 text-amber-500/50 cursor-not-allowed border border-amber-500/20' :
                                  (eventDetails?.joined ? 'bg-success-normal hover:bg-success-normal-hover text-white cursor-pointer' : 'bg-accent-normal hover:bg-accent-normal-hover text-white cursor-pointer')]">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor" :class="isUnverified ? 'text-amber-500/30' : 'text-white/80'"><path d="m368-320 112-84 110 84-42-136 112-88H524l-44-136-44 136H300l110 88-42 136ZM160-160q-33 0-56.5-23.5T80-240v-135q0-11 7-19t18-10q24-8 39.5-29t15.5-47q0-26-15.5-47T105-556q-11-2-18-10t-7-19v-135q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v135q0 11-7 19t-18 10q-24 8-39.5 29T800-480q0 26 15.5 47t39.5 29q11 2 18 10t7 19v135q0 33-23.5 56.5T800-160H160Zm0-80h640v-102q-37-22-58.5-58.5T720-480q0-43 21.5-79.5T800-618v-102H160v102q37 22 58.5 58.5T240-480q0 43-21.5 79.5T160-342v102Zm320-240Z"/></svg>
@@ -122,8 +132,8 @@
                 </div>
 
                 <div class="flex flex-col lg:flex-row gap-8 bg-white/5 border border-white/10 rounded-3xl p-6 md:p-10">
-                    <img v-if="eventDetails?.image_url" :src="eventDetails.image_url" class="w-full lg:w-2/5 rounded-3xl object-cover" alt="Event Image">
-                    <div v-else class="w-full lg:w-2/5 rounded-3xl bg-secondary-normal/20 flex items-center justify-center border border-secondary-normal/30 min-h-[200px]">
+                    <img v-if="eventDetails?.image_url" :src="eventDetails.image_url" class="w-auto lg:max-w-[40%] max-h-[300px] rounded-3xl object-contain border border-white/10" alt="Event Image">
+                    <div v-else class="w-full lg:w-2/5 h-[300px] rounded-3xl bg-secondary-normal/20 flex items-center justify-center border border-secondary-normal/30">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#B7B7B7"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z"/></svg>
                     </div>
                     <div class="flex flex-col gap-8 flex-1">
@@ -149,6 +159,11 @@
                         </div>
                     </div>
                 </div>
+
+                <button @click="downloadPDF" class="flex items-center gap-2 mt-10 self-center w-fit bg-accent-normal hover:bg-accent-normal-hover text-white px-8 py-3.5 cursor-pointer rounded-full duration-300 shadow-lg font-black tracking-widest text-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z"/></svg>
+                    Leer Folleto del Evento
+                </button>
 
                 <div class="flex flex-col gap-4 mt-8">
                     <h3 class="text-3xl font-bold mx-auto mb-2 text-white">Google Maps</h3>

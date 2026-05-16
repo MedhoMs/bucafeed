@@ -171,9 +171,7 @@
                             <p class="text-white/80 mt-2 text-sm line-clamp-3 leading-relaxed">{{ q.content }}</p>
                             
                             <!-- Preview de Imagen -->
-                            <div v-if="q.image" class="mt-4 rounded-xl overflow-hidden border border-white/5 bg-black/40 aspect-video w-full max-w-lg flex items-center justify-center">
-                                <img :src="getImageUrl(q.image)" alt="Preview" class="w-full h-full object-contain" />
-                            </div>
+                            <img v-if="q.image" :src="getImageUrl(q.image)" alt="Preview" class="mt-4 max-h-[300px] w-auto max-w-full rounded-xl border border-white/5" />
                             <div class="post-footer mt-4 flex items-center justify-between">
                                 <router-link :to="'/question/' + q.id" class="responses-badge bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95 px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 select-none group" :title="t.forum.viewThread">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-dimmed group-hover:text-success-normal transition-colors"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>

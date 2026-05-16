@@ -220,6 +220,21 @@
             </div>
         </div>
 
+        <!-- Moderation Warning (for images) -->
+        <transition name="slide-fade">
+            <div
+                v-if="selectedFile && selectedFile.type.startsWith('image/')"
+                class="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-200/80 mt-1 animate-in fade-in slide-in-from-top-1 duration-300"
+            >
+                <svg class="mt-0.5 shrink-0 text-amber-500" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>
+                </svg>
+                <p class="text-[10px] leading-tight font-medium">
+                    Los administradores podrán borrar tu respuesta si se detecta contenido inapropiado en la foto.
+                </p>
+            </div>
+        </transition>
+
     </div>
 </template>
 

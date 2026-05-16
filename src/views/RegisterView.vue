@@ -38,7 +38,8 @@
             institutionSelect.innerHTML = '<option value="">Cargando...</option>';
             try {
                 const response = await fetch(`${apiBase}/educational-centers?type=${type}`);
-                const centers = await response.json();
+                const responseData = await response.json();
+                const centers = Array.isArray(responseData) ? responseData : (responseData.data || []);
                 institutionSelect.innerHTML = '';
                 if (!centers.length) {
                     const opt = document.createElement('option');
@@ -54,6 +55,7 @@
                     institutionSelect.appendChild(option);
                 });
             } catch (e) {
+                console.error(e);
                 institutionSelect.innerHTML = '<option value="">Error al cargar centros</option>';
             }
         }

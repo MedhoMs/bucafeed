@@ -27,8 +27,7 @@ CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
 # ── Stage 2: Builder de producción ───────────────────────────────────
 FROM base AS builder
-# Las variables VITE_* se compilan dentro del bundle en build time.
-# En Railway: Settings → Variables → Add as Build Variables
+
 ARG VITE_API_URL
 ARG VITE_SOCKET_URL
 ARG VITE_BACKEND_URL
