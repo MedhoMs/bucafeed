@@ -59,7 +59,8 @@ const handleDelete = () => {
         <div class="grid grid-cols-2 gap-4 mb-6 relative z-10">
             <div>
                 <p class="text-[9px] font-black uppercase text-white/20 tracking-[0.2em] mb-1">Ponente</p>
-                <router-link v-if="props.teacher_id" :to="'/profile/' + props.teacher_id" class="text-xs font-bold text-white/80 truncate hover:text-primary-normal transition-colors">
+                <router-link v-if="props.teacher_id" :to="'/profile/' + props.teacher_id"
+                    class="text-xs font-bold text-white/80 truncate hover:text-primary-normal transition-colors">
                     {{ props.teacher }}
                 </router-link>
                 <p v-else class="text-xs font-bold text-white/80 truncate">{{ props.teacher }}</p>
@@ -86,8 +87,7 @@ const handleDelete = () => {
 
         <div class="mt-auto pt-6 flex justify-end relative z-10">
             <div v-if="disabled"
-                class="bg-[#1a2d42]/50 text-white/30 text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-xl border border-white/5 cursor-not-allowed opacity-50"
-            >
+                class="bg-[#1a2d42]/50 text-white/30 text-[10px] font-black uppercase tracking-widest px-8 py-3 rounded-xl border border-white/5 cursor-not-allowed opacity-50">
                 Entrar al Chat
             </div>
             <router-link v-else

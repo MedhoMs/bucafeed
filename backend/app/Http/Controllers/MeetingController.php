@@ -19,7 +19,7 @@ class MeetingController extends TemplateController
     {
         return [
             ['name' => 'name', 'label' => 'Nombre de la Charla', 'placeholder' => 'Ej: Dudas PHP', 'value' => $model->name ?? '', 'required' => true],
-            ['name' => 'schedule', 'label' => 'Horario', 'placeholder' => 'Ej: 10:00', 'value' => $model->schedule ?? '', 'required' => true],
+            ['name' => 'schedule', 'type' => 'time', 'label' => 'Horario', 'value' => $model->schedule ? substr($model->schedule, 0, 5) : '', 'required' => true],
             ['name' => 'description', 'type' => 'textarea', 'label' => 'Descripción', 'value' => $model->description ?? '', 'full' => true],
         ];
     }
@@ -30,7 +30,7 @@ class MeetingController extends TemplateController
             'name' => 'required|string|max:255',
             'teacher_id' => 'required|exists:users,id',
             'educational_center_id' => 'required|exists:educational_centers,id',
-            'schedule' => 'required|string',
+            'schedule' => 'required',
         ];
     }
 
