@@ -72,6 +72,7 @@ const emit = defineEmits(['update:modelValue', 'submit'])
                 :label="field.label"
                 :previewUrl="field.previewUrl"
                 :aspect="field.aspect || 'square'"
+                :showModerationWarning="field.showModerationWarning"
             />
 
             <!-- CHECKLIST (Especial alumnos) -->
