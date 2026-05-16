@@ -70,7 +70,7 @@ const fetchUserGroups = async () => {
 const fetchMeetings = async (page = 1) => {
     try {
         let endpoint = `meetings?page=${page}`;
-        
+
         if (user.value) {
             const role = user.value.role?.toLowerCase();
             if (role === 'student' || role === 'alumno' || role === 'estudiante') {
@@ -81,9 +81,9 @@ const fetchMeetings = async (page = 1) => {
         }
 
         const result = await get(endpoint);
-        
+
         const dataArray = result.data || result;
-        
+
         if (Array.isArray(dataArray)) {
             meetings.value = dataArray.map(m => ({
                 id: m.id,
@@ -93,10 +93,10 @@ const fetchMeetings = async (page = 1) => {
                 group: m.group ? m.group.name : (m.educational_center ? m.educational_center.name : t.value.meetings.various),
                 group_id: m.group_id,
                 educational_center_id: m.educational_center_id,
-                schedule: m.schedule,
+                schedule: m.schedule ? m.schedule.substring(0, 5) : '',
                 description: m.description
             }));
-            
+
             pagination.currentPage = result.current_page || 1;
             pagination.lastPage = result.last_page || 1;
         }
@@ -158,7 +158,7 @@ const meetingFields = computed(() => {
     const baseFields = [
         { id: 'name', type: 'text', label: t.value.meetings.form.title, placeholder: t.value.meetings.form.titlePlaceholder, required: true },
         { id: 'teacher_name', type: 'text', label: t.value.meetings.form.teacher, placeholder: t.value.meetings.form.teacherPlaceholder, required: true, full: false },
-        { id: 'schedule', type: 'text', label: t.value.meetings.form.schedule, placeholder: t.value.meetings.form.schedulePlaceholder, required: true, full: false },
+        { id: 'schedule', type: 'time', label: t.value.meetings.form.schedule, required: true, full: false },
     ];
 
     if (user.value?.role?.toLowerCase().includes('admin')) {
@@ -216,7 +216,7 @@ const closeModal = () => {
 const saveMeeting = async () => {
     // Validar campos requeridos
     const centerId = newMeeting.value.educational_center_id || user.value?.educational_center_id;
-    
+
     if (newMeeting.value.name && newMeeting.value.schedule && centerId) {
         try {
             const payload = {
@@ -230,7 +230,7 @@ const saveMeeting = async () => {
             };
 
             const response = await apiPost('meetings', payload);
-            
+
             if (response) {
                 showToast(t.value.meetings.success || 'Charla creada correctamente', 'success')
                 await fetchMeetings();
@@ -250,7 +250,7 @@ const confirmDelete = (id) => {
 
 const deleteMeeting = async () => {
     if (!meetingToDelete.value) return;
-    
+
     try {
         // Cerrar modal inmediatamente para mejor UX
         const id = meetingToDelete.value;
@@ -259,7 +259,7 @@ const deleteMeeting = async () => {
 
         await apiDelete(`meetings/${id}`);
         showToast('Charla eliminada', 'success')
-        
+
         // Recargar la lista para sincronizar con el servidor
         await fetchMeetings();
     } catch (error) {
@@ -276,7 +276,8 @@ const deleteMeeting = async () => {
     <div class="min-h-screen">
         <NavBar></NavBar>
 
-        <div v-if="toast.show" :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-xl shadow-2xl font-semibold text-sm', toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white']">
+        <div v-if="toast.show"
+            :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-xl shadow-2xl font-semibold text-sm', toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white']">
             {{ toast.msg }}
         </div>
 
@@ -286,40 +287,34 @@ const deleteMeeting = async () => {
                     <SearchBar :items="availableMeetings" @update:filtered="filteredMeetings = $event" />
                 </template>
                 <template #actions>
-                    <PrimaryButton v-if="canCreateMeeting" :text="t.meetings.newMeeting" icon="plus" @click="openModal" />
+                    <PrimaryButton v-if="canCreateMeeting" :text="t.meetings.newMeeting" icon="plus"
+                        @click="openModal" />
                 </template>
 
             </PageHeader>
-    
-            <section 
-                :class="[
-                    'text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 flex flex-col flex-1 pt-6',
-                    (filteredMeetings.length === 0 || isUnverified) ? 'justify-center pb-32' : 'mb-20'
-                ]"
-            >
+
+            <section :class="[
+                'text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 flex flex-col flex-1 pt-6',
+                (filteredMeetings.length === 0 || isUnverified) ? 'justify-center pb-32' : 'mb-20'
+            ]">
                 <!-- Banner para alumnos no verificados (Centrado y bloqueante) -->
-                <UnverifiedBanner 
-                    v-if="isUnverified"
-                    :message="t.meetings.unverifiedMessage || 'No puedes visualizar las charlas programadas hasta que tu centro verifique tu identidad.'"
-                />
+                <UnverifiedBanner v-if="isUnverified"
+                    :message="t.meetings.unverifiedMessage || 'No puedes visualizar las charlas programadas hasta que tu centro verifique tu identidad.'" />
 
                 <template v-else>
-                    <div v-if="filteredMeetings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1">
-                        <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id" :name="meeting.name"
-                            :teacher="meeting.teacher" :teacher_id="meeting.teacher_id" :schedule="meeting.schedule" :group="meeting.group"
-                            :group_id="meeting.group_id" :description="meeting.description" 
-                            :disabled="isUnverified"
-                            @delete="confirmDelete" />
+                    <div v-if="filteredMeetings.length > 0"
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1">
+                        <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id"
+                            :name="meeting.name" :teacher="meeting.teacher" :teacher_id="meeting.teacher_id"
+                            :schedule="meeting.schedule" :group="meeting.group" :group_id="meeting.group_id"
+                            :description="meeting.description" :disabled="isUnverified" @delete="confirmDelete" />
                     </div>
 
                     <div v-if="pagination.lastPage > 1" class="mt-12 mb-10 flex justify-center w-full">
-                        <Pagination
-                            :current-page="pagination.currentPage"
-                            :last-page="pagination.lastPage"
-                            @change="handlePageChange"
-                        />
+                        <Pagination :current-page="pagination.currentPage" :last-page="pagination.lastPage"
+                            @change="handlePageChange" />
                     </div>
-    
+
                     <div v-if="filteredMeetings.length === 0"
                         class="w-fit bg-white/5 backdrop-blur-md p-10 mx-auto rounded-3xl shadow-xl border border-white/10 text-center">
                         <h3 class="text-2xl font-bold text-white mb-2">{{ t.meetings.noMeetings || 'No se han encontrado reuniones' }}</h3>
@@ -327,16 +322,16 @@ const deleteMeeting = async () => {
                     </div>
                 </template>
             </section>
-    
+
             <!-- Modal de Creación -->
-            <BaseModal v-if="showModal" :title="t.meetings.createTitle" :confirm-text="t.meetings.createConfirm" @close="closeModal"
-                @confirm="saveMeeting">
+            <BaseModal v-if="showModal" :title="t.meetings.createTitle" :confirm-text="t.meetings.createConfirm"
+                @close="closeModal" @confirm="saveMeeting">
                 <GenericForm v-model="newMeeting" :fields="meetingFields" />
             </BaseModal>
 
             <!-- Modal de Confirmación de Borrado -->
-            <BaseModal v-if="showDeleteModal" title="¿Eliminar charla?" confirm-text="Eliminar" @close="showDeleteModal = false"
-                @confirm="deleteMeeting">
+            <BaseModal v-if="showDeleteModal" title="¿Eliminar charla?" confirm-text="Eliminar"
+                @close="showDeleteModal = false" @confirm="deleteMeeting">
                 <p class="text-white/60 text-sm">Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta charla?</p>
             </BaseModal>
         </main>

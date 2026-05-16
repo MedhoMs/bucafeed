@@ -40,3 +40,7 @@ mysql_data/
 *.sql
 
 package-lock.json
+
+/vendor
+/composer.json
+/composer.lock

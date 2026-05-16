@@ -125,6 +125,7 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
 
 Route::get('/events', [EventController::class, 'apiIndex']);
 Route::post('/events/{id}/join', [EventController::class, 'apiJoin'])->middleware('auth:sanctum');
+Route::get('/events/{id}/pdf', [EventController::class, 'generatePDF']);
 Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name('api.event.image');
 Route::post('/events/generate-kahoot', [KahootController::class, 'generateQuestions']);
 Route::get('/test-gemini', function (\Illuminate\Http\Request $request) {

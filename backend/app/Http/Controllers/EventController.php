@@ -7,6 +7,7 @@ use App\Models\EducationalCenter;
 use App\Models\Rol;
 use App\Models\Cycle;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EventController extends TemplateController
 {
@@ -122,6 +123,15 @@ class EventController extends TemplateController
     /**
      * API / Public methods
      */
+    public function generatePDF($id)
+    {
+        $event = Event::with('educationalCenter')->findOrFail($id);
+        
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.event_info', compact('event'));
+        
+        return $pdf->stream("Evento_{$event->id}.pdf");
+    }
+
     public function streamImage($id)
     {
         $event = Event::findOrFail($id);
