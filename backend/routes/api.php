@@ -386,6 +386,7 @@ Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
     Route::delete('/groups/{group}/subjects/{tag}', [EducationalCenterController::class, 'apiRemoveSubjectTeacher']);
     Route::get('/teachers', [EducationalCenterController::class, 'apiTeachers']);
     Route::get('/students', [EducationalCenterController::class, 'apiStudents']);
+    Route::get('/tutors', [EducationalCenterController::class, 'apiTutors']);
     Route::get('/students/pending', [EducationalCenterController::class, 'apiPendingStudents']);
     Route::post('/students/{userId}/verify', [EducationalCenterController::class, 'apiVerifyStudent']);
     Route::get('/admins', [EducationalCenterController::class, 'apiAdmins']);

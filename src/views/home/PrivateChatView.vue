@@ -16,7 +16,9 @@
 
     const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
     
-    const contacts = ref([]);
+    const studentsList = ref([]);
+    const tutorsList = ref([]);
+    const activeTab = ref('students');
     const loadingContacts = ref(false);
     const messages = ref([]);
     const selectedContactId = ref(null);
@@ -27,9 +29,22 @@
     const currentRoomId = ref(null);
     const activeCallRoomId = ref(null);
 
+    const showTabs = computed(() => {
+        const role = authUser.value?.role?.toLowerCase();
+        return role === 'teacher' || role === 'profesor';
+    });
+
+    const contacts = computed(() => {
+        if (showTabs.value) {
+            return activeTab.value === 'students' ? studentsList.value : tutorsList.value;
+        }
+        return studentsList.value;
+    });
+
     const selectedContact = computed(() => {
         if (!selectedContactId.value) return null;
-        return contacts.value.find(c => Number(c.id) === Number(selectedContactId.value));
+        const allContacts = [...studentsList.value, ...tutorsList.value];
+        return allContacts.find(c => Number(c.id) === Number(selectedContactId.value));
     });
 
     // Verificar si un contacto está online
@@ -64,7 +79,17 @@
             const data = await get(endpoint);
             // Si es admin, nos filtramos a nosotros mismos de la lista
             const filteredData = Array.isArray(data) ? data.filter(u => Number(u.id) !== Number(authUser.value.id)) : [];
-            contacts.value = filteredData;
+            studentsList.value = filteredData;
+
+            // Si es profesor, cargar también los tutores
+            if (role === 'teacher' || role === 'profesor') {
+                try {
+                    const tutorsData = await get('my-center/tutors');
+                    tutorsList.value = Array.isArray(tutorsData) ? tutorsData : [];
+                } catch (tutorError) {
+                    console.error("Error fetching tutors list:", tutorError);
+                }
+            }
         } catch (error) {
             console.error("Error fetching contacts:", error);
         } finally {
@@ -348,12 +373,30 @@
                         </button>
                         <h2 class="text-2xl font-bold text-white tracking-normal">Chat Privado</h2>
                     </div>
-                    <p class="text-xs text-white opacity-50 uppercase font-bold tracking-widest">
+                    <p v-if="!showTabs" class="text-xs text-white opacity-50 uppercase font-bold tracking-widest">
                         {{ 
                             (authUser?.role?.toLowerCase() === 'student' || authUser?.role?.toLowerCase() === 'alumno' || authUser?.role?.toLowerCase() === 'eu') ? 'Profesores' : 
                             ((authUser?.role?.toLowerCase() === 'admin' || authUser?.role?.toLowerCase() === 'administrador' || authUser?.role?.toLowerCase() === 'ei') ? 'Administradores' : 'Estudiantes')
                         }}
                     </p>
+
+                    <!-- Pestañas premium para profesores (Separación Alumnos / Tutores Legales) -->
+                    <div v-if="showTabs" class="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/5 mt-2">
+                        <button 
+                            @click="activeTab = 'students'" 
+                            class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all duration-200 cursor-pointer"
+                            :class="activeTab === 'students' ? 'bg-[#406071] text-white shadow-md' : 'text-white/60 hover:text-white/80 hover:bg-white/5'"
+                        >
+                            Alumnos
+                        </button>
+                        <button 
+                            @click="activeTab = 'tutors'" 
+                            class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all duration-200 cursor-pointer"
+                            :class="activeTab === 'tutors' ? 'bg-[#406071] text-white shadow-md' : 'text-white/60 hover:text-white/80 hover:bg-white/5'"
+                        >
+                            Tutores Legales
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex-1 overflow-y-auto custom-scrollbar">
