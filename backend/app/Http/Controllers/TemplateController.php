@@ -18,6 +18,8 @@ abstract class TemplateController extends Controller
     protected $with = [];  // Relaciones a cargar (ej: ['student', 'teacher'])
     protected $withCount = []; // Conteos de relaciones (ej: ['students', 'teachers'])
 
+    protected $apiPerPage = 12; // Número de elementos por página en la API
+
     /**
      * Endpoint API genérico para el Frontend
      */
@@ -36,8 +38,8 @@ abstract class TemplateController extends Controller
         // Aplicar filtros extra si existen
         $query = $this->extraFilters($query, $request);
 
-        // Devolvemos paginado (10 por defecto o lo que se prefiera)
-        return response()->json($query->orderBy('id', 'desc')->paginate(12));
+        // Devolvemos paginado
+        return response()->json($query->orderBy('id', 'desc')->paginate($this->apiPerPage));
     }
 
     /**
