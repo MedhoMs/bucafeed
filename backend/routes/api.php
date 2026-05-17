@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Cycle;
+use App\Models\EducationalCenter;
+use App\Models\Student;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -360,6 +362,7 @@ Route::delete('/users/tutors/{tutorId}', [UserController::class, 'removeTutor'])
 Route::get('/users/{userId}/tutors', [UserController::class, 'getTutors'])->middleware('auth:sanctum');
 Route::get('/users/{userId}/tutor-teachers', [UserController::class, 'getTutorTeachers'])->middleware('auth:sanctum');
 Route::get('/users/{userId}/tutor-students', [UserController::class, 'getTutorStudents'])->middleware('auth:sanctum');
+Route::get('/users/{id}', [UserController::class, 'show'])->middleware('auth:sanctum');
 Route::apiResource('users', UserController::class);
 
 // Endpoint para generar usuarios de prueba (solo admin)
@@ -414,7 +417,7 @@ Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
 // ====================================================================
 Route::get('/fix-db', function () {
     // 1. Asegurar que existe el centro de Administración Global
-    $adminCenter = \App\Models\EducationalCenter::firstOrCreate(
+    $adminCenter = EducationalCenter::firstOrCreate(
         ['name' => 'Administración TelamoNet'],
         [
             'category' => 'IES',
@@ -425,7 +428,7 @@ Route::get('/fix-db', function () {
     );
 
     // 2. Asignar este centro a todos los usuarios con rol Admin o EI que no tengan centro
-    \App\Models\User::whereIn('role', ['Admin', 'Administrador', 'EI'])
+    User::whereIn('role', ['Admin', 'Administrador', 'EI'])
         ->whereNull('educational_center_id')
         ->update([
             'educational_center_id' => $adminCenter->id,
@@ -433,13 +436,13 @@ Route::get('/fix-db', function () {
         ]);
 
     // 3. Verificar a todos los estudiantes (tabla students) para que puedan chatear
-    \App\Models\Student::where('verified', false)
+    Student::where('verified', false)
         ->update(['verified' => true]);
 
     // 4. Asegurarse de que el usuario principal en users también conste como verificado
     // Si tu tabla de users tiene is_verified, si no la tiene no pasará nada
-    if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'is_verified')) {
-        \App\Models\User::where('role', 'Student')->update(['is_verified' => true]);
+    if (Schema::hasColumn('users', 'is_verified')) {
+        User::where('role', 'Student')->update(['is_verified' => true]);
     }
 
     return response()->json([

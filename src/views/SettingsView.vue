@@ -158,7 +158,7 @@ onMounted(() => {
                                 'w-10 h-10 rounded-lg flex items-center justify-center transition-colors',
                                 activeSection === section.id ? 'bg-[#0f2828] text-white shadow-lg' : 'bg-white/5 text-white/40 group-hover:text-white'
                             ]">
-                                <span class="material-symbols-outlined">{{ section.icon }}</span>
+                                <span v-html="section.icon" class="w-5 h-5 flex items-center justify-center"></span>
                             </div>
                             <div>
                                 <p :class="['font-bold text-sm transition-colors', activeSection === section.id ? 'text-white' : 'text-white/60 group-hover:text-white']">
