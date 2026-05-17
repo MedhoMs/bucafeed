@@ -20,7 +20,7 @@
         </div>
         @if($createUrl)
         <button 
-            class="btn-modal btn-primary px-6 py-3 rounded-2xl font-bold flex items-center gap-2.5 w-full md:w-auto justify-center shadow-lg shadow-(--admin-primary-glow) hover:shadow-(--admin-primary)/40 transition-all active:scale-95 border border-white/10"
+            class="btn-modal px-6 py-3 rounded-2xl font-bold flex items-center gap-2.5 w-full md:w-auto justify-center shadow-lg shadow-[rgba(79,209,197,0.4)] hover:shadow-[rgba(79,209,197,0.4)] hover:brightness-90 hover:cursor-pointer transition-all duration-200 active:scale-95 border border-white/10"
             style="background-color: var(--admin-primary);"
             data-url="{{ $createUrl }}"
             data-title="{{ $createTitle }}"

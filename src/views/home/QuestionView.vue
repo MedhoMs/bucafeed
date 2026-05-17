@@ -217,7 +217,7 @@
 <template>
     <div class="min-h-screen">
         <NavBar></NavBar>
-        <main class="lg:pl-75 pt-20 lg:pt-8 flex flex-col min-h-screen relative pb-32">
+        <main class="lg:pl-75 pt-20 lg:pt-8 flex flex-col min-h-screen relative pb-44">
             <!-- Banner para alumnos no verificados (Centrado y bloqueante) -->
             <UnverifiedBanner 
                 v-if="isUnverified"
@@ -371,38 +371,46 @@
                         </div>
                     </div>
     
-                    <div v-if="!loading && question" class="w-full pb-32 mt-auto pt-12">
-                        <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-6 pt-8 border-t border-white/5 w-full">
-                            <div class="flex justify-center md:justify-start">
-                                <router-link to="/foro" class="inline-flex items-center gap-2 text-white hover:bg-accent-normal-hover transition-colors bg-accent-normal px-8 py-3 rounded-xl text-sm font-bold w-full md:w-auto justify-center shadow-lg">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
-                                    {{ t.forum.backToForum }}
-                                </router-link>
-                            </div>
-                            <div class="flex justify-center">
-                                <Pagination 
-                                    :current-page="pagination.currentPage" 
-                                    :last-page="pagination.lastPage" 
-                                    @change="handlePageChange"
-                                    class="mt-0!"
-                                />
-                            </div>
-                            <div class="hidden md:block"></div>
-                        </div>
-                    </div>
+                    <!-- Paginación y botón Volver al foro movidos a la barra fija inferior para mantenerse siempre visibles -->
                 </section>
-                <!-- Formulario de respuesta -->
-                <div class="fixed bottom-0 right-0 left-0 lg:left-75 bg-[#0f2828] border-t border-white/10 px-4 lg:px-8 py-3 z-50">
-                    <div class="w-full max-w-7xl mx-auto flex flex-col gap-1">
-                        <TextChatBar 
-                            :disabled="isUnverified" 
-                            is-response 
-                            @sendMessage="handleSendMessage" 
-                        />
-                        <!-- Pequeño aviso inferior -->
-                        <p v-if="isUnverified" class="text-[9px] text-amber-400/60 font-black uppercase tracking-widest text-center mt-1">
-                            Cuenta pendiente de verificación - Interacción deshabilitada
-                        </p>
+                <!-- Barra fija inferior unificada (Paginación + Entrada de texto) -->
+                <div class="fixed bottom-0 right-0 left-0 lg:left-75 z-50 pointer-events-none">
+                    <div class="w-full flex flex-col">
+                        <!-- 1. Fila de paginación y botón Volver -->
+                        <div v-if="!loading && question" class="px-4 lg:px-14 py-4 pointer-events-none">
+                            <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-4 w-full">
+                                <div class="flex justify-center md:justify-start pointer-events-auto">
+                                    <router-link to="/foro" class="inline-flex items-center gap-2 text-white hover:bg-accent-normal-hover transition-colors bg-accent-normal px-8 py-3 rounded-xl text-sm font-bold w-full md:w-auto justify-center shadow-lg no-underline">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
+                                        {{ t.forum.backToForum }}
+                                    </router-link>
+                                </div>
+                                <div class="flex justify-center pointer-events-auto">
+                                    <Pagination 
+                                        :current-page="pagination.currentPage" 
+                                        :last-page="pagination.lastPage" 
+                                        @change="handlePageChange"
+                                        class="mt-0!"
+                                    />
+                                </div>
+                                <div class="hidden md:block"></div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Fila del formulario de respuesta -->
+                        <div class="px-4 lg:px-14 py-3 bg-[#0f2828]/95 backdrop-blur-md border-t border-white/10 pointer-events-auto">
+                            <div class="flex flex-col gap-1 w-full">
+                                <TextChatBar 
+                                    :disabled="isUnverified" 
+                                    is-response 
+                                    @sendMessage="handleSendMessage" 
+                                />
+                                <!-- Pequeño aviso inferior -->
+                                <p v-if="isUnverified" class="text-[9px] text-amber-400/60 font-black uppercase tracking-widest text-center mt-1">
+                                    Cuenta pendiente de verificación - Interacción deshabilitada
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>

@@ -97,7 +97,7 @@
 <template>
     <div class="min-h-screen">
         <NavBar></NavBar>
-        <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen items-center w-full">
+        <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen w-full">
             <PageHeader :title="t.notifications.title" :subtitle="t.notifications.subtitle">
                 <template #search>
                     <div id="notificationFilter" class="text-white flex flex-wrap justify-center gap-3 items-center">
@@ -145,7 +145,7 @@
             </PageHeader>
 
             <section class="text-white w-full px-6 lg:px-14 mb-20 flex-1 flex flex-col">
-                <div id="mainBody" class="flex flex-col gap-4 items-center flex-1">
+                <div id="mainBody" class="flex flex-col gap-4 w-full flex-1">
                     <div v-if="loading" class="text-white/40 italic py-20">
                         Cargando...
                     </div>
@@ -161,7 +161,7 @@
                     <div
                         v-for="notification in notifications"
                         :key="notification.id"
-                        class="notification-card max-w-4xl w-full"
+                        class="notification-card w-full"
                         :class="{ 'border-accent-normal/30 ring-1 ring-accent-normal/10': !notification.read }"
                         @click="handleClick(notification)"
                     >

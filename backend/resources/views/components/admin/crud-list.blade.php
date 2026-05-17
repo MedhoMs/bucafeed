@@ -50,7 +50,7 @@
             Cerrar
         </button>
 
-        <a href="#" data-url="{{ $createUrl }}" data-load="modal" data-title="{{ $createTitle }}" class="btn-modal btn-primary px-6 py-2 rounded-xl font-semibold transition-all duration-200">
+        <a href="#" data-url="{{ $createUrl }}" data-load="modal" data-title="{{ $createTitle }}" class="btn-modal px-6 py-2.5 rounded-xl font-bold text-white shadow-lg shadow-[rgba(79,209,197,0.4)] hover:shadow-[rgba(79,209,197,0.4)] hover:brightness-90 hover:cursor-pointer transition-all duration-200 active:scale-95 border border-white/10" style="background-color: var(--admin-primary);">
             {{ $createText }}
         </a>
     </div>

@@ -92,6 +92,22 @@
         color-scheme: dark !important;
     }
 
+    /* Estilos globales de Scrollbar para el Panel Admin */
+    .custom-scroll::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.24);
+    }
+
     /* Helper classes using these variables */
     .bg-admin-card { background-color: var(--admin-bg-card); }
     .border-admin { border-color: var(--admin-border); }
