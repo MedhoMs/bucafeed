@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Student;
 use App\Mail\VerificationCodeMail;
 use App\Mail\PasswordResetMail;
 use Illuminate\Http\Request;
@@ -86,6 +87,7 @@ class AuthController extends Controller
         if (in_array($role, ['Student', 'Teacher', 'EI'])) {
             $rules['education_level']  = 'required|string|max:255';
             $rules['institution_name'] = 'required|string|max:255';
+            $rules['educational_center_id'] = 'nullable|integer|exists:educational_centers,id';
         }
 
         if (in_array($role, ['Student', 'Teacher', 'EU'])) {
@@ -107,15 +109,25 @@ class AuthController extends Controller
         $validated = $validator->validated();
 
         $user = User::create([
-            'name'             => $validated['name'] ?? null,
-            'last_name'        => $validated['last_name'] ?? null,
-            'email'            => $validated['email'],
-            'password'         => Hash::make($validated['password']),
-            'role'             => $validated['role'],
-            'dni'              => $validated['dni'] ?? null,
-            'education_level'  => $validated['education_level'] ?? null,
-            'institution_name' => $validated['institution_name'] ?? null,
+            'name'                  => $validated['name'] ?? null,
+            'last_name'             => $validated['last_name'] ?? null,
+            'email'                 => $validated['email'],
+            'password'              => Hash::make($validated['password']),
+            'role'                  => $validated['role'],
+            'dni'                   => $validated['dni'] ?? null,
+            'education_level'       => $validated['education_level'] ?? null,
+            'institution_name'      => $validated['institution_name'] ?? null,
+            'educational_center_id' => $validated['educational_center_id'] ?? null,
         ]);
+
+        if ($user->role === 'Student') {
+            Student::create([
+                'user_id'               => $user->id,
+                'educational_center_id' => $user->educational_center_id,
+                'course'                => $user->education_level ?? '',
+                'verified'              => false,
+            ]);
+        }
 
         // Generar token
         $token = $user->createToken('auth_token')->plainTextToken;
