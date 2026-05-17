@@ -233,7 +233,7 @@ abstract class TemplateController extends Controller
 
         $model->delete();
 
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->expectsJson() || $request->is('api/*')) {
             return response()->json(['success' => true, 'message' => 'Eliminado correctamente']);
         }
         return redirect()->route($this->viewPath . '.index')->with('success', 'Eliminado correctamente.');
