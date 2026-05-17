@@ -46,7 +46,8 @@
     }
 
     const fetchContacts = async () => {
-        if (!authUser.value?.educational_center_id) return;
+        const isLegalTutor = authUser.value?.is_legal_tutor === true;
+        if (!authUser.value?.educational_center_id && !isLegalTutor) return;
         loadingContacts.value = true;
         try {
             const role = authUser.value.role?.toLowerCase();
@@ -56,6 +57,8 @@
                 endpoint = 'my-center/teachers';
             } else if (role === 'admin' || role === 'administrador' || role === 'ei') {
                 endpoint = 'my-center/admins';
+            } else if (role === 'eu' && isLegalTutor) {
+                endpoint = `users/${authUser.value.id}/tutor-teachers`;
             }
                 
             const data = await get(endpoint);
@@ -347,7 +350,7 @@
                     </div>
                     <p class="text-xs text-white opacity-50 uppercase font-bold tracking-widest">
                         {{ 
-                            (authUser?.role?.toLowerCase() === 'student' || authUser?.role?.toLowerCase() === 'alumno') ? 'Profesores' : 
+                            (authUser?.role?.toLowerCase() === 'student' || authUser?.role?.toLowerCase() === 'alumno' || authUser?.role?.toLowerCase() === 'eu') ? 'Profesores' : 
                             ((authUser?.role?.toLowerCase() === 'admin' || authUser?.role?.toLowerCase() === 'administrador' || authUser?.role?.toLowerCase() === 'ei') ? 'Administradores' : 'Estudiantes')
                         }}
                     </p>
