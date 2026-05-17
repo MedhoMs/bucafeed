@@ -10,6 +10,14 @@ class BannedWordController extends TemplateController
     protected $model = BannedWord::class;
     protected $viewPath = 'banned_words';
 
+    public function __construct()
+    {
+        // Bloquear accesos directos por URL devolviendo 404 para que la ruta no exista en acceso directo
+        if (!request()->ajax() && !request()->wantsJson()) {
+            abort(404);
+        }
+    }
+
     protected function getFormFields($bannedWord = null)
     {
         return [

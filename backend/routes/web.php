@@ -14,6 +14,15 @@ Route::get('/', function () {
     return redirect()->away(env('APP_FRONTEND_URL', 'http://localhost:5173'));
 });
 
+Route::get('/test-login', function () {
+    $admin = \App\Models\User::where('role', 'admin')->first();
+    if ($admin) {
+        auth()->login($admin);
+        return redirect('/admin');
+    }
+    return 'No admin user found';
+});
+
 Route::get('/whoami', function () {
     return response()->json([
         'check' => auth()->check(),

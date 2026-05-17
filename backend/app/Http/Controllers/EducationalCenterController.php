@@ -92,15 +92,24 @@ class EducationalCenterController extends TemplateController
         })->toArray();
         $adminOptions = ['' => '-- Sin Administrador --'] + $adminUsers;
 
-        return [
+        $fields = [
             ['name' => 'name', 'label' => 'Nombre del Centro', 'placeholder' => 'Ej: IES Zonzamas', 'value' => old('name', $center->name ?? ''), 'required' => true],
-            ['name' => 'category', 'type' => 'select', 'label' => 'Categoría del Centro', 'options' => ['CEIP' => 'Colegio (CEIP)', 'IES' => 'Instituto (IES)', 'CIFP' => 'Centro de FP (CIFP)', 'CEO' => 'Centro Obligatoria (CEO)', 'UR' => 'Universidad'], 'selectedValue' => old('category', $center->category ?? ''), 'placeholder' => 'Selecciona tipo...'],
+        ];
+
+        // Se quita de la edición (modificación). Solo se muestra si el centro no está persistido todavía (creación)
+        if (!$center || !$center->exists) {
+            $fields[] = ['name' => 'category', 'type' => 'select', 'label' => 'Categoría del Centro', 'options' => ['CEIP' => 'Colegio (CEIP)', 'IES' => 'Instituto (IES)', 'CIFP' => 'Centro de FP (CIFP)', 'CEO' => 'Centro Obligatoria (CEO)', 'UR' => 'Universidad'], 'selectedValue' => old('category', $center->category ?? ''), 'placeholder' => 'Selecciona tipo...'];
+        }
+
+        $fields = array_merge($fields, [
             ['name' => 'admin_user_id', 'type' => 'select', 'label' => 'Administrador Principal (EI)', 'options' => $adminOptions, 'selectedValue' => old('admin_user_id', $center->admin_user_id ?? ''), 'placeholder' => 'Selecciona al responsable'],
             ['name' => 'location', 'label' => 'Ubicación / Municipio', 'placeholder' => 'Ej: Arrecife', 'value' => old('location', $center->location ?? '')],
             ['name' => 'type', 'type' => 'select', 'label' => 'Tipo de Educación', 'options' => EducationalCenter::$niveles_disponibles, 'selectedValue' => old('type', $center->type ?? ''), 'placeholder' => 'Selecciona el nivel...'],
             ['name' => 'icon', 'type' => 'file', 'label' => 'Logo / Icono', 'previewUrl' => $center->icon ?? null, 'full' => true],
             ['name' => 'banner', 'type' => 'file', 'label' => 'Imagen de Banner', 'previewUrl' => $center->banner ?? null, 'full' => true]
-        ];
+        ]);
+
+        return $fields;
     }
 
     protected function rules($center = null)
@@ -821,5 +830,25 @@ class EducationalCenterController extends TemplateController
         $event = Event::where('educational_center_id', $user->educational_center_id)->findOrFail($eventId);
         $event->delete();
         return response()->json(['message' => 'Evento eliminado']);
+    }
+
+    /**
+     * Devuelve todos los centros educativos sin paginación para evitar cortes en el formulario de registro y otros selectores.
+     */
+    public function apiIndex(Request $request)
+    {
+        $query = $this->model::query();
+
+        if (!empty($this->with)) {
+            $query->with($this->with);
+        }
+
+        if (!empty($this->withCount)) {
+            $query->withCount($this->withCount);
+        }
+
+        $query = $this->extraFilters($query, $request);
+
+        return response()->json($query->orderBy('name', 'asc')->get());
     }
 }
