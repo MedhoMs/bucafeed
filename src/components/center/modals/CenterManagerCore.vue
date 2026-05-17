@@ -11,6 +11,7 @@ const props = defineProps({
     activeModal: { type: String, default: null },
     group: { type: Object, default: null },
     event: { type: Object, default: null }, // Nuevo prop para editar eventos
+    publication: { type: Object, default: null }, // Prop para editar publicaciones
     teachers: { type: Array, default: () => [] },
     students: { type: Array, default: () => [] },
     cycles: { type: Array, default: () => [] },
@@ -49,6 +50,12 @@ watch(() => props.activeModal, (val) => {
             ...defaults,
             ...props.event,
             image: null // No cargamos la URL de la imagen en el campo de archivo
+        }
+    } else if (val === 'edit_publication' && props.publication) {
+        form.value = {
+            ...defaults,
+            ...props.publication,
+            image: null
         }
     } else {
         form.value = defaults
@@ -119,6 +126,27 @@ const MODAL_MAP = computed(() => ({
             { id: 'end_time', type: 'time', label: t.value.manager.modals.event.endLabel, required: true, full: false },
             { id: 'location', type: 'text', label: t.value.manager.modals.event.locationLabel, placeholder: t.value.manager.modals.event.locationPlaceholder, required: true },
             { id: 'image', type: 'file', label: t.value.manager.modals.editEvent.imageLabel, aspect: 'video' }
+        ]
+    },
+    publication: {
+        title: t.value.manager.modals.publication.title,
+        msg: t.value.manager.modals.publication.msg,
+        url: '/my-center/publications',
+        fields: [
+            { id: 'title', type: 'text', label: t.value.manager.modals.publication.titleLabel, placeholder: t.value.manager.modals.publication.titlePlaceholder, required: true },
+            { id: 'description', type: 'textarea', label: t.value.manager.modals.publication.descLabel, placeholder: t.value.manager.modals.publication.descPlaceholder, required: true, full: true },
+            { id: 'image', type: 'file', label: t.value.manager.modals.publication.imageLabel, aspect: 'video' }
+        ]
+    },
+    edit_publication: {
+        title: t.value.manager.modals.editPublication.title,
+        msg: t.value.manager.modals.editPublication.msg,
+        url: `/my-center/publications/${props.publication?.id}`,
+        method: 'PUT',
+        fields: [
+            { id: 'title', type: 'text', label: t.value.manager.modals.publication.titleLabel, placeholder: t.value.manager.modals.publication.titlePlaceholder, required: true },
+            { id: 'description', type: 'textarea', label: t.value.manager.modals.publication.descLabel, placeholder: t.value.manager.modals.publication.descPlaceholder, required: true, full: true },
+            { id: 'image', type: 'file', label: t.value.manager.modals.editPublication.imageLabel, aspect: 'video' }
         ]
     },
     enroll_users: {

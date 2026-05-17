@@ -20,7 +20,8 @@ const centerTabs = computed(() => {
         { id: 'overview', label: 'Grupos',   icon: 'M3 21l18 0 M5 21v-14l8 -4v18 M19 21v-10l-6 -4' },
         { id: 'people',   label: 'Personas', icon: 'M12 12m-9 8v-1a6 6 0 0 1 12 0v1 M12 10a4 4 0 1 1 0 -8a4 4 0 0 1 0 8z' },
         { id: 'cycles',   label: cyclesLabel, icon: 'M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12 M16 3l0 4 M8 3l0 4' },
-        { id: 'events',   label: 'Eventos',  icon: 'M12 2v4m0 16v-4m8-8h-4M4 12H2m18 0h-2M6.34 6.34l-1.41-1.41m12.72 0l-1.41 1.41M6.34 17.66l-1.41 1.41m12.72 0l-1.41-1.41' }
+        { id: 'events',   label: 'Eventos',  icon: 'M12 2v4m0 16v-4m8-8h-4M4 12H2m18 0h-2M6.34 6.34l-1.41-1.41m12.72 0l-1.41 1.41M6.34 17.66l-1.41 1.41m12.72 0l-1.41-1.41' },
+        { id: 'publications', label: 'Publicaciones', icon: 'M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z M7 7h10 M7 12h10 M7 17h10' }
     ]
 })
 </script>

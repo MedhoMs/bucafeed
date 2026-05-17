@@ -163,7 +163,11 @@ Enter
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M21 14l-3 -3h-7a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1h9a1 1 0 0 1 1 1v10" /><path d="M14 15v2a1 1 0 0 1 -1 1h-7l-3 3v-10a1 1 0 0 1 1 -1h2" /></svg>
                     </template>
                 </NavBarLinks>
- 
+                <NavBarLinks to="/publicaciones" :title="t.nav.publications || 'Publicaciones'">
+                    <template #icon>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z M7 7h10 M7 12h10 M7 17h10"/></svg>
+                    </template>
+                </NavBarLinks>
                 <NavBarLinks to="/explore" :title=t.nav.explore>
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
@@ -214,7 +218,7 @@ Enter
                     </template>
                 </NavBarLinks>
  
- 
+
                     <router-link
                         class="relative flex items-center gap-2.5 mb-5 mr-4 mt-auto rounded-xl text-base font-medium py-3 px-4 text-white no-underline transition-all duration-200 ease-in-out hover:bg-secondary-normal hover:cursor-pointer active:bg-secondary-normal active:font-bold"
                         id="profile" to="/profile">
