@@ -73,7 +73,7 @@
         </div>
 
         <!-- Core Admin Scripts -->
-        <script src="{{ asset('js/admin-core.js') }}"></script>
+        <script src="{{ asset('js/admin-core.js') }}?v={{ time() }}"></script>
     </body>
 </html>
 @endif
