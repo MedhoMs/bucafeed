@@ -150,6 +150,22 @@ router.beforeEach((to, from, next) => {
         // Just proceed — the views handle it with UnverifiedBanner
     }
 
+    // Block EU (External Users) from restricted routes
+    if (loggedIn?.role === 'EU') {
+        const isLegalTutor = loggedIn?.is_legal_tutor === true;
+        
+        // EU never has access to forum or meetings
+        const noAccessRoutesForEU = ['/foro', '/question', '/meeting', '/meetingchat'];
+        if (noAccessRoutesForEU.some(r => to.path.startsWith(r))) {
+            return next('/home');
+        }
+        
+        // EU has access to private-chat ONLY if they are a legal tutor
+        if (to.path.startsWith('/private-chat') && !isLegalTutor) {
+            return next('/home');
+        }
+    }
+
     next();
 });
 

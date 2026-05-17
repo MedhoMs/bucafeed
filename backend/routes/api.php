@@ -358,6 +358,8 @@ Route::get('/users/find-tutor', [UserController::class, 'findTutorByDni'])->midd
 Route::post('/users/tutors', [UserController::class, 'addTutor'])->middleware('auth:sanctum');
 Route::delete('/users/tutors/{tutorId}', [UserController::class, 'removeTutor'])->middleware('auth:sanctum');
 Route::get('/users/{userId}/tutors', [UserController::class, 'getTutors'])->middleware('auth:sanctum');
+Route::get('/users/{userId}/tutor-teachers', [UserController::class, 'getTutorTeachers'])->middleware('auth:sanctum');
+Route::get('/users/{userId}/tutor-students', [UserController::class, 'getTutorStudents'])->middleware('auth:sanctum');
 Route::apiResource('users', UserController::class);
 
 // Endpoint para generar usuarios de prueba (solo admin)
@@ -385,6 +387,7 @@ Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
     Route::delete('/groups/{group}/subjects/{tag}', [EducationalCenterController::class, 'apiRemoveSubjectTeacher']);
     Route::get('/teachers', [EducationalCenterController::class, 'apiTeachers']);
     Route::get('/students', [EducationalCenterController::class, 'apiStudents']);
+    Route::get('/tutors', [EducationalCenterController::class, 'apiTutors']);
     Route::get('/students/pending', [EducationalCenterController::class, 'apiPendingStudents']);
     Route::post('/students/{userId}/verify', [EducationalCenterController::class, 'apiVerifyStudent']);
     Route::get('/admins', [EducationalCenterController::class, 'apiAdmins']);
