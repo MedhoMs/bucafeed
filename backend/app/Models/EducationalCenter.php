@@ -63,6 +63,11 @@ class EducationalCenter extends TemplateModel
         return $this->hasMany(Group::class);
     }
 
+    public function publications()
+    {
+        return $this->hasMany(Publication::class);
+    }
+
     public function cycles()
     {
         return $this->belongsToMany(Cycle::class, 'educational_center_cycle', 'educational_center_id', 'cycle_id');

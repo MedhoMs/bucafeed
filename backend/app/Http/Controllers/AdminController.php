@@ -10,6 +10,7 @@ use App\Models\Event;
 use App\Models\Question;
 use App\Models\BannedWord;
 use App\Models\Cycle;
+use App\Models\Publication;
 
 class AdminController extends Controller
 {
@@ -25,6 +26,7 @@ class AdminController extends Controller
             'totalSchools'      => EducationalCenter::count(),
             'totalEvents'       => Event::count(),
             'totalQuestions'    => Question::count(),
+            'totalPublications' => Publication::count(),
             'latestUsers'       => User::latest()->take(6)->get(),
             'latestQuestions'   => Question::with(['user', 'answers.user'])->latest()->take(5)->get(),
             'pendingAiReviews'  => 0, //provisional

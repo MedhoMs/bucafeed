@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import NavBar from '../../components/NavBar/NavBar.vue';
+import BaseModal from '@/components/modals/BaseModal.vue';
 import { useTranslations } from '../../composables/useTranslations';
 import { useApi } from '@/composables/useApi';
 
@@ -12,12 +13,15 @@ const { get, post } = useApi();
 const loading = ref(true);
 const questions = ref([]);
 const events = ref([]);
+const publications = ref([]);
 const followCenters = ref([]);
 const searchQuery = ref('');
 const activeTab = ref('para_ti');
 const showAllCenters = ref(false);
 const hoveredCenterId = ref(null);
 const isScrolled = ref(false);
+const showDetailsModal = ref(false);
+const selectedPublication = ref(null);
 
 const handleScroll = () => {
     isScrolled.value = window.scrollY > 20;
@@ -26,14 +30,16 @@ const handleScroll = () => {
 const fetchAllData = async () => {
     loading.value = true;
     try {
-        const [qRes, eRes, uRes] = await Promise.all([
+        const [qRes, eRes, uRes, pRes] = await Promise.all([
             get('questions'),
             get('events'),
-            get('users?role=EI') // Fetch educational centers (Users with role EI)
+            get('users?role=EI'), // Fetch educational centers (Users with role EI)
+            get('publications') // Fetch publications
         ]);
 
         questions.value = qRes.data && Array.isArray(qRes.data) ? qRes.data : (qRes || []);
         events.value = eRes.data && Array.isArray(eRes.data) ? eRes.data : (eRes || []);
+        publications.value = pRes.data && Array.isArray(pRes.data) ? pRes.data : (pRes || []);
         
         const usersList = uRes.data && Array.isArray(uRes.data) ? uRes.data : (uRes || []);
         // Map centers dynamically from actual User accounts having role = 'EI'
@@ -85,6 +91,10 @@ const daysUntil = (dateStr) => {
     if (diff === 1) return 'Mañana';
     if (diff < 0) return 'Finalizado';
     return `En ${diff} días`;
+};
+
+const viewPublication = (pub) => {
+    router.push({ name: 'publication-details', params: { id: pub.id } });
 };
 
 const goToQuestion = (id) => router.push({ name: 'question', params: { id } });
@@ -144,6 +154,16 @@ const filteredEvents = computed(() => {
         (e.title && e.title.toLowerCase().includes(query)) ||
         (e.description && e.description.toLowerCase().includes(query)) ||
         (getCenterName(e).toLowerCase().includes(query))
+    );
+});
+
+const filteredPublications = computed(() => {
+    if (!searchQuery.value) return publications.value;
+    const query = searchQuery.value.toLowerCase();
+    return publications.value.filter(p => 
+        (p.title && p.title.toLowerCase().includes(query)) ||
+        (p.description && p.description.toLowerCase().includes(query)) ||
+        (p.center_name && p.center_name.toLowerCase().includes(query))
     );
 });
 
@@ -243,6 +263,12 @@ onUnmounted(() => {
                                 {{ t.explore.events || 'Eventos' }}
                             </button>
                             <button 
+                                @click="activeTab = 'publicaciones'"
+                                :class="['tab-btn', activeTab === 'publicaciones' ? 'tab-btn-active' : '']"
+                            >
+                                {{ t.explore.publications || 'Publicaciones' }}
+                            </button>
+                            <button 
                                 @click="activeTab = 'preguntas'"
                                 :class="['tab-btn', activeTab === 'preguntas' ? 'tab-btn-active' : '']"
                             >
@@ -277,6 +303,28 @@ onUnmounted(() => {
                                         <h2 class="text-2xl md:text-3xl font-black text-white leading-tight mb-2">{{ events[0].title }}</h2>
                                         <p class="text-white/60 text-xs md:text-sm font-semibold uppercase tracking-wider">{{ getCenterName(events[0]) }} · {{ formatDate(events[0].date) }}</p>
                                     </div>
+                                </div>
+
+                                <!-- Novedades de Centros (Standalone recent publications teaser widget in Para ti) -->
+                                <div v-if="publications.length > 0 && !searchQuery" class="tab-content-container">
+                                    <h3 class="px-5 py-4 text-white font-black text-lg border-b border-white/5">{{ t.explore.recentPublications || 'Novedades de centros' }}</h3>
+                                    
+                                    <div v-for="p in publications.slice(0, 2)" :key="'pt-p-'+p.id"
+                                         @click="viewPublication(p)"
+                                         class="trend-row">
+                                        <div class="flex flex-col pr-8">
+                                            <span class="trend-category">Novedad · {{ p.center_name }}</span>
+                                            <span class="trend-topic">{{ p.title }}</span>
+                                            <span class="trend-meta">{{ formatDate(p.created_at) }}</span>
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        @click="activeTab = 'publicaciones'" 
+                                        class="w-full text-center py-4 text-xs font-black uppercase tracking-widest text-white hover:text-white/80 transition-colors cursor-pointer border-t border-white/5 bg-white/[0.01] hover:bg-white/[0.03]"
+                                    >
+                                        {{ t.explore.seeMorePublications || 'Ver más publicaciones →' }}
+                                    </button>
                                 </div>
 
                                 <!-- "Ver preguntas" Feed list styled exactly like the "Who to follow" widget -->
@@ -371,6 +419,36 @@ onUnmounted(() => {
                                 </div>
                             </div>
 
+                            <!-- TAB 4: PUBLICACIONES -->
+                            <div v-if="activeTab === 'publicaciones'">
+                                <div class="tab-content-container">
+                                    <div v-if="filteredPublications.length === 0" class="py-12 text-center text-white/30">
+                                        {{ t.explore.noMatchingPublications || 'No se encontraron publicaciones coincidentes.' }}
+                                    </div>
+                                    <div v-else>
+                                        <div v-for="p in filteredPublications.slice(0, 6)" :key="p.id" 
+                                             @click="viewPublication(p)"
+                                             class="trend-row">
+                                            <div class="flex flex-col pr-8">
+                                                <span class="trend-category">Novedad · {{ p.center_name }}</span>
+                                                <span class="trend-topic">{{ p.title }}</span>
+                                                <span class="trend-meta">{{ formatDate(p.created_at) }}</span>
+                                            </div>
+                                            <button class="trend-options-btn">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                                            </button>
+                                        </div>
+
+                                        <button 
+                                            @click="router.push({ name: 'publications' })" 
+                                            class="w-full text-center py-4 text-xs font-black uppercase tracking-widest text-white hover:text-white/80 transition-colors cursor-pointer border-t border-white/5 bg-white/[0.01] hover:bg-white/[0.03]"
+                                        >
+                                            {{ t.explore.seeMorePublications || 'Ver más publicaciones →' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -437,6 +515,7 @@ onUnmounted(() => {
                 </div>
 
             </div>
+            
         </main>
     </div>
 </template>

@@ -16,6 +16,8 @@ import CenterManagementView from "../views/home/CenterManagementView.vue";
 import ForumView from "../views/home/ForumView.vue";
 import SettingsView from "../views/SettingsView.vue";
 import EventDetailsView from "../views/home/EventDetailsView.vue";
+import PublicationView from "../views/home/PublicationView.vue";
+import PublicationDetailsView from "../views/home/PublicationDetailsView.vue";
 import PrivateChatView from "../views/home/PrivateChatView.vue";
 import ErrorPageView from "../views/ErrorPageView.vue";
 import { user } from "@/stores/auth";
@@ -82,6 +84,16 @@ const router = createRouter({
             path: '/event-details/:id?',
             name: 'event-details',
             component: EventDetailsView
+        },
+        {
+            path: '/publicaciones',
+            name: 'publications',
+            component: PublicationView
+        },
+        {
+            path: '/publicacion-detalles/:id?',
+            name: 'publication-details',
+            component: PublicationDetailsView
         },
         {
             path: '/meeting',
