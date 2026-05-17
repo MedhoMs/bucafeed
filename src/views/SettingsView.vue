@@ -213,31 +213,41 @@ onMounted(() => {
                                             class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-net transition-all"
                                             @keyup.enter="addTutor"
                                             maxlength="9"
-                                        >
+                                        />
                                         <button 
                                             @click="addTutor"
                                             :disabled="searching || !tutorDni"
                                             class="bg-brand-net hover:bg-brand-net/80 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
                                         >
-                                            <span v-if="searching" class="material-symbols-outlined animate-spin">sync</span>
-                                            <span v-else class="material-symbols-outlined">person_add</span>
+                                            <svg v-if="searching" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 animate-spin fill-current">
+                                                <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+                                            </svg>
+                                            <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 fill-current">
+                                                <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                            </svg>
                                             {{ t.settings.tutors.add_button }}
                                         </button>
                                     </div>
                                     <p v-if="errorMessage" class="text-red-400 text-sm flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-base">error</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 h-4 inline-block fill-current">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                        </svg>
                                         {{ errorMessage }}
                                     </p>
                                     <p v-if="successMessage" class="text-emerald-400 text-sm flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-base">check_circle</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 h-4 inline-block fill-current">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                        </svg>
                                         {{ successMessage }}
                                     </p>
                                 </div>
-
+ 
                                 <!-- Tutors List -->
                                 <div class="space-y-4">
-                                    <div v-if="tutorsList.length === 0" class="text-center py-12 bg-white/5 rounded-2xl border border-dashed border-white/10">
-                                        <span class="material-symbols-outlined text-4xl text-white/10 mb-2">family_restroom</span>
+                                    <div v-if="tutorsList.length === 0" class="text-center py-12 bg-white/5 rounded-2xl border border-dashed border-white/10 flex flex-col items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-10 h-10 text-white/10 mb-2 fill-current">
+                                            <path d="M13.5 7h3v7h2v5h-7v-5h2V7zM9 7c1.1 0 2 0.9 2 2s-0.9 2-2 2-2-0.9-2-2 0.9-2 2-2zm0 6c1.66 0 3 1.34 3 3v5H6v-5c0-1.66 1.34-3 3-3z"/>
+                                        </svg>
                                         <p class="text-white/40">{{ t.settings.tutors.no_tutors }}</p>
                                     </div>
                                     <div 
@@ -248,7 +258,9 @@ onMounted(() => {
                                         <div class="flex items-center gap-4">
                                             <div class="w-12 h-12 rounded-full bg-brand-net/10 flex items-center justify-center overflow-hidden border border-brand-net/20">
                                                 <img v-if="tutor.profile_picture" :src="tutor.profile_picture" class="w-full h-full object-cover">
-                                                <span v-else class="material-symbols-outlined text-brand-net">person</span>
+                                                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 text-brand-net fill-current">
+                                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                                </svg>
                                             </div>
                                             <div>
                                                 <p class="font-bold text-white">{{ tutor.name }} {{ tutor.last_name }}</p>
@@ -259,14 +271,16 @@ onMounted(() => {
                                             @click="openDeleteModal(tutor.id)"
                                             class="w-10 h-10 rounded-xl bg-white/5 hover:bg-red-500/20 text-white/40 hover:text-red-400 flex items-center justify-center transition-all cursor-pointer"
                                         >
-                                            <span class="material-symbols-outlined text-xl">delete</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 fill-current">
+                                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                            </svg>
                                         </button>
                                     </div>
                                 </div>
                             </section>
-
-
-    
+ 
+ 
+     
                             <!-- Language Section -->
                             <section v-if="activeSection === 'language'" class="space-y-8">
                                 <div class="flex items-center gap-4 mb-10">
@@ -286,9 +300,11 @@ onMounted(() => {
                                             <span class="text-2xl">🇪🇸</span>
                                             <span class="font-bold">{{ t.settings.language.spanish }}</span>
                                         </div>
-                                        <span v-if="locale === 'es'" class="material-symbols-outlined text-brand-net">check_circle</span>
+                                        <svg v-if="locale === 'es'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 text-brand-net fill-current">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                        </svg>
                                     </button>
-    
+     
                                     <button 
                                         @click="setLocale('en')"
                                         :class="[
@@ -300,7 +316,9 @@ onMounted(() => {
                                             <span class="text-2xl">🇺🇸</span>
                                             <span class="font-bold">{{ t.settings.language.english }}</span>
                                         </div>
-                                        <span v-if="locale === 'en'" class="material-symbols-outlined text-brand-net">check_circle</span>
+                                        <svg v-if="locale === 'en'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 text-brand-net fill-current">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                        </svg>
                                     </button>
                                 </div>
                             </section>
