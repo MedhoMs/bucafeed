@@ -404,3 +404,43 @@ Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
     Route::post('/enroll-cycles', [EducationalCenterController::class, 'apiEnrollCycles']);
     Route::delete('/cycles/{cycle}', [EducationalCenterController::class, 'apiRemoveCycle']);
 });
+
+// ====================================================================
+// RUTA TEMPORAL PARA ARREGLAR DATOS EN PRODUCCIÓN SIN BORRAR NADA
+// (Puedes borrar este bloque después de ejecutarla una vez)
+// ====================================================================
+Route::get('/fix-db', function () {
+    // 1. Asegurar que existe el centro de Administración Global
+    $adminCenter = \App\Models\EducationalCenter::firstOrCreate(
+        ['name' => 'Administración TelamoNet'],
+        [
+            'category' => 'IES',
+            'location' => 'Global',
+            'type' => 'TM',
+            'description' => 'Centro global para administradores'
+        ]
+    );
+
+    // 2. Asignar este centro a todos los usuarios con rol Admin o EI que no tengan centro
+    \App\Models\User::whereIn('role', ['Admin', 'Administrador', 'EI'])
+        ->whereNull('educational_center_id')
+        ->update([
+            'educational_center_id' => $adminCenter->id,
+            'institution_name' => $adminCenter->name
+        ]);
+
+    // 3. Verificar a todos los estudiantes (tabla students) para que puedan chatear
+    \App\Models\Student::where('verified', false)
+        ->update(['verified' => true]);
+
+    // 4. Asegurarse de que el usuario principal en users también conste como verificado
+    // Si tu tabla de users tiene is_verified, si no la tiene no pasará nada
+    if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'is_verified')) {
+        \App\Models\User::where('role', 'Student')->update(['is_verified' => true]);
+    }
+
+    return response()->json([
+        'message' => '¡Base de datos arreglada con éxito!',
+        'admin_center_id' => $adminCenter->id
+    ]);
+});
