@@ -39,6 +39,12 @@ backend/.env
 mysql_data/
 *.sql
 
+# Seguridad - nunca subir al repo
+security-reports/       # Reportes OWASP ZAP
+*.enc                   # Backups cifrados
+.env.ha                 # Producción HA secrets
+deploy/*.key            # Claves privadas
+
 package-lock.json
 
 /vendor

@@ -1,0 +1,27 @@
+# =============================================================================
+# TelamoNet - Cron Jobs de Producción
+# =============================================================================
+# Instalar en el servidor con:
+#   sudo cp deploy/crontab.production /etc/cron.d/telamonet
+#   sudo chmod 644 /etc/cron.d/telamonet
+# =============================================================================
+# Formato: min hora día mes día_semana usuario comando
+# =============================================================================
+
+# ── Backup automático diario a las 03:00 AM ──────────────────────────────────
+0 3 * * * root /opt/telamonet/deploy/backup.sh >> /var/log/telamonet-backup.log 2>&1
+
+# ── Renovación automática de certificados SSL (cada 12h) ─────────────────────
+0 */12 * * * root certbot renew --quiet --deploy-hook 'systemctl reload nginx' >> /var/log/certbot-renew.log 2>&1
+
+# ── Limpieza de logs de Nginx (semanal, domingo a las 04:00 AM) ──────────────
+0 4 * * 0 root find /var/log/nginx/ -name "*.log" -mtime +30 -delete
+
+# ── Limpieza de sesiones Redis expiradas (diaria, 02:00 AM) ──────────────────
+0 2 * * * root docker exec telamonet_redis redis-cli -a "${REDIS_PASSWORD}" BGSAVE >> /var/log/redis-bgsave.log 2>&1
+
+# ── Health check y reinicio automático de contenedores caídos (cada 5 min) ───
+*/5 * * * * root docker compose -f /opt/telamonet/docker-compose.ha.yml ps --filter status=exited --format "{{.Name}}" | xargs -r docker compose -f /opt/telamonet/docker-compose.ha.yml restart >> /var/log/telamonet-health.log 2>&1
+
+# ── Limpieza de imágenes Docker huérfanas (semanal, sábado 05:00 AM) ─────────
+0 5 * * 6 root docker system prune -f >> /var/log/docker-cleanup.log 2>&1

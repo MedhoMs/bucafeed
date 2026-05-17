@@ -84,10 +84,10 @@
                 <div class="max-w-7xl mx-auto">
                     <div class="text-center mb-24 timeline-item-animated opacity-0 translate-y-10 transition-all duration-700">
                         <h2 class="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
-                            ¿Qué es TelamoNet?
+                            {{ t.home.aboutTitle }}
                         </h2>
                         <p class="text-white/60 text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
-                            La plataforma definitiva diseñada para conectar a la comunidad educativa, facilitando el aprendizaje colaborativo.
+                            {{ t.home.aboutSubtitle }}
                         </p>
                     </div>
                     
@@ -103,8 +103,8 @@
                                 
                                 <div v-if="index % 2 === 0" class="md:w-[45%] order-2 md:order-1 text-left md:text-right mt-6 md:mt-0 transition-all duration-300 group-hover:-translate-x-4">
                                     <div class="bg-white/5 backdrop-blur-md p-8 md:p-10 rounded-3xl border border-white/10 shadow-2xl">
-                                        <h3 class="mb-4 font-black text-white text-3xl text-shadow-sm">{{ item.title }}</h3>
-                                        <p class="text-lg leading-relaxed text-white/80">{{ item.description }}</p>
+                                        <h3 class="mb-4 font-black text-white text-3xl text-shadow-sm">{{ t.home.timeline[item.key].title }}</h3>
+                                        <p class="text-lg leading-relaxed text-white/80">{{ t.home.timeline[item.key].description }}</p>
                                     </div>
                                 </div>
                                 
@@ -117,8 +117,8 @@
 
                                 <div v-if="index % 2 !== 0" class="md:w-[45%] order-2 md:order-3 text-left mt-6 md:mt-0 transition-all duration-300 group-hover:translate-x-4">
                                     <div class="bg-white/5 backdrop-blur-md p-8 md:p-10 rounded-3xl border border-white/10 shadow-2xl">
-                                        <h3 class="mb-4 font-black text-white text-3xl text-shadow-sm">{{ item.title }}</h3>
-                                        <p class="text-lg leading-relaxed text-white/80">{{ item.description }}</p>
+                                        <h3 class="mb-4 font-black text-white text-3xl text-shadow-sm">{{ t.home.timeline[item.key].title }}</h3>
+                                        <p class="text-lg leading-relaxed text-white/80">{{ t.home.timeline[item.key].description }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -133,10 +133,10 @@
                 <div class="max-w-7xl mx-auto">
                     <div class="text-center mb-20 timeline-item-animated opacity-0 translate-y-10 transition-all duration-700">
                         <h2 class="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">
-                            Nuestro Equipo
+                            {{ t.home.teamTitle }}
                         </h2>
                         <p class="text-white/60 text-xl max-w-3xl mx-auto">
-                            Las mentes detrás de TelamoNet, trabajando para mejorar la educación digital.
+                            {{ t.home.teamSubtitle }}
                         </p>
                     </div>
 

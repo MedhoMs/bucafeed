@@ -314,6 +314,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/chats/{chat}/messages', [ChatController::class, 'getMessages']);
     Route::post('/chats/{chat}/messages', [ChatController::class, 'sendMessage']);
 
+    // Admin Room
+    Route::post('/meetings/admin-room', [MeetingController::class, 'adminRoom']);
+
     // Preguntas y Respuestas (Acciones protegidas)
     Route::post('answers/{answer}/useful', [AnswerController::class, 'markAsUseful']);
     Route::delete('answers/{answer}/useful', [AnswerController::class, 'unmarkAsUseful']);

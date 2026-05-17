@@ -50,12 +50,18 @@
         loadingContacts.value = true;
         try {
             const role = authUser.value.role?.toLowerCase();
-            const endpoint = (role === 'student' || role === 'alumno') 
-                ? 'my-center/teachers' 
-                : 'my-center/students';
+            let endpoint = 'my-center/students'; // Default para profesores
+            
+            if (role === 'student' || role === 'alumno') {
+                endpoint = 'my-center/teachers';
+            } else if (role === 'admin' || role === 'administrador' || role === 'ei') {
+                endpoint = 'my-center/admins';
+            }
                 
             const data = await get(endpoint);
-            contacts.value = Array.isArray(data) ? data : [];
+            // Si es admin, nos filtramos a nosotros mismos de la lista
+            const filteredData = Array.isArray(data) ? data.filter(u => Number(u.id) !== Number(authUser.value.id)) : [];
+            contacts.value = filteredData;
         } catch (error) {
             console.error("Error fetching contacts:", error);
         } finally {
@@ -162,6 +168,21 @@
         }
     };
 
+    const handleCallClose = async () => {
+        activeCallRoomId.value = null;
+        // Marcar todos los mensajes de tipo llamada como finalizados en la vista local
+        messages.value.forEach(msg => {
+            if (msg.type === 'call') {
+                msg.callEnded = true;
+            }
+        });
+        
+        // Avisar a la otra persona por socket
+        if (currentRoomId.value) {
+            emitSocket('call:ended', currentRoomId.value, { ended: true });
+        }
+    };
+
     onMounted(async () => {
         await fetchContacts();
 
@@ -175,6 +196,15 @@
                     scrollToBottom();
                 }
             }
+        });
+        
+        onSocket('call:ended', (data) => {
+            messages.value.forEach(msg => {
+                if (msg.type === 'call') {
+                    msg.callEnded = true;
+                }
+            });
+            activeCallRoomId.value = null;
         });
     });
 </script>
@@ -232,7 +262,7 @@
                             <span class="text-[10px] font-black uppercase tracking-widest text-white/80">Sesión de video activa</span>
                         </div>
                     </div>
-                        <VideoCall :room-id="activeCallRoomId" @close="activeCallRoomId = null" />
+                        <VideoCall :room-id="activeCallRoomId" @close="handleCallClose" />
                     </div>
 
                     <div ref="chatContainer" class="flex-1 overflow-y-auto p-6 flex flex-col space-y-4 custom-scrollbar" :class="{'opacity-20 pointer-events-none scale-98': activeCallRoomId}">
@@ -262,18 +292,23 @@
 
                                     <div v-else-if="msg.type === 'call'" class="flex flex-col gap-3 p-1">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                            <div :class="['w-10 h-10 rounded-full flex items-center justify-center', msg.callEnded ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400']">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"/><rect x="3" y="6" width="12" height="12" rx="2"/><circle cx="9" cy="12" r="2"/></svg>
                                             </div>
                                             <div>
-                                                <p class="text-sm font-bold">{{ Number(msg.sender) === Number(authUser?.id) ? 'Has iniciado una videollamada' : 'Te ha invitado a una videollamada' }}</p>
-                                                <p class="text-[10px] opacity-60">Haz clic abajo para unirte a la sesión</p>
+                                                <p class="text-sm font-bold">{{ msg.callEnded ? 'Llamada finalizada' : (Number(msg.sender) === Number(authUser?.id) ? 'Has iniciado una videollamada' : 'Te ha invitado a una videollamada') }}</p>
+                                                <p class="text-[10px] opacity-60">{{ msg.callEnded ? 'La sesión de video ha terminado' : 'Haz clic abajo para unirte a la sesión' }}</p>
                                             </div>
                                         </div>
-                                        <button @click="activeCallRoomId = msg.content" class="w-full py-3 px-6 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                        <button v-if="!msg.callEnded" 
+                                            @click="activeCallRoomId = msg.content" 
+                                            class="w-full py-3 px-6 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>
                                             Unirse ahora
                                         </button>
+                                        <div v-else class="w-full py-3 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest text-center bg-red-500/10 text-red-400/70 border border-red-500/20">
+                                            Sesión finalizada
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -313,7 +348,7 @@
                     <p class="text-xs text-white opacity-50 uppercase font-bold tracking-widest">
                         {{ 
                             (authUser?.role?.toLowerCase() === 'student' || authUser?.role?.toLowerCase() === 'alumno') ? 'Profesores' : 
-                            ((authUser?.role?.toLowerCase() === 'admin' || authUser?.role?.toLowerCase() === 'administrador') ? 'Administradores' : 'Estudiantes')
+                            ((authUser?.role?.toLowerCase() === 'admin' || authUser?.role?.toLowerCase() === 'administrador' || authUser?.role?.toLowerCase() === 'ei') ? 'Administradores' : 'Estudiantes')
                         }}
                     </p>
                 </div>
