@@ -391,4 +391,68 @@ class UserController extends TemplateController
 
         return response()->json($tutors);
     }
+
+    /**
+     * API: Obtener profesores de los centros educativos de los hijos/alumnos del tutor
+     */
+    public function getTutorTeachers(Request $request, $userId)
+    {
+        $authUser = $request->user();
+        if (!$authUser) return response()->json(['message' => 'No autenticado'], 401);
+
+        // A tutor can only see teachers for their own students
+        if ($authUser->id != $userId && strtolower($authUser->role) !== 'admin') {
+            return response()->json(['message' => 'No tienes permiso para ver esta información'], 403);
+        }
+
+        $user = User::findOrFail($userId);
+        if ($user->role !== 'EU') {
+            return response()->json([]);
+        }
+
+        // Get all educational_center_ids of the students that this tutor has
+        $centerIds = $user->studentsOfTutor()
+            ->whereNotNull('educational_center_id')
+            ->pluck('educational_center_id')
+            ->unique()
+            ->toArray();
+
+        if (empty($centerIds)) {
+            return response()->json([]);
+        }
+
+        // Get all teachers from these educational centers
+        $teachers = User::whereIn('educational_center_id', $centerIds)
+            ->where('role', 'Teacher')
+            ->get(['id', 'name', 'last_name', 'role', 'profile_picture', 'dni', 'educational_center_id', 'institution_name']);
+
+        return response()->json($teachers);
+    }
+
+    /**
+     * API: Obtener alumnos/hijos asociados a un tutor legal
+     */
+    public function getTutorStudents(Request $request, $userId)
+    {
+        $authUser = $request->user();
+        if (!$authUser) return response()->json(['message' => 'No autenticado'], 401);
+
+        $role = strtolower($authUser->role);
+        // Solo profesores, centros educativos y administradores tienen acceso
+        $canView = in_array($role, ['teacher', 'ei', 'admin', 'profesor', 'institución educativa', 'administrador']);
+
+        if (!$canView) {
+            return response()->json(['message' => 'No tienes permiso para ver esta información'], 403);
+        }
+
+        $user = User::findOrFail($userId);
+        if ($user->role !== 'EU') {
+            return response()->json([]);
+        }
+
+        // Get all students of this tutor
+        $students = $user->studentsOfTutor()->get(['users.id', 'name', 'last_name', 'role', 'profile_picture', 'dni']);
+
+        return response()->json($students);
+    }
 }

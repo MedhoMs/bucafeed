@@ -28,10 +28,21 @@ class User extends Authenticatable
         'description',
     ];
 
-    protected $appends = ['role_name', 'is_verified'];
+    protected $appends = ['role_name', 'is_verified', 'is_legal_tutor'];
+
+    public function getIsLegalTutorAttribute(): bool
+    {
+        if ($this->role !== 'EU') {
+            return false;
+        }
+        return $this->studentsOfTutor()->exists();
+    }
 
     public function getRoleNameAttribute()
     {
+        if ($this->role === 'EU' && $this->getIsLegalTutorAttribute()) {
+            return 'Tutor Legal';
+        }
         $roles = [
             'Admin' => 'Administrador',
             'EI' => 'Institución Educativa',

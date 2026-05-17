@@ -617,6 +617,33 @@ class EducationalCenterController extends TemplateController
         return response()->json($students);
     }
 
+    public function apiTutors(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json([]);
+        }
+
+        // Get all student IDs of this center
+        $studentIds = User::where('educational_center_id', $user->educational_center_id)
+            ->where('role', 'Student')
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($studentIds)) {
+            return response()->json([]);
+        }
+
+        // Get all unique tutors for these students
+        $tutors = User::where('role', 'EU')
+            ->whereHas('studentsOfTutor', function($query) use ($studentIds) {
+                $query->whereIn('student_id', $studentIds);
+            })
+            ->get(['id', 'name', 'last_name', 'role', 'profile_picture', 'dni']);
+
+        return response()->json($tutors);
+    }
+
     /**
      * Returns students that belong to this center but are still pending verification.
      */
