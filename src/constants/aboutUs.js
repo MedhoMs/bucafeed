@@ -28,17 +28,17 @@ export const ABOUT_US_TIMELINE = [
 export const PROJECT_TEAM = [
     {
         name: "Antonio Morera Marrero",
-        github: "https://github.com/AntonioMorera",
-        avatar: "https://github.com/AntonioMorera.png"
+        github: "https://github.com/AntonioMorera"
     },
     {
         name: "Daniel Bucaloiu Morales",
-        github: "https://github.com/MedhoMs",
-        avatar: "https://github.com/MedhoMs.png"
+        github: "https://github.com/danielbucaloiu"
     },
     {
         name: "Jason Camila Sotto",
-        github: "https://github.com/jasoncs-16",
-        avatar: "https://github.com/jasoncs-16.png"
+        github: "https://github.com/jasoncs-16"
     }
-];
+].map(member => ({
+    ...member,
+    avatar: member.github + ".png"
+}));

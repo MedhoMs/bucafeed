@@ -184,9 +184,22 @@ const toggleFollow = async () => {
         if (response) {
             profileData.value.isFollowing = response.is_following;
             profileData.value.seguidores = response.followers_count;
+            
+            // Sincronizar con localStorage para que la vista de Explorar y otras vistas estén al día inmediatamente
+            const savedFollows = localStorage.getItem('followed_centers');
+            let followsObj = {};
+            if (savedFollows) {
+                try {
+                    followsObj = JSON.parse(savedFollows);
+                } catch (e) {
+                    console.error('Error al parsear followed_centers:', e);
+                }
+            }
+            followsObj[profileData.value.id] = response.is_following;
+            localStorage.setItem('followed_centers', JSON.stringify(followsObj));
         }
     } catch (e) {
-
+        console.error('Error al cambiar estado de seguimiento:', e);
     }
 }
 
@@ -216,6 +229,19 @@ const loadProfile = async (id) => {
                 isFollowing: data.is_following || false,
                 description: data.description || ''
             };
+
+            // Doble validación con localStorage para asegurar consistencia visual inmediata
+            const savedFollows = localStorage.getItem('followed_centers');
+            if (savedFollows) {
+                try {
+                    const followsObj = JSON.parse(savedFollows);
+                    if (followsObj[data.id] !== undefined) {
+                        profileData.value.isFollowing = followsObj[data.id];
+                    }
+                } catch (e) {
+                    console.error('Error al cargar estados de seguimiento guardados:', e);
+                }
+            }
 
             const role = data.role?.toLowerCase();
             if (role === 'student') {
