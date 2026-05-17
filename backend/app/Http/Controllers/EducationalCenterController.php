@@ -352,7 +352,7 @@ class EducationalCenterController extends TemplateController
     {
         $user = $request->user();
         if (!$user || !$user->educational_center_id) {
-            return response()->json([], 403);
+            return response()->json([]);
         }
         $groups = Group::with(['cycle', 'tutor', 'students', 'subjectsWithTeachers'])
                         ->where('educational_center_id', $user->educational_center_id)

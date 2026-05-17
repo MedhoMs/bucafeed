@@ -87,10 +87,10 @@ class SecurityHeadersMiddleware
         $response->headers->set('Content-Security-Policy', $cspDirectives);
 
         // ── 9. Cross-Origin Resource Policy ───────────────────────────────────
-        $response->headers->set('Cross-Origin-Resource-Policy', 'same-origin');
+        $response->headers->set('Cross-Origin-Resource-Policy', 'cross-origin');
 
         // ── 10. Cross-Origin Opener Policy ────────────────────────────────────
-        $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+        $response->headers->set('Cross-Origin-Opener-Policy', 'cross-origin');
 
         return $response;
     }

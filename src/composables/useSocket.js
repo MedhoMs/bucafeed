@@ -20,7 +20,8 @@ export function useSocket() {
 
         // Detección de protocolo para producción (HTTPS -> WSS)
         const isProd = window.location.protocol === 'https:';
-        const socketUrl = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_SIGNALING_URL || (isProd ? `//${window.location.hostname}` : `//${window.location.hostname}:3000`);
+        const socketUrlRaw = import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_SIGNALING_URL || (isProd ? `//${window.location.hostname}` : `//${window.location.hostname}:3000`);
+        const socketUrl = typeof socketUrlRaw === 'string' ? socketUrlRaw.replace(/^["']|["']$/g, '') : socketUrlRaw;
         
         socketInstance = io(socketUrl, {
             transports: ['websocket', 'polling'],
