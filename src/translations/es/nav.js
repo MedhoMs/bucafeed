@@ -11,6 +11,7 @@ export const nav = {
     privateChat: "Chat Privado",
     event: "Eventos",
     eventDetails: "Eventos Detalles",
+    publications: "Publicaciones",
     foro: "Foro",
     videoCall: "Videollamada",
     post: "Crear",

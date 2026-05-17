@@ -41,6 +41,20 @@ export const manager = {
             msg: "Event updated correctly",
             imageLabel: "New image (optional)"
         },
+        publication: {
+            title: "Create New Publication",
+            msg: "Publication published successfully",
+            titleLabel: "Publication Title",
+            titlePlaceholder: "e.g., Academic Achievement",
+            descLabel: "Content",
+            descPlaceholder: "What is this publication about?",
+            imageLabel: "Cover Image"
+        },
+        editPublication: {
+            title: "Edit Publication",
+            msg: "Publication updated correctly",
+            imageLabel: "New image (optional)"
+        },
         enrollUsers: {
             title: "Enroll Users",
             msg: "Users enrolled successfully",
@@ -54,6 +68,16 @@ export const manager = {
             title: "Link Educational Cycles",
             msg: "Cycles linked successfully",
             searchPlaceholder: "Search educational cycle..."
+        },
+        user: {
+            title: "Create New User",
+            msg: "User created successfully",
+            nameLabel: "Name",
+            lastNameLabel: "Last Name",
+            dniLabel: "DNI/NIE",
+            emailLabel: "Email",
+            passLabel: "Password",
+            roleLabel: "Role"
         }
     },
     labels: {

@@ -10,6 +10,7 @@ import GroupsTab from '@/components/center/tabs/GroupsTab.vue'
 import PeopleTab from '@/components/center/tabs/PeopleTab.vue'
 import CyclesTab from '@/components/center/tabs/CyclesTab.vue'
 import EventsTab from '@/components/center/tabs/EventsTab.vue'
+import PublicationsTab from '@/components/center/tabs/PublicationsTab.vue'
 import CenterManagerCore from '@/components/center/modals/CenterManagerCore.vue'
 
 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
@@ -28,6 +29,7 @@ const pendingStudents = ref([])
 const admins = ref([])
 const cycles = ref([])
 const events = ref([])
+const publications = ref([])
 const loading = ref(true)
 const activeTab = ref('overview')
 const toast = ref({ show: false, msg: '', type: 'success' })
@@ -36,6 +38,7 @@ const toast = ref({ show: false, msg: '', type: 'success' })
 const activeModal = ref(null)
 const selectedGroup = ref(null)
 const selectedEvent = ref(null)
+const selectedPublication = ref(null)
 const expandedGroup = ref(null)
 const confirmingDelete = ref(null)
 
@@ -49,6 +52,8 @@ const showToast = ({ msg, type = 'success' }) => {
 const openModal = (type, item = null) =>{
     if (type.includes('event')) {
         selectedEvent.value = item;
+    } else if (type.includes('publication')) {
+        selectedPublication.value = item;
     } else {
         selectedGroup.value = item;
     }
@@ -58,9 +63,9 @@ const openModal = (type, item = null) =>{
 async function loadAll() {
     loading.value = true
     try {
-        const fetchs = ['my-center', 'my-center/groups', 'my-center/teachers', 'my-center/students', 'my-center/students/pending', 'my-center/admins', 'my-center/cycles', 'my-center/events']
+        const fetchs = ['my-center', 'my-center/groups', 'my-center/teachers', 'my-center/students', 'my-center/students/pending', 'my-center/admins', 'my-center/cycles', 'my-center/events', 'my-center/publications']
         const results = await Promise.all(fetchs.map(p => fetch(`${apiBase}/${p}`, { headers: headers.value }).then(r => r.json())));
-        [center.value, groups.value, teachers.value, students.value, pendingStudents.value, admins.value, cycles.value, events.value] = results;
+        [center.value, groups.value, teachers.value, students.value, pendingStudents.value, admins.value, cycles.value, events.value, publications.value] = results;
     } catch (e) { showToast({ msg: 'Error de servidor', type: 'error' }) }
     loading.value = false
 }
@@ -88,7 +93,8 @@ async function deleteItem(type, item, itemId = null) {
         group:   { url: `/groups/${item.id}`, msg: 'Eliminado', clean: () => confirmingDelete.value = null },
         student: { url: `/groups/${item.id}/students/${itemId}`, msg: 'Quitado' },
         subject: { url: `/groups/${item.id}/subjects/${itemId}`, msg: 'Quitado' },
-        event:   { url: `/events/${item.id}`, msg: 'Evento eliminado' }
+        event:   { url: `/events/${item.id}`, msg: 'Evento eliminado' },
+        publication: { url: `/publications/${item.id}`, msg: 'Publicación eliminada' }
     }[type]
     try {
         const res = await fetch(`${apiBase}/my-center${config.url}`, { method: 'DELETE', headers: headers.value })
@@ -120,15 +126,16 @@ const getTeacherName = (id) => {
                         <p class="text-white/40 text-sm font-bold uppercase tracking-wider">{{ center.location }}</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
                     <div v-for="stat in [
                         { label: 'Grupos', value: center.groups_count },
                         { label: 'Profesores', value: center.teachers_count },
                         { label: 'Alumnos', value: center.students_count },
+                        { label: 'Publicaciones', value: center.publications_count },
                     ]" :key="stat.label" 
                          class="flex flex-col items-center border-b sm:border-b-0 sm:border-r border-white/5 last:border-0 pb-4 sm:pb-0">
-                        <span class="text-2xl sm:text-3xl font-black text-white/90">{{ stat.label }}</span>
-                        <span class="text-[20px] text-white/30 uppercase tracking-[0.2em] font-black mt-1 sm:mt-2">{{ stat.value || 0 }}</span>
+                        <span class="text-xl sm:text-2xl font-black text-white/90">{{ stat.label }}</span>
+                        <span class="text-[18px] text-white/30 uppercase tracking-[0.2em] font-black mt-1 sm:mt-2">{{ stat.value || 0 }}</span>
                     </div>
                 </div>
             </ManagementCard>
@@ -169,12 +176,20 @@ const getTeacherName = (id) => {
                 @openModal="openModal"
                 @deleteItem="deleteItem"
             />
+
+            <PublicationsTab 
+                v-else-if="activeTab === 'publications'" 
+                :publications="publications"
+                @openModal="openModal"
+                @deleteItem="deleteItem"
+            />
             
         </template>
         <CenterManagerCore 
             :activeModal="activeModal" 
             :group="selectedGroup" 
             :event="selectedEvent"
+            :publication="selectedPublication"
             :teachers="teachers" 
             :students="students" 
             :cycles="cycles" 

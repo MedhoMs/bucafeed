@@ -10,6 +10,8 @@ use App\Models\Group;
 use App\Models\Rol;
 use App\Models\Tag;
 use App\Models\Event;
+use App\Models\Publication;
+
 
 
 use Illuminate\Http\Request;
@@ -344,7 +346,7 @@ class EducationalCenterController extends TemplateController
         if (!$user || !$user->educational_center_id) {
             return response()->json(['message' => 'No tienes un centro asignado'], 403);
         }
-        $center = EducationalCenter::withCount(['students', 'teachers', 'groups'])->find($user->educational_center_id);
+        $center = EducationalCenter::withCount(['students', 'teachers', 'groups', 'publications'])->find($user->educational_center_id);
         return response()->json($center);
     }
 
@@ -822,4 +824,105 @@ class EducationalCenterController extends TemplateController
         $event->delete();
         return response()->json(['message' => 'Evento eliminado']);
     }
+
+    public function apiPublications(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json([], 403);
+        }
+        $publications = Publication::where('educational_center_id', $user->educational_center_id)
+                                   ->orderBy('created_at', 'desc')
+                                   ->get();
+        return response()->json($publications);
+    }
+
+    public function apiStorePublication(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $validated = $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'required|string',
+            'image'       => 'nullable',
+        ]);
+
+        $validated['educational_center_id'] = $user->educational_center_id;
+
+        // Procesar imagen (Archivo o Base64)
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $imageName = time() . '_image_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $path = 'uploads/publications';
+            $file->move(public_path($path), $imageName);
+            $validated['image'] = '/' . $path . '/' . $imageName;
+        } elseif ($request->filled('image') && str_starts_with($request->image, 'data:image')) {
+            try {
+                $base64Image = $request->image;
+                $format = str_contains($base64Image, 'image/jpeg') ? 'jpg' : 'png';
+                $image = str_replace(['data:image/jpeg;base64,', 'data:image/png;base64,', 'data:image/jpg;base64,', ' '], ['', '', '', '+'], $base64Image);
+                $imageName = time() . '_image_' . rand(100, 999) . '.' . $format;
+                $path = 'uploads/publications';
+                $fullPath = public_path($path);
+                if (!file_exists($fullPath)) mkdir($fullPath, 0777, true);
+                \File::put($fullPath . '/' . $imageName, base64_decode($image));
+                $validated['image'] = '/' . $path . '/' . $imageName;
+            } catch (\Exception $e) { \Log::error("Error Base64: " . $e->getMessage()); }
+        }
+
+        $publication = Publication::create($validated);
+
+        return response()->json($publication, 201);
+    }
+
+    public function apiUpdatePublication(Request $request, $publicationId)
+    {
+        $user = $request->user();
+        $publication = Publication::where('educational_center_id', $user->educational_center_id)->findOrFail($publicationId);
+
+        $validated = $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'required|string',
+            'image'       => 'nullable',
+        ]);
+
+        // Procesar imagen (Archivo o Base64)
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $imageName = time() . '_image_' . rand(100, 999) . '.' . $file->getClientOriginalExtension();
+            $path = 'uploads/publications';
+            $file->move(public_path($path), $imageName);
+            $validated['image'] = '/' . $path . '/' . $imageName;
+        } elseif ($request->filled('image') && str_starts_with($request->image, 'data:image')) {
+            try {
+                $base64Image = $request->image;
+                $format = str_contains($base64Image, 'image/jpeg') ? 'jpg' : 'png';
+                $image = str_replace(['data:image/jpeg;base64,', 'data:image/png;base64,', 'data:image/jpg;base64,', ' '], ['', '', '', '+'], $base64Image);
+                $imageName = time() . '_image_' . rand(100, 999) . '.' . $format;
+                $path = 'uploads/publications';
+                $fullPath = public_path($path);
+                if (!file_exists($fullPath)) mkdir($fullPath, 0777, true);
+                \File::put($fullPath . '/' . $imageName, base64_decode($image));
+                $validated['image'] = '/' . $path . '/' . $imageName;
+            } catch (\Exception $e) { \Log::error("Error Base64: " . $e->getMessage()); }
+        } elseif (!$request->filled('image')) {
+            unset($validated['image']);
+        }
+
+        $publication->update($validated);
+
+        return response()->json($publication);
+    }
+
+    public function apiDeletePublication(Request $request, $publicationId)
+    {
+        $user = $request->user();
+        $publication = Publication::where('educational_center_id', $user->educational_center_id)->findOrFail($publicationId);
+        $publication->delete();
+        return response()->json(['message' => 'Publicación eliminada']);
+    }
 }
+
