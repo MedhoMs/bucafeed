@@ -133,15 +133,15 @@ onMounted(() => {
 <template>
     <div class="min-h-screen">
         <NavBar />
-        <main class="lg:pl-75 pt-16 lg:pt-0 min-h-screen text-white">
-            <div class="max-w-7xl mx-auto px-6 py-12">
-                <header class="mb-12">
-                    <h1 class="text-4xl font-bold tracking-tight text-white">{{ t.settings.title }}</h1>
-                    <p class="text-white/60 mt-1 text-lg">{{ t.settings.subtitle }}</p>
-                </header>
+        <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen text-white">
+            <header class="px-6 lg:px-14 pt-8 mb-6">
+                <h1 class="text-4xl font-bold tracking-tight text-white">{{ t.settings.title }}</h1>
+                <p class="text-white/60 mt-1 text-lg">{{ t.settings.subtitle }}</p>
+            </header>
     
+            <section class="text-white w-full max-w-screen-2xl mx-auto px-6 lg:px-14 flex-1 flex flex-col pt-6 pb-6">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-                    <!-- Navigation -->
+                    <!-- Left Column (Navigation) -->
                     <nav class="lg:col-span-4 space-y-2">
                         <button 
                             v-for="section in filteredSections" 
@@ -156,7 +156,7 @@ onMounted(() => {
                         >
                             <div :class="[
                                 'w-10 h-10 rounded-lg flex items-center justify-center transition-colors',
-                                activeSection === section.id ? 'bg-[#0f2828] text-white shadow-lg' : 'bg-white/5 text-white/40 group-hover:text-white'
+                                activeSection === section.id ? 'bg-accent-normal text-white shadow-lg' : 'bg-white/5 text-white/40 group-hover:text-white'
                             ]">
                                 <span v-html="section.icon" class="w-5 h-5 flex items-center justify-center"></span>
                             </div>
@@ -164,7 +164,7 @@ onMounted(() => {
                                 <p :class="['font-bold text-sm transition-colors', activeSection === section.id ? 'text-white' : 'text-white/60 group-hover:text-white']">
                                     {{ t.settings.sections[section.id]?.label || section.label }}
                                 </p>
-                                <p :class="['text-[9px] uppercase tracking-[0.2em] mt-0.5 transition-colors', activeSection === section.id ? 'text-white/40' : 'text-white/10 group-hover:text-white/30']">
+                                <p :class="['text-xs uppercase tracking-widest mt-0.5 transition-colors', activeSection === section.id ? 'text-white/40' : 'text-white/10 group-hover:text-white/30']">
                                     {{ t.settings.sections[section.id]?.desc || section.desc }}
                                 </p>
                             </div>
@@ -173,7 +173,7 @@ onMounted(() => {
     
                     <!-- Content Area -->
                     <div class="lg:col-span-8">
-                        <div class="glass-card !bg-[#0f2828]/50 backdrop-blur-md rounded-3xl p-8 lg:p-12 shadow-2xl border border-white/5">
+                        <div class="glass-card bg-accent-normal/50 backdrop-blur-md rounded-3xl p-8 lg:p-12 shadow-2xl border border-white/5">
                             
                             <!-- Account Section -->
                             <section v-if="activeSection === 'account'" class="space-y-8">
@@ -265,14 +265,7 @@ onMounted(() => {
                                 </div>
                             </section>
 
-                            <!-- Privacy Section -->
-                            <section v-if="activeSection === 'privacy'" class="space-y-8">
-                                <div class="flex items-center gap-4 mb-10">
-                                    <h2 class="text-3xl font-black uppercase tracking-tighter">{{ t.settings.privacy.title }}</h2>
-                                    <div class="h-px flex-1 bg-brand-net/20"></div>
-                                </div>
-                                <p class="text-white/40 italic text-sm">{{ t.settings.privacy.coming_soon }}</p>
-                            </section>
+
     
                             <!-- Language Section -->
                             <section v-if="activeSection === 'language'" class="space-y-8">
@@ -356,19 +349,20 @@ onMounted(() => {
                                 </div>
                             </section>
     
-                            <!-- Notifications Section -->
-                            <section v-if="activeSection === 'notifications'" class="space-y-8">
-                                <div class="flex items-center gap-4 mb-10">
-                                    <h2 class="text-3xl font-black uppercase tracking-tighter">{{ t.settings.notifications.title }}</h2>
-                                    <div class="h-px flex-1 bg-brand-net/20"></div>
-                                </div>
-                                <p class="text-white/40 italic text-sm">{{ t.settings.notifications.coming_soon }}</p>
-                            </section>
+
     
                         </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- Botón Volver al final (Abajo de toda la vista, alineado a la izquierda en desktop) -->
+                <div class="mt-auto pt-12 flex justify-center lg:justify-start">
+                    <RouterLink to="/profile" class="flex justify-center items-center gap-2 bg-accent-normal hover:bg-accent-normal-hover text-white px-8 py-3.5 cursor-pointer rounded-2xl duration-300 shadow-lg font-black uppercase tracking-widest text-xs w-fit">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z"/></svg>
+                        {{ t.nav.back }}
+                    </RouterLink>
+                </div>
+            </section>
         </main>
 
         <!-- Delete Tutor Confirmation Modal -->
