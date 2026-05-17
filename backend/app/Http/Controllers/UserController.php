@@ -428,4 +428,31 @@ class UserController extends TemplateController
 
         return response()->json($teachers);
     }
+
+    /**
+     * API: Obtener alumnos/hijos asociados a un tutor legal
+     */
+    public function getTutorStudents(Request $request, $userId)
+    {
+        $authUser = $request->user();
+        if (!$authUser) return response()->json(['message' => 'No autenticado'], 401);
+
+        $role = strtolower($authUser->role);
+        // Solo profesores, centros educativos y administradores tienen acceso
+        $canView = in_array($role, ['teacher', 'ei', 'admin', 'profesor', 'institución educativa', 'administrador']);
+
+        if (!$canView) {
+            return response()->json(['message' => 'No tienes permiso para ver esta información'], 403);
+        }
+
+        $user = User::findOrFail($userId);
+        if ($user->role !== 'EU') {
+            return response()->json([]);
+        }
+
+        // Get all students of this tutor
+        $students = $user->studentsOfTutor()->get(['users.id', 'name', 'last_name', 'role', 'profile_picture', 'dni']);
+
+        return response()->json($students);
+    }
 }
