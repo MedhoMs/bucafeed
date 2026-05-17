@@ -131,4 +131,31 @@ class MeetingController extends TemplateController
         $meeting = Meeting::with($this->with)->findOrFail($id);
         return response()->json($meeting);
     }
+
+    public function adminRoom(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !in_array(strtolower($user->role), ['admin', 'administrador', 'ei'])) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $centerId = $request->input('center_id') ?? $user->educational_center_id;
+        if (!$centerId) {
+            return response()->json(['message' => 'No center assigned'], 400);
+        }
+
+        $meeting = Meeting::firstOrCreate(
+            [
+                'educational_center_id' => $centerId,
+                'name' => 'Sala Global de Administradores'
+            ],
+            [
+                'teacher_id' => $user->id,
+                'schedule' => '24/7',
+                'description' => 'Sala de reuniones y chat permanente exclusiva para los administradores del centro.'
+            ]
+        );
+
+        return response()->json($meeting);
+    }
 }

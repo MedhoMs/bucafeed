@@ -56,9 +56,10 @@ class ChatController extends Controller
             ->with('user')
             ->orderBy('created_at', 'asc')
             ->get()
-            ->map(function ($msg) {
+            ->map(function ($msg) use ($chat) {
                 return [
                     'id' => $msg->id,
+                    'chat_id' => $chat->id,
                     'type' => $msg->message_type,
                     'content' => $msg->content,
                     'file_name' => $msg->file_name,
@@ -142,6 +143,7 @@ class ChatController extends Controller
 
         return response()->json([
             'id' => $message->id,
+            'chat_id' => $chat->id,
             'type' => $message->message_type,
             'content' => $message->content,
             'file_name' => $message->file_name,
