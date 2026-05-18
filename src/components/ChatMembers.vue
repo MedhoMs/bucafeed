@@ -117,7 +117,7 @@
         leave-active-class="transition-opacity duration-300 ease-in"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0">
-        <div v-if="isMenuOpen" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60"></div>
+        <div v-if="isMenuOpen" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60 cursor-pointer"></div>
     </Transition>
 
     <Transition
@@ -159,7 +159,7 @@
                         <button
                             v-if="props.meeting?.teacher_id && Number(props.meeting.teacher_id) !== Number(authUser?.id)"
                             @click="openPrivateChat(props.meeting.teacher_id)"
-                            class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2"
+                            class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2 cursor-pointer"
                             title="Mensaje"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8z"/><path d="M3 7l9 6l9 -6"/></svg>
@@ -203,7 +203,7 @@
                         <button
                             v-if="!['student', 'alumno', 'estudiante'].includes(authUser?.role?.toLowerCase())"
                             @click="openPrivateChat(student.id)"
-                            class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2"
+                            class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2 cursor-pointer"
                             title="Mensaje"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8z"/><path d="M3 7l9 6l9 -6"/></svg>

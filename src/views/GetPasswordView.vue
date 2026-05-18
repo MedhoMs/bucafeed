@@ -136,7 +136,7 @@
                         maxlength="100"
                         required>
 
-                    <button type="button" :disabled="loading" @click="sendCode" class="text-center mb-4">
+                    <button type="button" :disabled="loading" @click="sendCode" class="text-center mb-4 cursor-pointer">
                         <ButtonForm :value="loading ? 'Enviando…' : 'Enviar código'" />
                     </button>
                 </template>
@@ -176,13 +176,13 @@
                         maxlength="50"
                         required>
 
-                    <button type="button" :disabled="loading" @click="resetPassword" class="text-center mb-4">
+                    <button type="button" :disabled="loading" @click="resetPassword" class="text-center mb-4 cursor-pointer">
                         <ButtonForm :value="loading ? 'Guardando…' : 'Cambiar contraseña'" />
                     </button>
 
                     <!-- Reenviar código -->
                     <button type="button" @click="step = 1; errorMsg = ''; successMsg = ''"
-                        class="text-sm text-gray-500 hover:text-black hover:underline transition-all duration-200 text-center mt-1 mb-2">
+                        class="text-sm text-gray-500 hover:text-black hover:underline transition-all duration-200 text-center mt-1 mb-2 cursor-pointer">
                         ← Volver e introducir otro email
                     </button>
                 </template>

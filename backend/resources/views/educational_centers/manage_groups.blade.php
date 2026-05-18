@@ -8,7 +8,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 2v2" /></svg>
                 Crear Nuevo Grupo / Nivel
             </h3>
-            <button id="btn-reset-form" type="button" onclick="resetGroupForm()" class="hidden text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white transition-colors">
+            <button id="btn-reset-form" type="button" onclick="resetGroupForm()" class="hidden text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white transition-colors cursor-pointer">
                 Limpiar y Crear Nuevo
             </button>
         </div>
@@ -110,7 +110,7 @@
             </div>
 
             <div class="flex justify-end">
-                <button type="button" id="btn-submit-group" onclick="submitGroupForm(this)" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/20">
+                <button type="button" id="btn-submit-group" onclick="submitGroupForm(this)" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/20 cursor-pointer">
                     Crear Grupo e Iniciar Nivel
                 </button>
             </div>
@@ -135,13 +135,13 @@
                             </p>
                         </div>
                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onclick="ajaxLoad('{{ route('educational_centers.group_details', [$center->id, $group->id]) }}', document.getElementById('modal-body'), true)" class="p-2 text-white/20 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-xl transition-all" title="Consultar Detalles">
+                            <button onclick="ajaxLoad('{{ route('educational_centers.group_details', [$center->id, $group->id]) }}', document.getElementById('modal-body'), true)" class="p-2 text-white/20 hover:text-emerald-400 hover:bg-emerald-400/10 rounded-xl transition-all cursor-pointer" title="Consultar Detalles">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
                             </button>
-                            <button onclick="editGroup('{{ $group->id }}', this)" class="p-2 text-white/20 hover:text-blue-400 hover:bg-blue-400/10 rounded-xl transition-all" title="Editar Grupo">
+                            <button onclick="editGroup('{{ $group->id }}', this)" class="p-2 text-white/20 hover:text-blue-400 hover:bg-blue-400/10 rounded-xl transition-all cursor-pointer" title="Editar Grupo">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
                             </button>
-                            <button onclick="deleteGroup('{{ $group->id }}', this)" class="p-2 text-white/20 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all" title="Eliminar Grupo">
+                            <button onclick="deleteGroup('{{ $group->id }}', this)" class="p-2 text-white/20 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all cursor-pointer" title="Eliminar Grupo">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                             </button>
                         </div>

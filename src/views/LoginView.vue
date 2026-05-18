@@ -102,7 +102,7 @@
                 <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.login.password }}</label>
                 <input type="password" class="outline-hidden border-0 border-b border-black mb-7.5 p-0.5 text-xl" maxlength="20" id="password-register-form" name="password-register-form" :placeholder="t.login.placeholderPassword" required>
 
-                <button id="loginButton" class="text-center">
+                <button id="loginButton" class="text-center cursor-pointer">
                     <ButtonForm :value="t.login.submit"></ButtonForm>
                 </button>
 

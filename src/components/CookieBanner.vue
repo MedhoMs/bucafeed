@@ -39,10 +39,10 @@ const rejectAll = () => {
                         {{ t.settings.cookies.desc }}
                     </p>
                     <div class="flex gap-3">
-                        <button @click="acceptAll" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-semibold transition-all">
+                        <button @click="acceptAll" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-semibold transition-all cursor-pointer">
                             {{ t.settings.cookies.accept_all }}
                         </button>
-                        <button @click="rejectAll" class="flex-1 bg-white/5 hover:bg-white/10 text-white py-2 rounded-xl text-sm font-semibold transition-all border border-white/5">
+                        <button @click="rejectAll" class="flex-1 bg-white/5 hover:bg-white/10 text-white py-2 rounded-xl text-sm font-semibold transition-all border border-white/5 cursor-pointer">
                             {{ t.settings.cookies.reject_optional }}
                         </button>
                     </div>

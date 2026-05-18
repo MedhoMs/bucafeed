@@ -340,7 +340,7 @@ async function handleAction() {
                 <div v-if="activeModal === 'enroll_users'"
                     class="flex p-1 bg-white/5 rounded-xl border border-white/10 shadow-inner">
                     <button v-for="r in ['Student', 'Teacher']" :key="r" @click="activeEnrollTab = r"
-                        :class="['flex-1 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all flex items-center justify-center gap-2', activeEnrollTab === r ? 'bg-secondary-normal text-white shadow-lg' : 'text-white/20 hover:text-white/40']">
+                        class="cursor-pointer" :class="['flex-1 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all flex items-center justify-center gap-2', activeEnrollTab === r ? 'bg-secondary-normal text-white shadow-lg' : 'text-white/20 hover:text-white/40']">
                         <svg v-if="r === 'Student'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-3.5 h-3.5 fill-current">
                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                         </svg>

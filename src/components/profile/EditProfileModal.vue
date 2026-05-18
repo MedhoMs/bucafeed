@@ -65,13 +65,13 @@ const saveProfile = async () => {
     <Transition name="fade">
         <div v-if="show" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
             <!-- Overlay -->
-            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="emit('close')"></div>
+            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer" @click="emit('close')"></div>
 
             <!-- Modal -->
             <div class="relative w-full max-w-2xl bg-[#15202b] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
                 <header class="p-6 border-b border-white/10 flex justify-between items-center bg-[#1c2732]">
                     <h2 class="text-xl font-bold text-white">Editar Perfil</h2>
-                    <button @click="emit('close')" class="text-white/40 hover:text-white transition-colors">
+                    <button @click="emit('close')" class="text-white/40 hover:text-white transition-colors cursor-pointer">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
                 </header>
@@ -124,10 +124,10 @@ const saveProfile = async () => {
                 </div>
 
                 <footer class="p-6 border-t border-white/10 bg-[#1c2732] flex justify-end gap-3">
-                    <button @click="emit('close')" class="px-6 py-2.5 rounded-xl text-white/60 hover:bg-white/5 transition-all">
+                    <button @click="emit('close')" class="px-6 py-2.5 rounded-xl text-white/60 hover:bg-white/5 transition-all cursor-pointer">
                         Cancelar
                     </button>
-                    <PrimaryButton 
+                    <PrimaryButton class="cursor-pointer" 
                         text="Guardar Cambios" 
                         :loading="loading"
                         @click="saveProfile"

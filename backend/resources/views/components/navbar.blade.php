@@ -1,6 +1,6 @@
 <!-- Mobile Header (Visible below lg) -->
 <div class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#142b2b] border-b border-white/10 flex justify-between items-center px-4 z-55 shadow-md">
-    <button id="mobile-toggle" class="p-2 text-white/70 hover:text-white transition-colors">
+    <button id="mobile-toggle" class="p-2 text-white/70 hover:text-white transition-colors cursor-pointer">
         <x-admin.constants.icons name="menu" />
     </button>
     <div class="flex items-center gap-2">

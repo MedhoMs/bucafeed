@@ -292,7 +292,7 @@ const deleteMeeting = async () => {
                     <SearchBar :items="availableMeetings" @update:filtered="filteredMeetings = $event" />
                 </template>
                 <template #actions>
-                    <PrimaryButton v-if="canCreateMeeting" :text="t.meetings.newMeeting" icon="plus"
+                    <PrimaryButton class="cursor-pointer" v-if="canCreateMeeting" :text="t.meetings.newMeeting" icon="plus"
                         @click="openModal" />
                 </template>
 

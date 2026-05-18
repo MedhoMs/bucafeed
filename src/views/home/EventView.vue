@@ -156,7 +156,7 @@
                     />
                 </template>
                 <template #actions>
-                    <PrimaryButton 
+                    <PrimaryButton class="cursor-pointer" 
                         v-if="canCreate" 
                         :text="t.events.newEvent" 
                         icon="plus" 

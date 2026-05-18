@@ -103,10 +103,10 @@ onUnmounted(() => {
             
             <div v-if="events.length > 0" class="relative">
                 <!-- Flechas de navegación -->
-                <button @click="prevSlide(); startAutoSlide()" class="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 lg:p-4 rounded-full btn-dark-icon opacity-100 lg:opacity-0 lg:group-hover/carousel:opacity-100">
+                <button @click="prevSlide(); startAutoSlide()" class="absolute left-2 lg:left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 lg:p-4 rounded-full btn-dark-icon opacity-100 lg:opacity-0 lg:group-hover/carousel:opacity-100 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="lg:w-7 lg:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
                 </button>
-                <button @click="nextSlide(); startAutoSlide()" class="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 lg:p-4 rounded-full btn-dark-icon opacity-100 lg:opacity-0 lg:group-hover/carousel:opacity-100">
+                <button @click="nextSlide(); startAutoSlide()" class="absolute right-2 lg:right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 lg:p-4 rounded-full btn-dark-icon opacity-100 lg:opacity-0 lg:group-hover/carousel:opacity-100 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="lg:w-7 lg:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                 </button>
 
@@ -145,7 +145,7 @@ onUnmounted(() => {
             <div v-if="events.length > 1" class="flex justify-center gap-2 lg:gap-3 mt-4 lg:mt-6">
                 <button v-for="(_, i) in events" :key="i" 
                         @click="goToSlide(i); startAutoSlide()"
-                        :class="['h-1.5 lg:h-2 rounded-full', (activeIndex === i + 1) ? 'w-8 lg:w-10 dot-indicator-active' : 'w-1.5 lg:w-2 dot-indicator']">
+                        class="cursor-pointer" :class="['h-1.5 lg:h-2 rounded-full', (activeIndex === i + 1) ? 'w-8 lg:w-10 dot-indicator-active' : 'w-1.5 lg:w-2 dot-indicator']">
                 </button>
             </div>
         </div>

@@ -41,7 +41,7 @@ const filteredEvents = computed(() => {
                 </div>
             </div>
 
-            <PrimaryButton 
+            <PrimaryButton class="cursor-pointer" 
                 text="Nuevo Evento" 
                 icon="plus"
                 @click="emit('openModal', 'event')"
