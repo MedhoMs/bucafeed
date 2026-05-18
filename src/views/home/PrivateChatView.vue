@@ -14,7 +14,7 @@
     const { get, post } = useApi();
     const { setupSocket, emitSocket, onlineUsers, connected, on: onSocket, joinRoom, leaveRoom } = useSocket();
 
-    const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
+    const isUnverified = computed(() => ['Student', 'Teacher'].includes(authUser.value?.role) && authUser.value?.is_verified === false)
     
     const studentsList = ref([]);
     const tutorsList = ref([]);
@@ -330,7 +330,7 @@
                                         </div>
                                         <button v-if="!msg.callEnded" 
                                             @click="activeCallRoomId = msg.content" 
-                                            class="w-full py-3 px-6 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                            class="w-full py-3 px-6 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>
                                             Unirse ahora
                                         </button>

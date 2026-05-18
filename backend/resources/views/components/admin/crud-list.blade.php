@@ -46,7 +46,7 @@
     @endif
     
     <div class="mt-8 flex justify-end gap-3 flex-wrap">
-        <button type="button" class="px-5 py-2 rounded-xl bg-slate-700/50 hover:bg-slate-700 text-white transition-all duration-200" data-bs-dismiss="modal" onclick="document.getElementById('default-modal').classList.add('hidden')">
+        <button type="button" class="px-5 py-2 rounded-xl bg-slate-700/50 hover:bg-slate-700 text-white transition-all duration-200 cursor-pointer" data-bs-dismiss="modal" onclick="document.getElementById('default-modal').classList.add('hidden')">
             Cerrar
         </button>
 

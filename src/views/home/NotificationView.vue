@@ -149,7 +149,7 @@
                     <div
                         v-for="notification in notifications"
                         :key="notification.id"
-                        class="notification-card w-full"
+                        class="notification-card w-full cursor-pointer"
                         :class="{ 'border-accent-normal/30 ring-1 ring-accent-normal/10': !notification.read }"
                         @click="handleClick(notification)"
                     >
@@ -180,7 +180,7 @@
                                 <span class="text-xs text-white/30 font-medium">{{ formatDate(notification.created_at) }}</span>
                                 <button
                                     @click="handleDelete($event, notification)"
-                                    class="p-1.5 rounded-lg hover:bg-white/10 text-white/30 hover:text-red-400 transition-colors"
+                                    class="p-1.5 rounded-lg hover:bg-white/10 text-white/30 hover:text-red-400 transition-colors cursor-pointer"
                                     title="Eliminar"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>

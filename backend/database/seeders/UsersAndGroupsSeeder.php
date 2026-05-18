@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Group;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\EducationalCenter;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -180,12 +181,20 @@ class UsersAndGroupsSeeder extends Seeder
         $dni = sprintf('%08d', 10000000 + $globalCounter * 10) . 'T';
         $globalCounter++;
 
-        return User::updateOrCreate(['email' => $teacherEmail], [
+        $user = User::updateOrCreate(['email' => $teacherEmail], [
             'name' => $profName, 'last_name' => $profSurname, 'password' => Hash::make('12345678'),
             'role' => 'Teacher', 'educational_center_id' => $center->id,
             'dni' => $dni,
             'institution_name' => $center->name, 'education_level' => $center->type
         ]);
+
+        Teacher::updateOrCreate(['user_id' => $user->id], [
+            'educational_center_id' => $center->id,
+            'specialty'             => $user->education_level ?? '',
+            'verified'              => true,
+        ]);
+
+        return $user;
     }
 
     private function removeAccents($string): string

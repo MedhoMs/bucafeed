@@ -152,9 +152,9 @@ router.beforeEach((to, from, next) => {
         return next('/home');
     }
 
-    // Block unverified students from restricted routes
-    const isStudent = loggedIn?.role === 'Student';
-    const isUnverified = isStudent && loggedIn?.is_verified === false;
+    // Block unverified students and teachers from restricted routes
+    const isStudentOrTeacher = ['Student', 'Teacher'].includes(loggedIn?.role);
+    const isUnverified = isStudentOrTeacher && loggedIn?.is_verified === false;
     const restrictedForUnverified = ['/foro', '/event', '/meeting', '/private-chat', '/meetingchat'];
 
     if (isUnverified && restrictedForUnverified.some(r => to.path.startsWith(r))) {

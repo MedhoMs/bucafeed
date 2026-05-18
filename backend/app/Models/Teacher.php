@@ -13,6 +13,11 @@ class Teacher extends Model
         'user_id',
         'educational_center_id',
         'specialty',
+        'verified',
+    ];
+
+    protected $casts = [
+        'verified' => 'boolean',
     ];
 
     public function user()

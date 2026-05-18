@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EducationalCenter;
 use App\Models\User;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\Cycle;
 use App\Models\Group;
 use App\Models\Rol;
@@ -530,6 +531,19 @@ class EducationalCenterController extends TemplateController
             );
         }
 
+        // For Teachers enrolled by the center, create/update their Teacher record with verified=false (pending verification)
+        $enrolledTeachers = User::whereIn('id', $userIds)->where('role', 'Teacher')->get();
+        foreach ($enrolledTeachers as $enrolledUser) {
+            Teacher::updateOrCreate(
+                ['user_id' => $enrolledUser->id],
+                [
+                    'educational_center_id' => $center->id,
+                    'specialty' => $enrolledUser->education_level ?? '',
+                    'verified' => false,   // Must be verified by center before full access
+                ]
+            );
+        }
+
         return response()->json(['message' => 'Usuarios matriculados correctamente']);
     }
 
@@ -596,7 +610,10 @@ class EducationalCenterController extends TemplateController
         }
         $teachers = User::where('educational_center_id', $user->educational_center_id)
                         ->where('role', 'Teacher')
-                        ->get();
+                        ->with('teacher')
+                        ->get()
+                        ->filter(fn($u) => $u->is_verified)
+                        ->values();
         return response()->json($teachers);
     }
 
@@ -708,6 +725,63 @@ class EducationalCenterController extends TemplateController
 
         return response()->json([
             'message' => 'Estudiante verificado correctamente',
+            'user' => $targetUser,
+        ]);
+    }
+
+    /**
+     * Returns teachers that belong to this center but are still pending verification.
+     */
+    public function apiPendingTeachers(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->educational_center_id) {
+            return response()->json([], 403);
+        }
+        $pending = User::where('educational_center_id', $user->educational_center_id)
+                        ->where('role', 'Teacher')
+                        ->with('teacher')
+                        ->get()
+                        ->filter(fn($u) => !$u->is_verified)
+                        ->values();
+        return response()->json($pending);
+    }
+
+    /**
+     * Marks a teacher as verified by the educational center.
+     */
+    public function apiVerifyTeacher(Request $request, $userId)
+    {
+        $authUser = $request->user();
+        if (!$authUser || !$authUser->educational_center_id) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $targetUser = User::where('id', $userId)
+                          ->where('educational_center_id', $authUser->educational_center_id)
+                          ->where('role', 'Teacher')
+                          ->first();
+
+        if (!$targetUser) {
+            return response()->json(['message' => 'Usuario no encontrado o no pertenece a este centro'], 404);
+        }
+
+        // Usar updateOrCreate para asegurar que el registro existe y marcarlo como verificado
+        $teacher = Teacher::updateOrCreate(
+            ['user_id' => $targetUser->id],
+            [
+                'educational_center_id' => $authUser->educational_center_id,
+                'specialty' => $targetUser->education_level ?? '',
+                'verified' => true
+            ]
+        );
+
+        // Refrescar el usuario para incluir is_verified actualizado
+        $targetUser->refresh();
+        $targetUser->load('teacher');
+
+        return response()->json([
+            'message' => 'Profesor verificado correctamente',
             'user' => $targetUser,
         ]);
     }

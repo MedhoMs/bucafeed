@@ -6,7 +6,7 @@
     import { useTranslations } from '../../composables/useTranslations'
     import UnverifiedBanner from '@/components/common/UnverifiedBanner.vue'
 
-    const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
+    const isUnverified = computed(() => ['Student', 'Teacher'].includes(user.value?.role) && user.value?.is_verified === false)
 
     const eventDetails = ref(null)
     const direccion = ref('')

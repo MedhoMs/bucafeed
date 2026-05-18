@@ -22,7 +22,7 @@ const { get, del: apiDelete } = useApi();
 
 import { user as authUser, token as authToken } from '@/stores/auth'
 
-const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
+const isUnverified = computed(() => ['Student', 'Teacher'].includes(authUser.value?.role) && authUser.value?.is_verified === false)
 
 const rawPublications = ref([]);
 const publications = ref([]);
@@ -130,7 +130,7 @@ const deletePublication = async () => {
                     />
                 </template>
                 <template #actions>
-                    <PrimaryButton 
+                    <PrimaryButton class="cursor-pointer" 
                         v-if="canCreate" 
                         :text="t.publications?.newPublication || 'Nueva Publicación'" 
                         icon="plus" 

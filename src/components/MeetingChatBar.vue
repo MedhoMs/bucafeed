@@ -22,7 +22,7 @@ const emit = defineEmits(['joinCall', 'forceLeaveCall']);
 
 const meetingId = computed(() => route.params.id);
 const canCreateKahoot = computed(() => authUser.value && ['Teacher', 'Admin', 'EI'].includes(authUser.value.role));
-const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
+const isUnverified = computed(() => ['Student', 'Teacher'].includes(authUser.value?.role) && authUser.value?.is_verified === false)
 
 const { connect: connectSocket, emit: emitSocket, on: onSocket, off: offSocket, disconnect: disconnectSocket, joinRoom, leaveRoom } = useSocket()
 const messages = ref([])

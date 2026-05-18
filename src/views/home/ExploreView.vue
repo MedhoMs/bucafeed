@@ -5,6 +5,7 @@ import NavBar from '../../components/NavBar/NavBar.vue';
 import BaseModal from '@/components/modals/BaseModal.vue';
 import { useTranslations } from '../../composables/useTranslations';
 import { useApi } from '@/composables/useApi';
+import { user } from '@/stores/auth';
 
 const { t } = useTranslations();
 const router = useRouter();
@@ -30,12 +31,23 @@ const handleScroll = () => {
 const fetchAllData = async () => {
     loading.value = true;
     try {
-        const [qRes, eRes, uRes, pRes] = await Promise.all([
-            get('questions'),
+        const promises = [
             get('events'),
             get('users?role=EI'), // Fetch educational centers (Users with role EI)
             get('publications') // Fetch publications
-        ]);
+        ];
+
+        // Omit questions fetch if user is External User (EU)
+        if (user.value?.role !== 'EU') {
+            promises.push(get('questions'));
+        }
+
+        const results = await Promise.all(promises);
+
+        const eRes = results[0];
+        const uRes = results[1];
+        const pRes = results[2];
+        const qRes = user.value?.role !== 'EU' ? results[3] : { data: [] };
 
         questions.value = qRes.data && Array.isArray(qRes.data) ? qRes.data : (qRes || []);
         events.value = eRes.data && Array.isArray(eRes.data) ? eRes.data : (eRes || []);
@@ -242,7 +254,7 @@ onUnmounted(() => {
                                     :placeholder="t.explore.searchPlaceholder || 'Buscar en TelamoNet...'" 
                                     class="ml-4 w-full flex-1 outline-none border-none bg-transparent text-sm font-bold text-white placeholder:text-white/20 tracking-tight"
                                 />
-                                <button v-if="searchQuery" @click="searchQuery = ''" class="flex items-center pl-2">
+                                <button v-if="searchQuery" @click="searchQuery = ''" class="flex items-center pl-2 cursor-pointer">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-white/40 hover:text-white transition-colors"><path d="M18 6 6 18M6 6l12 12"/></svg>
                                 </button>
                             </div>
@@ -252,25 +264,26 @@ onUnmounted(() => {
                         <div class="flex border-b border-white/5 mb-6 overflow-x-auto select-none scrollbar-none">
                             <button 
                                 @click="activeTab = 'para_ti'"
-                                :class="['tab-btn', activeTab === 'para_ti' ? 'tab-btn-active' : '']"
+                                class="cursor-pointer" :class="['tab-btn', activeTab === 'para_ti' ? 'tab-btn-active' : '']"
                             >
                                 {{ t.explore.forYou || 'Para ti' }}
                             </button>
                             <button 
                                 @click="activeTab = 'eventos'"
-                                :class="['tab-btn', activeTab === 'eventos' ? 'tab-btn-active' : '']"
+                                class="cursor-pointer" :class="['tab-btn', activeTab === 'eventos' ? 'tab-btn-active' : '']"
                             >
                                 {{ t.explore.events || 'Eventos' }}
                             </button>
                             <button 
                                 @click="activeTab = 'publicaciones'"
-                                :class="['tab-btn', activeTab === 'publicaciones' ? 'tab-btn-active' : '']"
+                                class="cursor-pointer" :class="['tab-btn', activeTab === 'publicaciones' ? 'tab-btn-active' : '']"
                             >
                                 {{ t.explore.publications || 'Publicaciones' }}
                             </button>
                             <button 
+                                v-if="user?.role !== 'EU'"
                                 @click="activeTab = 'preguntas'"
-                                :class="['tab-btn', activeTab === 'preguntas' ? 'tab-btn-active' : '']"
+                                class="cursor-pointer" :class="['tab-btn', activeTab === 'preguntas' ? 'tab-btn-active' : '']"
                             >
                                 {{ t.explore.questions || 'Preguntas' }}
                             </button>
@@ -311,7 +324,7 @@ onUnmounted(() => {
                                     
                                     <div v-for="p in publications.slice(0, 2)" :key="'pt-p-'+p.id"
                                          @click="viewPublication(p)"
-                                         class="trend-row">
+                                         class="trend-row cursor-pointer">
                                         <div class="flex flex-col pr-8">
                                             <span class="trend-category">Novedad · {{ p.center_name }}</span>
                                             <span class="trend-topic">{{ p.title }}</span>
@@ -327,20 +340,47 @@ onUnmounted(() => {
                                     </button>
                                 </div>
 
-                                <!-- "Ver preguntas" Feed list styled exactly like the "Who to follow" widget -->
-                                <div class="tab-content-container">
+                                <!-- "Ver eventos" Feed list styled exactly like the "Who to follow" widget (For External Users) -->
+                                <div v-if="user?.role === 'EU'" class="tab-content-container">
+                                    <h3 class="px-5 py-4 text-white font-black text-lg border-b border-white/5">{{ t.explore.seeEvents || 'Ver eventos' }}</h3>
+                                    
+                                    <!-- Dynamic Events only -->
+                                    <div v-for="e in filteredEvents.slice(0, 4)" :key="'pt-e-'+e.id"
+                                         @click="viewEvent(e)"
+                                         class="trend-row cursor-pointer">
+                                        <div class="flex flex-col pr-8">
+                                            <span class="trend-category">Evento Académico · {{ getCenterName(e) }}</span>
+                                            <span class="trend-topic">{{ e.title }}</span>
+                                            <span class="trend-meta">{{ formatDate(e.date) }} · {{ daysUntil(e.date) }}</span>
+                                        </div>
+                                        <button class="trend-options-btn cursor-pointer">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                                        </button>
+                                    </div>
+
+                                    <!-- Ver más eventos button at the end -->
+                                    <button 
+                                        @click="activeTab = 'eventos'" 
+                                        class="w-full text-center py-4 text-xs font-black uppercase tracking-widest text-white hover:text-white/80 transition-colors cursor-pointer border-t border-white/5 bg-white/[0.01] hover:bg-white/[0.03]"
+                                    >
+                                        {{ t.explore.seeMoreEvents || 'Ver más eventos →' }}
+                                    </button>
+                                </div>
+
+                                <!-- "Ver preguntas" Feed list styled exactly like the "Who to follow" widget (For other roles) -->
+                                <div v-else class="tab-content-container">
                                     <h3 class="px-5 py-4 text-white font-black text-lg border-b border-white/5">{{ t.explore.seeQuestions || 'Ver preguntas' }}</h3>
                                     
                                     <!-- Dynamic Questions only -->
                                     <div v-for="q in filteredQuestions.slice(0, 4)" :key="'pt-q-'+q.id"
                                          @click="goToQuestion(q.id)"
-                                         class="trend-row">
+                                         class="trend-row cursor-pointer">
                                         <div class="flex flex-col pr-8">
                                             <span class="trend-category">Foro · {{ t.explore.trendIn || 'Tendencia en' }} {{ getQuestionTag(q) }}</span>
                                             <span class="trend-topic">{{ q.question || q.title }}</span>
                                             <span class="trend-meta">{{ q.answers ? q.answers.length : 0 }} {{ t.explore.answers || 'respuestas' }} · {{ t.explore.createdBy || 'Creado por' }} {{ q.user?.name ?? 'Usuario' }}</span>
                                         </div>
-                                        <button class="trend-options-btn">
+                                        <button class="trend-options-btn cursor-pointer">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
                                         </button>
                                     </div>
@@ -365,13 +405,13 @@ onUnmounted(() => {
                                         <!-- List of up to 6 events at a time -->
                                         <div v-for="e in filteredEvents.slice(0, 6)" :key="e.id" 
                                              @click="viewEvent(e)"
-                                             class="trend-row">
+                                             class="trend-row cursor-pointer">
                                             <div class="flex flex-col pr-8">
                                                 <span class="trend-category">Evento Académico · {{ getCenterName(e) }}</span>
                                                 <span class="trend-topic">{{ e.title }}</span>
                                                 <span class="trend-meta">{{ formatDate(e.date) }} · {{ daysUntil(e.date) }}</span>
                                             </div>
-                                            <button class="trend-options-btn">
+                                            <button class="trend-options-btn cursor-pointer">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
                                             </button>
                                         </div>
@@ -397,13 +437,13 @@ onUnmounted(() => {
                                         <!-- List of up to 6 questions at a time -->
                                         <div v-for="q in filteredQuestions.slice(0, 6)" :key="q.id" 
                                              @click="goToQuestion(q.id)"
-                                             class="trend-row">
+                                             class="trend-row cursor-pointer">
                                             <div class="flex flex-col pr-8">
                                                 <span class="trend-category">Foro · {{ getQuestionTag(q) }}</span>
                                                 <span class="trend-topic">{{ q.question || q.title }}</span>
                                                 <span class="trend-meta">{{ q.answers ? q.answers.length : 0 }} {{ t.explore.answers || 'respuestas' }} · {{ t.explore.by || 'Por' }} {{ q.user?.name ?? 'Usuario' }}</span>
                                             </div>
-                                            <button class="trend-options-btn">
+                                            <button class="trend-options-btn cursor-pointer">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
                                             </button>
                                         </div>
@@ -428,13 +468,13 @@ onUnmounted(() => {
                                     <div v-else>
                                         <div v-for="p in filteredPublications.slice(0, 6)" :key="p.id" 
                                              @click="viewPublication(p)"
-                                             class="trend-row">
+                                             class="trend-row cursor-pointer">
                                             <div class="flex flex-col pr-8">
                                                 <span class="trend-category">Novedad · {{ p.center_name }}</span>
                                                 <span class="trend-topic">{{ p.title }}</span>
                                                 <span class="trend-meta">{{ formatDate(p.created_at) }}</span>
                                             </div>
-                                            <button class="trend-options-btn">
+                                            <button class="trend-options-btn cursor-pointer">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
                                             </button>
                                         </div>
@@ -483,7 +523,7 @@ onUnmounted(() => {
                                         @mouseenter="hoveredCenterId = center.id"
                                         @mouseleave="hoveredCenterId = null"
                                         :class="['follow-btn', followedStates[center.id] ? 'follow-btn-active' : '']"
-                                        class="min-w-24 text-center"
+                                        class="min-w-24 text-center cursor-pointer"
                                     >
                                         <span v-if="followedStates[center.id]">
                                             {{ hoveredCenterId === center.id ? (t.explore.unfollow || 'Dejar de seguir') : (t.explore.following || 'Siguiendo') }}

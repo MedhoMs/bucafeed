@@ -17,7 +17,7 @@ const manejarClick = () => {
 </script>
 
 <template>
-  <button class="boton-unico" @click="manejarClick">
+  <button class="boton-unico cursor-pointer" @click="manejarClick">
     {{ props.texto }}
   </button>
 </template>

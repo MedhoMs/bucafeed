@@ -74,7 +74,7 @@ const changePage = (page) => {
                 v-else
                 @click="changePage(page)"
                 :aria-current="page === currentPage ? 'page' : undefined"
-                class="w-10 h-10 flex items-center justify-center text-sm transition-all rounded-2xl border border-white/10"
+                class="w-10 h-10 flex items-center justify-center text-sm transition-all rounded-2xl border border-white/10 cursor-pointer"
                 :class="[
                     page === currentPage 
                         ? 'bg-[#0f2828] text-white font-black shadow-lg' 

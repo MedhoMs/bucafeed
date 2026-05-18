@@ -99,6 +99,17 @@
             }
         }
 
+        const letters = "TRWAGMYFPDXBNJZSQVHLCKE"
+        let result = "Dni inválido"
+        function validateDni(newDni) {
+            if (newDni.length = 9) {
+                if (newDni[8] == letters[newDni[0,8] % 23]) {
+                    result = "Dni válido"
+                }
+            }
+            return result
+        }
+
         registerForm.addEventListener('click', function(e) { e.preventDefault(); });
         registerButton.addEventListener('click', function() { validateForm(); });
 
@@ -340,7 +351,6 @@
                     <p hidden class="absolute top-48.75 left-27.5 text-sm font-semibold">{{ t.register.invalidPassword }}</p>
                     <label class="font-bold" for="who-register-form" id="who-register-label">{{ t.register.whoAreYou }}</label>
                     <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
-                        <option value="EI">{{ t.register.educationalInstitution }}</option>
                         <option value="Student">{{ t.register.student }}</option>
                         <option value="Teacher">{{ t.register.teacher }}</option>
                         <option value="EU">{{ t.register.externalUser }}</option>
@@ -378,7 +388,7 @@
                     <input type="text" class="validateEmailInput outline-hidden border-b border-black mb-7.5 p-0.5 w-32 text-center text-xl" maxlength="6" autocomplete="off" id="code-register-form" name="code-register-form" required></input>
                 </section>
 
-                <button id="registerButton" class="absolute bottom-15 lg:bottom-20 right-8 lg:right-12 text-center hidden">
+                <button id="registerButton" class="absolute bottom-15 lg:bottom-20 right-8 lg:right-12 text-center hidden cursor-pointer">
                     <ButtonForm :value="t.register.submit"></ButtonForm>
                 </button>
 
