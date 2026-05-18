@@ -60,19 +60,28 @@ class User extends Authenticatable
      */
     public function getIsVerifiedAttribute(): bool
     {
-        if ($this->role !== 'Student') {
-            return true;
-        }
-        try {
-            // Use already loaded relation to avoid N+1
-            if ($this->relationLoaded('student')) {
-                return (bool) ($this->student?->verified ?? false);
+        if ($this->role === 'Student') {
+            try {
+                // Use already loaded relation to avoid N+1
+                if ($this->relationLoaded('student')) {
+                    return (bool) ($this->student?->verified ?? false);
+                }
+                return (bool) (Student::where('user_id', $this->id)->value('verified') ?? false);
+            } catch (\Throwable $e) {
+                // Column may not exist yet (migration pending) — treat as unverified but don't crash
+                return false;
             }
-            return (bool) (Student::where('user_id', $this->id)->value('verified') ?? false);
-        } catch (\Throwable $e) {
-            // Column may not exist yet (migration pending) — treat as unverified but don't crash
-            return false;
+        } elseif ($this->role === 'Teacher') {
+            try {
+                if ($this->relationLoaded('teacher')) {
+                    return (bool) ($this->teacher?->verified ?? false);
+                }
+                return (bool) (Teacher::where('user_id', $this->id)->value('verified') ?? false);
+            } catch (\Throwable $e) {
+                return false;
+            }
         }
+        return true;
     }
 
     protected $hidden = [

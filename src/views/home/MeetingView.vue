@@ -17,7 +17,7 @@ import { useApi } from '../../composables/useApi';
 const { t } = useTranslations()
 const { get, post: apiPost, del: apiDelete, loading: apiLoading } = useApi();
 
-const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
+const isUnverified = computed(() => ['Student', 'Teacher'].includes(user.value?.role) && user.value?.is_verified === false)
 
 const meetings = ref([]);
 const centers = ref([]);
