@@ -26,6 +26,7 @@ const groups = ref([])
 const teachers = ref([])
 const students = ref([])
 const pendingStudents = ref([])
+const pendingTeachers = ref([])
 const admins = ref([])
 const cycles = ref([])
 const events = ref([])
@@ -63,9 +64,9 @@ const openModal = (type, item = null) =>{
 async function loadAll() {
     loading.value = true
     try {
-        const fetchs = ['my-center', 'my-center/groups', 'my-center/teachers', 'my-center/students', 'my-center/students/pending', 'my-center/admins', 'my-center/cycles', 'my-center/events', 'my-center/publications']
+        const fetchs = ['my-center', 'my-center/groups', 'my-center/teachers', 'my-center/students', 'my-center/students/pending', 'my-center/teachers/pending', 'my-center/admins', 'my-center/cycles', 'my-center/events', 'my-center/publications']
         const results = await Promise.all(fetchs.map(p => fetch(`${apiBase}/${p}`, { headers: headers.value }).then(r => r.json())));
-        [center.value, groups.value, teachers.value, students.value, pendingStudents.value, admins.value, cycles.value, events.value, publications.value] = results;
+        [center.value, groups.value, teachers.value, students.value, pendingStudents.value, pendingTeachers.value, admins.value, cycles.value, events.value, publications.value] = results;
     } catch (e) { showToast({ msg: 'Error de servidor', type: 'error' }) }
     loading.value = false
 }
@@ -81,6 +82,22 @@ async function verifyStudent(userId) {
         const data = await res.json()
         if (res.ok) {
             showToast({ msg: 'Estudiante verificado correctamente' })
+            await loadAll()
+        } else {
+            showToast({ msg: data.message || 'Error al verificar', type: 'error' })
+        }
+    } catch (e) { showToast({ msg: 'Error de servidor', type: 'error' }) }
+}
+
+async function verifyTeacher(userId) {
+    try {
+        const res = await fetch(`${apiBase}/my-center/teachers/${userId}/verify`, {
+            method: 'POST',
+            headers: headers.value
+        })
+        const data = await res.json()
+        if (res.ok) {
+            showToast({ msg: 'Profesor verificado correctamente' })
             await loadAll()
         } else {
             showToast({ msg: data.message || 'Error al verificar', type: 'error' })
@@ -159,8 +176,10 @@ const getTeacherName = (id) => {
                 :teachers="teachers" 
                 :students="students" 
                 :pendingStudents="pendingStudents"
+                :pendingTeachers="pendingTeachers"
                 @openModal="openModal"
                 @verifyStudent="verifyStudent"
+                @verifyTeacher="verifyTeacher"
             />
 
             <CyclesTab 

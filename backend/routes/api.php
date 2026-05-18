@@ -400,6 +400,8 @@ Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
     Route::get('/tutors', [EducationalCenterController::class, 'apiTutors']);
     Route::get('/students/pending', [EducationalCenterController::class, 'apiPendingStudents']);
     Route::post('/students/{userId}/verify', [EducationalCenterController::class, 'apiVerifyStudent']);
+    Route::get('/teachers/pending', [EducationalCenterController::class, 'apiPendingTeachers']);
+    Route::post('/teachers/{userId}/verify', [EducationalCenterController::class, 'apiVerifyTeacher']);
     Route::get('/admins', [EducationalCenterController::class, 'apiAdmins']);
     Route::get('/cycles', [EducationalCenterController::class, 'apiCycles']);
     

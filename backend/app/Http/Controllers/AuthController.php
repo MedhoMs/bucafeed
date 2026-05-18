@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Mail\VerificationCodeMail;
 use App\Mail\PasswordResetMail;
 use Illuminate\Http\Request;
@@ -125,6 +126,15 @@ class AuthController extends Controller
                 'user_id'               => $user->id,
                 'educational_center_id' => $user->educational_center_id,
                 'course'                => $user->education_level ?? '',
+                'verified'              => false,
+            ]);
+        }
+
+        if ($user->role === 'Teacher') {
+            Teacher::create([
+                'user_id'               => $user->id,
+                'educational_center_id' => $user->educational_center_id,
+                'specialty'             => $user->education_level ?? '',
                 'verified'              => false,
             ]);
         }

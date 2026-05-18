@@ -14,7 +14,7 @@
     const { get, post } = useApi();
     const { setupSocket, emitSocket, onlineUsers, connected, on: onSocket, joinRoom, leaveRoom } = useSocket();
 
-    const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
+    const isUnverified = computed(() => ['Student', 'Teacher'].includes(authUser.value?.role) && authUser.value?.is_verified === false)
     
     const studentsList = ref([]);
     const tutorsList = ref([]);

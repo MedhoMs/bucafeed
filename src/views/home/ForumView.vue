@@ -18,8 +18,8 @@
     const router = useRouter();
     const { get, del, loading: apiLoading } = useApi();
 
-    // Un alumno está no verificado si su rol es Student y is_verified es false
-    const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
+    // Un usuario está no verificado si su rol es Student o Teacher y is_verified es false
+    const isUnverified = computed(() => ['Student', 'Teacher'].includes(user.value?.role) && user.value?.is_verified === false)
     
     const rawQuestions = ref([]);
     const questions = ref([]);

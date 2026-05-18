@@ -5,6 +5,7 @@ import NavBar from '../../components/NavBar/NavBar.vue';
 import BaseModal from '@/components/modals/BaseModal.vue';
 import { useTranslations } from '../../composables/useTranslations';
 import { useApi } from '@/composables/useApi';
+import { user } from '@/stores/auth';
 
 const { t } = useTranslations();
 const router = useRouter();
@@ -30,12 +31,23 @@ const handleScroll = () => {
 const fetchAllData = async () => {
     loading.value = true;
     try {
-        const [qRes, eRes, uRes, pRes] = await Promise.all([
-            get('questions'),
+        const promises = [
             get('events'),
             get('users?role=EI'), // Fetch educational centers (Users with role EI)
             get('publications') // Fetch publications
-        ]);
+        ];
+
+        // Omit questions fetch if user is External User (EU)
+        if (user.value?.role !== 'EU') {
+            promises.push(get('questions'));
+        }
+
+        const results = await Promise.all(promises);
+
+        const eRes = results[0];
+        const uRes = results[1];
+        const pRes = results[2];
+        const qRes = user.value?.role !== 'EU' ? results[3] : { data: [] };
 
         questions.value = qRes.data && Array.isArray(qRes.data) ? qRes.data : (qRes || []);
         events.value = eRes.data && Array.isArray(eRes.data) ? eRes.data : (eRes || []);
@@ -269,6 +281,7 @@ onUnmounted(() => {
                                 {{ t.explore.publications || 'Publicaciones' }}
                             </button>
                             <button 
+                                v-if="user?.role !== 'EU'"
                                 @click="activeTab = 'preguntas'"
                                 :class="['tab-btn', activeTab === 'preguntas' ? 'tab-btn-active' : '']"
                             >
@@ -327,8 +340,35 @@ onUnmounted(() => {
                                     </button>
                                 </div>
 
-                                <!-- "Ver preguntas" Feed list styled exactly like the "Who to follow" widget -->
-                                <div class="tab-content-container">
+                                <!-- "Ver eventos" Feed list styled exactly like the "Who to follow" widget (For External Users) -->
+                                <div v-if="user?.role === 'EU'" class="tab-content-container">
+                                    <h3 class="px-5 py-4 text-white font-black text-lg border-b border-white/5">{{ t.explore.seeEvents || 'Ver eventos' }}</h3>
+                                    
+                                    <!-- Dynamic Events only -->
+                                    <div v-for="e in filteredEvents.slice(0, 4)" :key="'pt-e-'+e.id"
+                                         @click="viewEvent(e)"
+                                         class="trend-row">
+                                        <div class="flex flex-col pr-8">
+                                            <span class="trend-category">Evento Académico · {{ getCenterName(e) }}</span>
+                                            <span class="trend-topic">{{ e.title }}</span>
+                                            <span class="trend-meta">{{ formatDate(e.date) }} · {{ daysUntil(e.date) }}</span>
+                                        </div>
+                                        <button class="trend-options-btn">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                                        </button>
+                                    </div>
+
+                                    <!-- Ver más eventos button at the end -->
+                                    <button 
+                                        @click="activeTab = 'eventos'" 
+                                        class="w-full text-center py-4 text-xs font-black uppercase tracking-widest text-white hover:text-white/80 transition-colors cursor-pointer border-t border-white/5 bg-white/[0.01] hover:bg-white/[0.03]"
+                                    >
+                                        {{ t.explore.seeMoreEvents || 'Ver más eventos →' }}
+                                    </button>
+                                </div>
+
+                                <!-- "Ver preguntas" Feed list styled exactly like the "Who to follow" widget (For other roles) -->
+                                <div v-else class="tab-content-container">
                                     <h3 class="px-5 py-4 text-white font-black text-lg border-b border-white/5">{{ t.explore.seeQuestions || 'Ver preguntas' }}</h3>
                                     
                                     <!-- Dynamic Questions only -->

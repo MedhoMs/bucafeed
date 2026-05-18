@@ -106,7 +106,7 @@
 
     defineExpose({ activeMenu })
 
-    const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
+    const isUnverified = computed(() => ['Student', 'Teacher'].includes(user.value?.role) && user.value?.is_verified === false)
 </script>
  
 <template>

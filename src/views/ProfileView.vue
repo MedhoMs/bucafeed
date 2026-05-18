@@ -307,7 +307,7 @@ watch(() => route.params.id, (newId) => {
                                 class="icono w-25 h-25 rounded-full border-4 bg-background object-cover shadow-xl transition-all duration-300 group-hover:opacity-80"
                                 :class="[
                                     saving ? 'opacity-50 blur-sm' : '',
-                                    (profileData.roleCode?.toLowerCase() === 'student' && !profileData.is_verified) ? 'border-amber-300' : 'border-background'
+                                    (profileData.roleCode?.toLowerCase() === 'student' || profileData.roleCode?.toLowerCase() === 'teacher' && !profileData.is_verified) ? 'border-amber-300' : 'border-background'
                                 ]" />
                             <div v-if="profileData.isOwner && !saving"
                                 class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
@@ -351,11 +351,16 @@ watch(() => route.params.id, (newId) => {
                                 <path
                                     d="m344-60-76-128-144-32 14-148-98-112 98-112-14-148 144-32 76-128 136 58 136-58 76 128 144 32-14 148 98 112-98 112 14 148-144 32-76 128-136-58-136 58Zm34-102 102-44 104 44 56-96 110-26-10-112 74-84-74-86 10-112-110-24-58-96-102 44-104-44-56 96-110 24 10 112-74 86 74 84-10 114 110 24 58 96Zm102-318Zm-42 142 226-226-56-58-170 170-86-84-56 56 142 142Z" />
                             </svg>
+                            <svg v-if="profileData.roleCode?.toLowerCase() !== 'teacher' || profileData.is_verified" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                                fill="#009dff">
+                                <path
+                                    d="m344-60-76-128-144-32 14-148-98-112 98-112-14-148 144-32 76-128 136 58 136-58 76 128 144 32-14 148 98 112-98 112 14 148-144 32-76 128-136-58-136 58Zm34-102 102-44 104 44 56-96 110-26-10-112 74-84-74-86 10-112-110-24-58-96-102 44-104-44-56 96-110 24 10 112-74 86 74 84-10 114 110 24 58 96Zm102-318Zm-42 142 226-226-56-58-170 170-86-84-56 56 142 142Z" />
+                            </svg>
                         </div>
                         <p class="nombre-usuario text-[#8b98a5] text-base my-0.5 mx-0">{{ profileData.email }}</p>
                         <p class="text-white/50 text-xs font-mono uppercase mt-1">{{ profileData.role }}</p>
                         
-                        <!-- Mensaje de pendiente de verificación con micro-animaciones premium -->
+                        <!-- Mensaje de pendiente de verificación para alumno -->
                         <div v-if="profileData.roleCode?.toLowerCase() === 'student' && !profileData.is_verified" 
                             class="inline-flex items-center gap-2 mt-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-bold rounded-lg shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="">
@@ -364,6 +369,17 @@ watch(() => route.params.id, (newId) => {
                                 <line x1="12" y1="17" x2="12.01" y2="17"/>
                             </svg>
                             Alumno pendiente de verificación
+                        </div>
+
+                        <!-- Mensaje de pendiente de verificación para profesor -->
+                        <div v-if="profileData.roleCode?.toLowerCase() === 'teacher' && !profileData.is_verified" 
+                            class="inline-flex items-center gap-2 mt-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-bold rounded-lg shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="">
+                                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            Profesor pendiente de verificación
                         </div>
                         
                         <div v-if="profileData.roleCode.toLowerCase() !== 'admin'" class="seguidores text-[#8b98a5] text-sm mt-2 flex flex-wrap gap-x-3 gap-y-1 items-center">
