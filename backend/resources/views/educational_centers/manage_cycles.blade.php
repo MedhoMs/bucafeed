@@ -28,7 +28,7 @@
                     <button
                         type="button"
                         onclick="submitCenterCycleForm(this)"
-                        class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all active:scale-95"
+                        class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
                     >
                         Vincular
                     </button>
@@ -50,7 +50,7 @@
                 <button
                     type="button"
                     onclick="submitCenterCycleForm(this)"
-                    class="px-6 py-2.5 border border-white/10 hover:bg-white/5 text-white rounded-xl text-sm font-bold transition-all active:scale-95"
+                    class="px-6 py-2.5 border border-white/10 hover:bg-white/5 text-white rounded-xl text-sm font-bold transition-all active:scale-95 cursor-pointer"
                 >
                     Registrar y Vincular
                 </button>
@@ -70,7 +70,7 @@
                 </div>
                 <button
                     onclick="removeCenterCycle('{{ $cycle->id }}', this)"
-                    class="p-2 text-white/20 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                    class="p-2 text-white/20 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
                     title="Desvincular Ciclo"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>

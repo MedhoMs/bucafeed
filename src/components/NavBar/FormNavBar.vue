@@ -22,7 +22,7 @@ const languageSelector = () => {
 <template>
     <nav>
         <div id="language-selector">
-            <div @click="languageSelector" id="selector-text-svg">
+            <div class="cursor-pointer" @click="languageSelector" id="selector-text-svg">
                 <p>{{ t.nav.selectLanguage }}</p>
                 <svg width="20" height="20" viewBox="0 0 12 12"class="chevron":class="{ 'rotated': showLanguages }">
                     <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
@@ -31,12 +31,12 @@ const languageSelector = () => {
      
             <!--:class="{ 'show': showLanguages }" se usa para atribuirle el valor false o true, y que se aplique el hidden (mirar script setup)-->
             <div id="languages-buttons" :class="{ 'show': showLanguages }">
-                <div class="language-flag-container" @click="changeLanguage('es')" >
+                <div class="language-flag-container cursor-pointer" @click="changeLanguage('es')" >
                     <p id="spanish-selector" class="language-button">Español</p>
                     <img src="../../assets/flags-icons/spain.png" alt="Spain Flag">
                 </div>
                 
-                <div class="language-flag-container" @click="changeLanguage('en')">
+                <div class="language-flag-container cursor-pointer" @click="changeLanguage('en')">
                     <p id="english-selector" class="language-button">English</p>
                     <img src="../../assets/flags-icons/united-kingdom.png" alt="United Kingdom Flag">
                 </div>

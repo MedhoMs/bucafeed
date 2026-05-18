@@ -79,7 +79,7 @@
     </div>
 
     <div class="flex justify-end pt-4">
-        <button onclick="toggleModal(false)" class="px-6 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all">
+        <button onclick="toggleModal(false)" class="px-6 py-2 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-all cursor-pointer">
             Cerrar Detalles
         </button>
     </div>

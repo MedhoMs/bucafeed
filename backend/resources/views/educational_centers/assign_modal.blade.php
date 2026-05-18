@@ -33,10 +33,10 @@
         </div>
 
         <div class="flex justify-end gap-3 pt-4 border-t border-white/10">
-            <button type="button" class="px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-all" data-bs-dismiss="modal">
+            <button type="button" class="px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-all cursor-pointer" data-bs-dismiss="modal">
                 Cancelar
             </button>
-            <button type="button" onclick="submitAssignForm(this)" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/20 transition-all">
+            <button type="button" onclick="submitAssignForm(this)" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/20 transition-all cursor-pointer">
                 Finalizar Matrícula
             </button>
         </div>

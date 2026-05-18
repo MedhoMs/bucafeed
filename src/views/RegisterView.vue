@@ -377,7 +377,7 @@
                     <input type="text" class="validateEmailInput outline-hidden border-b border-black mb-7.5 p-0.5 w-32 text-center text-xl" maxlength="6" autocomplete="off" id="code-register-form" name="code-register-form" required></input>
                 </section>
 
-                <button id="registerButton" class="absolute bottom-15 lg:bottom-20 right-8 lg:right-12 text-center hidden">
+                <button id="registerButton" class="absolute bottom-15 lg:bottom-20 right-8 lg:right-12 text-center hidden cursor-pointer">
                     <ButtonForm :value="t.register.submit"></ButtonForm>
                 </button>
 

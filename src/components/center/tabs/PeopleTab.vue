@@ -31,7 +31,7 @@ const goToProfile = (id) => {
 <template>
     <div class="text-white">
         <div class="flex items-center justify-end mb-8">
-            <PrimaryButton 
+            <PrimaryButton class="cursor-pointer" 
                 text="Matricular Personas" 
                 icon="plus" 
                 @click="$emit('openModal', 'enroll_users')" 
@@ -94,7 +94,7 @@ const goToProfile = (id) => {
                         <!-- Ver perfil -->
                         <button 
                             @click="goToProfile(item.id)"
-                            class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest"
+                            class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest cursor-pointer"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -105,7 +105,7 @@ const goToProfile = (id) => {
                         <!-- Verificar -->
                         <button 
                             @click="$emit(item.isTeacher ? 'verifyTeacher' : 'verifyStudent', item.id)"
-                            class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/25 hover:border-emerald-400/50 text-emerald-400 hover:text-emerald-300 transition-all text-[10px] font-black uppercase tracking-widest active:scale-95"
+                            class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/25 hover:border-emerald-400/50 text-emerald-400 hover:text-emerald-300 transition-all text-[10px] font-black uppercase tracking-widest active:scale-95 cursor-pointer"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 6 9 17l-5-5"/>

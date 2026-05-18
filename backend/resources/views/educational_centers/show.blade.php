@@ -15,7 +15,7 @@
             <p class="text-white/50 font-medium">Ficha detallada del centro educativo en {{ $center->location }}</p>
         </div>
         <div class="flex gap-2">
-            <button class="btn-modal px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-bold transition-colors" data-url="{{ route('educational_centers.edit', $center->id) }}" data-title="Editar Centro" data-load="modal">Editar</button>
+            <button class="btn-modal px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-bold transition-colors cursor-pointer" data-url="{{ route('educational_centers.edit', $center->id) }}" data-title="Editar Centro" data-load="modal">Editar</button>
         </div>
     </div>
 
@@ -73,7 +73,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-400"><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>
                         Personal y Alumnado
                     </h3>
-                    <button class="btn-modal text-xs font-bold text-blue-400 hover:underline" data-url="{{ route('educational_centers.add_users', $center->id) }}" data-title="Gestionar Matrícula" data-load="modal">Gestionar Lista</button>
+                    <button class="btn-modal text-xs font-bold text-blue-400 hover:underline cursor-pointer" data-url="{{ route('educational_centers.add_users', $center->id) }}" data-title="Gestionar Matrícula" data-load="modal">Gestionar Lista</button>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -95,7 +95,7 @@
                 <div class="relative z-10">
                     <h4 class="text-white/80 text-xs font-bold uppercase tracking-widest mb-4">Acción Sugerida</h4>
                     <p class="text-lg font-bold text-white mb-6">Asigna alumnos a sus respectivos tutores.</p>
-                    <button class="btn-modal w-full py-3 bg-white text-blue-600 rounded-2xl font-black text-sm shadow-lg hover:scale-[1.02] transition-transform" 
+                    <button class="btn-modal w-full py-3 bg-white text-blue-600 rounded-2xl font-black text-sm shadow-lg hover:scale-[1.02] transition-transform cursor-pointer" 
                             data-url="{{ route('educational_centers.assign_view', $center->id) }}" 
                             data-title="Asignación de Tutorías" 
                             data-load="modal">

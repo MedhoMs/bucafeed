@@ -69,7 +69,7 @@
             </div>
         </div>
 
-        <button type="button" onclick="submitAddUsers(this)" class="w-full mt-6 flex justify-center items-center py-3.5 px-4 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/25">
+        <button type="button" onclick="submitAddUsers(this)" class="w-full mt-6 flex justify-center items-center py-3.5 px-4 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/25 cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
             Vincular Usuarios Seleccionados
         </button>

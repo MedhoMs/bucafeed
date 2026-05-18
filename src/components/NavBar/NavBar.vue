@@ -112,7 +112,7 @@
 <template>
     <!--Hamburger menu flotante premium-->
     <button v-show="!menu && !hideHamburger" @click="activeMenu()" 
-        class="lg:hidden fixed top-5 left-6 z-[100] bg-accent-normal/80 backdrop-blur-md p-2 rounded-xl border border-white/10 text-white shadow-2xl active:scale-95 transition-all flex items-center justify-center">
+        class="lg:hidden fixed top-5 left-6 z-[100] bg-accent-normal/80 backdrop-blur-md p-2 rounded-xl border border-white/10 text-white shadow-2xl active:scale-95 transition-all flex items-center justify-center cursor-pointer">
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
     </button>
  
@@ -125,7 +125,7 @@ Enter
         leave-active-class="transition-opacity duration-300 ease-in"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0">
-        <div v-if="menu" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60"></div>
+        <div v-if="menu" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60 cursor-pointer"></div>
     </Transition>
  
     <!--Sidebar siempre visible en desktop, toggle en móvil-->
@@ -146,7 +146,7 @@ Enter
                     </h1>
                 </router-link>
                 <!--Botón X Material-->
-                <button @click="closeMenu()" class="lg:hidden p-1.5 rounded-lg hover:bg-white/10 text-white/70 transition-all ml-auto">
+                <button @click="closeMenu()" class="lg:hidden p-1.5 rounded-lg hover:bg-white/10 text-white/70 transition-all ml-auto cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                 </button>
             </div>
@@ -245,7 +245,7 @@ Enter
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
                             {{ t.nav.profile }}
                         </router-link>
-                        <router-link @click="handleNewAccount" class="flex gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-secondary-normal active:font-semibold" to="/">
+                        <router-link @click="handleNewAccount" class="flex gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-secondary-normal active:font-semibold cursor-pointer" to="/">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
                             {{ t.nav.addAccount }}
                         </router-link>

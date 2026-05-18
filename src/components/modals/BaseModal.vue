@@ -11,7 +11,7 @@ defineEmits(['close', 'confirm'])
 </script>
 
 <template>
-    <div class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center px-4" @click.self="$emit('close')">
+    <div class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center px-4 cursor-pointer" @click.self="$emit('close')">
         <div class="bg-[#0f2828] border border-white/10 rounded-3xl p-8 w-full max-w-[480px] shadow-[0_25px_80px_rgba(0,0,0,0.8)]">
             <h3 class="text-2xl font-black text-white mb-8 uppercase tracking-tighter">{{ title }}</h3>
             

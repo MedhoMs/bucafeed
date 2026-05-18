@@ -22,7 +22,7 @@
     <button
         onclick="toggleDropdownList('{{ $dropdownId }}', event)"
         type="button"
-        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold transition-all shadow-xs hover:scale-105 active:scale-95 {{ $activeColor }}"
+        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold transition-all shadow-xs hover:scale-105 active:scale-95 {{ $activeColor }} cursor-pointer"
     >
         @if($icon)
             <span class="opacity-80 shrink-0">{!! $icon !!}</span>

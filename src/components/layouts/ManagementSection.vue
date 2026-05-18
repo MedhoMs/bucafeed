@@ -11,7 +11,7 @@ defineEmits(['add'])
 <template>
     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8 pl-1">
         <h2 class="text-xl font-black text-white uppercase tracking-tighter">{{ title }}</h2>
-        <PrimaryButton 
+        <PrimaryButton class="cursor-pointer" 
             v-if="addButtonText" 
             :text="addButtonText" 
             icon="plus"
