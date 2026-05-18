@@ -45,14 +45,6 @@
         <x-navbar-link title="Publicaciones" to="/admin/publications" data-load="section" data-title="Publicaciones activas">
             <x-admin.constants.icons name="article" />
         </x-navbar-link>
-
-        <x-navbar-link title="Reputación y logros" to="/admin/badges" data-load="section" data-title="Reputación y Logros">
-            <x-admin.constants.icons name="award" />
-        </x-navbar-link>
-
-        <x-navbar-link title="Chats" to="/admin/group-chats" data-load="section" data-title="Chats Grupales">
-            <x-admin.constants.icons name="messages" />
-        </x-navbar-link>
     </div>
 
     <!-- Bottom Actions -->
