@@ -130,6 +130,7 @@ Route::get('/events', [EventController::class, 'apiIndex']);
 Route::post('/events/{id}/join', [EventController::class, 'apiJoin'])->middleware('auth:sanctum');
 Route::get('/events/{id}/pdf', [EventController::class, 'generatePDF']);
 Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name('api.event.image');
+Route::delete('/events/{id}', [EventController::class, 'destroy'])->middleware('auth:sanctum');
 
 Route::get('/publications', [PublicationController::class, 'apiIndex']);
 Route::get('/publications/{id}', [PublicationController::class, 'show']);

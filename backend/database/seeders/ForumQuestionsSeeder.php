@@ -341,6 +341,7 @@ class ForumQuestionsSeeder extends Seeder
                 'user_id' => $author->id,
                 'title' => $qData['title'],
                 'content' => $qData['content'],
+                'image' => $this->getQuestionImage($qData['title']),
             ]);
 
             foreach ($qData['tags'] as $tagName) {
@@ -386,6 +387,7 @@ class ForumQuestionsSeeder extends Seeder
                 'user_id' => $mateo->id,
                 'title' => '¿Cómo se alinea verticalmente un div sin Flexbox?',
                 'content' => 'Estoy haciendo un ejercicio y no podemos usar Flexbox. ¿Hay alguna forma de centrar verticalmente un div con CSS puro?',
+                'image' => $this->getQuestionImage('¿Cómo se alinea verticalmente un div sin Flexbox?'),
             ]);
             if (isset($tags['Diseño de Interfaces Web'])) {
                 $q->tags()->attach($tags['Diseño de Interfaces Web']);
@@ -405,5 +407,10 @@ class ForumQuestionsSeeder extends Seeder
         }
 
         echo "✅ {$createdCount} preguntas creadas con respuestas.\n";
+    }
+
+    private function getQuestionImage(string $title): ?string
+    {
+        return null;
     }
 }
