@@ -352,27 +352,22 @@ class ForumQuestionsSeeder extends Seeder
 
             $numAnswers = count($qData['answers']);
             foreach ($qData['answers'] as $i => $ansData) {
-                $respondent = null;
-                if ($ansData['role'] === 'teacher' && $teachers->isNotEmpty()) {
-                    $respondent = $teachers->random();
-                } else {
-                    $respondent = $allUsers->where('id', '!=', $author->id)->random();
+                // Ensure respondent is a Student, NOT a Teacher!
+                $availableStudents = $students->where('id', '!=', $author->id);
+                if ($availableStudents->isEmpty()) {
+                    $availableStudents = $students;
                 }
+                
+                $respondent = $availableStudents->random();
                 if (!$respondent) continue;
-
-                $isUseful = ($i === 0);
 
                 Answer::create([
                     'question_id' => $question->id,
                     'user_id' => $respondent->id,
                     'content' => $ansData['content'],
-                    'is_useful' => $isUseful,
-                    'reputation' => $isUseful ? 10 : rand(0, 5),
+                    'is_useful' => false,
+                    'reputation' => 0,
                 ]);
-
-                if ($isUseful) {
-                    $respondent->increment('reputation', 10);
-                }
             }
 
             $question->update(['answer_count' => $numAnswers]);
@@ -397,10 +392,9 @@ class ForumQuestionsSeeder extends Seeder
                     'question_id' => $q->id,
                     'user_id' => $valentina->id,
                     'content' => '¡Hola Mateo! Puedes usar:\n\n1. position: absolute; top: 50%; transform: translateY(-50%);\n2. display: table-cell; vertical-align: middle;\n3. display: grid; place-items: center; (esto sí es Grid, no Flex, y funciona)\n\nPersonalmente recomiendo la opción 1, funciona en navegadores antiguos.',
-                    'is_useful' => true,
-                    'reputation' => 10,
+                    'is_useful' => false,
+                    'reputation' => 0,
                 ]);
-                $valentina->increment('reputation', 10);
             }
             $q->update(['answer_count' => 1]);
             $createdCount++;

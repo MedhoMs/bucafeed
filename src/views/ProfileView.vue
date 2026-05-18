@@ -282,7 +282,7 @@ watch(() => route.params.id, (newId) => {
 <template>
     <div class="min-h-screen">
         <NavBar></NavBar>
-        <main class="lg:pl-75 pt-16 lg:pt-0 flex flex-col min-h-screen">
+        <main class="lg:pl-75 lg:pt-0 flex flex-col min-h-screen">
             <div class="text-white w-full mx-auto flex flex-col">
                 <section class="bg-black/10 text-white flex-1">
                     <div class="relative">
