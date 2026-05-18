@@ -33,12 +33,12 @@ const languageSelector = () => {
             <div id="languages-buttons" :class="{ 'show': showLanguages }">
                 <div class="language-flag-container cursor-pointer" @click="changeLanguage('es')" >
                     <p id="spanish-selector" class="language-button">Español</p>
-                    <img src="../../assets/flags-icons/spain.png" alt="Spain Flag">
+                    <img src="../../assets/flags-icons/spain.png" :alt="locale === 'es' ? 'Bandera de España' : 'Spain Flag'">
                 </div>
                 
                 <div class="language-flag-container cursor-pointer" @click="changeLanguage('en')">
                     <p id="english-selector" class="language-button">English</p>
-                    <img src="../../assets/flags-icons/united-kingdom.png" alt="United Kingdom Flag">
+                    <img src="../../assets/flags-icons/united-kingdom.png" :alt="locale === 'es' ? 'Bandera de Reino Unido' : 'United Kingdom Flag'">
                 </div>
             </div>
         </div>

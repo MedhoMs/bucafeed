@@ -57,7 +57,7 @@ const canManagePublication = computed(() => {
                                 {{ publication.center_name }}
                             </span>
                             <span class="text-xs text-white/40 uppercase tracking-wider">
-                                Novedades • {{ formattedDate }}
+                                {{ t.publications?.news || 'Novedades' }} • {{ formattedDate }}
                             </span>
                         </div>
                     </div>
@@ -67,7 +67,7 @@ const canManagePublication = computed(() => {
                         v-if="canManagePublication" 
                         @click.stop="emit('delete', publication)" 
                         class="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 z-10 cursor-pointer"
-                        title="Eliminar Publicación"
+                        :title="t.publications?.deleteTitle || 'Eliminar Publicación'"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                     </button>
@@ -79,21 +79,21 @@ const canManagePublication = computed(() => {
 
                 <!-- PREVIEW DE IMAGEN MÓVIL (SOLO VISIBLE EN MÓVIL) -->
                 <div v-if="publication.image_url" class="block md:hidden mt-4 w-full h-48 rounded-xl overflow-hidden border border-white/10 shadow-md">
-                    <img :src="publication.image_url" alt="Preview" class="w-full h-full object-cover" />
+                    <img :src="publication.image_url" :alt="t.publications?.imagePreviewAlt || 'Preview'" class="w-full h-full object-cover" />
                 </div>
             </div>
 
             <!-- FOOTER -->
             <div class="post-footer mt-6 flex items-center justify-between pt-4 border-t border-white/5 w-full">
                 <div class="flex flex-col">
-                    <span class="text-[9px] text-white/20 font-black uppercase tracking-widest mb-1">Sección</span>
-                    <span class="text-xs text-white/70 font-bold tracking-tighter">Novedades</span>   
+                    <span class="text-[9px] text-white/20 font-black uppercase tracking-widest mb-1">{{ t.publications?.section || 'Sección' }}</span>
+                    <span class="text-xs text-white/70 font-bold tracking-tighter">{{ t.publications?.news || 'Novedades' }}</span>   
                 </div>
 
                 <div v-if="mode === 'manage'" class="flex items-center gap-2">
-                    <button @click.stop="emit('edit', publication)" class="px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 active:scale-95 shadow-lg flex items-center gap-2 cursor-pointer" title="Editar Publicación">
+                    <button @click.stop="emit('edit', publication)" class="px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 active:scale-95 shadow-lg flex items-center gap-2 cursor-pointer" :title="t.publications?.editTitle || 'Editar Publicación'">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-                        Editar
+                        {{ t.publications?.edit || 'Editar' }}
                     </button>
                 </div>
 
@@ -109,7 +109,7 @@ const canManagePublication = computed(() => {
 
         <!-- COLUMNA DE IMAGEN DESKTOP (SOLO VISIBLE EN DESKTOP) -->
         <div v-if="publication.image_url" class="hidden md:block md:w-[32%] lg:w-[26%] rounded-2xl overflow-hidden border border-white/10 shadow-lg flex-shrink-0 relative self-stretch min-h-[180px]">
-            <img :src="publication.image_url" alt="Preview" class="absolute inset-0 w-full h-full object-cover transition-all duration-500 hover:scale-105" />
+            <img :src="publication.image_url" :alt="t.publications?.imagePreviewAlt || 'Preview'" class="absolute inset-0 w-full h-full object-cover transition-all duration-500 hover:scale-105" />
         </div>
 
     </div>

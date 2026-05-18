@@ -4,7 +4,9 @@ import ManagementCard from '@/components/layouts/ManagementCard.vue'
 import PrimaryButton from '@/components/common/PrimaryButton.vue'
 import { useRouter } from 'vue-router'
 import { computed } from 'vue'
+import { useTranslations } from '@/composables/useTranslations'
 
+const { t } = useTranslations()
 const router = useRouter()
 
 const props = defineProps({
@@ -23,6 +25,12 @@ const allPending = computed(() => {
     ]
 })
 
+const normalSections = computed(() => [
+    { t: t.value.manager?.people?.sections?.admins || 'Dirección', d: props.admins },
+    { t: t.value.manager?.people?.sections?.teachers || 'Cuerpo Docente', d: props.teachers },
+    { t: t.value.manager?.people?.sections?.students || 'Alumnado', d: props.students }
+])
+
 const goToProfile = (id) => {
     router.push(`/profile/${id}`)
 }
@@ -32,7 +40,7 @@ const goToProfile = (id) => {
     <div class="text-white">
         <div class="flex items-center justify-end mb-8">
             <PrimaryButton class="cursor-pointer" 
-                text="Matricular Personas" 
+                :text="t.manager?.people?.enrollPeople || 'Matricular Personas'" 
                 icon="plus" 
                 @click="$emit('openModal', 'enroll_users')" 
             />
@@ -40,7 +48,7 @@ const goToProfile = (id) => {
 
         <!-- ── Sección: Pendientes de Verificación ── -->
         <div v-if="allPending && allPending.length > 0" class="mb-12">
-            <ManagementSection :title="`Pendientes de Verificación | ${allPending.length}`" />
+            <ManagementSection :title="`${t.manager?.people?.pendingVerification || 'Pendientes de Verificación'} | ${allPending.length}`" />
 
             <!-- Banner informativo -->
             <div class="flex items-center gap-3 mb-5 bg-amber-500/10 border border-amber-500/25 rounded-xl px-5 py-3.5">
@@ -50,7 +58,7 @@ const goToProfile = (id) => {
                     <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
                 <p class="text-amber-300/80 text-xs font-bold uppercase tracking-wider">
-                    Estos usuarios han solicitado acceso y esperan verificación. Accede a su perfil para comprobar su identidad antes de validarlos.
+                    {{ t.manager?.people?.pendingAlertText || 'Estos usuarios han solicitado acceso y esperan verificación. Accede a su perfil para comprobar su identidad antes de validarlos.' }}
                 </p>
             </div>
 
@@ -64,7 +72,7 @@ const goToProfile = (id) => {
                     <div class="absolute top-3 right-3">
                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[9px] font-black uppercase tracking-widest">
                             <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                            Pendiente
+                            {{ t.manager?.people?.pendingStatus || 'Pendiente' }}
                         </span>
                     </div>
 
@@ -73,7 +81,7 @@ const goToProfile = (id) => {
                         <button 
                             @click="goToProfile(item.id)"
                             class="w-11 h-11 rounded-full flex items-center justify-center text-sm font-black text-white/90 bg-amber-500/20 border-2 border-amber-500/30 hover:border-amber-400 transition-all shrink-0 cursor-pointer"
-                            :title="`Ver perfil de ${item.name}`"
+                            :title="t.manager?.people?.viewProfileOf?.replace('{name}', item.name) || `Ver perfil de ${item.name}`"
                         >
                             {{ item.name?.charAt(0) }}{{ item.last_name?.charAt(0) }}
                         </button>
@@ -82,7 +90,7 @@ const goToProfile = (id) => {
                                 {{ item.name }} {{ item.last_name || '' }}
                             </p>
                             <p class="text-[9px] text-amber-400/70 font-black uppercase tracking-tighter mt-0.5 animate-pulse">
-                                {{ item.isTeacher ? 'Profesor' : 'Alumno' }} <span class="text-white/40 font-normal">| {{ item.education_level || 'Sin nivel' }}</span>
+                                {{ item.isTeacher ? (t.manager?.people?.teacherRole || 'Profesor') : (t.manager?.people?.studentRole || 'Alumno') }} <span class="text-white/40 font-normal">| {{ item.education_level || 'Sin nivel' }}</span>
                             </p>
                             <p class="text-[9px] text-white/20 font-bold uppercase tracking-tighter mt-0.5 truncate">
                                 {{ item.email }}
@@ -100,7 +108,7 @@ const goToProfile = (id) => {
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                                 <circle cx="12" cy="7" r="4"/>
                             </svg>
-                            Ver Perfil
+                            {{ t.manager?.people?.viewProfile || 'Ver Perfil' }}
                         </button>
                         <!-- Verificar -->
                         <button 
@@ -110,7 +118,7 @@ const goToProfile = (id) => {
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 6 9 17l-5-5"/>
                             </svg>
-                            Verificar
+                            {{ t.manager?.people?.verify || 'Verificar' }}
                         </button>
                     </div>
                 </ManagementCard>
@@ -118,7 +126,7 @@ const goToProfile = (id) => {
         </div>
 
         <!-- ── Secciones normales: Dirección, Cuerpo Docente, Alumnado ── -->
-        <div v-for="sect in [{t:'Dirección', d:admins}, {t:'Cuerpo Docente', d:teachers}, {t:'Alumnado', d:students}]" :key="sect.t" class="mb-12">
+        <div v-for="sect in normalSections" :key="sect.t" class="mb-12">
             
             <ManagementSection :title="`${sect.t} | ${sect.d.length}`" />
 

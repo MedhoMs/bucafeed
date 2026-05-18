@@ -61,7 +61,7 @@ async function startMeetingCall() {
         const savedMsg = await apiPost(`meetings/${meetingId}/messages`, {
             type: 'call',
             content: roomId,
-            file_name: 'Sesión de video iniciada'
+            file_name: t.value.meetings?.videoSessionStarted || 'Sesión de video iniciada'
         });
 
         if (savedMsg) {
@@ -106,13 +106,13 @@ function handleCallEnd() {
                                 <path d="M5 12l6 6" />
                                 <path d="M5 12l6 -6" />
                             </svg>
-                            <span class="hidden xl:inline text-sm font-medium">Volver</span>
+                            <span class="hidden xl:inline text-sm font-medium">{{ t.nav?.back || 'Volver' }}</span>
                         </button>
                     </div>
 
                     
                     <p class="text-xl lg:text-4xl text-center font-bold truncate px-2 tracking-normal flex-shrink min-w-0 max-w-[60%]">
-                        {{ meetingId ? `${meetingName}` : 'Chat de Reunión' }}
+                        {{ meetingId ? `${meetingName}` : (t.meetings?.chatTitle || 'Chat de Reunión') }}
                     </p>
 
                     
@@ -120,7 +120,7 @@ function handleCallEnd() {
                         <button v-if="canStartCall" @click="startMeetingCall" 
                                 class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 transition-all text-[10px] font-black uppercase tracking-widest shadow-lg shrink-0 cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"/><path d="M3 6m0 2a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2z"/></svg>
-                            <span class="hidden sm:inline">Iniciar Llamada</span>
+                            <span class="hidden sm:inline">{{ t.meetings?.startCall || 'Iniciar Llamada' }}</span>
                         </button>
                     </div>
                 </div>
@@ -130,7 +130,7 @@ function handleCallEnd() {
                     <div class="flex items-center justify-between px-6 py-2 bg-black/60 backdrop-blur-sm z-30 relative">
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-white/80">Sesión de video grupal activa</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-white/80">{{ t.meetings?.activeVideoSession || 'Sesión de video grupal activa' }}</span>
                         </div>
                     </div>
                     <VideoCall :room-id="activeCallRoomId" @close="handleCallEnd" />

@@ -28,7 +28,7 @@
         successMsg.value = ''
 
         if (!email.value) {
-            errorMsg.value = 'Por favor, introduce tu email'
+            errorMsg.value = t.value.login?.recover?.enterEmailError || 'Por favor, introduce tu email'
             return
         }
 
@@ -42,13 +42,13 @@
             const data = await res.json()
 
             if (data.status === 'success') {
-                successMsg.value = 'Código enviado a tu correo. Revisa tu bandeja de entrada.'
+                successMsg.value = t.value.login?.recover?.codeSentSuccess || 'Código enviado a tu correo. Revisa tu bandeja de entrada.'
                 step.value = 2
             } else {
-                errorMsg.value = data.message || 'Error al enviar el código'
+                errorMsg.value = data.message || t.value.login?.recover?.sendCodeError || 'Error al enviar el código'
             }
         } catch {
-            errorMsg.value = 'Error de conexión, inténtalo de nuevo'
+            errorMsg.value = t.value.login?.recover?.connectionError || 'Error de conexión, inténtalo de nuevo'
         } finally {
             loading.value = false
         }
@@ -60,15 +60,15 @@
         successMsg.value = ''
 
         if (!code.value || !newPassword.value || !confirmPass.value) {
-            errorMsg.value = 'Por favor, rellena todos los campos'
+            errorMsg.value = t.value.login?.recover?.fillFieldsError || 'Por favor, rellena todos los campos'
             return
         }
         if (newPassword.value.length < 8) {
-            errorMsg.value = 'La contraseña debe tener al menos 8 caracteres'
+            errorMsg.value = t.value.login?.recover?.passMinError || 'La contraseña debe tener al menos 8 caracteres'
             return
         }
         if (newPassword.value !== confirmPass.value) {
-            errorMsg.value = 'Las contraseñas no coinciden'
+            errorMsg.value = t.value.login?.recover?.passMatchError || 'Las contraseñas no coinciden'
             return
         }
 
@@ -87,13 +87,13 @@
             const data = await res.json()
 
             if (data.status === 'success') {
-                successMsg.value = '¡Contraseña actualizada! Redirigiendo al inicio de sesión…'
+                successMsg.value = t.value.login?.recover?.updateSuccess || '¡Contraseña actualizada! Redirigiendo al inicio de sesión…'
                 setTimeout(() => router.push('/login'), 2000)
             } else {
-                errorMsg.value = data.message || 'Error al cambiar la contraseña'
+                errorMsg.value = data.message || t.value.login?.recover?.updateError || 'Error al cambiar la contraseña'
             }
         } catch {
-            errorMsg.value = 'Error de conexión, inténtalo de nuevo'
+            errorMsg.value = t.value.login?.recover?.connectionError || 'Error de conexión, inténtalo de nuevo'
         } finally {
             loading.value = false
         }
@@ -103,7 +103,7 @@
 <template>
     <main class="relative flex flex-col justify-center items-center min-h-screen bg-black/50">
 
-        <h1 class="text-3xl lg:text-6xl my-4 lg:mt-0 lg:mb-17.5 text-center font-bold text-white text-shadow-lg">RECUPERAR CONTRASEÑA</h1>
+        <h1 class="text-3xl lg:text-6xl my-4 lg:mt-0 lg:mb-17.5 text-center font-bold text-white text-shadow-lg">{{ t.login?.recover?.title || 'RECUPERAR CONTRASEÑA' }}</h1>
 
         <div class="flex flex-col lg:flex-row justify-center items-stretch mb-37.5" id="form-container">
 
@@ -111,9 +111,9 @@
             <div v-if="isMobile"
                 class="flex flex-col lg:justify-center items-center lg:h-100 w-90 lg:w-100 p-2.5 text-white rounded-tl-xl rounded-tr-xl lg:rounded-bl-xl lg:rounded-tl-xl bg-[linear-gradient(140deg,#326465,#1d2e3e)]"
                 id="side-panel">
-                <p class="text-center text-2xl lg:text-3xl font-bold mb-7.5 text-shadow-md" id="welcome">{{ t.login.welcome }}</p>
+                <p class="text-center text-2xl lg:text-3xl font-bold mb-7.5 text-shadow-md" id="welcome">{{ t.login?.welcome }}</p>
                 <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
-                <p class="text-center text-2xl lg:text-xl font-bold mt-7.5 ml-2.5 mr-2.5 text-shadow-md" id="eslogan">{{ t.login.eslogan }}</p>
+                <p class="text-center text-2xl lg:text-xl font-bold mt-7.5 ml-2.5 mr-2.5 text-shadow-md" id="eslogan">{{ t.login?.eslogan }}</p>
             </div>
 
             <!-- Formulario principal -->
@@ -125,8 +125,8 @@
 
                 <!-- ── PASO 1: email ── -->
                 <template v-if="step === 1">
-                    <label class="font-bold mt-4" for="recover-email">Correo electrónico</label>
-                    <span class="text-xs mb-1">Introduce el email asociado a tu cuenta</span>
+                    <label class="font-bold mt-4" for="recover-email">{{ t.login?.recover?.emailLabel || 'Correo electrónico' }}</label>
+                    <span class="text-xs mb-1">{{ t.login?.recover?.emailSub || 'Introduce el email asociado a tu cuenta' }}</span>
                     <input
                         id="recover-email"
                         v-model="email"
@@ -137,14 +137,14 @@
                         required>
 
                     <button type="button" :disabled="loading" @click="sendCode" class="text-center mb-4 cursor-pointer">
-                        <ButtonForm :value="loading ? 'Enviando…' : 'Enviar código'" />
+                        <ButtonForm :value="loading ? (t.login?.recover?.sending || 'Enviando…') : (t.login?.recover?.sendCode || 'Enviar código')" />
                     </button>
                 </template>
 
                 <!-- ── PASO 2: código + nueva contraseña ── -->
                 <template v-if="step === 2">
-                    <label class="font-bold mt-4" for="recover-code">Código de verificación</label>
-                    <span class="text-xs mb-1">Revisa tu bandeja de entrada (o spam)</span>
+                    <label class="font-bold mt-4" for="recover-code">{{ t.login?.recover?.codeLabel || 'Código de verificación' }}</label>
+                    <span class="text-xs mb-1">{{ t.login?.recover?.codeSub || 'Revisa tu bandeja de entrada (o spam)' }}</span>
                     <input
                         id="recover-code"
                         v-model="code"
@@ -155,8 +155,8 @@
                         maxlength="6"
                         required>
 
-                    <label class="font-bold" for="recover-new-pass">Nueva contraseña</label>
-                    <span class="text-xs mb-1">Mínimo 8 caracteres</span>
+                    <label class="font-bold" for="recover-new-pass">{{ t.login?.recover?.newPassLabel || 'Nueva contraseña' }}</label>
+                    <span class="text-xs mb-1">{{ t.login?.recover?.newPassSub || 'Mínimo 8 caracteres' }}</span>
                     <input
                         id="recover-new-pass"
                         v-model="newPassword"
@@ -166,7 +166,7 @@
                         maxlength="50"
                         required>
 
-                    <label class="font-bold" for="recover-confirm-pass">Confirmar contraseña</label>
+                    <label class="font-bold" for="recover-confirm-pass">{{ t.login?.recover?.confirmPassLabel || 'Confirmar contraseña' }}</label>
                     <input
                         id="recover-confirm-pass"
                         v-model="confirmPass"
@@ -177,20 +177,20 @@
                         required>
 
                     <button type="button" :disabled="loading" @click="resetPassword" class="text-center mb-4 cursor-pointer">
-                        <ButtonForm :value="loading ? 'Guardando…' : 'Cambiar contraseña'" />
+                        <ButtonForm :value="loading ? (t.login?.recover?.saving || 'Guardando…') : (t.login?.recover?.changePass || 'Cambiar contraseña')" />
                     </button>
 
                     <!-- Reenviar código -->
                     <button type="button" @click="step = 1; errorMsg = ''; successMsg = ''"
                         class="text-sm text-gray-500 hover:text-black hover:underline transition-all duration-200 text-center mt-1 mb-2 cursor-pointer">
-                        ← Volver e introducir otro email
+                        {{ t.login?.recover?.backToEmail || '← Volver e introducir otro email' }}
                     </button>
                 </template>
 
                 <!-- Enlace al login -->
                 <RouterLink to="/login"
                     class="flex justify-center items-center text-sm gap-1 text-[#4a4a4a] font-bold mt-4 mb-2 transition-all duration-200 ease-in-out hover:brightness-200">
-                    <p class="lg:text-md text-sm">¿Ya recuerdas tu contraseña? Inicia sesión</p>
+                    <p class="lg:text-md text-sm">{{ t.login?.recover?.alreadyRemember || '¿Ya recuerdas tu contraseña? Inicia sesión' }}</p>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -201,9 +201,9 @@
             <div v-if="!isMobile"
                 class="flex flex-col lg:justify-center items-center w-90 lg:w-100 p-2.5 text-white rounded-tl-xl rounded-tr-xl lg:rounded-br-xl lg:rounded-tr-xl lg:rounded-tl-none bg-[linear-gradient(140deg,#326465,#1d2e3e)]"
                 id="side-panel">
-                <p class="text-center text-2xl lg:text-3xl font-bold mb-7.5 text-shadow-md" id="welcome">Vamos a recuperar tu contraseña</p>
+                <p class="text-center text-2xl lg:text-3xl font-bold mb-7.5 text-shadow-md" id="welcome">{{ t.login?.recover?.sideTitle || 'Vamos a recuperar tu contraseña' }}</p>
                 <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
-                <p class="text-center text-2xl lg:text-xl font-bold mt-7.5 ml-2.5 mr-2.5 text-shadow-md" id="eslogan">Sigue los pasos para que puedas recuperar tu contraseña</p>
+                <p class="text-center text-2xl lg:text-xl font-bold mt-7.5 ml-2.5 mr-2.5 text-shadow-md" id="eslogan">{{ t.login?.recover?.sideEslogan || 'Sigue los pasos para que puedas recuperar tu contraseña' }}</p>
             </div>
         </div>
     </main>

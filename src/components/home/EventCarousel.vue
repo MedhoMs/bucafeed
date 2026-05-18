@@ -121,7 +121,7 @@ onUnmounted(() => {
                          :class="index === activeIndex ? 'scale-100 opacity-100' : 'scale-90 opacity-40 blur-[1px] lg:blur-[2px]'">
                         
                         <div class="relative aspect-[16/10] lg:aspect-video rounded-[2rem] lg:rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl">
-                            <img :src="getEventImage(event)" class="w-full h-full object-cover" alt="event image">
+                            <img :src="getEventImage(event)" class="w-full h-full object-cover" :alt="t.events?.imagePreviewAlt || 'event image'">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
                             
                             <div v-if="index === activeIndex" class="absolute bottom-0 left-0 p-5 md:p-12 lg:p-16 w-full transform transition-all duration-700">
@@ -132,7 +132,7 @@ onUnmounted(() => {
                                 <h3 class="text-xl md:text-5xl lg:text-6xl font-black mb-2 lg:mb-4 tracking-tighter text-white line-clamp-2">{{ event.title }}</h3>
                                 <p class="hidden md:block text-white/70 text-sm md:text-lg lg:text-xl line-clamp-2 mb-4 lg:mb-6 max-w-3xl leading-relaxed">{{ event.description }}</p>
                                 <button @click="viewEventDetails(event)" class="inline-flex items-center justify-center btn-light gap-2 lg:gap-3 px-4 lg:px-8 py-2 lg:py-4 rounded-xl lg:rounded-2xl font-black uppercase text-[8px] lg:text-xs tracking-widest cursor-pointer">
-                                    Ver Detalles
+                                    {{ t.events?.viewDetails || 'Ver Detalles' }}
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" class="lg:w-5 lg:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
                                 </button>
                             </div>

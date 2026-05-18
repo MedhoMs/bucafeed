@@ -20,7 +20,19 @@ export const meetings = {
         centerPlaceholder: "Seleccionar centro...",
         description: "Descripción",
         descriptionPlaceholder: "Describe brevemente de qué trata la charla...",
-        success: "Charla creada correctamente"
+        success: "Charla creada correctamente",
+        groupLabel: "Grupo (opcional)",
+        groupPlaceholder: "Seleccionar grupo...",
+        allGroups: "-- Todos los grupos --",
+        errorCreating: "Error al crear la charla",
+        successDelete: "Charla eliminada",
+        errorDeleting: "Error al eliminar"
     },
-    unverifiedMessage: "No puedes visualizar las charlas programadas hasta que tu centro verifique tu identidad."
+    unverifiedMessage: "No puedes visualizar las charlas programadas hasta que tu centro verifique tu identidad.",
+    videoSessionStarted: "Sesión de video iniciada",
+    startCall: "Iniciar Llamada",
+    activeVideoSession: "Sesión de video grupal activa",
+    deleteTitle: "¿Eliminar charla?",
+    deleteConfirm: "Eliminar",
+    deleteWarning: "Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta charla?"
 };

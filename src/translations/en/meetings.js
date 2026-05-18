@@ -19,7 +19,20 @@ export const meetings = {
         center: "Educational Center",
         centerPlaceholder: "Select center...",
         description: "Description",
-        descriptionPlaceholder: "Briefly describe what the meeting is about..."
+        descriptionPlaceholder: "Briefly describe what the meeting is about...",
+        success: "Meeting created successfully",
+        groupLabel: "Group (optional)",
+        groupPlaceholder: "Select group...",
+        allGroups: "-- All groups --",
+        errorCreating: "Error creating meeting",
+        successDelete: "Meeting deleted",
+        errorDeleting: "Error deleting"
     },
-    unverifiedMessage: "You cannot view scheduled meetings until your center verifies your identity."
+    unverifiedMessage: "You cannot view scheduled meetings until your center verifies your identity.",
+    videoSessionStarted: "Video session started",
+    startCall: "Start Call",
+    activeVideoSession: "Active group video session",
+    deleteTitle: "Delete meeting?",
+    deleteConfirm: "Delete",
+    deleteWarning: "This action cannot be undone. Are you sure you want to delete this meeting?"
 };

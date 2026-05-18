@@ -23,6 +23,10 @@ export const forum = {
     confirmDeleteMessage: "This action cannot be undone. The question and all its replies will be permanently deleted.",
     confirm: "Confirm",
     cancel: "Cancel",
-    unverifiedMessage: "You cannot view questions or interact in the forum until your center verifies your account.",
-    unverifiedThreadMessage: "You cannot view this thread until your center verifies your identity."
+    unverifiedMessage: "You cannot view questions or interact in the forum until your account is verified by your center.",
+    unverifiedThreadMessage: "You cannot view this thread until your identity is verified by your center.",
+    unverifiedInteraction: "Account pending verification - Interaction disabled",
+    teacherInteraction: "Teachers cannot answer questions",
+    section: "Section",
+    academicForum: "Academic Forum"
 };

@@ -3,6 +3,9 @@ import { ref, watch } from 'vue'
 import ImageUpload from '@/components/common/forms/ImageUpload.vue'
 import PrimaryButton from '@/components/common/PrimaryButton.vue'
 import { useApi } from '@/composables/useApi'
+import { useTranslations } from '@/composables/useTranslations'
+
+const { t } = useTranslations()
 
 const props = defineProps({
     show: Boolean,
@@ -70,7 +73,7 @@ const saveProfile = async () => {
             <!-- Modal -->
             <div class="relative w-full max-w-2xl bg-[#15202b] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
                 <header class="p-6 border-b border-white/10 flex justify-between items-center bg-[#1c2732]">
-                    <h2 class="text-xl font-bold text-white">Editar Perfil</h2>
+                    <h2 class="text-xl font-bold text-white">{{ t.profile?.editProfileModal?.title || 'Editar Perfil' }}</h2>
                     <button @click="emit('close')" class="text-white/40 hover:text-white transition-colors cursor-pointer">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                     </button>
@@ -79,44 +82,44 @@ const saveProfile = async () => {
                 <div class="flex-1 overflow-y-auto p-8 space-y-8">
                     <!-- Banner Upload -->
                     <div class="space-y-3">
-                        <label class="text-xs font-black uppercase tracking-widest text-white/40 ml-2">Imagen de Banner</label>
+                        <label class="text-xs font-black uppercase tracking-widest text-white/40 ml-2">{{ t.profile?.editProfileModal?.bannerLabel || 'Imagen de Banner' }}</label>
                         <ImageUpload 
                             v-model="formData.banner" 
                             aspect="banner" 
                             :preview-url="user.bannerUrl"
-                            label="Subir Banner"
+                            :label="t.profile?.editProfileModal?.bannerBtn || 'Subir Banner'"
                         />
                     </div>
 
                     <!-- Profile Pic & Info Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                         <div class="space-y-3">
-                            <label class="text-xs font-black uppercase tracking-widest text-white/40 ml-2">Foto de Perfil</label>
+                            <label class="text-xs font-black uppercase tracking-widest text-white/40 ml-2">{{ t.profile?.editProfileModal?.profilePicLabel || 'Foto de Perfil' }}</label>
                             <ImageUpload 
                                 v-model="formData.profile_picture" 
                                 aspect="square" 
                                 :preview-url="user.iconoUrl"
-                                label="Foto Perfil"
+                                :label="t.profile?.editProfileModal?.profilePicBtn || 'Foto Perfil'"
                             />
                         </div>
 
                         <div class="space-y-6">
                             <div class="space-y-2">
-                                <label class="text-xs font-black uppercase tracking-widest text-white/40 ml-2">Nombre</label>
+                                <label class="text-xs font-black uppercase tracking-widest text-white/40 ml-2">{{ t.profile?.editProfileModal?.nameLabel || 'Nombre' }}</label>
                                 <input 
                                     v-model="formData.name"
                                     type="text" 
                                     class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 focus:outline-none transition-all"
-                                    placeholder="Tu nombre"
+                                    :placeholder="t.profile?.editProfileModal?.namePlaceholder || 'Tu nombre'"
                                 >
                             </div>
                             <div class="space-y-2">
-                                <label class="text-xs font-black uppercase tracking-widest text-white/40 ml-2">Apellidos</label>
+                                <label class="text-xs font-black uppercase tracking-widest text-white/40 ml-2">{{ t.profile?.editProfileModal?.lastNameLabel || 'Apellidos' }}</label>
                                 <input 
                                     v-model="formData.last_name"
                                     type="text" 
                                     class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 focus:outline-none transition-all"
-                                    placeholder="Tus apellidos"
+                                    :placeholder="t.profile?.editProfileModal?.lastNamePlaceholder || 'Tus apellidos'"
                                 >
                             </div>
                         </div>
@@ -125,10 +128,10 @@ const saveProfile = async () => {
 
                 <footer class="p-6 border-t border-white/10 bg-[#1c2732] flex justify-end gap-3">
                     <button @click="emit('close')" class="px-6 py-2.5 rounded-xl text-white/60 hover:bg-white/5 transition-all cursor-pointer">
-                        Cancelar
+                        {{ t.profile?.editProfileModal?.cancel || 'Cancelar' }}
                     </button>
                     <PrimaryButton class="cursor-pointer" 
-                        text="Guardar Cambios" 
+                        :text="t.profile?.editProfileModal?.saveChanges || 'Guardar Cambios'" 
                         :loading="loading"
                         @click="saveProfile"
                     />

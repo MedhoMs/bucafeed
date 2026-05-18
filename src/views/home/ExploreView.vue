@@ -99,10 +99,10 @@ const formatDate = (dateStr) => {
 const daysUntil = (dateStr) => {
     if (!dateStr) return '';
     const diff = Math.ceil((new Date(dateStr) - new Date()) / (1000 * 60 * 60 * 24));
-    if (diff === 0) return 'Hoy';
-    if (diff === 1) return 'Mañana';
-    if (diff < 0) return 'Finalizado';
-    return `En ${diff} días`;
+    if (diff === 0) return t.value.explore?.today || 'Hoy';
+    if (diff === 1) return t.value.explore?.tomorrow || 'Mañana';
+    if (diff < 0) return t.value.explore?.finished || 'Finalizado';
+    return (t.value.explore?.inDays || 'En {days} días').replace('{days}', diff);
 };
 
 const viewPublication = (pub) => {
@@ -123,15 +123,15 @@ const getQuestionTag = (q) => {
     if (q.cycle_name) return q.cycle_name;
     if (q.category?.name) return q.category.name;
     const role = q.user?.role?.toLowerCase();
-    if (role === 'student' || role === 'alumno') return 'Alumno';
-    if (role === 'teacher' || role === 'profesor') return 'Profesor';
-    if (role === 'admin' || role === 'administrador') return 'Admin';
-    return 'Duda';
+    if (role === 'student' || role === 'alumno') return t.value.explore?.student || 'Alumno';
+    if (role === 'teacher' || role === 'profesor') return t.value.explore?.teacher || 'Profesor';
+    if (role === 'admin' || role === 'administrador') return t.value.explore?.admin || 'Admin';
+    return t.value.explore?.doubt || 'Duda';
 };
 
 const getCenterName = (event) => {
     if (!event) return '';
-    return event.center_name || event.creator?.institution_name || event.educational_center?.name || 'Comunidad';
+    return event.center_name || event.creator?.institution_name || event.educational_center?.name || (t.value.explore?.community || 'Comunidad');
 };
 
 const getEventImage = (event) => {
@@ -326,7 +326,7 @@ onUnmounted(() => {
                                          @click="viewPublication(p)"
                                          class="trend-row cursor-pointer">
                                         <div class="flex flex-col pr-8">
-                                            <span class="trend-category">Novedad · {{ p.center_name }}</span>
+                                            <span class="trend-category">{{ t.explore?.news || 'Novedad' }} · {{ p.center_name }}</span>
                                             <span class="trend-topic">{{ p.title }}</span>
                                             <span class="trend-meta">{{ formatDate(p.created_at) }}</span>
                                         </div>
@@ -349,7 +349,7 @@ onUnmounted(() => {
                                          @click="viewEvent(e)"
                                          class="trend-row cursor-pointer">
                                         <div class="flex flex-col pr-8">
-                                            <span class="trend-category">Evento Académico · {{ getCenterName(e) }}</span>
+                                            <span class="trend-category">{{ t.explore?.academicEvent || 'Evento Académico' }} · {{ getCenterName(e) }}</span>
                                             <span class="trend-topic">{{ e.title }}</span>
                                             <span class="trend-meta">{{ formatDate(e.date) }} · {{ daysUntil(e.date) }}</span>
                                         </div>
@@ -376,9 +376,9 @@ onUnmounted(() => {
                                          @click="goToQuestion(q.id)"
                                          class="trend-row cursor-pointer">
                                         <div class="flex flex-col pr-8">
-                                            <span class="trend-category">Foro · {{ t.explore.trendIn || 'Tendencia en' }} {{ getQuestionTag(q) }}</span>
+                                            <span class="trend-category">{{ t.explore?.forum || 'Foro' }} · {{ t.explore.trendIn || 'Tendencia en' }} {{ getQuestionTag(q) }}</span>
                                             <span class="trend-topic">{{ q.question || q.title }}</span>
-                                            <span class="trend-meta">{{ q.answers ? q.answers.length : 0 }} {{ t.explore.answers || 'respuestas' }} · {{ t.explore.createdBy || 'Creado por' }} {{ q.user?.name ?? 'Usuario' }}</span>
+                                            <span class="trend-meta">{{ q.answers ? q.answers.length : 0 }} {{ t.explore.answers || 'respuestas' }} · {{ t.explore.createdBy || 'Creado por' }} {{ q.user?.name ?? (t.explore?.user || 'Usuario') }}</span>
                                         </div>
                                         <button class="trend-options-btn cursor-pointer">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
@@ -407,7 +407,7 @@ onUnmounted(() => {
                                              @click="viewEvent(e)"
                                              class="trend-row cursor-pointer">
                                             <div class="flex flex-col pr-8">
-                                                <span class="trend-category">Evento Académico · {{ getCenterName(e) }}</span>
+                                                <span class="trend-category">{{ t.explore?.academicEvent || 'Evento Académico' }} · {{ getCenterName(e) }}</span>
                                                 <span class="trend-topic">{{ e.title }}</span>
                                                 <span class="trend-meta">{{ formatDate(e.date) }} · {{ daysUntil(e.date) }}</span>
                                             </div>
@@ -439,9 +439,9 @@ onUnmounted(() => {
                                              @click="goToQuestion(q.id)"
                                              class="trend-row cursor-pointer">
                                             <div class="flex flex-col pr-8">
-                                                <span class="trend-category">Foro · {{ getQuestionTag(q) }}</span>
+                                                <span class="trend-category">{{ t.explore?.forum || 'Foro' }} · {{ getQuestionTag(q) }}</span>
                                                 <span class="trend-topic">{{ q.question || q.title }}</span>
-                                                <span class="trend-meta">{{ q.answers ? q.answers.length : 0 }} {{ t.explore.answers || 'respuestas' }} · {{ t.explore.by || 'Por' }} {{ q.user?.name ?? 'Usuario' }}</span>
+                                                <span class="trend-meta">{{ q.answers ? q.answers.length : 0 }} {{ t.explore.answers || 'respuestas' }} · {{ t.explore.by || 'Por' }} {{ q.user?.name ?? (t.explore?.user || 'Usuario') }}</span>
                                             </div>
                                             <button class="trend-options-btn cursor-pointer">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
@@ -470,7 +470,7 @@ onUnmounted(() => {
                                              @click="viewPublication(p)"
                                              class="trend-row cursor-pointer">
                                             <div class="flex flex-col pr-8">
-                                                <span class="trend-category">Novedad · {{ p.center_name }}</span>
+                                                <span class="trend-category">{{ t.explore?.news || 'Novedad' }} · {{ p.center_name }}</span>
                                                 <span class="trend-topic">{{ p.title }}</span>
                                                 <span class="trend-meta">{{ formatDate(p.created_at) }}</span>
                                             </div>
@@ -547,7 +547,7 @@ onUnmounted(() => {
 
                         <!-- Footer Links -->
                         <div class="px-4 text-[11px] text-white/20 leading-relaxed font-semibold">
-                            Términos de Servicio · Política de Privacidad · Uso de Cookies · Más opciones · © 2026 TelamoNet.
+                            {{ t.explore?.footerText || 'Términos de Servicio · Política de Privacidad · Uso de Cookies · Más opciones · © 2026 TelamoNet.' }}
                         </div>
 
                     </div>

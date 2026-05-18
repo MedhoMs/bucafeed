@@ -15,5 +15,18 @@ export const profile = {
     events_created: "Eventos creados",
     settings_tooltip: "Configuración",
     upload_banner: "Cambiar portada",
-    upload_profile: "Cambiar foto de perfil"
+    upload_profile: "Cambiar foto de perfil",
+    editProfileModal: {
+        title: "Editar Perfil",
+        bannerLabel: "Imagen de Banner",
+        bannerBtn: "Subir Banner",
+        profilePicLabel: "Foto de Perfil",
+        profilePicBtn: "Foto Perfil",
+        nameLabel: "Nombre",
+        namePlaceholder: "Tu nombre",
+        lastNameLabel: "Apellidos",
+        lastNamePlaceholder: "Tus apellidos",
+        cancel: "Cancelar",
+        saveChanges: "Guardar Cambios"
+    }
 };
