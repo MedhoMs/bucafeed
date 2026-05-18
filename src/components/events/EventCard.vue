@@ -2,7 +2,7 @@
 /**
  * EventCard.vue - Plantilla maestra unificada para eventos en TelamoNet
  */
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useTranslations } from '../../composables/useTranslations'
 import { user } from '../../stores/auth'
 
@@ -15,6 +15,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['edit', 'delete', 'details'])
+
+const imageError = ref(false)
 
 const formattedDate = computed(() => {
     try {
@@ -43,7 +45,7 @@ const canManageEvent = computed(() => {
         
         <!-- HEADER / IMAGEN -->
         <div class="relative h-44 overflow-hidden group/header">
-            <img v-if="event.image_url" :src="event.image_url" class="w-full h-full object-cover">
+            <img v-if="event.image_url && !imageError" :src="event.image_url" @error="imageError = true" class="w-full h-full object-cover">
             <div v-else class="w-full h-full bg-secondary-normal/20 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#B7B7B7"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z"/></svg>
             </div>
