@@ -307,7 +307,7 @@ watch(() => route.params.id, (newId) => {
                                 class="icono w-25 h-25 rounded-full border-4 bg-background object-cover shadow-xl transition-all duration-300 group-hover:opacity-80"
                                 :class="[
                                     saving ? 'opacity-50 blur-sm' : '',
-                                    (profileData.roleCode?.toLowerCase() === 'student' || profileData.roleCode?.toLowerCase() === 'teacher' && !profileData.is_verified) ? 'border-amber-300' : 'border-background'
+                                    (['student', 'teacher'].includes(profileData.roleCode?.toLowerCase()) && !profileData.is_verified) ? 'border-amber-300' : 'border-background'
                                 ]" />
                             <div v-if="profileData.isOwner && !saving"
                                 class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
@@ -346,12 +346,7 @@ watch(() => route.params.id, (newId) => {
                     <div class="px-5 pb-2.5 -mt-2">
                         <div class="flex items-center gap-2">
                             <h2 class="nombre text-2xl font-bold m-0 text-[#e7e9ea]">{{ profileData.name }}</h2>
-                            <svg v-if="profileData.roleCode?.toLowerCase() !== 'student' || profileData.is_verified" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                                fill="#009dff">
-                                <path
-                                    d="m344-60-76-128-144-32 14-148-98-112 98-112-14-148 144-32 76-128 136 58 136-58 76 128 144 32-14 148 98 112-98 112 14 148-144 32-76 128-136-58-136 58Zm34-102 102-44 104 44 56-96 110-26-10-112 74-84-74-86 10-112-110-24-58-96-102 44-104-44-56 96-110 24 10 112-74 86 74 84-10 114 110 24 58 96Zm102-318Zm-42 142 226-226-56-58-170 170-86-84-56 56 142 142Z" />
-                            </svg>
-                            <svg v-if="profileData.roleCode?.toLowerCase() !== 'teacher' || profileData.is_verified" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                            <svg v-if="!['student', 'teacher'].includes(profileData.roleCode?.toLowerCase()) || profileData.is_verified" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
                                 fill="#009dff">
                                 <path
                                     d="m344-60-76-128-144-32 14-148-98-112 98-112-14-148 144-32 76-128 136 58 136-58 76 128 144 32-14 148 98 112-98 112 14 148-144 32-76 128-136-58-136 58Zm34-102 102-44 104 44 56-96 110-26-10-112 74-84-74-86 10-112-110-24-58-96-102 44-104-44-56 96-110 24 10 112-74 86 74 84-10 114 110 24 58 96Zm102-318Zm-42 142 226-226-56-58-170 170-86-84-56 56 142 142Z" />
