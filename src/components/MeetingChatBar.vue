@@ -9,6 +9,7 @@ import TextChatBar from './TextChatBar.vue';
 import KahootMessage from './KahootMessage.vue';
 
 const { get, post } = useApi()
+const { t } = useTranslations()
 const route = useRoute()
 const chatContainer = ref(null)
 
@@ -21,7 +22,7 @@ const emit = defineEmits(['joinCall', 'forceLeaveCall']);
 
 const meetingId = computed(() => route.params.id);
 const canCreateKahoot = computed(() => authUser.value && ['Teacher', 'Admin', 'EI'].includes(authUser.value.role));
-const isUnverified = computed(() => authUser.value?.role === 'Student' && authUser.value?.is_verified === false)
+const isUnverified = computed(() => ['Student', 'Teacher'].includes(authUser.value?.role) && authUser.value?.is_verified === false)
 
 const { connect: connectSocket, emit: emitSocket, on: onSocket, off: offSocket, disconnect: disconnectSocket, joinRoom, leaveRoom } = useSocket()
 const messages = ref([])
@@ -338,9 +339,15 @@ defineExpose({ loadMessages, markCallsEnded })
                         <span class="text-xs text-white/60">{{ pdfFile ? pdfFile.name : 'PDF del temario' }}</span>
                     </label>
                 </div>
-                <div class="flex items-center gap-2 mb-2">
-                    <input type="number" v-model.number="numQuestions" min="1" max="30" placeholder="Nº preguntas" class="w-20 bg-[#152027] border border-white/10 rounded-lg px-2 py-1 text-white text-xs outline-hidden" />
-                    <input type="number" v-model.number="timePerQuestion" min="5" max="120" placeholder="Tiempo (s)" class="w-20 bg-[#152027] border border-white/10 rounded-lg px-2 py-1 text-white text-xs outline-hidden" />
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[9px] uppercase font-bold tracking-wider text-white/40">{{ t.kahoot.numQuestions }}</label>
+                        <input type="number" v-model.number="numQuestions" min="1" max="30" class="w-full bg-[#152027] border border-white/10 rounded-lg px-2.5 py-1.5 text-white text-xs outline-hidden focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all duration-200" />
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[9px] uppercase font-bold tracking-wider text-white/40">{{ t.kahoot.timePerQuestion }}</label>
+                        <input type="number" v-model.number="timePerQuestion" min="5" max="120" class="w-full bg-[#152027] border border-white/10 rounded-lg px-2.5 py-1.5 text-white text-xs outline-hidden focus:border-teal-500 focus:ring-1 focus:ring-teal-500/30 transition-all duration-200" />
+                    </div>
                 </div>
                 <button @click="generateQuestions" :disabled="generating || !pdfFile" class="w-full bg-[#1f5252] hover:bg-[#2a6a6a] disabled:opacity-50 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-colors cursor-pointer">{{ generating ? 'Generando...' : 'Generar con IA' }}</button>
             </template>
@@ -349,9 +356,11 @@ defineExpose({ loadMessages, markCallsEnded })
         <div class="pt-2 shrink-0">
             <div class="flex items-center gap-2 mb-2">
                 <button v-if="canCreateKahoot" @click="toggleKahootCreator"
-                    class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+                    class="flex items-center gap-2 text-sm px-4 py-2 rounded-full transition-colors cursor-pointer"
                     :class="showKahootCreator ? 'bg-[#1f5252] text-white' : 'bg-white/10 text-white/70 hover:bg-white/20'">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 21v-2a4 4 0 0 1 4 -4h4"/><path d="M13 7l4 4l6 -6"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor" class="w-4.5 h-4.5 shrink-0">
+                        <path d="M580.5-371.5Q592-383 592-400t-11.5-28.5Q569-440 552-440t-28.5 11.5Q512-417 512-400t11.5 28.5Q535-360 552-360t28.5-11.5ZM523-482h58q0-29 4.5-41.5T608-553q21-20 37.5-40t16.5-51q0-45-30.39-72.5Q601.21-744 552-744q-38 0-68 21.5t-42 58.87L494-642q7-23 22.5-35t35.5-12q23.11 0 37.56 13Q604-663 604-642t-15.5 36.5Q573-590 556-574q-22 20-27.5 36.5T523-482ZM312-240q-29.7 0-50.85-21.15Q240-282.3 240-312v-480q0-29.7 21.15-50.85Q282.3-864 312-864h480q29.7 0 50.85 21.15Q864-821.7 864-792v480q0 29.7-21.15 50.85Q821.7-240 792-240H312Zm0-72h480v-480H312v480ZM168-96q-29.7 0-50.85-21.15Q96-138.3 96-168v-552h72v552h552v72H168Zm144-696v480-480Z"/>
+                    </svg>
                     {{ showKahootCreator ? 'Cerrar' : 'Kahoot' }}
                 </button>
             </div>

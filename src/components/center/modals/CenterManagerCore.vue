@@ -340,9 +340,13 @@ async function handleAction() {
                 <div v-if="activeModal === 'enroll_users'"
                     class="flex p-1 bg-white/5 rounded-xl border border-white/10 shadow-inner">
                     <button v-for="r in ['Student', 'Teacher']" :key="r" @click="activeEnrollTab = r"
-                        :class="['flex-1 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all flex items-center justify-center gap-2', activeEnrollTab === r ? 'bg-secondary-normal text-white shadow-lg' : 'text-white/20 hover:text-white/40']">
-                        <span class="material-symbols-outlined !text-sm">{{ r === 'Student' ? 'person' : 'school'
-                            }}</span>
+                        class="cursor-pointer" :class="['flex-1 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all flex items-center justify-center gap-2', activeEnrollTab === r ? 'bg-secondary-normal text-white shadow-lg' : 'text-white/20 hover:text-white/40']">
+                        <svg v-if="r === 'Student'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-3.5 h-3.5 fill-current">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-3.5 h-3.5 fill-current">
+                            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+                        </svg>
                         {{ r === 'Student' ? t.manager.modals.enrollUsers.tabs.student :
                             t.manager.modals.enrollUsers.tabs.teacher }}
                     </button>
@@ -350,14 +354,16 @@ async function handleAction() {
 
                 <!-- Search Bar -->
                 <div class="relative">
-                    <span
-                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/20">search</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-white/20 fill-current">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
                     <input v-model="searchQuery"
                         :placeholder="activeModal === 'enroll_users' ? t.manager.modals.enrollUsers.searchPlaceholder : t.manager.modals.enrollCycles.searchPlaceholder"
                         class="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-white text-sm focus:border-secondary-normal focus:ring-1 focus:ring-secondary-normal outline-none transition-all shadow-inner">
                     <div v-if="searchLoading" class="absolute right-4 top-1/2 -translate-y-1/2">
-                        <span
-                            class="material-symbols-outlined animate-spin text-secondary-normal">progress_activity</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 animate-spin text-secondary-normal fill-current">
+                            <path d="M12 2v2a8 8 0 1 0 8 8h2c0-5.52-4.48-10-10-10Z"/>
+                        </svg>
                     </div>
                 </div>
 
@@ -366,7 +372,9 @@ async function handleAction() {
                     class="min-h-[200px] max-h-72 overflow-y-auto space-y-2 pr-2 custom-scrollbar border border-white/5 p-2 rounded-xl bg-black/10 shadow-inner">
                     <div v-if="!searchLoading && searchResults.length === 0"
                         class="flex flex-col items-center justify-center py-10 opacity-20">
-                        <span class="material-symbols-outlined !text-5xl mb-2">search_off</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-12 h-12 mb-2 fill-current">
+                            <path d="M2 2L1.39 3.41l2.36 2.36C3.24 6.67 3 7.8 3 9c0 3.87 3.13 7 7 7 1.2 0 2.33-.24 3.23-.73l6.36 6.36L21 20.22 2 2zm8 12c-2.76 0-5-2.24-5-5 0-.76.17-1.47.47-2.11l6.64 6.64c-.64.3-1.35.47-2.11.47zM20.3 15.7l-3.3-3.3c.63-.9.99-2 .99-3.2 0-3.87-3.13-7-7-7-1.2 0-2.3.36-3.2.99l-3.3-3.3 1.4-1.4 15.8 15.8-1.39 1.41zM10.89 5c2.24 0 4.11 1.87 4.11 4.11 0 .86-.27 1.66-.73 2.3l-5.68-5.68c.64-.46 1.44-.73 2.3-.73z"/>
+                        </svg>
                         <p class="text-[10px] font-black uppercase tracking-widest">{{ t.manager.labels.noResults }}</p>
                     </div>
 

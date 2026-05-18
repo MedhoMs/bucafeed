@@ -9,7 +9,7 @@
 <div class="relative inline-block text-left filter-dropdown">
     <button 
         type="button" 
-        class="dropdown-toggle inline-flex justify-between items-center w-full px-5 py-2.5 bg-(--admin-bg-input) border border-(--admin-primary)/40 rounded-xl text-xs font-bold text-white hover:bg-(--admin-primary)/10 transition-all active:scale-95 border-dashed"
+        class="dropdown-toggle inline-flex justify-between items-center w-full px-5 py-2.5 bg-(--admin-bg-input) border border-(--admin-primary)/40 rounded-xl text-xs font-bold text-white hover:bg-(--admin-primary)/10 transition-all active:scale-95 border-dashed cursor-pointer"
     >
         <span>{{ $label }}</span>
         <x-admin.constants.icons name="filter" />
@@ -27,10 +27,18 @@
             @endif
 
             @foreach($options as $value => $text)
+                @php
+                    $isActive = false;
+                    if ($selected === null || $selected === '') {
+                        $isActive = ($value === '');
+                    } else {
+                        $isActive = ((string)$selected === (string)$value);
+                    }
+                @endphp
                 <a 
                     href="{{ url()->current() }}?{{ http_build_query(array_merge(request()->query(), [$name => $value])) }}" 
                     data-load="section"
-                    class="block px-4 py-3 text-sm text-white/50 hover:bg-(--admin-primary-soft) hover:text-white transition-colors {{ $selected == $value ? 'bg-(--admin-primary)/40 text-white font-bold' : '' }}"
+                    class="block px-4 py-3 text-sm text-white/50 hover:bg-(--admin-primary-soft) hover:text-white transition-colors {{ $isActive ? 'bg-(--admin-primary-soft) text-(--admin-primary) font-black border-l-2 border-(--admin-primary) pl-3.5' : '' }}"
                 >
                     {{ $text }}
                 </a>

@@ -10,6 +10,8 @@
     'deleteText' => 'Confirmar Eliminación',
     'showCancel' => true,
     'cancelText' => 'Volver',
+    'backUrl' => null,
+    'backTitle' => 'Detalles',
 ])
 
 <div class="w-full pt-4 sticky top-0 px-2 lg:px-0">
@@ -40,22 +42,29 @@
 
         <div class="flex items-center justify-between mt-8">
             @if($showCancel)
-                <button type="button" class="px-8 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10 transition-all duration-300 text-sm font-bold uppercase tracking-widest flex items-center gap-2" data-bs-dismiss="modal" onclick="document.getElementById('default-modal').classList.add('hidden')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    {{ $cancelText }}
-                </button>
+                @if($backUrl)
+                    <button type="button" class="px-8 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10 transition-all duration-300 text-sm font-bold uppercase tracking-widest flex items-center gap-2 cursor-pointer" onclick="document.getElementById('modal-title').textContent = '{{ $backTitle }}'; ajaxLoad('{{ $backUrl }}', document.getElementById('modal-body'), true, false)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        {{ $cancelText }}
+                    </button>
+                @else
+                    <button type="button" class="px-8 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10 transition-all duration-300 text-sm font-bold uppercase tracking-widest flex items-center gap-2 cursor-pointer" data-bs-dismiss="modal" onclick="document.getElementById('default-modal').classList.add('hidden')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        {{ $cancelText }}
+                    </button>
+                @endif
             @else
                 <div></div>
             @endif
-<div class="flex items-center gap-3">
+            <div class="flex items-center gap-3">
                 @if (($oper != 'destroy' && $oper != 'show') && (!$disabled || $oper == 'edit'))
-                    <button type="submit" class="w-full md:w-auto bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg shadow-cyan-900/20 active:scale-95 flex items-center justify-center gap-2">
+                    <button type="submit" class="w-full md:w-auto bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg shadow-cyan-900/20 active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                         {{ ($oper == 'edit') ? $editText : $saveText }}
                     </button>
                 @endif
                 @if ($oper == 'destroy' && empty($datos['exito']))
-                    <button type="submit" class="px-6 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-all duration-200">
+                    <button type="submit" class="px-6 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-all duration-200 cursor-pointer">
                         {{ $deleteText }}
                     </button>
                 @endif

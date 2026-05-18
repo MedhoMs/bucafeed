@@ -81,7 +81,7 @@ const displayUrl = computed(() => {
                 <button 
                     type="button"
                     @click.stop="emit('update:modelValue', null)" 
-                    class="absolute top-0 right-0 bg-black/60 rounded-bl-lg p-0.5 hover:bg-red-500 transition-colors"
+                    class="absolute top-0 right-0 bg-black/60 rounded-bl-lg p-0.5 hover:bg-red-500 transition-colors cursor-pointer"
                 >
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
@@ -90,7 +90,7 @@ const displayUrl = computed(() => {
             <button
                 type="button"
                 @click="triggerInput"
-                class="hover:text-emerald-400 transition-colors" 
+                class="hover:text-emerald-400 transition-colors cursor-pointer" 
                 title="Subir Imagen"
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

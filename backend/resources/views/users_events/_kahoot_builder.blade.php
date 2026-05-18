@@ -145,7 +145,7 @@
     <div id="kahoot-questions-list" class="space-y-4 mb-4"></div>
 
     <button type="button" id="kahoot-add-btn"
-        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 border-dashed text-white/60 hover:text-white text-sm transition-all duration-200">
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 border-dashed text-white/60 hover:text-white text-sm transition-all duration-200 cursor-pointer">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
         </svg>
@@ -301,7 +301,7 @@
         qRow.innerHTML = `
             <span class="mt-1 flex-shrink-0 w-7 h-7 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-300 text-xs font-bold">${idx + 1}</span>
             <input type="text" class="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500/60 transition-colors" placeholder="Escribe la pregunta..." value="${escHtml(q.question)}" data-q-idx="${idx}" />
-            <button type="button" class="mt-1 flex-shrink-0 w-7 h-7 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 flex items-center justify-center text-red-400 transition-colors" data-remove="${idx}" title="Eliminar pregunta">
+            <button type="button" class="mt-1 flex-shrink-0 w-7 h-7 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 flex items-center justify-center text-red-400 transition-colors cursor-pointer" data-remove="${idx}" title="Eliminar pregunta">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>`;
 

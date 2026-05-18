@@ -41,7 +41,7 @@ const filteredPublications = computed(() => {
                 </div>
             </div>
 
-            <PrimaryButton 
+            <PrimaryButton class="cursor-pointer" 
                 text="Nueva Publicación" 
                 icon="plus"
                 @click="emit('openModal', 'publication')"

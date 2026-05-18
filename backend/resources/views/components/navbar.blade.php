@@ -1,6 +1,6 @@
 <!-- Mobile Header (Visible below lg) -->
 <div class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#142b2b] border-b border-white/10 flex justify-between items-center px-4 z-55 shadow-md">
-    <button id="mobile-toggle" class="p-2 text-white/70 hover:text-white transition-colors">
+    <button id="mobile-toggle" class="p-2 text-white/70 hover:text-white transition-colors cursor-pointer">
         <x-admin.constants.icons name="menu" />
     </button>
     <div class="flex items-center gap-2">
@@ -44,14 +44,6 @@
 
         <x-navbar-link title="Publicaciones" to="/admin/publications" data-load="section" data-title="Publicaciones activas">
             <x-admin.constants.icons name="article" />
-        </x-navbar-link>
-
-        <x-navbar-link title="Reputación y logros" to="/admin/badges" data-load="section" data-title="Reputación y Logros">
-            <x-admin.constants.icons name="award" />
-        </x-navbar-link>
-
-        <x-navbar-link title="Chats" to="/admin/group-chats" data-load="section" data-title="Chats Grupales">
-            <x-admin.constants.icons name="messages" />
         </x-navbar-link>
     </div>
 

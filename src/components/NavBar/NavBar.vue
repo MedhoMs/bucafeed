@@ -106,13 +106,13 @@
 
     defineExpose({ activeMenu })
 
-    const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
+    const isUnverified = computed(() => ['Student', 'Teacher'].includes(user.value?.role) && user.value?.is_verified === false)
 </script>
  
 <template>
     <!--Hamburger menu flotante premium-->
     <button v-show="!menu && !hideHamburger" @click="activeMenu()" 
-        class="lg:hidden fixed top-5 left-6 z-[100] bg-accent-normal/80 backdrop-blur-md p-2 rounded-xl border border-white/10 text-white shadow-2xl active:scale-95 transition-all flex items-center justify-center">
+        class="lg:hidden fixed top-5 left-6 z-[100] bg-accent-normal/80 backdrop-blur-md p-2 rounded-xl border border-white/10 text-white shadow-2xl active:scale-95 transition-all flex items-center justify-center cursor-pointer">
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
     </button>
  
@@ -125,7 +125,7 @@ Enter
         leave-active-class="transition-opacity duration-300 ease-in"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0">
-        <div v-if="menu" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60"></div>
+        <div v-if="menu" @click="closeMenu()" class="lg:hidden fixed inset-0 z-40 bg-black/60 cursor-pointer"></div>
     </Transition>
  
     <!--Sidebar siempre visible en desktop, toggle en móvil-->
@@ -138,13 +138,15 @@ Enter
         leave-to-class="-translate-x-full">
         <nav v-if="menu || true" v-show="menu || isDesktop" class="fixed top-0 left-0 flex flex-col w-75 h-screen px-5 nav-sidebar shrink-0 overflow-y-auto overflow-x-hidden">
  
-            <div class="flex flex-row items-center gap-3 mb-4 mt-4 shrink-0">
-                <img class="w-16.25 h-17.5" src="@/assets/logo/logoTelamon.png" alt="Logo">
-                <h1 class="font-bold text-xl text-white">
-                    {{ t.nav.title }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span>
-                </h1>
+            <div class="flex flex-row items-center mb-4 mt-4 shrink-0 w-full justify-between">
+                <router-link to="/home" @click="closeMenu()" class="flex flex-row items-center gap-3 no-underline group cursor-pointer select-none">
+                    <img class="w-16.25 h-17.5 transition-transform duration-300 ease-out group-hover:scale-110" src="@/assets/logo/logoTelamon.png" alt="Logo">
+                    <h1 class="font-bold text-xl text-white">
+                        {{ t.nav.title }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span>
+                    </h1>
+                </router-link>
                 <!--Botón X Material-->
-                <button @click="closeMenu()" class="lg:hidden ml-auto p-1.5 rounded-lg hover:bg-white/10 text-white/70 transition-all">
+                <button @click="closeMenu()" class="lg:hidden p-1.5 rounded-lg hover:bg-white/10 text-white/70 transition-all ml-auto cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                 </button>
             </div>
@@ -243,7 +245,7 @@ Enter
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
                             {{ t.nav.profile }}
                         </router-link>
-                        <router-link @click="handleNewAccount" class="flex gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-secondary-normal active:font-semibold" to="/">
+                        <router-link @click="handleNewAccount" class="flex gap-2.5 m-1 text-base items-center py-3 px-4 rounded-xl text-white no-underline transition-all duration-200 ease-in-out font-medium hover:bg-secondary-normal active:font-semibold cursor-pointer" to="/">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
                             {{ t.nav.addAccount }}
                         </router-link>

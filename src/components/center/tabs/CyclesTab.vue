@@ -23,7 +23,7 @@ const title = computed(() => {
         <div class="flex items-center justify-between gap-4 mb-12">
             <ManagementSection :title="`${title} | ${cycles.length}`" />
             
-            <PrimaryButton 
+            <PrimaryButton class="cursor-pointer" 
                 text="Añadir Ciclos" 
                 icon="plus" 
                 @click="$emit('openModal', 'enroll_cycles')" 

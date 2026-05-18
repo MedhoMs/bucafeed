@@ -15,6 +15,7 @@ class EventController extends TemplateController
     protected $viewPath = 'users_events';
     protected $with = ['educationalCenter'];
     protected $withCount = ['participants'];
+    protected $apiPerPage = 8;
 
     protected function extraFilters($query, Request $request)
     {

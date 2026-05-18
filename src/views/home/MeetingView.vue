@@ -18,6 +18,11 @@ const { t } = useTranslations()
 const { get, post: apiPost, del: apiDelete, loading: apiLoading } = useApi();
 
 const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
+const isAdmin = computed(() => {
+    if (!user.value) return false;
+    const role = user.value.role?.toLowerCase();
+    return role === 'admin' || role === 'administrador';
+})
 
 const meetings = ref([]);
 const centers = ref([]);
@@ -287,7 +292,7 @@ const deleteMeeting = async () => {
                     <SearchBar :items="availableMeetings" @update:filtered="filteredMeetings = $event" />
                 </template>
                 <template #actions>
-                    <PrimaryButton v-if="canCreateMeeting" :text="t.meetings.newMeeting" icon="plus"
+                    <PrimaryButton class="cursor-pointer" v-if="canCreateMeeting" :text="t.meetings.newMeeting" icon="plus"
                         @click="openModal" />
                 </template>
 
@@ -307,7 +312,7 @@ const deleteMeeting = async () => {
                         <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id"
                             :name="meeting.name" :teacher="meeting.teacher" :teacher_id="meeting.teacher_id"
                             :schedule="meeting.schedule" :group="meeting.group" :group_id="meeting.group_id"
-                            :description="meeting.description" :disabled="isUnverified" @delete="confirmDelete" />
+                            :description="meeting.description" :disabled="isUnverified || isAdmin" @delete="confirmDelete" />
                     </div>
 
                     <div v-if="pagination.lastPage > 1" class="mt-12 mb-10 flex justify-center w-full">

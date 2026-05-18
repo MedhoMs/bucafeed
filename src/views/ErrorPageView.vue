@@ -19,7 +19,7 @@
             <p class="four-o-four text-8xl font-bold tracking-[8px]">404</p>
             <p class="absolute -bottom-65 text-3xl subtitle">Esta página se ha perdido en el océano</p>
 
-            <button class="absolute -bottom-90 text-2xl p-3 border-3 rounded-xl border-[#13536b] bg-white text-[#0d3a4a] font-bold transition-transform duration-200 hover:scale-105">
+            <button class="absolute -bottom-90 text-2xl p-3 border-3 rounded-xl border-[#13536b] bg-white text-[#0d3a4a] font-bold transition-transform duration-200 hover:scale-105 cursor-pointer">
                 <RouterLink class="cursor-pointer block" to="/home">
                     Volver al Inicio
                 </RouterLink>

@@ -46,11 +46,11 @@
     @endif
     
     <div class="mt-8 flex justify-end gap-3 flex-wrap">
-        <button type="button" class="px-5 py-2 rounded-xl bg-slate-700/50 hover:bg-slate-700 text-white transition-all duration-200" data-bs-dismiss="modal" onclick="document.getElementById('default-modal').classList.add('hidden')">
+        <button type="button" class="px-5 py-2 rounded-xl bg-slate-700/50 hover:bg-slate-700 text-white transition-all duration-200 cursor-pointer" data-bs-dismiss="modal" onclick="document.getElementById('default-modal').classList.add('hidden')">
             Cerrar
         </button>
 
-        <a href="#" data-url="{{ $createUrl }}" data-load="modal" data-title="{{ $createTitle }}" class="btn-modal btn-primary px-6 py-2 rounded-xl font-semibold transition-all duration-200">
+        <a href="#" data-url="{{ $createUrl }}" data-load="modal" data-title="{{ $createTitle }}" class="btn-modal px-6 py-2.5 rounded-xl font-bold text-white shadow-lg shadow-[rgba(79,209,197,0.4)] hover:shadow-[rgba(79,209,197,0.4)] hover:opacity-80 cursor-pointer transition-all duration-200 active:scale-95 border border-white/10" style="background-color: var(--admin-primary);">
             {{ $createText }}
         </a>
     </div>
