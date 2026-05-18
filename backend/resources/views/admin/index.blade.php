@@ -171,7 +171,7 @@
                                 <x-admin.user-avatar :user="$question->user" size="w-8 h-8" :showName="false" class="shrink-0" />
 
                                 <div class="min-w-0">
-                                    <p class="text-white text-sm font-bold truncate">{{ $question->user->name }}</p>
+                                    <p class="text-white text-sm font-bold truncate">{{ $question->user?->name ?? 'Usuario Eliminado' }}</p>
                                     <p class="text-white/80 text-xs line-clamp-2 leading-snug mt-1" title="{{ $question->title }}">{{ $question->title }}</p>
                                 </div>
                             </div>
