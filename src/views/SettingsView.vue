@@ -375,7 +375,7 @@ onMounted(() => {
 
                 <!-- Botón Volver al final (Abajo de toda la vista, alineado a la izquierda en desktop) -->
                 <div class="mt-auto pt-12 flex justify-center lg:justify-start">
-                    <RouterLink to="/profile" class="flex justify-center items-center gap-2 bg-accent-normal hover:bg-accent-normal-hover text-white px-8 py-3.5 cursor-pointer rounded-2xl duration-300 shadow-lg font-black uppercase tracking-widest text-xs w-fit">
+                    <RouterLink to="/profile" class="flex mr-auto gap-2 bg-accent-normal hover:bg-accent-normal-hover text-white px-8 py-3.5 cursor-pointer rounded-2xl duration-300 shadow-lg font-black uppercase tracking-widest text-xs w-fit">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z"/></svg>
                         {{ t.nav.back }}
                     </RouterLink>

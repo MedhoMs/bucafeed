@@ -34,6 +34,9 @@
         return role === 'teacher' || role === 'profesor';
     });
 
+    const tab1Label = computed(() => 'Alumnos');
+    const tab2Label = computed(() => 'Tutores Legales');
+
     const contacts = computed(() => {
         if (showTabs.value) {
             return activeTab.value === 'students' ? studentsList.value : tutorsList.value;
@@ -71,7 +74,7 @@
             if (role === 'student' || role === 'alumno') {
                 endpoint = 'my-center/teachers';
             } else if (role === 'admin' || role === 'administrador' || role === 'ei') {
-                endpoint = 'my-center/admins';
+                endpoint = 'my-center/teachers';
             } else if (role === 'eu' && isLegalTutor) {
                 endpoint = `users/${authUser.value.id}/tutor-teachers`;
             }
@@ -375,26 +378,25 @@
                     </div>
                     <p v-if="!showTabs" class="text-xs text-white opacity-50 uppercase font-bold tracking-widest">
                         {{ 
-                            (authUser?.role?.toLowerCase() === 'student' || authUser?.role?.toLowerCase() === 'alumno' || authUser?.role?.toLowerCase() === 'eu') ? 'Profesores' : 
-                            ((authUser?.role?.toLowerCase() === 'admin' || authUser?.role?.toLowerCase() === 'administrador' || authUser?.role?.toLowerCase() === 'ei') ? 'Administradores' : 'Estudiantes')
+                            ['student', 'alumno', 'eu', 'admin', 'administrador', 'ei'].includes(authUser?.role?.toLowerCase()) ? 'Profesores' : 'Estudiantes'
                         }}
                     </p>
 
-                    <!-- Pestañas premium para profesores (Separación Alumnos / Tutores Legales) -->
+                    <!-- Pestañas premium para profesores (Separación Alumnos/Tutores) -->
                     <div v-if="showTabs" class="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/5 mt-2">
                         <button 
                             @click="activeTab = 'students'" 
                             class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all duration-200 cursor-pointer"
                             :class="activeTab === 'students' ? 'bg-[#406071] text-white shadow-md' : 'text-white/60 hover:text-white/80 hover:bg-white/5'"
                         >
-                            Alumnos
+                            {{ tab1Label }}
                         </button>
                         <button 
                             @click="activeTab = 'tutors'" 
                             class="flex-1 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-all duration-200 cursor-pointer"
                             :class="activeTab === 'tutors' ? 'bg-[#406071] text-white shadow-md' : 'text-white/60 hover:text-white/80 hover:bg-white/5'"
                         >
-                            Tutores Legales
+                            {{ tab2Label }}
                         </button>
                     </div>
                 </div>

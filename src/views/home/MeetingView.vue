@@ -308,7 +308,7 @@ const deleteMeeting = async () => {
 
                 <template v-else>
                     <div v-if="filteredMeetings.length > 0"
-                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1">
+                        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10 flex-1 mx-auto">
                         <Meeting v-for="meeting in filteredMeetings" :key="meeting.id" :id="meeting.id"
                             :name="meeting.name" :teacher="meeting.teacher" :teacher_id="meeting.teacher_id"
                             :schedule="meeting.schedule" :group="meeting.group" :group_id="meeting.group_id"
