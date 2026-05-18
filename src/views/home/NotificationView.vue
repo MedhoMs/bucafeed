@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, onMounted, watch } from 'vue';
+    import { ref, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
     import NavBar from '../../components/NavBar/NavBar.vue';
     import PageHeader from '@/components/common/PageHeader.vue';
@@ -62,19 +62,19 @@
 
     const getNotificationIcon = (type) => {
         if (type === 'answer') {
-            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-message-exclamation"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M15 18h-2l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5" /><path d="M19 16v3" /><path d="M19 22v.01" /></svg>'
+            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M15 18h-2l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5" /><path d="M19 16v3" /><path d="M19 22v.01" /></svg>'
         }
         if (type === 'answer_useful') {
-            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-star"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1.002l3.086 -6.253l3.086 6.253l6.9 1.002l-5 4.867l1.179 6.873z" /></svg>'
+            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1.002l3.086 -6.253l3.086 6.253l6.9 1.002l-5 4.867l1.179 6.873z" /></svg>'
         }
         if (type === 'meeting' || type === 'meeting_message') {
-            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-stats"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" /><path d="M18 14v4h4" /><path d="M14 18a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M15 3v4" /><path d="M7 3v4" /><path d="M3 11h16" /></svg>'
+            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" /><path d="M18 14v4h4" /><path d="M14 18a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M15 3v4" /><path d="M7 3v4" /><path d="M3 11h16" /></svg>'
         }
         if (type === 'private_message') {
-            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-message"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" /></svg>'
+            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 9h8" /><path d="M8 13h6" /><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" /></svg>'
         }
         if (type === 'group_message') {
-            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-users"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>'
+            return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>'
         }
         return ''
     }
@@ -102,19 +102,24 @@
         <main class="lg:pl-75 pt-20 lg:pt-0 flex flex-col min-h-screen w-full">
             <PageHeader :title="t.notifications.title" :subtitle="t.notifications.subtitle">
                 <template #search>
-                    <div id="notificationFilter" class="text-white flex flex-wrap justify-center gap-3 items-center">
+                    <!-- Mobile: scroll horizontal sin scrollbar visible -->
+                    <!-- Desktop: centrado con wrap -->
+                    <div
+                        id="notificationFilter"
+                        class="text-white flex items-center gap-3 overflow-x-auto lg:overflow-x-visible flex-nowrap lg:flex-wrap lg:justify-center scroll-smooth px-4 lg:px-0 pb-1 lg:pb-0 no-scrollbar"
+                    >
                         <span
                             v-for="tab in filterTabs"
                             :key="tab.label"
                             :class="[
-                                'inline-flex items-center gap-3 py-4 px-8 rounded-full cursor-pointer duration-500 font-black text-base uppercase tracking-wider',
+                                'inline-flex items-center gap-2 lg:gap-3 py-3 lg:py-4 px-5 lg:px-8 rounded-full cursor-pointer duration-500 font-black text-sm lg:text-base uppercase tracking-wider shrink-0',
                                 activeFilter === tab.label || (!activeFilter && tab.label === 'Todo')
                                     ? 'bg-secondary-normal text-white shadow-2xl scale-105'
                                     : 'hover:bg-white/5 text-white/60 hover:text-white'
                             ]"
                             @click="setFilter(tab)"
                         >
-                            <span v-html="tab.icon" class="[&>svg]:w-6 [&>svg]:h-6 shrink-0 opacity-80"></span>
+                            <span v-html="tab.icon" class="[&>svg]:w-5 [&>svg]:h-5 lg:[&>svg]:w-6 lg:[&>svg]:h-6 shrink-0 opacity-80"></span>
                             {{
                                 tab.label === 'Todo' ? t.notifications.filterAll :
                                 tab.label === 'Charlas' ? t.notifications.filterMeetings :
@@ -150,7 +155,10 @@
                     >
                         <div class="flex justify-between items-start">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0" :class="{ 'bg-accent-normal/10 border-accent-normal/20': !notification.read }">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0"
+                                    :class="{ 'bg-accent-normal/10 border-accent-normal/20': !notification.read }"
+                                >
                                     <div v-html="getNotificationIcon(notification.type)" class="[&>svg]:w-5 [&>svg]:h-5"></div>
                                 </div>
                                 <div>
@@ -181,7 +189,7 @@
                         </div>
 
                         <div v-if="notification.type === 'answer' || notification.type === 'answer_useful'" class="mt-3 ml-14">
-                            <h2 class="notification-title uppercase">{{ notification.data?.question_title || '' }}</h2>
+                            <h2 class="text-xl lg:text-2xl font-black uppercase">{{ notification.data?.question_title || '' }}</h2>
                             <p v-if="notification.data?.answer_snippet && notification.type === 'answer'" class="text-white/50 text-sm mt-1 truncate">
                                 {{ notification.data.answer_snippet }}
                             </p>
@@ -191,28 +199,26 @@
                         </div>
 
                         <div v-if="notification.type === 'meeting'" class="mt-3 ml-14">
-                            <h2 class="notification-title uppercase">{{ notification.data?.meeting_name || '' }}</h2>
+                            <h2 class="text-xl lg:text-2xl font-black uppercase">{{ notification.data?.meeting_name || '' }}</h2>
                             <p v-if="notification.data?.teacher_name" class="text-white/50 text-sm mt-1">
                                 {{ t.notifications.from }} <span class="text-white/50 font-medium">{{ notification.data.teacher_name }}</span>
                             </p>
-                            <div class="notification-footer">
-                                <div class="responses-badge">
-                                    <span v-if="notification.data?.schedule" class="inline-flex items-center gap-1.5 text-xs font-bold bg-white/5 px-3 py-1 rounded-lg border border-white/10">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                        {{ t.notifications.schedule }}: {{ notification.data.schedule }}
-                                    </span>
-                                </div>
+                            <div class="flex justify-end mt-2">
+                                <span v-if="notification.data?.schedule" class="inline-flex items-center gap-1.5 text-xs font-bold bg-white/5 px-3 py-1 rounded-lg border border-white/10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    {{ t.notifications.schedule }}: {{ notification.data.schedule }}
+                                </span>
                             </div>
                         </div>
 
                         <div v-if="notification.type === 'private_message' || notification.type === 'meeting_message' || notification.type === 'group_message'" class="mt-3 ml-14">
-                            <h2 v-if="notification.type === 'private_message'" class="notification-title text-base">
+                            <h2 v-if="notification.type === 'private_message'" class="text-base font-black">
                                 {{ notification.data?.sender_name || '' }}
                             </h2>
-                            <h2 v-if="notification.type === 'meeting_message'" class="notification-title text-base uppercase">
+                            <h2 v-if="notification.type === 'meeting_message'" class="text-base font-black uppercase">
                                 {{ notification.data?.meeting_name || '' }}
                             </h2>
-                            <h2 v-if="notification.type === 'group_message'" class="notification-title text-base uppercase">
+                            <h2 v-if="notification.type === 'group_message'" class="text-base font-black uppercase">
                                 {{ notification.data?.group_name || '' }}
                             </h2>
                             <p v-if="notification.data?.sender_name" class="text-white/30 text-xs mt-1">
@@ -238,6 +244,10 @@
 </template>
 
 <style scoped>
+    /* Ocultar scrollbar manteniendo funcionalidad de scroll */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
     .notification-card {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
         border: 1px solid rgba(255, 255, 255, 0.12);
@@ -269,15 +279,5 @@
         border-color: rgba(255, 255, 255, 0.2);
         transform: translateY(-1px);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    }
-
-    .notification-title {
-        font-size: 24px;
-        font-weight: 900;
-    }
-
-    .responses-badge {
-        display: flex;
-        justify-content: flex-end;
     }
 </style>

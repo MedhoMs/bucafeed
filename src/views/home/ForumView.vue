@@ -110,7 +110,6 @@
                         :items="rawQuestions" 
                         filterField="title"
                         @update:filtered="questions = $event"
-                        class="w-full"
                     />
                 </template>
 
