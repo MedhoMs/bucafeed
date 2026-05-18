@@ -36,7 +36,7 @@
     <!-- Lista del Registro -->
     <div class="space-y-3 max-h-87.5 overflow-y-auto pr-2 custom-scroll">
         @forelse($cycles as $cycle)
-            <div class="group flex items-center justify-between p-4 bg-white/3 border border-white/5 hover:border-white/20 hover:bg-white/[0.07] rounded-2xl transition-all duration-300">
+            <div class="group flex items-center justify-between p-4 bg-white/3 border border-white/5 cursor-pointer hover:border-white/20 hover:bg-white/[0.07] rounded-2xl transition-all duration-300">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-xl bg-linear-to-br from-blue-500/10 to-purple-500/10 flex items-center justify-center border border-white/10 group-hover:border-blue-500/30 transition-all">
                         <span class="text-[10px] font-black text-white/60 group-hover:text-blue-400">{{ $cycle->level ?? '?' }}</span>
@@ -50,7 +50,7 @@
                 </div>
                 <button
                     onclick="removeGlobalCycle('{{ $cycle->id }}', this)"
-                    class="p-2.5 text-white/10 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                    class="p-2.5 text-white/10 hover:text-red-400 cursor-pointer hover:bg-red-400/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
                     title="Eliminar del Registro"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>

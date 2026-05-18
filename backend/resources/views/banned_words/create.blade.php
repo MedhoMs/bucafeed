@@ -5,6 +5,8 @@
     :datos="$datos ?? []"
     :disabled="$disabled"
     deleteText="Eliminar palabra"
+    backUrl="/admin/banned-words"
+    backTitle="Palabras Vetadas"
 >        @if($oper != 'destroy')
             <x-admin.form-template :disabled="$disabled" :fields="$fields" />
         @else

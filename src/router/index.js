@@ -162,6 +162,12 @@ router.beforeEach((to, from, next) => {
         // Just proceed — the views handle it with UnverifiedBanner
     }
 
+    // Block admin from entering meeting chats
+    const isAdmin = loggedIn?.role?.toLowerCase() === 'admin' || loggedIn?.role?.toLowerCase() === 'administrador';
+    if (isAdmin && to.path.startsWith('/meetingchat')) {
+        return next('/meeting');
+    }
+
     // Block EU (External Users) from restricted routes
     if (loggedIn?.role === 'EU') {
         const isLegalTutor = loggedIn?.is_legal_tutor === true;

@@ -94,15 +94,24 @@ class EducationalCenterController extends TemplateController
         })->toArray();
         $adminOptions = ['' => '-- Sin Administrador --'] + $adminUsers;
 
-        return [
+        $fields = [
             ['name' => 'name', 'label' => 'Nombre del Centro', 'placeholder' => 'Ej: IES Zonzamas', 'value' => old('name', $center->name ?? ''), 'required' => true],
-            ['name' => 'category', 'type' => 'select', 'label' => 'Categoría del Centro', 'options' => ['CEIP' => 'Colegio (CEIP)', 'IES' => 'Instituto (IES)', 'CIFP' => 'Centro de FP (CIFP)', 'CEO' => 'Centro Obligatoria (CEO)', 'UR' => 'Universidad'], 'selectedValue' => old('category', $center->category ?? ''), 'placeholder' => 'Selecciona tipo...'],
+        ];
+
+        // Se quita de la edición (modificación). Solo se muestra si el centro no está persistido todavía (creación)
+        if (!$center || !$center->exists) {
+            $fields[] = ['name' => 'category', 'type' => 'select', 'label' => 'Categoría del Centro', 'options' => ['CEIP' => 'Colegio (CEIP)', 'IES' => 'Instituto (IES)', 'CIFP' => 'Centro de FP (CIFP)', 'CEO' => 'Centro Obligatoria (CEO)', 'UR' => 'Universidad'], 'selectedValue' => old('category', $center->category ?? ''), 'placeholder' => 'Selecciona tipo...'];
+        }
+
+        $fields = array_merge($fields, [
             ['name' => 'admin_user_id', 'type' => 'select', 'label' => 'Administrador Principal (EI)', 'options' => $adminOptions, 'selectedValue' => old('admin_user_id', $center->admin_user_id ?? ''), 'placeholder' => 'Selecciona al responsable'],
             ['name' => 'location', 'label' => 'Ubicación / Municipio', 'placeholder' => 'Ej: Arrecife', 'value' => old('location', $center->location ?? '')],
             ['name' => 'type', 'type' => 'select', 'label' => 'Tipo de Educación', 'options' => EducationalCenter::$niveles_disponibles, 'selectedValue' => old('type', $center->type ?? ''), 'placeholder' => 'Selecciona el nivel...'],
             ['name' => 'icon', 'type' => 'file', 'label' => 'Logo / Icono', 'previewUrl' => $center->icon ?? null, 'full' => true],
             ['name' => 'banner', 'type' => 'file', 'label' => 'Imagen de Banner', 'previewUrl' => $center->banner ?? null, 'full' => true]
-        ];
+        ]);
+
+        return $fields;
     }
 
     protected function rules($center = null)
@@ -125,11 +134,11 @@ class EducationalCenterController extends TemplateController
     public function addCycle(Request $request, $id)
     {
         $center = EducationalCenter::findOrFail($id);
-        
+
         if ($request->filled('cycle_id')) {
             $center->cycles()->syncWithoutDetaching([$request->cycle_id]);
         }
-        
+
         if ($request->filled('new_cycle')) {
             $cycle = Cycle::firstOrCreate(['name' => $request->new_cycle]);
             $center->cycles()->syncWithoutDetaching([$cycle->id]);
@@ -160,12 +169,12 @@ class EducationalCenterController extends TemplateController
         $center = EducationalCenter::with(['groups.tutor', 'groups.cycle', 'groups.students', 'groups.subjectsWithTeachers', 'teachers', 'students', 'cycles.tags'])->findOrFail($id);
         $allTags = Tag::orderBy('name')->get();
         $suggestedTags = $center->cycles->flatMap->tags->unique('id');
-        
+
         $cycleTagsMap = [];
         foreach($center->cycles as $c) {
             $cycleTagsMap[$c->id] = $c->tags->pluck('id')->toArray();
         }
-        
+
         return view('educational_centers.manage_groups', compact('center', 'allTags', 'suggestedTags', 'cycleTagsMap'));
     }
 
@@ -187,7 +196,7 @@ class EducationalCenterController extends TemplateController
         ]);
 
         if (!empty($validated['students'])) $group->students()->attach($validated['students']);
-        
+
         if (!empty($validated['teachers'])) {
             foreach ($validated['teachers'] as $tagId => $teacherId) {
                 if ($teacherId) $group->subjectsWithTeachers()->attach($tagId, ['user_id' => $teacherId]);
@@ -224,7 +233,7 @@ class EducationalCenterController extends TemplateController
                 $q->whereNull('educational_center_id')->orWhere('educational_center_id', '!=', $id);
             })
             ->orderBy('name')->get();
-            
+
         return view('educational_centers.assign_modal', compact('center', 'students'));
     }
 
@@ -246,7 +255,7 @@ class EducationalCenterController extends TemplateController
     public function addUsers($id)
     {
         $center = EducationalCenter::findOrFail($id);
-        
+
         $studentRoles = ['Student'];
         if ($center->name === 'Administración TelamoNet') {
             $studentRoles[] = 'Admin';
@@ -256,7 +265,7 @@ class EducationalCenterController extends TemplateController
             ->whereNull('educational_center_id')
             ->where('institution_name', $center->name)
             ->orderBy('name')->get();
-            
+
         $availableTeachers = User::where('role', 'Teacher')
             ->whereNull('educational_center_id')
             ->where('institution_name', $center->name)
@@ -301,7 +310,7 @@ class EducationalCenterController extends TemplateController
         } else {
             $group->students()->detach();
         }
-        
+
         $group->subjectsWithTeachers()->detach();
         if (!empty($validated['teachers'])) {
             foreach ($validated['teachers'] as $tagId => $teacherId) {
@@ -373,9 +382,9 @@ class EducationalCenterController extends TemplateController
             'cycle_id' => 'nullable|exists:cycles,id',
             'tutor_id' => 'nullable|exists:users,id',
         ]);
-        
+
         $center = EducationalCenter::findOrFail($user->educational_center_id);
-        
+
         $group = $center->groups()->create([
             'name' => $validated['name'],
             'cycle_id' => $validated['cycle_id'] ?? null,
@@ -389,7 +398,7 @@ class EducationalCenterController extends TemplateController
     {
         $user = $request->user();
         $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
-        
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'cycle_id' => 'nullable|exists:cycles,id',
@@ -416,12 +425,12 @@ class EducationalCenterController extends TemplateController
     {
         $user = $request->user();
         $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
-        
+
         $validated = $request->validate([
             'student_ids' => 'required|array',
             'student_ids.*' => 'exists:users,id'
         ]);
-        
+
         // Use syncWithoutDetaching to add them without removing existing
         $group->students()->syncWithoutDetaching($validated['student_ids']);
         return response()->json(['message' => 'Alumnos asignados']);
@@ -439,11 +448,11 @@ class EducationalCenterController extends TemplateController
     {
         $user = $request->user();
         $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
-        
+
         $validated = $request->validate([
             'user_id' => 'nullable|exists:users,id'
         ]);
-        
+
         $group->update(['tutor_id' => $validated['user_id'] ?? null]);
         return response()->json(['message' => 'Tutor asignado']);
     }
@@ -559,15 +568,15 @@ class EducationalCenterController extends TemplateController
     {
         $user = $request->user();
         $group = Group::where('educational_center_id', $user->educational_center_id)->findOrFail($groupId);
-        
+
         $validated = $request->validate([
             'tag_id' => 'required|exists:tags,id',
             'user_id' => 'required|exists:users,id'
         ]);
-        
+
         $group->subjectsWithTeachers()->detach($validated['tag_id']);
         $group->subjectsWithTeachers()->attach($validated['tag_id'], ['user_id' => $validated['user_id']]);
-        
+
         return response()->json(['message' => 'Materia y profesor asignados']);
     }
 
@@ -741,7 +750,7 @@ class EducationalCenterController extends TemplateController
             'start_time'  => 'required',
             'end_time'    => 'required',
             'target_role' => 'nullable|string',
-            'image'       => 'nullable', 
+            'image'       => 'nullable',
         ]);
 
         $validated['educational_center_id'] = $user->educational_center_id;
@@ -785,7 +794,7 @@ class EducationalCenterController extends TemplateController
             'start_time'  => 'required',
             'end_time'    => 'required',
             'target_role' => 'nullable|string',
-            'image'       => 'nullable', 
+            'image'       => 'nullable',
         ]);
 
         // Procesar imagen (Archivo o Base64)
@@ -823,6 +832,26 @@ class EducationalCenterController extends TemplateController
         $event = Event::where('educational_center_id', $user->educational_center_id)->findOrFail($eventId);
         $event->delete();
         return response()->json(['message' => 'Evento eliminado']);
+    }
+
+    /**
+     * Devuelve todos los centros educativos sin paginación para evitar cortes en el formulario de registro y otros selectores.
+     */
+    public function apiIndex(Request $request)
+    {
+        $query = $this->model::query();
+
+        if (!empty($this->with)) {
+            $query->with($this->with);
+        }
+
+        if (!empty($this->withCount)) {
+            $query->withCount($this->withCount);
+        }
+
+        $query = $this->extraFilters($query, $request);
+
+        return response()->json($query->orderBy('name', 'asc')->get());
     }
 
     public function apiPublications(Request $request)

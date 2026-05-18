@@ -18,6 +18,8 @@ abstract class TemplateController extends Controller
     protected $with = [];  // Relaciones a cargar (ej: ['student', 'teacher'])
     protected $withCount = []; // Conteos de relaciones (ej: ['students', 'teachers'])
 
+    protected $apiPerPage = 12; // Número de elementos por página en la API
+
     /**
      * Endpoint API genérico para el Frontend
      */
@@ -36,8 +38,8 @@ abstract class TemplateController extends Controller
         // Aplicar filtros extra si existen
         $query = $this->extraFilters($query, $request);
 
-        // Devolvemos paginado (10 por defecto o lo que se prefiera)
-        return response()->json($query->orderBy('id', 'desc')->paginate(12));
+        // Devolvemos paginado
+        return response()->json($query->orderBy('id', 'desc')->paginate($this->apiPerPage));
     }
 
     /**
@@ -233,7 +235,11 @@ abstract class TemplateController extends Controller
 
         $model->delete();
 
-        if ($request->ajax() || $request->expectsJson() || $request->is('api/*')) {
+        if ($request->ajax()) {
+            return $this->renderForm($model, 'destroy', '', 'Operación completada con éxito.');
+        }
+
+        if ($request->expectsJson() || $request->is('api/*')) {
             return response()->json(['success' => true, 'message' => 'Eliminado correctamente']);
         }
         return redirect()->route($this->viewPath . '.index')->with('success', 'Eliminado correctamente.');

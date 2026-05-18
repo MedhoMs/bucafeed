@@ -138,13 +138,15 @@ Enter
         leave-to-class="-translate-x-full">
         <nav v-if="menu || true" v-show="menu || isDesktop" class="fixed top-0 left-0 flex flex-col w-75 h-screen px-5 nav-sidebar shrink-0 overflow-y-auto overflow-x-hidden">
  
-            <div class="flex flex-row items-center gap-3 mb-4 mt-4 shrink-0">
-                <img class="w-16.25 h-17.5" src="@/assets/logo/logoTelamon.png" alt="Logo">
-                <h1 class="font-bold text-xl text-white">
-                    {{ t.nav.title }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span>
-                </h1>
+            <div class="flex flex-row items-center mb-4 mt-4 shrink-0 w-full justify-between">
+                <router-link to="/home" @click="closeMenu()" class="flex flex-row items-center gap-3 no-underline group cursor-pointer select-none">
+                    <img class="w-16.25 h-17.5 transition-transform duration-300 ease-out group-hover:scale-110" src="@/assets/logo/logoTelamon.png" alt="Logo">
+                    <h1 class="font-bold text-xl text-white">
+                        {{ t.nav.title }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span>
+                    </h1>
+                </router-link>
                 <!--Botón X Material-->
-                <button @click="closeMenu()" class="lg:hidden ml-auto p-1.5 rounded-lg hover:bg-white/10 text-white/70 transition-all">
+                <button @click="closeMenu()" class="lg:hidden p-1.5 rounded-lg hover:bg-white/10 text-white/70 transition-all ml-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                 </button>
             </div>
