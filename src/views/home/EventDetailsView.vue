@@ -166,10 +166,10 @@
                 </button>
 
                 <div class="flex flex-col gap-4 mt-8">
-                    <h3 class="text-3xl font-bold mx-auto mb-2 text-white">Google Maps</h3>
+                    <h3 class="text-3xl font-black uppercase mx-auto w-fit tracking-tighter mb-2 text-white">Google Maps</h3>
                     <iframe
                         :src="mapaUrl"
-                        class="w-full lg:w-4/5 h-[300px] md:h-[450px] rounded-2xl mx-auto"
+                        class="w-full h-[300px] md:h-[450px] rounded-3xl border border-white/10 shadow-lg"
                         style="border:0"
                         loading="lazy"
                         allowfullscreen

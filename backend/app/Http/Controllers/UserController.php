@@ -142,7 +142,7 @@ class UserController extends TemplateController
      */
     public function profileModal($id)
     {
-        $user = User::with('educationalCenter')->findOrFail($id);
+        $user = User::with(['educationalCenter', 'questions', 'answers.question', 'events.educationalCenter'])->findOrFail($id);
         return view('users.profile_modal', compact('user'));
     }
     /**

@@ -25,7 +25,7 @@ class ContentValidationController extends Controller
     {
         $request->validate([
             'title'   => 'nullable|string|min:3|max:200',
-            'content' => 'required|string|min:3|max:5000',
+            'content' => 'required|string|min:1|max:5000',
         ]);
 
         $title   = $request->input('title');

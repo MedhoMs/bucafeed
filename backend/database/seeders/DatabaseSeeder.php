@@ -71,6 +71,7 @@ class DatabaseSeeder extends Seeder
             MeetingsSeeder::class,
             EventsSeeder::class,
             ForumQuestionsSeeder::class,
+            PublicationsSeeder::class,
         ]);
 
         echo "🏁 Seeding Maestro completado.\n";

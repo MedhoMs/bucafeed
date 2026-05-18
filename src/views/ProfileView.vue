@@ -327,7 +327,7 @@ watch(() => route.params.id, (newId) => {
                     </div>
 
                     <!-- Botón de configuración -->
-                    <div class="flex justify-end items-center p-4 mt-0 gap-3">
+                    <div class="flex justify-end items-center p-4 mt-0 gap-3 min-h-16">
                         <ButtonTemplate v-if="!profileData.isOwner && profileData.roleCode?.toLowerCase() !== 'admin'"
                             :texto="profileData.isFollowing ? t.profile.unfollow : t.profile.follow"
                             :accion="toggleFollow" />

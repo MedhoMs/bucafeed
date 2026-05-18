@@ -81,7 +81,7 @@ const fetchAllData = async () => {
                 alias: `@${aliasName}`,
                 verified: true,
                 avatarLetter: displayName.substring(0, 1).toUpperCase(),
-                profile_picture: u.profile_picture
+                profile_picture: u.profile_picture || u.educational_center?.icon || u.educationalCenter?.icon
             };
         });
     } catch (e) {

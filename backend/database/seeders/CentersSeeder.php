@@ -87,7 +87,9 @@ class CentersSeeder extends Seeder
 
             $center = EducationalCenter::updateOrCreate(['name' => $data['name']], [
                 'location' => $data['location'], 'type' => $data['type'],
-                'category' => $data['category'], 'admin_user_id' => $admin->id
+                'category' => $data['category'], 'admin_user_id' => $admin->id,
+                'icon' => null,
+                'banner' => null,
             ]);
 
             $admin->update(['educational_center_id' => $center->id]);
@@ -99,6 +101,8 @@ class CentersSeeder extends Seeder
             'type' => 'TM',
             'category' => 'Administración',
             'location' => 'TelamoNet',
+            'icon' => null,
+            'banner' => null,
         ]);
 
         // Vincular a todos los administradores a este centro por defecto

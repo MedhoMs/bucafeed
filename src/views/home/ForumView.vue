@@ -138,56 +138,85 @@
                     <div id="mainBody" class="flex flex-col gap-6 w-full flex-1">
                         <div v-if="apiLoading && questions.length === 0" class="text-white/40 italic py-10">{{ t.forum.loading }}</div>
         
-                        <div v-for="q in questions" :key="q.id" class="post-card text-left w-full">
-                            <router-link v-if="q.user?.id" :to="'/profile/' + q.user.id" class="flex gap-4 items-center mb-4 hover:opacity-80 transition-opacity w-full pr-14 no-underline">
-                                <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
-                                <div class="flex flex-col">
-                                    <span class="text-sm font-bold text-white">
-                                        {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
-                                    </span>
-                                    <span class="text-xs text-white/40 uppercase tracking-normal">
-                                        {{ 
-                                            q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
-                                            (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
-                                        }}
-                                    </span>
-                                </div>
-                            </router-link>
-                            <div v-else class="flex gap-4 items-center mb-4 w-full pr-14">
-                                <UserAvatar :user="q.user" class="shrink-0 shadow-lg bg-[#15202b]" />
-                                <div class="flex flex-col">
-                                    <span class="text-sm font-bold text-white">
-                                        {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
-                                    </span>
-                                    <span class="text-xs text-white/40 uppercase tracking-normal">
-                                        {{ 
-                                            q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
-                                            (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)
-                                        }}
-                                    </span>
-                                </div>
-                            </div>
-                            <h2 class="post-title text-white">{{ q.title }}</h2>
-                            <p class="text-white/80 mt-2 text-sm line-clamp-3 leading-relaxed">{{ q.content }}</p>
+                        <div v-for="q in questions" :key="q.id" class="post-card text-left w-full transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex flex-col md:flex-row gap-6">
                             
-                            <!-- Preview de Imagen -->
-                            <img v-if="q.image" :src="getImageUrl(q.image)" alt="Preview" class="mt-4 max-h-[300px] w-auto max-w-full rounded-xl border border-white/5" />
-                            <div class="post-footer mt-4 flex items-center justify-between">
-                                <router-link :to="'/question/' + q.id" class="responses-badge bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95 px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 select-none group" :title="t.forum.viewThread">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-dimmed group-hover:text-success-normal transition-colors"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
-                                    <span class="response-count text-sm text-white/80 font-bold">{{ q.answers ? q.answers.length : 0 }} {{ t.forum.responses }}</span>
-                                    <span class="text-xs text-success-normal font-black uppercase ml-2 opacity-0 group-hover:opacity-100 transition-opacity">{{ t.forum.viewThread }}</span>
-                                </router-link>
-        
-                                <button 
-                                    v-if="user?.role?.toLowerCase() === 'admin'"
-                                    @click.stop="triggerDelete(q.id)"
-                                    class="absolute top-7 right-7 p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 z-10"
-                                    :title="t.forum.delete"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                                </button>
+                            <!-- COLUMNA DE CONTENIDO (IZQUIERDA EN DESKTOP) -->
+                            <div class="flex-1 flex flex-col justify-between min-w-0">
+                                <div>
+                                    <!-- HEADER INFO -->
+                                    <div class="flex items-center justify-between gap-3 mb-4 w-full">
+                                        <div class="flex items-center gap-3">
+                                            <router-link v-if="q.user?.id" :to="'/profile/' + q.user.id" class="flex gap-3 items-center hover:opacity-80 transition-opacity no-underline">
+                                                <UserAvatar :user="q.user" size="w-10 h-10" class="shrink-0 shadow-lg bg-[#15202b]" />
+                                                <div class="flex flex-col">
+                                                    <span class="text-sm font-bold text-white">
+                                                        {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
+                                                    </span>
+                                                    <span class="text-xs text-white/40 uppercase tracking-wider">
+                                                        {{ 
+                                                            q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                                            (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : q.user?.role || t.forum.student)
+                                                        }}
+                                                    </span>
+                                                </div>
+                                            </router-link>
+                                            <div v-else class="flex gap-3 items-center">
+                                                <UserAvatar :user="q.user" size="w-10 h-10" class="shrink-0 shadow-lg bg-[#15202b]" />
+                                                <div class="flex flex-col">
+                                                    <span class="text-sm font-bold text-white">
+                                                        {{ q.user?.name ?? t.forum.user }} <span v-if="q.user?.last_name">{{ q.user.last_name }}</span>
+                                                    </span>
+                                                    <span class="text-xs text-white/40 uppercase tracking-wider">
+                                                        {{ 
+                                                            q.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                                            (q.user?.role?.toLowerCase() === 'teacher' || q.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : q.user?.role || t.forum.student)
+                                                        }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Botón Eliminar (Admin) -->
+                                        <button 
+                                            v-if="user?.role?.toLowerCase() === 'admin'"
+                                            @click.stop="triggerDelete(q.id)"
+                                            class="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-90 z-10 cursor-pointer"
+                                            :title="t.forum.delete"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                        </button>
+                                    </div>
+
+                                    <!-- TÍTULO Y CONTENIDO -->
+                                    <h2 class="post-title text-white leading-snug">{{ q.title }}</h2>
+                                    <p class="text-white/80 mt-2 text-sm line-clamp-3 leading-relaxed">{{ q.content }}</p>
+
+                                    <!-- PREVIEW DE IMAGEN MÓVIL (SOLO VISIBLE EN MÓVIL) -->
+                                    <div v-if="q.image" class="block md:hidden mt-4 w-full h-48 rounded-xl overflow-hidden border border-white/10 shadow-md">
+                                        <img :src="getImageUrl(q.image)" alt="Preview" class="w-full h-full object-cover" />
+                                    </div>
+                                </div>
+
+                                <!-- FOOTER -->
+                                <div class="post-footer mt-6 flex items-center justify-between pt-4 border-t border-white/5 w-full">
+                                    <div class="flex flex-col">
+                                        <span class="text-[9px] text-white/20 font-black uppercase tracking-widest mb-1">Sección</span>
+                                        <span class="text-xs text-white/70 font-bold tracking-tighter">Foro Académico</span>   
+                                    </div>
+
+                                    <router-link :to="'/question/' + q.id" class="responses-badge bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95 px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 select-none group" :title="t.forum.viewThread">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-dimmed group-hover:text-success-normal transition-colors"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+                                        <span class="response-count text-sm text-white/80 font-bold">{{ q.answers ? q.answers.length : 0 }} {{ t.forum.responses }}</span>
+                                        <span class="text-xs text-success-normal font-black uppercase ml-2 opacity-0 group-hover:opacity-100 transition-opacity">{{ t.forum.viewThread }}</span>
+                                    </router-link>
+                                </div>
                             </div>
+
+                            <!-- COLUMNA DE IMAGEN DESKTOP (SOLO VISIBLE EN DESKTOP) -->
+                            <div v-if="q.image" class="hidden md:block md:w-[32%] lg:w-[26%] rounded-2xl overflow-hidden border border-white/10 shadow-lg flex-shrink-0 relative self-stretch min-h-[180px]">
+                                <img :src="getImageUrl(q.image)" alt="Preview" class="absolute inset-0 w-full h-full object-cover transition-all duration-500 hover:scale-105" />
+                            </div>
+
                         </div>
                     </div>
 
@@ -235,21 +264,27 @@
 
 <style scoped>
     .post-card {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
         padding: 1.75rem;
         position: relative;
         overflow: hidden;
+        width: 100%;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
     }
 
     .post-card:hover {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%);
+        border-color: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3), 0 0 1px 1px rgba(255, 255, 255, 0.1) inset;
     }
 
     .post-title {
-        font-size: 28px;
+        font-size: 24px;
         font-weight: 900;
         letter-spacing: normal;
+        margin-top: 8px;
     }
 </style>
