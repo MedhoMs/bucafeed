@@ -23,5 +23,9 @@ export const explore = {
     answers: "answers",
     by: "By",
     noMatchingEvents: "No matching events found.",
-    noMatchingQuestions: "No matching questions found in the forum."
+    noMatchingQuestions: "No matching questions found in the forum.",
+    publications: "Publications",
+    noMatchingPublications: "No matching publications found.",
+    seeMorePublications: "See more publications →",
+    recentPublications: "News from centers"
 };

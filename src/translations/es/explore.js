@@ -23,5 +23,9 @@ export const explore = {
     answers: "respuestas",
     by: "Por",
     noMatchingEvents: "No se encontraron eventos coincidentes.",
-    noMatchingQuestions: "No se encontraron dudas en el foro."
+    noMatchingQuestions: "No se encontraron dudas en el foro.",
+    publications: "Publicaciones",
+    noMatchingPublications: "No se encontraron publicaciones coincidentes.",
+    seeMorePublications: "Ver más publicaciones →",
+    recentPublications: "Novedades de centros"
 };

@@ -159,4 +159,36 @@ class EventController extends TemplateController
             'message' => $joined ? 'Te has unido al evento' : 'Has abandonado el evento'
         ]);
     }
+
+    /**
+     * API / Web Delete Event override
+     */
+    public function destroy(Request $request, $id)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'No autenticado'], 401);
+        }
+
+        $event = Event::findOrFail($id);
+
+        $role = strtolower($user->role ?? '');
+        $isSuperAdmin = in_array($role, ['admin', 'administrador', 'staff']);
+        $isCenterAdmin = ($role === 'ei');
+
+        if (!$isSuperAdmin && !$isCenterAdmin) {
+            return response()->json(['message' => 'No tienes permisos para eliminar este evento.'], 403);
+        }
+
+        if ($isCenterAdmin && $event->educational_center_id !== $user->educational_center_id) {
+            return response()->json(['message' => 'No puedes eliminar eventos de otros centros.'], 403);
+        }
+
+        $event->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Evento eliminado correctamente.'
+        ]);
+    }
 }

@@ -42,12 +42,16 @@ class SecurityHeadersMiddleware
             $response->headers->remove($header);
         }
 
+        $isLocal = app()->environment('local', 'development', 'testing') || config('app.debug') === true;
+
         // ── 2. HTTP Strict Transport Security (HSTS) ─────────────────────────
-        // Obliga al navegador a usar siempre HTTPS durante 2 años
-        $response->headers->set(
-            'Strict-Transport-Security',
-            'max-age=63072000; includeSubDomains; preload'
-        );
+        // Solo en producción
+        if (!$isLocal) {
+            $response->headers->set(
+                'Strict-Transport-Security',
+                'max-age=63072000; includeSubDomains; preload'
+            );
+        }
 
         // ── 3. Prevenir que la página sea embebida en iframes (Clickjacking) ──
         $response->headers->set('X-Frame-Options', 'DENY');
@@ -68,21 +72,35 @@ class SecurityHeadersMiddleware
         );
 
         // ── 8. Content Security Policy (CSP) ─────────────────────────────────
-        // Ajusta los dominios según los CDNs/servicios que uses
-        $cspDirectives = implode('; ', [
+        $scriptSrc = "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net";
+        $styleSrc = "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com";
+        $connectSrc = "connect-src 'self' wss: https://livekit.cloud https://api.resend.com";
+        $imgSrc = "img-src 'self' data: https: blob:";
+        $extraDirectives = [];
+
+        if ($isLocal) {
+            // Permitir localhost, IPs locales y Hot Reload de Vite en desarrollo
+            $scriptSrc .= " http://localhost:5173 http://127.0.0.1:5173 http://*:5173 http://*";
+            $styleSrc .= " http://localhost:5173 http://127.0.0.1:5173 http://*:5173 http://*";
+            $connectSrc .= " http://localhost:5173 ws://localhost:5173 http://127.0.0.1:5173 ws://127.0.0.1:5173 http://*:5173 ws://*:5173 http://* ws://*";
+            $imgSrc .= " http://localhost:5173 http://127.0.0.1:5173 http://*:5173 http://*";
+        } else {
+            $extraDirectives[] = "upgrade-insecure-requests";
+        }
+
+        $cspDirectives = implode('; ', array_merge([
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",      // Vue + librerías
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",   // CSS + Google Fonts
+            $scriptSrc,
+            $styleSrc,
             "font-src 'self' https://fonts.gstatic.com data:",
-            "img-src 'self' data: https: blob:",                               // Imágenes + avatares
-            "connect-src 'self' wss: https://livekit.cloud https://api.resend.com", // API + WebSocket
-            "media-src 'self' blob:",                                          // Videollamadas
-            "object-src 'none'",                                               // Sin Flash/Java
+            $imgSrc,
+            $connectSrc,
+            "media-src 'self' blob:",
+            "object-src 'none'",
             "base-uri 'self'",
             "form-action 'self'",
-            "frame-ancestors 'none'",                                          // Anti-Clickjacking
-            "upgrade-insecure-requests",                                       // Forzar HTTPS
-        ]);
+            "frame-ancestors 'none'",
+        ], $extraDirectives));
 
         $response->headers->set('Content-Security-Policy', $cspDirectives);
 

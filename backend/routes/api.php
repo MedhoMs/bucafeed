@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EducationalCenterController;
 use App\Http\Controllers\QuestionController;
@@ -129,6 +130,12 @@ Route::get('/events', [EventController::class, 'apiIndex']);
 Route::post('/events/{id}/join', [EventController::class, 'apiJoin'])->middleware('auth:sanctum');
 Route::get('/events/{id}/pdf', [EventController::class, 'generatePDF']);
 Route::get('/events/{id}/image', [EventController::class, 'streamImage'])->name('api.event.image');
+Route::delete('/events/{id}', [EventController::class, 'destroy'])->middleware('auth:sanctum');
+
+Route::get('/publications', [PublicationController::class, 'apiIndex']);
+Route::get('/publications/{id}', [PublicationController::class, 'show']);
+Route::get('/publications/{id}/image', [PublicationController::class, 'streamImage'])->name('api.publication.image');
+Route::delete('/publications/{id}', [PublicationController::class, 'destroy'])->middleware('auth:sanctum');
 Route::post('/events/generate-kahoot', [KahootController::class, 'generateQuestions']);
 Route::get('/test-gemini', function (\Illuminate\Http\Request $request) {
     $apiKey = config('services.gemini.api_key');
@@ -401,6 +408,12 @@ Route::middleware('auth:sanctum')->prefix('my-center')->group(function () {
     Route::post('/events', [EducationalCenterController::class, 'apiStoreEvent']);
     Route::put('/events/{event}', [EducationalCenterController::class, 'apiUpdateEvent']);
     Route::delete('/events/{event}', [EducationalCenterController::class, 'apiDeleteEvent']);
+
+    // Gestión de Publicaciones del Centro
+    Route::get('/publications', [EducationalCenterController::class, 'apiPublications']);
+    Route::post('/publications', [EducationalCenterController::class, 'apiStorePublication']);
+    Route::put('/publications/{publication}', [EducationalCenterController::class, 'apiUpdatePublication']);
+    Route::delete('/publications/{publication}', [EducationalCenterController::class, 'apiDeletePublication']);
 
     // Gestión de Usuarios Globales (Matriculación)
     Route::get('/search-users', [EducationalCenterController::class, 'apiSearchUsers']);

@@ -28,9 +28,8 @@ class DatabaseSeeder extends Seeder
 
         // 2. Administradores del Sistema
         $admins = [
-            ['name' => 'Antonio', 'last_name' => 'Morera Marrero', 'email' => 'antoniomorera784@gmail.com', 'dni' => '78845622N', 'password' => 'mikaela123'],
-            ['name' => 'Daniel', 'last_name' => 'Bucaloiu Morales', 'email' => 'danielbucaloiu@gmail.com', 'dni' => '12345678Z', 'password' => '0000'],
-            ['name' => 'Jason', 'last_name' => 'Camila Sotto', 'email' => 'jasoncsotto16@gmail.com', 'dni' => '12345678A', 'password' => 'luigi2005'],
+            ['name' => 'Admin', 'last_name' => 'Admin', 'email' =>'admin@gmail.com', 'dni' => '12345678G', 'password' => 'admin123'],
+
         ];
 
         foreach ($admins as $admin) {
@@ -72,6 +71,7 @@ class DatabaseSeeder extends Seeder
             MeetingsSeeder::class,
             EventsSeeder::class,
             ForumQuestionsSeeder::class,
+            PublicationsSeeder::class,
         ]);
 
         echo "🏁 Seeding Maestro completado.\n";

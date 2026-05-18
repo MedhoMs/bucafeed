@@ -9,6 +9,7 @@ use App\Http\Controllers\BannedWordController;
 use App\Http\Controllers\EducationalCenterController;
 use App\Http\Controllers\CycleController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\PublicationController;
 
 Route::get('/', function () {
     return redirect()->away(env('APP_FRONTEND_URL', 'http://localhost:5173'));
@@ -171,6 +172,21 @@ $adminRoutes = [
             ['get', 'create', 'create', 'create'],
             ['post', 'store', 'store', 'store'],
             ['get', 'tags-by-user/{userId}', 'getTagsByUser', 'tags_by_user'],
+            ['get', 'show/{id}', 'show', 'show'],
+            ['get', 'destroy/{id}', 'destroy', 'destroy'],
+            ['post', 'destroy/{id}', 'destroy', 'destroy.post'],
+        ],
+    ],
+    [
+        'prefix'     => 'admin/publications',
+        'name'       => 'publication.',
+        'controller' => PublicationController::class,
+        'routes'     => [
+            ['get', '/', 'index', 'index'],
+            ['get', 'create', 'create', 'create'],
+            ['post', 'store', 'store', 'store'],
+            ['get', 'edit/{id}', 'edit', 'edit'],
+            ['post', 'update/{id}', 'update', 'update'],
             ['get', 'show/{id}', 'show', 'show'],
             ['get', 'destroy/{id}', 'destroy', 'destroy'],
             ['post', 'destroy/{id}', 'destroy', 'destroy.post'],

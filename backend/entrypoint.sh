@@ -35,10 +35,15 @@ if [ ! -L "public/storage" ]; then
     php artisan storage:link
 fi
 
-# 2. Instalar dependencias de PHP solo si falta el autoload
-if [ ! -f "vendor/autoload.php" ]; then
-    echo "Instalando dependencias de PHP (composer)..."
+# 2. Instalar/Actualizar dependencias de PHP
+if [ "$APP_ENV" != "production" ]; then
+    echo "Verificando/Instalando dependencias de PHP (composer) para desarrollo..."
     composer install --no-interaction --optimize-autoloader
+else
+    if [ ! -f "vendor/autoload.php" ]; then
+        echo "Instalando dependencias de PHP (composer) indispensables..."
+        composer install --no-interaction --optimize-autoloader --no-dev
+    fi
 fi
 
 # 3. Generar clave si no existe (solo en desarrollo con archivo .env)
@@ -52,18 +57,22 @@ if [ ! -f "routes/api.php" ]; then
     php artisan install:api --no-interaction
 fi
 
-# 5. Instalar dependencias de Node solo si falta la carpeta node_modules
-if [ ! -d "node_modules" ]; then
-    echo "Instalando dependencias de Node para el Admin Panel..."
+# 5. Instalar/Actualizar dependencias de Node para el Admin Panel
+if [ "$APP_ENV" != "production" ]; then
+    echo "Verificando/Instalando dependencias de Node para el Admin Panel..."
     npm install
+else
+    if [ ! -d "node_modules" ]; then
+        echo "Instalando dependencias de Node indispensables..."
+        npm install --only=production
+    fi
 fi
 
-# 6. Construir assets si no existe la carpeta build (necesario para ver estilos del admin)
-if [ ! -d "public/build" ]; then
-    echo "Compilando assets del Admin Panel (esto puede tardar un poco)..."
+# 6. Construir assets si no existe la carpeta build o estamos en desarrollo
+if [ ! -d "public/build" ] || [ "$APP_ENV" != "production" ]; then
+    echo "Compilando assets del Admin Panel..."
     npm run build
 fi
-
 # 7. Limpiar y recachear configuración (asegura que Railway env vars se aplican)
 php artisan config:clear
 php artisan route:clear
@@ -79,9 +88,18 @@ fi
 echo "Ejecutando migraciones pendientes..."
 php artisan migrate --force
 
-# En desarrollo, sembrar datos de prueba si la tabla está vacía
+# En desarrollo, sembrar datos de prueba si la tabla está vacía (menos de 10 usuarios)
 if [ "$APP_ENV" != "production" ]; then
-    php artisan db:seed --force
+    USER_COUNT=$(php artisan tinker --execute="echo App\Models\User::count();" 2>/dev/null | tr -d '\r\n')
+    if [ -z "$USER_COUNT" ] || ! [[ "$USER_COUNT" =~ ^[0-9]+$ ]]; then
+        USER_COUNT=0
+    fi
+    if [ "$USER_COUNT" -lt 10 ]; then
+        echo "La base de datos parece vacía ($USER_COUNT usuarios). Sembrando datos iniciales..."
+        php artisan db:seed --force
+    else
+        echo "La base de datos ya contiene datos ($USER_COUNT usuarios). Saltando seeding automático."
+    fi
 fi
 
 # Iniciar Supervisor (que gestiona PHP y Nginx)

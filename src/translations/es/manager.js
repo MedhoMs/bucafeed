@@ -41,6 +41,20 @@ export const manager = {
             msg: "Evento actualizado correctamente",
             imageLabel: "Nueva imagen (opcional)"
         },
+        publication: {
+            title: "Crear Nueva Publicación",
+            msg: "Publicación creada con éxito",
+            titleLabel: "Título de la Publicación",
+            titlePlaceholder: "Ej: Logro académico",
+            descLabel: "Contenido",
+            descPlaceholder: "¿De qué trata la publicación?",
+            imageLabel: "Imagen de portada"
+        },
+        editPublication: {
+            title: "Editar Publicación",
+            msg: "Publicación actualizada correctamente",
+            imageLabel: "Nueva imagen (opcional)"
+        },
         enrollUsers: {
             title: "Matricular Usuarios",
             msg: "Usuarios matriculados con éxito",
