@@ -21,7 +21,8 @@
 
     const isUnverified = computed(() => ['Student', 'Teacher'].includes(user.value?.role) && user.value?.is_verified === false)
     const isTeacher = computed(() => user.value?.role === 'Teacher')
-    const cannotAnswer = computed(() => isUnverified.value || isTeacher.value)
+    const isCenterAdmin = computed(() => user.value?.role === 'EI')
+    const cannotAnswer = computed(() => isUnverified.value || isTeacher.value || isCenterAdmin.value)
 
     const getImageUrl = (path) => {
         if (!path) return null;
@@ -341,6 +342,27 @@
                                                 </span>
                                             </div>
                                             <div class="flex items-center gap-3">
+                                                <!-- Botón Like (Reputación) -->
+                                                <button 
+                                                    v-if="['Student', 'Teacher'].includes(user?.role) && user?.id === question?.user_id && ans.user_id !== user?.id && !ans.is_useful"
+                                                    @click="likeAnswer(ans)"
+                                                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white transition-all active:scale-95 text-xs font-bold cursor-pointer"
+                                                    title="Otorgar +50 puntos de reputación"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.74-1c.22-.4.45-.83.71-1.31.49-1 .81-2.22 1.2-2.83a4 4 0 0 1 4.59-2.22c1.4.3 1 2.09.81 3.25z"/></svg>
+                                                    Útil
+                                                </button>
+                                                <button 
+                                                    v-if="ans.is_useful"
+                                                    @click="['Student', 'Teacher'].includes(user?.role) && user?.id === question?.user_id ? unlikeAnswer(ans) : null"
+                                                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-500/20 text-green-400 text-xs font-bold border border-green-500/20 transition-all"
+                                                    :class="['Student', 'Teacher'].includes(user?.role) && user?.id === question?.user_id ? 'hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 cursor-pointer' : ''"
+                                                    :title="['Student', 'Teacher'].includes(user?.role) && user?.id === question?.user_id ? 'Retirar reconocimiento' : 'Respuesta reconocida'"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="group-hover:hidden"><path d="M20 6 9 17l-5-5"/></svg>
+                                                    Reconocida
+                                                </button>
+
                                                 <span class="text-xs text-white/30">{{ new Date(ans.created_at).toLocaleDateString() }}</span>
                                                 <!-- Botón Eliminar Answer (Admin) -->
                                                 <button 
@@ -401,6 +423,9 @@
                                  </p>
                                  <p v-else-if="isTeacher" class="text-[9px] text-red-400/80 font-black uppercase tracking-widest text-center mt-1">
                                      {{ t.forum.teacherInteraction || 'Los profesores no pueden responder a las preguntas' }}
+                                 </p>
+                                 <p v-else-if="isCenterAdmin" class="text-[9px] text-red-400/80 font-black uppercase tracking-widest text-center mt-1">
+                                     {{ t.forum.centerAdminInteraction || 'Los administradores de centros no pueden responder a las preguntas' }}
                                  </p>
                              </div>
                          </div>

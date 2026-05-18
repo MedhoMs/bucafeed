@@ -13,6 +13,21 @@ class QuestionController extends TemplateController
     protected $viewPath = 'questions';
     protected $with = ['user', 'tags', 'answers.user'];
 
+    public function store(Request $request)
+    {
+        $user = auth()->user();
+        if ($user && $user->role === 'Teacher') {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Los profesores no pueden crear preguntas.'
+                ], 403);
+            }
+            return redirect()->back()->with('error', 'Los profesores no pueden crear preguntas.');
+        }
+
+        return parent::store($request);
+    }
+
     public function destroy(Request $request, $id)
     {
         $question = Question::findOrFail($id);

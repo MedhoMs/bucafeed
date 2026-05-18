@@ -27,6 +27,7 @@ export const forum = {
     unverifiedThreadMessage: "No puedes visualizar este hilo hasta que tu centro verifique tu identidad.",
     unverifiedInteraction: "Cuenta pendiente de verificación - Interacción deshabilitada",
     teacherInteraction: "Los profesores no pueden responder a las preguntas",
+    centerAdminInteraction: "Los administradores de centros no pueden responder a las preguntas",
     section: "Sección",
     academicForum: "Foro Académico"
 };

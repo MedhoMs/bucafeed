@@ -27,6 +27,7 @@ export const forum = {
     unverifiedThreadMessage: "You cannot view this thread until your identity is verified by your center.",
     unverifiedInteraction: "Account pending verification - Interaction disabled",
     teacherInteraction: "Teachers cannot answer questions",
+    centerAdminInteraction: "Center administrators cannot answer questions",
     section: "Section",
     academicForum: "Academic Forum"
 };
