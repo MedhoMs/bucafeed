@@ -41,7 +41,8 @@ watch(() => props.activeModal, (val) => {
     // Valores por defecto
     const defaults = {
         name: '', cycle_id: null, user_id: null, student_ids: [], tag_id: null,
-        title: '', description: '', location: '', date: '', start_time: '', end_time: '', target_role: null, image: null
+        title: '', description: '', location: '', date: '', start_time: '', end_time: '', target_role: null, image: null,
+        teacher_id: null
     }
 
     // Si estamos editando un evento, precargar sus datos
@@ -165,7 +166,7 @@ const MODAL_MAP = computed(() => ({
         url: '/meetings',
         fields: [
             { id: 'name', type: 'text', label: t.value.meetings.form.title, placeholder: t.value.meetings.form.titlePlaceholder, required: true },
-            { id: 'teacher_name', type: 'text', label: t.value.meetings.form.teacher, placeholder: t.value.meetings.form.teacherPlaceholder, required: true },
+            { id: 'teacher_id', type: 'select', label: t.value.meetings.form.teacher, placeholder: t.value.meetings.form.teacherPlaceholder, options: props.teachers.map(t => ({ id: t.id, name: `${t.name} ${t.last_name || ''}`.trim() })), required: true },
             { id: 'schedule', type: 'time', label: t.value.meetings.form.schedule, placeholder: t.value.meetings.form.schedulePlaceholder, required: true },
             { id: 'description', type: 'textarea', label: t.value.meetings.form.description, placeholder: t.value.meetings.form.descriptionPlaceholder, required: false, full: true },
         ]
@@ -265,11 +266,14 @@ async function handleAction() {
         if (props.activeModal?.includes('enroll')) {
             body = JSON.stringify({ ids: selectedIds.value, type: activeEnrollTab.value })
         } else if (props.activeModal === 'meeting') {
+            const selectedTeacher = props.teachers.find(t => Number(t.id) === Number(form.value.teacher_id));
+            const teacherName = selectedTeacher ? `${selectedTeacher.name} ${selectedTeacher.last_name || ''}`.trim() : '';
             body = JSON.stringify({
                 ...form.value,
                 group_id: props.group?.id,
                 educational_center_id: props.center?.id,
-                teacher_id: authUser.value?.id
+                teacher_id: form.value.teacher_id ? Number(form.value.teacher_id) : authUser.value?.id,
+                teacher_name: teacherName || null
             })
         } else if (props.activeModal === 'user') {
             body = JSON.stringify({

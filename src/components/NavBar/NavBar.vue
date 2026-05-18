@@ -136,7 +136,7 @@ Enter
         leave-active-class="transition-transform duration-300 ease-in"
         leave-from-class="translate-x-0"
         leave-to-class="-translate-x-full">
-        <nav v-if="menu || true" v-show="menu || isDesktop" class="fixed top-0 left-0 flex flex-col w-75 h-screen px-5 nav-sidebar shrink-0 overflow-y-auto overflow-x-hidden">
+        <nav v-if="menu || true" v-show="menu || isDesktop" class="fixed top-0 bottom-0 left-0 flex flex-col w-75 px-5 nav-sidebar shrink-0 overflow-y-auto overflow-x-hidden">
  
             <div class="flex flex-row items-center mb-4 mt-4 shrink-0 w-full justify-between">
                 <router-link to="/home" @click="closeMenu()" class="flex flex-row items-center gap-3 no-underline group cursor-pointer select-none">

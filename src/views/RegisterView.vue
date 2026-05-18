@@ -5,7 +5,7 @@
     import { useRouter } from 'vue-router';
     const { t } = useTranslations()
     const router = useRouter();
-    import { onMounted, ref } from 'vue';
+    import { onMounted } from 'vue';
     import { login } from '@/stores/auth';
     import { useIsMobile } from '@/composables/useIsMobile';
 
@@ -77,8 +77,11 @@
         };
 
         textInputs.forEach((input) => {
-            input.addEventListener("keyup", (e) => {
+            input.addEventListener("input", (e) => {
                 const name = e.target.name;
+                if (name === "dni-register-form") {
+                    e.target.value = e.target.value.toUpperCase();
+                }
                 const regex = patterns[name];
                 if (regex) validateExpresion(e.target, regex);
             });
@@ -86,28 +89,35 @@
 
         function validateExpresion(input, pattern) {
             errorText = input.nextElementSibling;
-            if (pattern.test(input.value)) {
+            let isValid = pattern.test(input.value);
+
+            if (isValid && input.name === "dni-register-form") {
+                isValid = validateDni(input.value) === "Dni válido";
+            }
+
+            if (isValid) {
                 input.classList.add('valido');
                 input.classList.remove('border-red-500');
                 input.classList.add('border-green-500');
                 errorText.hidden = true;
             } else {
                 input.classList.add('invalido');
+                input.classList.remove('border-green-500');
                 errorText.classList.add('text-red-500');
                 input.classList.add('border-red-500');
                 errorText.hidden = false;
             }
         }
 
-        const letters = "TRWAGMYFPDXBNJZSQVHLCKE"
-        let result = "Dni inválido"
+        const letters = "TRWAGMYFPDXBNJZSQVHLCKE";
         function validateDni(newDni) {
-            if (newDni.length = 9) {
-                if (newDni[8] == letters[newDni[0,8] % 23]) {
-                    result = "Dni válido"
+            let result = "Dni inválido";
+            if (newDni.length === 9) {
+                if (newDni[8] === letters[parseInt(newDni.slice(0, 8)) % 23]) {
+                    result = "Dni válido";
                 }
             }
-            return result
+            return result;
         }
 
         registerForm.addEventListener('click', function(e) { e.preventDefault(); });
@@ -122,6 +132,12 @@
         }
 
         function validateInputs(inputs) {
+            inputs.forEach(input => {
+                const name = input.name;
+                const regex = patterns[name];
+                if (regex) validateExpresion(input, regex);
+            });
+
             for (let i = 0; i < inputs.length; i++) {
                 if (inputs[i].classList.contains('border-red-500') || inputs[i].value === '') {
                     showWarning('Faltan datos o hay datos erróneos');
