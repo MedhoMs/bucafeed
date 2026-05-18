@@ -17,7 +17,7 @@ import { useApi } from '../../composables/useApi';
 const { t } = useTranslations()
 const { get, post: apiPost, del: apiDelete, loading: apiLoading } = useApi();
 
-const isUnverified = computed(() => user.value?.role === 'Student' && user.value?.is_verified === false)
+const isUnverified = computed(() => ['Student', 'Teacher'].includes(user.value?.role) && user.value?.is_verified === false)
 const isAdmin = computed(() => {
     if (!user.value) return false;
     const role = user.value.role?.toLowerCase();
@@ -145,6 +145,7 @@ const showToast = (msg, type = 'success') => {
 
 const canCreateMeeting = computed(() => {
     if (!user.value) return false;
+    if (isUnverified.value) return false;
     const role = user.value.role?.toLowerCase();
     const allowedRoles = ['teacher', 'ei', 'profesor'];
     return allowedRoles.includes(role);

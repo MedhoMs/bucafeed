@@ -15,6 +15,18 @@ class MeetingController extends TemplateController
     protected $viewPath = 'meetings';
     protected $with = ['teacher', 'educationalCenter', 'group'];
 
+    public function apiIndex(Request $request)
+    {
+        $user = auth()->user() ?? $request->user();
+        if ($user) {
+            if (in_array($user->role, ['Student', 'Teacher']) && !$user->is_verified) {
+                return response()->json(['message' => 'Tu cuenta está pendiente de verificación por tu centro educativo.'], 403);
+            }
+        }
+
+        return parent::apiIndex($request);
+    }
+
     protected function getFormFields($model = null)
     {
         return [
@@ -77,6 +89,13 @@ class MeetingController extends TemplateController
      */
     public function apiStore(Request $request)
     {
+        $user = auth()->user() ?? $request->user();
+        if ($user) {
+            if (in_array($user->role, ['Student', 'Teacher']) && !$user->is_verified) {
+                return response()->json(['message' => 'Tu cuenta está pendiente de verificación por tu centro educativo.'], 403);
+            }
+        }
+
         $validator = Validator::make($request->all(), $this->rules());
 
         if ($validator->fails()) {
@@ -128,6 +147,13 @@ class MeetingController extends TemplateController
 
     public function apiShow($id)
     {
+        $user = auth()->user() ?? request()->user();
+        if ($user) {
+            if (in_array($user->role, ['Student', 'Teacher']) && !$user->is_verified) {
+                return response()->json(['message' => 'Tu cuenta está pendiente de verificación por tu centro educativo.'], 403);
+            }
+        }
+
         $meeting = Meeting::with($this->with)->findOrFail($id);
         return response()->json($meeting);
     }

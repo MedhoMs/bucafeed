@@ -21,7 +21,13 @@ const meeting = ref(null);
 const activeCallRoomId = ref(null);
 const chatBarRef = ref(null);
 
+const isUnverified = computed(() => ['Student', 'Teacher'].includes(authUser.value?.role) && authUser.value?.is_verified === false)
+
 onMounted(() => {
+    if (isUnverified.value) {
+        router.push({ name: 'meeting' });
+        return;
+    }
     fetchMeeting();
 });
 const fetchMeeting = async () => {

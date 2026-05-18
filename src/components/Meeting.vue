@@ -18,6 +18,8 @@ const emit = defineEmits(['delete']);
 
 const canManageMeeting = computed(() => {
     if (!user.value) return false;
+    const isUnverified = ['Student', 'Teacher'].includes(user.value?.role) && user.value?.is_verified === false;
+    if (isUnverified) return false;
     const role = user.value.role?.toLowerCase();
     const allowedRoles = ['teacher', 'admin', 'ei', 'administrador', 'profesor'];
     return allowedRoles.includes(role);
