@@ -1,7 +1,6 @@
 <script setup>
     import NavBar from '../../components/NavBar/NavBar.vue';
 
-    import SideBar from '../../components/SideBar.vue';
     import UserAvatar from '../../components/common/UserAvatar.vue';
     import EmojiPicker from '../../components/common/EmojiPicker.vue';
 

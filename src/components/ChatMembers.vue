@@ -58,11 +58,10 @@
         }
     }
 
-    // Also try to get meeting details if meeting prop is incomplete
     const fetchMeetingDetails = async () => {
         const meetingId = route.params.id;
         if (!meetingId) return;
-        if (props.meeting?.group_id) return; // already have the info
+        if (props.meeting?.group_id) return;
         try {
             const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
             const response = await fetch(`${apiBase}/meetings/${meetingId}`);
@@ -80,7 +79,6 @@
 
     const { onlineUsers } = useSocket();
 
-    // Verificar si un usuario está online
     const isUserOnline = (userId) => {
         return onlineUsers.value.some(u => Number(u.id) === Number(userId));
     };
@@ -96,7 +94,6 @@
         await fetchMeetingDetails();
     });
 
-    // Re-fetch si cambia el meeting (pasado por prop) o el nombre del grupo
     watch(() => props.meeting, fetchStudents);
     watch(groupName, fetchStudents);
 
@@ -147,18 +144,27 @@
 
                 <div class="mr-auto w-full shrink-0">
                     <p class="text-lg lg:text-2xl font-bold self-start mb-2">Profesor</p>
-                    <router-link v-if="props.meeting?.teacher_id || props.meeting?.teacher?.id" :to="'/profile/' + (props.meeting?.teacher_id || props.meeting?.teacher?.id)" class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] hover:cursor-pointer transition-colors no-underline text-white">
-                        <div class="relative mr-2">
-                            <UserAvatar :user="props.meeting?.teacher" size="w-10 h-10" class="border-2 border-white shadow-xs shrink-0" />
-                            <span v-if="isUserOnline(props.meeting?.teacher_id || props.meeting?.teacher?.id)" class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1f5252] rounded-full"></span>
-                        </div>
-                        <p class="text-base lg:text-xl truncate flex-1">
-                            {{ props.meeting?.teacher ? `${props.meeting.teacher.name} ${props.meeting.teacher.last_name || ''}` : (meetingId ? meetingTeacherParam : 'Profesor') }}
-                        </p>
-                        <button v-if="props.meeting?.teacher_id && Number(props.meeting.teacher_id) !== Number(authUser?.id)" @click.prevent="openPrivateChat(props.meeting.teacher_id)" class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2" title="Mensaje">
+
+                    <!-- Profesor: separamos el link del avatar del botón de mensaje -->
+                    <div v-if="props.meeting?.teacher_id || props.meeting?.teacher?.id" class="flex items-center w-full rounded-3xl p-3 mb-5 hover:bg-[#2a4a5a] transition-colors">
+                        <router-link :to="'/profile/' + (props.meeting?.teacher_id || props.meeting?.teacher?.id)" class="flex items-center flex-1 no-underline text-white min-w-0">
+                            <div class="relative mr-2 shrink-0">
+                                <UserAvatar :user="props.meeting?.teacher" size="w-10 h-10" class="border-2 border-white shadow-xs" />
+                                <span v-if="isUserOnline(props.meeting?.teacher_id || props.meeting?.teacher?.id)" class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1f5252] rounded-full"></span>
+                            </div>
+                            <p class="text-base lg:text-xl truncate">
+                                {{ props.meeting?.teacher ? `${props.meeting.teacher.name} ${props.meeting.teacher.last_name || ''}` : (meetingId ? meetingTeacherParam : 'Profesor') }}
+                            </p>
+                        </router-link>
+                        <button
+                            v-if="props.meeting?.teacher_id && Number(props.meeting.teacher_id) !== Number(authUser?.id)"
+                            @click="openPrivateChat(props.meeting.teacher_id)"
+                            class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2"
+                            title="Mensaje"
+                        >
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8z"/><path d="M3 7l9 6l9 -6"/></svg>
                         </button>
-                    </router-link>
+                    </div>
                     <div v-else class="flex items-center w-full rounded-3xl p-3 mb-5 bg-[#2a4a5a]/20">
                         <UserAvatar size="w-10 h-10" class="border-2 border-white/20 shadow-xs mr-2 shrink-0" />
                         <p class="text-base lg:text-xl truncate text-white/50">
@@ -181,18 +187,28 @@
                         <p class="text-base lg:text-xl truncate">{{ authUser.name }} (Tú)</p>
                     </router-link>
 
-                    <!-- Otros Estudiantes -->
-                    <router-link v-for="student in students.filter(s => s.id !== authUser?.id)" :key="student.id" :to="'/profile/' + student.id"
-                        class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] cursor-pointer transition-colors no-underline text-white">
-                        <div class="relative mr-2">
-                            <UserAvatar :user="student" size="w-10 h-10" class="border-2 border-white shadow-xs shrink-0" />
-                            <span v-if="isUserOnline(student.id)" class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1f5252] rounded-full"></span>
-                        </div>
-                        <p class="text-base lg:text-xl truncate flex-1">{{ student.name }} {{ student.last_name }}</p>
-                        <button v-if="!['student', 'alumno', 'estudiante'].includes(authUser?.role?.toLowerCase())" @click.stop="openPrivateChat(student.id)" class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2" title="Mensaje">
+                    <!-- Otros Estudiantes: separamos el link del botón de mensaje -->
+                    <div
+                        v-for="student in students.filter(s => s.id !== authUser?.id)"
+                        :key="student.id"
+                        class="flex items-center w-full rounded-3xl p-3 mb-5 shrink-0 hover:bg-[#2a4a5a] transition-colors"
+                    >
+                        <router-link :to="'/profile/' + student.id" class="flex items-center flex-1 no-underline text-white min-w-0">
+                            <div class="relative mr-2 shrink-0">
+                                <UserAvatar :user="student" size="w-10 h-10" class="border-2 border-white shadow-xs" />
+                                <span v-if="isUserOnline(student.id)" class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#1f5252] rounded-full"></span>
+                            </div>
+                            <p class="text-base lg:text-xl truncate">{{ student.name }} {{ student.last_name }}</p>
+                        </router-link>
+                        <button
+                            v-if="!['student', 'alumno', 'estudiante'].includes(authUser?.role?.toLowerCase())"
+                            @click="openPrivateChat(student.id)"
+                            class="p-1.5 rounded-lg hover:bg-white/10 text-white/60 hover:text-white transition-colors shrink-0 ml-2"
+                            title="Mensaje"
+                        >
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8z"/><path d="M3 7l9 6l9 -6"/></svg>
                         </button>
-                    </router-link>
+                    </div>
 
                     <p v-if="students.length === 0 && (!authUser || authUser.role !== 'Student')" class="text-sm text-white/40 italic">No hay otros alumnos</p>
                 </div>

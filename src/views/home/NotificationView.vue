@@ -22,6 +22,7 @@
     } from '@/stores/notifications'
 
     const activeFilter = ref(null)
+    const activeFilterType = ref(null)
 
     const filterTabs = [
         { label: 'Todo', type: null, icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></svg>' },
@@ -32,11 +33,12 @@
 
     const setFilter = (tab) => {
         activeFilter.value = tab.label
+        activeFilterType.value = tab.type
         fetchNotifications(1, tab.type)
     }
 
     const handlePageChange = (page) => {
-        fetchNotifications(page, filterMap[activeFilter.value])
+        fetchNotifications(page, activeFilterType.value)
         window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
@@ -121,25 +123,6 @@
                                 tab.label
                             }}
                         </span>
-                    </div>
-                </template>
-
-                <template #bottom>
-                    <div v-if="notifications.length > 0" class="w-full relative flex items-center justify-center py-4">
-                        <Pagination
-                            v-if="lastPage > 1"
-                            :current-page="currentPage"
-                            :last-page="lastPage"
-                            @change="handlePageChange"
-                        />
-
-                        <button
-                            @click="markAllAsRead"
-                            class="absolute right-0 flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all text-xs font-bold shadow-lg backdrop-blur-sm"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                            {{ t.notifications.markAllAsRead }}
-                        </button>
                     </div>
                 </template>
             </PageHeader>
@@ -241,7 +224,6 @@
                         </div>
                     </div>
 
-                    <!-- Paginación Inferior -->
                     <div v-if="lastPage > 1" class="mt-12 mb-10 flex justify-center w-full">
                         <Pagination
                             :current-page="currentPage"
