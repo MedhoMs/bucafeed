@@ -341,7 +341,6 @@
                     <p hidden class="absolute top-48.75 left-27.5 text-sm font-semibold">{{ t.register.invalidPassword }}</p>
                     <label class="font-bold" for="who-register-form" id="who-register-label">{{ t.register.whoAreYou }}</label>
                     <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
-                        <option value="EI">{{ t.register.educationalInstitution }}</option>
                         <option value="Student">{{ t.register.student }}</option>
                         <option value="Teacher">{{ t.register.teacher }}</option>
                         <option value="EU">{{ t.register.externalUser }}</option>
