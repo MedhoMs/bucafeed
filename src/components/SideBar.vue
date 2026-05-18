@@ -98,7 +98,7 @@ const tendencias = [
       </div>
       
       <a href="#" class="block mt-2.5 text-[#4db8ff] text-sm px-2 hover:text-[#80d4ff] hover:underline transition-colors duration-200">
-        Ver más
+        {{ t.sidebar.viewMore || 'Ver más' }}
       </a>
     </div>
 

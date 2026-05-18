@@ -17,5 +17,12 @@ export const notifications = {
     noNotifications: "No tienes notificaciones",
     emptyMessage: "Cuando recibas notificaciones, aparecerán aquí.",
     newNotification: "Nueva notificación",
-    from: "de"
+    from: "de",
+    loading: "Cargando...",
+    delete: "Eliminar",
+    time: {
+        now: "Ahora",
+        agoMins: "Hace {mins} min",
+        agoHours: "Hace {hours}h"
+    }
 };

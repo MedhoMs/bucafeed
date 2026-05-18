@@ -91,7 +91,7 @@
         }
         // Block unverified students from joining
         if (isUnverified.value) {
-            showToast({ msg: 'Tu cuenta está pendiente de verificación. No puedes unirte a eventos.', type: 'error' });
+            showToast({ msg: t.value.events?.unverifiedJoinMessage || 'Tu cuenta está pendiente de verificación. No puedes unirte a eventos.', type: 'error' });
             return;
         }
         try {
@@ -134,7 +134,7 @@
             fetchEvents(pagination.currentPage);
         } catch (error) {
             console.error('Error deleting event:', error);
-            showToast({ msg: 'Error al eliminar el evento', type: 'error' });
+            showToast({ msg: t.value.events?.deleteError || 'Error al eliminar el evento', type: 'error' });
         }
     }
 </script>
@@ -170,7 +170,7 @@
                 <UnverifiedBanner 
                     v-if="isUnverified"
                     compact
-                    message="Puedes ver los eventos disponibles, pero no podrás inscribirte hasta que tu centro verifique tu identidad."
+                    :message="t.events?.exploreUnverifiedBanner || 'Puedes ver los eventos disponibles, pero no podrás inscribirte hasta que tu centro verifique tu identidad.'"
                 />
 
                 <div id="mainBody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center pb-20 flex-1">

@@ -4,6 +4,7 @@ export const sidebar = {
     trending:           "Tendencias",
     likedVideos:        "Videos que te gustaron",
     savedVideos:        "Videos guardados",
-    follow:             "Seguir"
+    follow:             "Seguir",
+    viewMore:           "Ver más"
 
 };

@@ -27,5 +27,20 @@ export const explore = {
     publications: "Publications",
     noMatchingPublications: "No matching publications found.",
     seeMorePublications: "See more publications →",
-    recentPublications: "News from centers"
+    recentPublications: "News from centers",
+    seeEvents: "See events",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    finished: "Finished",
+    inDays: "In {days} days",
+    student: "Student",
+    teacher: "Teacher",
+    admin: "Admin",
+    doubt: "Doubt",
+    community: "Community",
+    footerText: "Terms of Service · Privacy Policy · Cookie Use · More options · © 2026 TelamoNet.",
+    news: "News",
+    academicEvent: "Academic Event",
+    forum: "Forum",
+    user: "User"
 };

@@ -4,5 +4,6 @@ export const sidebar = {
     trending:           "Trending",
     likedVideos:        "Liked Videos",
     savedVideos:        "Saved Videos",
-    follow:             "follow"
+    follow:             "Follow",
+    viewMore:           "View more"
 };

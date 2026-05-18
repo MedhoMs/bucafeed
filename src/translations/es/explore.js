@@ -27,5 +27,20 @@ export const explore = {
     publications: "Publicaciones",
     noMatchingPublications: "No se encontraron publicaciones coincidentes.",
     seeMorePublications: "Ver más publicaciones →",
-    recentPublications: "Novedades de centros"
+    recentPublications: "Novedades de centros",
+    seeEvents: "Ver eventos",
+    today: "Hoy",
+    tomorrow: "Mañana",
+    finished: "Finalizado",
+    inDays: "En {days} días",
+    student: "Alumno",
+    teacher: "Profesor",
+    admin: "Admin",
+    doubt: "Duda",
+    community: "Comunidad",
+    footerText: "Términos de Servicio · Política de Privacidad · Uso de Cookies · Más opciones · © 2026 TelamoNet.",
+    news: "Novedad",
+    academicEvent: "Evento Académico",
+    forum: "Foro",
+    user: "Usuario"
 };

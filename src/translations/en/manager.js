@@ -90,5 +90,61 @@ export const manager = {
         noResults: "No results found",
         alreadyLinked: "Already linked",
         enrollHint: "Select the elements you want to enroll in your center"
+    },
+    searchEventsPlaceholder: "Search events by title or description...",
+    searchPublicationsPlaceholder: "Search publications by title or description...",
+    groups: {
+        title: "Group Management",
+        newGroup: "NEW GROUP",
+        studentsCount: "STUDENTS",
+        deleteTitle: "Delete Group",
+        confirmDelete: "DELETE?",
+        yes: "YES",
+        no: "NO",
+        emptySection: "Empty section",
+        actions: {
+            newMeeting: "New Talk",
+            changeTutor: "Change Tutor",
+            addStudents: "Add Students",
+            assignSubject: "Assign Subject"
+        },
+        sections: {
+            studentsList: "Students List",
+            subjectsAndTeaching: "Subjects & Teaching"
+        }
+    },
+    people: {
+        enrollPeople: "Enroll People",
+        pendingVerification: "Pending Verification",
+        pendingAlertText: "These users have requested access and are waiting for verification. Access their profile to check their identity before validating them.",
+        pendingStatus: "Pending",
+        viewProfileOf: "View profile of {name}",
+        teacherRole: "Teacher",
+        studentRole: "Student",
+        viewProfile: "View Profile",
+        verify: "Verify",
+        sections: {
+            admins: "Administration",
+            teachers: "Teaching Staff",
+            students: "Students"
+        }
+    },
+    stats: {
+        groups: "Groups",
+        teachers: "Teachers",
+        students: "Students",
+        publications: "Publications"
+    },
+    messages: {
+        serverError: "Server error",
+        studentVerified: "Student successfully verified",
+        teacherVerified: "Teacher successfully verified",
+        verifyError: "Error during verification",
+        deleted: "Deleted",
+        removed: "Removed",
+        eventDeleted: "Event deleted",
+        publicationDeleted: "Publication deleted",
+        error: "Error",
+        noTeacher: "No teacher"
     }
 };

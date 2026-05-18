@@ -21,18 +21,18 @@
         deleteNotification,
     } from '@/stores/notifications'
 
-    const activeFilter = ref(null)
+    const activeFilter = ref('all')
     const activeFilterType = ref(null)
 
     const filterTabs = [
-        { label: 'Todo', type: null, icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></svg>' },
-        { label: 'Charlas', type: 'meeting,meeting_message', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>' },
-        { label: 'Mensajes Privados', type: 'private_message', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8z"/><path d="M3 7l9 6l9 -6"/></svg>' },
-        { label: 'Respuestas', type: 'answer,answer_useful', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M15 18h-2l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5"/><path d="M19 16v3"/><path d="M19 22v.01"/></svg>' },
+        { id: 'all', label: 'Todo', type: null, icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/></svg>' },
+        { id: 'meetings', label: 'Charlas', type: 'meeting,meeting_message', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>' },
+        { id: 'private', label: 'Mensajes Privados', type: 'private_message', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v8z"/><path d="M3 7l9 6l9 -6"/></svg>' },
+        { id: 'answers', label: 'Respuestas', type: 'answer,answer_useful', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M15 18h-2l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v5.5"/><path d="M19 16v3"/><path d="M19 22v.01"/></svg>' },
     ]
 
     const setFilter = (tab) => {
-        activeFilter.value = tab.label
+        activeFilter.value = tab.id
         activeFilterType.value = tab.type
         fetchNotifications(1, tab.type)
     }
@@ -84,10 +84,10 @@
         const now = new Date()
         const diff = now - d
         const mins = Math.floor(diff / 60000)
-        if (mins < 1) return 'Ahora'
-        if (mins < 60) return `Hace ${mins} min`
+        if (mins < 1) return t.value.notifications?.time?.now || 'Ahora'
+        if (mins < 60) return (t.value.notifications?.time?.agoMins || 'Hace {mins} min').replace('{mins}', mins)
         const hours = Math.floor(mins / 60)
-        if (hours < 24) return `Hace ${hours}h`
+        if (hours < 24) return (t.value.notifications?.time?.agoHours || 'Hace {hours}h').replace('{hours}', hours)
         return d.toLocaleDateString()
     }
 
@@ -113,7 +113,7 @@
                             :key="tab.label"
                             :class="[
                                 'inline-flex items-center gap-2 lg:gap-3 py-3 lg:py-4 px-5 lg:px-8 rounded-full cursor-pointer duration-500 font-black text-sm lg:text-base uppercase tracking-wider shrink-0',
-                                activeFilter === tab.label || (!activeFilter && tab.label === 'Todo')
+                                activeFilter === tab.id
                                     ? 'bg-secondary-normal text-white shadow-2xl scale-105'
                                     : 'hover:bg-white/5 text-white/60 hover:text-white'
                             ]"
@@ -121,10 +121,10 @@
                         >
                             <span v-html="tab.icon" class="[&>svg]:w-5 [&>svg]:h-5 lg:[&>svg]:w-6 lg:[&>svg]:h-6 shrink-0 opacity-80"></span>
                             {{
-                                tab.label === 'Todo' ? t.notifications.filterAll :
-                                tab.label === 'Charlas' ? t.notifications.filterMeetings :
-                                tab.label === 'Mensajes Privados' ? t.notifications.filterPrivate :
-                                tab.label === 'Respuestas' ? t.notifications.filterPending :
+                                tab.id === 'all' ? t.notifications.filterAll :
+                                tab.id === 'meetings' ? t.notifications.filterMeetings :
+                                tab.id === 'private' ? t.notifications.filterPrivate :
+                                tab.id === 'answers' ? t.notifications.filterPending :
                                 tab.label
                             }}
                         </span>
@@ -135,7 +135,7 @@
             <section class="text-white w-full px-6 lg:px-14 mb-20 flex-1 flex flex-col">
                 <div id="mainBody" class="flex flex-col gap-4 w-full flex-1">
                     <div v-if="loading" class="text-white/40 italic py-20">
-                        Cargando...
+                        {{ t.notifications?.loading || 'Cargando...' }}
                     </div>
 
                     <div v-else-if="notifications.length === 0" class="text-center py-20">
@@ -181,7 +181,7 @@
                                 <button
                                     @click="handleDelete($event, notification)"
                                     class="p-1.5 rounded-lg hover:bg-white/10 text-white/30 hover:text-red-400 transition-colors cursor-pointer"
-                                    title="Eliminar"
+                                    :title="t.notifications?.delete || 'Eliminar'"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                                 </button>

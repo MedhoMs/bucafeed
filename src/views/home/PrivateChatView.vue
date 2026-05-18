@@ -34,8 +34,8 @@
         return role === 'teacher' || role === 'profesor';
     });
 
-    const tab1Label = computed(() => 'Alumnos');
-    const tab2Label = computed(() => 'Tutores Legales');
+    const tab1Label = computed(() => t.value.privateChat?.tabStudents || 'Alumnos');
+    const tab2Label = computed(() => t.value.privateChat?.tabTutors || 'Tutores Legales');
 
     const contacts = computed(() => {
         if (showTabs.value) {
@@ -185,7 +185,7 @@
             const savedMsg = await post(`chats/${currentChat.value.id}/messages`, {
                 type: 'call',
                 content: roomId,
-                file_name: 'Videollamada'
+                file_name: t.value.privateChat?.videoCall || 'Videollamada'
             });
             
             if (savedMsg && savedMsg.id) {
@@ -249,7 +249,7 @@
             <div class="flex-1 flex flex-col overflow-hidden relative" :class="mobileShowChat ? 'flex' : 'hidden lg:flex'">
                 <!-- Banner compacto si no está verificado -->
                 <div class="px-6 pt-4 shrink-0" v-if="isUnverified">
-                    <UnverifiedBanner compact message="Puedes ver tus chats, pero no podrás enviar mensajes ni iniciar llamadas hasta que el centro verifique tu identidad." />
+                    <UnverifiedBanner compact :message="t.privateChat?.unverifiedBanner || 'Puedes ver tus chats, pero no podrás enviar mensajes ni iniciar llamadas hasta que el centro verifique tu identidad.'" />
                 </div>
 
                 <template v-if="selectedContact">
@@ -265,7 +265,7 @@
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-bold text-white leading-none mb-1 tracking-normal">{{ selectedContact.name }} {{ selectedContact.last_name }}</h3>
-                                    <p class="text-[10px] text-white/50 uppercase font-bold tracking-wider">{{ selectedContact.role_name || 'Ver Perfil' }}</p>
+                                    <p class="text-[10px] text-white/50 uppercase font-bold tracking-wider">{{ selectedContact.role_name || (t.privateChat?.viewProfile || 'Ver Perfil') }}</p>
                                 </div>
                             </router-link>
                         </div>
@@ -276,7 +276,7 @@
                                 :disabled="isUnverified"
                                 :class="['p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 transition-all shadow-lg group', 
                                          isUnverified ? 'opacity-20 cursor-not-allowed' : 'hover:text-white hover:bg-emerald-500/20 hover:border-emerald-500/30 active:scale-95']"
-                                title="Iniciar Videollamada"
+                                :title="t.privateChat?.startVideoCall || 'Iniciar Videollamada'"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="isUnverified ? '' : 'group-hover:text-emerald-400'"><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"/><rect x="3" y="6" width="12" height="12" rx="2"/></svg>
                             </button>
@@ -290,7 +290,7 @@
                     <div class="flex items-center justify-between px-6 py-2 bg-black/60 backdrop-blur-sm z-30 relative">
                         <div class="flex items-center gap-2">
                             <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-white/80">Sesión de video activa</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-white/80">{{ t.privateChat?.activeVideoSession || 'Sesión de video activa' }}</span>
                         </div>
                     </div>
                         <VideoCall :room-id="activeCallRoomId" @close="handleCallClose" />
@@ -308,7 +308,7 @@
                                 :class="[Number(msg.sender) === Number(authUser?.id) ? 'self-end items-end' : 'self-start items-start', 'flex flex-col max-w-3/4 min-w-0']"
                             >
                                 <p class="text-[10px] text-white opacity-40 mb-1 px-1" :class="Number(msg.sender) === Number(authUser?.id) ? 'text-right' : 'text-left'">
-                                    {{ msg.user_name || (Number(msg.sender) === Number(authUser?.id) ? 'Yo' : selectedContact.name) }}
+                                    {{ msg.user_name || (Number(msg.sender) === Number(authUser?.id) ? (t.privateChat?.me || 'Yo') : selectedContact.name) }}
                                 </p>
                                 
                                 <div :class="[Number(msg.sender) === Number(authUser?.id) ? 'bg-secondary-normal rounded-tr-none' : 'bg-forum-card rounded-tl-none', 'rounded-2xl p-3 text-white shadow-sm w-fit']">
@@ -327,18 +327,18 @@
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553 -2.276a1 1 0 0 1 1.447 .894v6.764a1 1 0 0 1 -1.447 .894l-4.553 -2.276v-4z"/><rect x="3" y="6" width="12" height="12" rx="2"/><circle cx="9" cy="12" r="2"/></svg>
                                             </div>
                                             <div>
-                                                <p class="text-sm font-bold">{{ msg.callEnded ? 'Llamada finalizada' : (Number(msg.sender) === Number(authUser?.id) ? 'Has iniciado una videollamada' : 'Te ha invitado a una videollamada') }}</p>
-                                                <p class="text-[10px] opacity-60">{{ msg.callEnded ? 'La sesión de video ha terminado' : 'Haz clic abajo para unirte a la sesión' }}</p>
+                                                <p class="text-sm font-bold">{{ msg.callEnded ? (t.privateChat?.callEnded || 'Llamada finalizada') : (Number(msg.sender) === Number(authUser?.id) ? (t.privateChat?.youStartedCall || 'Has iniciado una videollamada') : (t.privateChat?.invitedToCall || 'Te ha invitado a una videollamada')) }}</p>
+                                                <p class="text-[10px] opacity-60">{{ msg.callEnded ? (t.privateChat?.videoEnded || 'La sesión de video ha terminado') : (t.privateChat?.joinCallInstruction || 'Haz clic abajo para unirte a la sesión') }}</p>
                                             </div>
                                         </div>
                                         <button v-if="!msg.callEnded" 
                                             @click="activeCallRoomId = msg.content" 
                                             class="w-full py-3 px-6 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10"/></svg>
-                                            Unirse ahora
+                                            {{ t.privateChat?.joinNow || 'Unirse ahora' }}
                                         </button>
                                         <div v-else class="w-full py-3 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest text-center bg-red-500/10 text-red-400/70 border border-red-500/20">
-                                            Sesión finalizada
+                                            {{ t.privateChat?.sessionFinished || 'Sesión finalizada' }}
                                         </div>
                                     </div>
                                 </div>
@@ -346,7 +346,7 @@
                             
                             <div v-if="messages.length === 0" class="text-center text-white opacity-20 py-12 flex flex-col items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mb-2 opacity-30"><path d="M8 9h8"/><path d="M8 13h6"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12"/></svg>
-                                <span class="text-sm italic">No hay mensajes aún.</span>
+                                <span class="text-sm italic">{{ t.privateChat?.noMessagesYet || 'No hay mensajes aún.' }}</span>
                             </div>
                         </template>
                     </div>
@@ -354,7 +354,7 @@
                     <div class="px-6 pb-4">
                         <TextChatBar :disabled="isUnverified" @sendMessage="handleSendMessage" />
                         <p v-if="isUnverified" class="text-[9px] text-amber-400/60 font-black uppercase tracking-widest text-center mt-2">
-                            Interacción deshabilitada - Pendiente de verificación
+                            {{ t.privateChat?.unverifiedInteraction || 'Interacción deshabilitada - Pendiente de verificación' }}
                         </p>
                     </div>
                 </template>
@@ -374,11 +374,11 @@
                         <button @click="openNavMenu" class="lg:hidden text-white/70 hover:text-white transition-colors cursor-pointer shrink-0">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
                         </button>
-                        <h2 class="text-2xl font-bold text-white tracking-normal">Chat Privado</h2>
+                        <h2 class="text-2xl font-bold text-white tracking-normal">{{ t.privateChat?.title || 'Chat Privado' }}</h2>
                     </div>
                     <p v-if="!showTabs" class="text-xs text-white opacity-50 uppercase font-bold tracking-widest">
                         {{ 
-                            ['student', 'alumno', 'eu', 'admin', 'administrador', 'ei'].includes(authUser?.role?.toLowerCase()) ? 'Profesores' : 'Estudiantes'
+                            ['student', 'alumno', 'eu', 'admin', 'administrador', 'ei'].includes(authUser?.role?.toLowerCase()) ? (t.privateChat?.teachers || 'Profesores') : (t.privateChat?.students || 'Estudiantes')
                         }}
                     </p>
 
@@ -423,7 +423,7 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <h3 class="text-sm font-bold text-white truncate">{{ contact.name }} {{ contact.last_name }}</h3>
-                            <p class="text-[10px] text-white opacity-40 uppercase">{{ contact.role_name || 'Contacto' }}</p>
+                            <p class="text-[10px] text-white opacity-40 uppercase">{{ contact.role_name || (t.privateChat?.contact || 'Contacto') }}</p>
                         </div>
                     </div>
                 </div>

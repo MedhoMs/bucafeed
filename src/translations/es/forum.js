@@ -24,5 +24,9 @@ export const forum = {
     confirm: "Confirmar",
     cancel: "Cancelar",
     unverifiedMessage: "No puedes visualizar las preguntas ni interactuar en el foro hasta que tu centro verifique tu cuenta.",
-    unverifiedThreadMessage: "No puedes visualizar este hilo hasta que tu centro verifique tu identidad."
+    unverifiedThreadMessage: "No puedes visualizar este hilo hasta que tu centro verifique tu identidad.",
+    unverifiedInteraction: "Cuenta pendiente de verificación - Interacción deshabilitada",
+    teacherInteraction: "Los profesores no pueden responder a las preguntas",
+    section: "Sección",
+    academicForum: "Foro Académico"
 };

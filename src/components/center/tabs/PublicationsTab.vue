@@ -5,6 +5,9 @@
 import { ref, computed } from 'vue'
 import PublicationCard from '@/components/publications/PublicationCard.vue'
 import PrimaryButton from '@/components/common/PrimaryButton.vue'
+import { useTranslations } from '@/composables/useTranslations'
+
+const { t } = useTranslations()
 
 const props = defineProps({
     publications: { type: Array, default: () => [] }
@@ -35,14 +38,14 @@ const filteredPublications = computed(() => {
                     <input 
                         v-model="search"
                         type="text" 
-                        placeholder="Buscar publicaciones por título o descripción..." 
+                        :placeholder="t.publications?.searchPlaceholder || 'Buscar publicaciones por título o descripción...'" 
                         class="w-full bg-white/5 border border-white/10 rounded-[22px] py-4.5 pl-14 pr-6 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all font-bold tracking-tight shadow-inner"
                     >
                 </div>
             </div>
 
             <PrimaryButton class="cursor-pointer" 
-                text="Nueva Publicación" 
+                :text="t.publications?.newPublication || 'Nueva Publicación'" 
                 icon="plus"
                 @click="emit('openModal', 'publication')"
             />
@@ -65,8 +68,8 @@ const filteredPublications = computed(() => {
             <div class="w-16 h-16 bg-[#406071]/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#406071" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="10" x2="21" y2="10"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
             </div>
-            <p class="text-white/20 text-[10px] font-black uppercase tracking-[0.2em]">No hay publicaciones activas</p>
-            <p class="text-white/10 text-[9px] font-bold mt-1 uppercase">Crea tu primera publicación para compartir noticias con la comunidad</p>
+            <p class="text-white/20 text-[10px] font-black uppercase tracking-[0.2em]">{{ t.publications?.noActivePublications || 'No hay publicaciones activas' }}</p>
+            <p class="text-white/10 text-[9px] font-bold mt-1 uppercase">{{ t.publications?.createFirstPublicationHint || 'Crea tu primera publicación para compartir noticias con la comunidad' }}</p>
         </div>
     </div>
 </template>
