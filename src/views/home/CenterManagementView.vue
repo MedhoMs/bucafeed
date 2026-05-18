@@ -67,7 +67,7 @@ async function loadAll() {
         const fetchs = ['my-center', 'my-center/groups', 'my-center/teachers', 'my-center/students', 'my-center/students/pending', 'my-center/teachers/pending', 'my-center/admins', 'my-center/cycles', 'my-center/events', 'my-center/publications']
         const results = await Promise.all(fetchs.map(p => fetch(`${apiBase}/${p}`, { headers: headers.value }).then(r => r.json())));
         [center.value, groups.value, teachers.value, students.value, pendingStudents.value, pendingTeachers.value, admins.value, cycles.value, events.value, publications.value] = results;
-    } catch (e) { showToast({ msg: 'Error de servidor', type: 'error' }) }
+    } catch (e) { showToast({ msg: t.value.manager?.messages?.serverError || 'Error de servidor', type: 'error' }) }
     loading.value = false
 }
 
@@ -81,12 +81,12 @@ async function verifyStudent(userId) {
         })
         const data = await res.json()
         if (res.ok) {
-            showToast({ msg: 'Estudiante verificado correctamente' })
+            showToast({ msg: t.value.manager?.messages?.studentVerified || 'Estudiante verificado correctamente' })
             await loadAll()
         } else {
-            showToast({ msg: data.message || 'Error al verificar', type: 'error' })
+            showToast({ msg: data.message || t.value.manager?.messages?.verifyError || 'Error al verificar', type: 'error' })
         }
-    } catch (e) { showToast({ msg: 'Error de servidor', type: 'error' }) }
+    } catch (e) { showToast({ msg: t.value.manager?.messages?.serverError || 'Error de servidor', type: 'error' }) }
 }
 
 async function verifyTeacher(userId) {
@@ -97,35 +97,42 @@ async function verifyTeacher(userId) {
         })
         const data = await res.json()
         if (res.ok) {
-            showToast({ msg: 'Profesor verificado correctamente' })
+            showToast({ msg: t.value.manager?.messages?.teacherVerified || 'Profesor verificado correctamente' })
             await loadAll()
         } else {
-            showToast({ msg: data.message || 'Error al verificar', type: 'error' })
+            showToast({ msg: data.message || t.value.manager?.messages?.verifyError || 'Error al verificar', type: 'error' })
         }
-    } catch (e) { showToast({ msg: 'Error de servidor', type: 'error' }) }
+    } catch (e) { showToast({ msg: t.value.manager?.messages?.serverError || 'Error de servidor', type: 'error' }) }
 }
 
 async function deleteItem(type, item, itemId = null) {
+    const msgKey = {
+        group: 'deleted',
+        student: 'removed',
+        subject: 'removed',
+        event: 'eventDeleted',
+        publication: 'publicationDeleted'
+    }[type]
     const config = {
-        group:   { url: `/groups/${item.id}`, msg: 'Eliminado', clean: () => confirmingDelete.value = null },
-        student: { url: `/groups/${item.id}/students/${itemId}`, msg: 'Quitado' },
-        subject: { url: `/groups/${item.id}/subjects/${itemId}`, msg: 'Quitado' },
-        event:   { url: `/events/${item.id}`, msg: 'Evento eliminado' },
-        publication: { url: `/publications/${item.id}`, msg: 'Publicación eliminada' }
+        group:   { url: `/groups/${item.id}`, clean: () => confirmingDelete.value = null },
+        student: { url: `/groups/${item.id}/students/${itemId}` },
+        subject: { url: `/groups/${item.id}/subjects/${itemId}` },
+        event:   { url: `/events/${item.id}` },
+        publication: { url: `/publications/${item.id}` }
     }[type]
     try {
         const res = await fetch(`${apiBase}/my-center${config.url}`, { method: 'DELETE', headers: headers.value })
         if (res.ok) {
-            showToast({ msg: config.msg })
+            showToast({ msg: t.value.manager?.messages?.[msgKey] || msgKey })
             if (config.clean) config.clean()
             await loadAll()
         }
-    } catch (e) { showToast({ msg: 'Error', type: 'error' }) }
+    } catch (e) { showToast({ msg: t.value.manager?.messages?.error || 'Error', type: 'error' }) }
 }
 
 const getTeacherName = (id) => {
-    const t = teachers.value.find(x => x.id === id)
-    return t ? `${t.name} ${t.last_name || ''}` : 'Sin profesor'
+    const foundTeacher = teachers.value.find(x => x.id === id)
+    return foundTeacher ? `${foundTeacher.name} ${foundTeacher.last_name || ''}` : (t.value.manager?.messages?.noTeacher || 'Sin profesor')
 }
 </script>
 
@@ -145,10 +152,10 @@ const getTeacherName = (id) => {
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
                     <div v-for="stat in [
-                        { label: 'Grupos', value: center.groups_count },
-                        { label: 'Profesores', value: center.teachers_count },
-                        { label: 'Alumnos', value: center.students_count },
-                        { label: 'Publicaciones', value: center.publications_count },
+                        { label: t.manager?.stats?.groups || 'Grupos', value: center.groups_count },
+                        { label: t.manager?.stats?.teachers || 'Profesores', value: center.teachers_count },
+                        { label: t.manager?.stats?.students || 'Alumnos', value: center.students_count },
+                        { label: t.manager?.stats?.publications || 'Publicaciones', value: center.publications_count },
                     ]" :key="stat.label" 
                          class="flex flex-col items-center border-b sm:border-b-0 sm:border-r border-white/5 last:border-0 pb-4 sm:pb-0">
                         <span class="text-xl sm:text-2xl font-black text-white/90">{{ stat.label }}</span>

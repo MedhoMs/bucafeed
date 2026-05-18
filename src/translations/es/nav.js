@@ -24,4 +24,5 @@ export const nav = {
     adminPanel: "Panel de administrador",
     myCenter: "Mi Centro",
     back: "Volver",
+    scrollToTop: "Volver arriba"
 };

@@ -1,5 +1,9 @@
 <script setup>
 // Component shown when a Student account is not yet verified by their educational center
+import { useTranslations } from '@/composables/useTranslations'
+
+const { t } = useTranslations()
+
 defineProps({
     /** Custom message override */
     message: {
@@ -24,14 +28,14 @@ defineProps({
             </svg>
         </div>
         <div class="flex-1">
-            <p class="text-xs font-black text-white uppercase tracking-wider mb-0.5">Cuenta pendiente de verificación</p>
+            <p class="text-xs font-black text-white uppercase tracking-wider mb-0.5">{{ t.validation?.unverifiedBanner?.title || 'Cuenta pendiente de verificación' }}</p>
             <p class="text-[10px] text-white/50 leading-tight">
-                {{ message || 'No puedes interactuar hasta que el centro valide tu identidad.' }}
+                {{ message || t.validation?.unverifiedBanner?.compactDesc || 'No puedes interactuar hasta que el centro valide tu identidad.' }}
             </p>
         </div>
         <div class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center gap-1.5 shrink-0 hidden sm:flex">
             <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-            <span class="text-[9px] font-black text-amber-400/80 uppercase tracking-widest">Esperando</span>
+            <span class="text-[9px] font-black text-amber-400/80 uppercase tracking-widest">{{ t.validation?.unverifiedBanner?.waiting || 'Esperando' }}</span>
         </div>
     </div>
 
@@ -47,14 +51,14 @@ defineProps({
             </div>
 
             <h3 class="text-lg font-black text-white uppercase tracking-wide mb-2">
-                Cuenta pendiente de verificación
+                {{ t.validation?.unverifiedBanner?.title || 'Cuenta pendiente de verificación' }}
             </h3>
             <p class="text-white/50 text-sm leading-relaxed">
-                {{ message || 'Tu cuenta todavía no ha sido verificada por tu centro educativo. Mientras tanto, no puedes realizar esta acción.' }}
+                {{ message || t.validation?.unverifiedBanner?.fullDesc || 'Tu cuenta todavía no ha sido verificada por tu centro educativo. Mientras tanto, no puedes realizar esta acción.' }}
             </p>
             <div class="mt-5 flex items-center justify-center gap-2 text-amber-400/60 text-xs font-bold uppercase tracking-widest">
                 <span class="w-2 h-2 rounded-full bg-amber-400/60 animate-pulse"></span>
-                Esperando verificación del centro
+                {{ t.validation?.unverifiedBanner?.waitingCenter || 'Esperando verificación del centro' }}
             </div>
         </div>
     </div>

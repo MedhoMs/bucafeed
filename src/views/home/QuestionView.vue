@@ -244,21 +244,31 @@
                                         <UserAvatar :user="question.user" size="w-12 h-12" class="shrink-0 shadow-lg bg-[#15202b]" />
                                         <div class="flex flex-col">
                                             <span class="text-base font-bold text-white flex items-center gap-2">
-                                                {{ question.user?.name ?? 'Usuario' }} <span v-if="question.user?.last_name">{{ question.user.last_name }}</span>
+                                                {{ question.user?.name ?? t.forum.user }} <span v-if="question.user?.last_name">{{ question.user.last_name }}</span>
                                                 <span class="px-2 py-0.5 rounded-full bg-accent-normal text-amber-300 text-[10px] font-black border border-white/60">
                                                     {{ question.user?.reputation ?? 0 }} pts
                                                 </span>
                                             </span>
-                                            <span class="text-xs text-white/40 uppercase tracking-normal">{{ question.user?.role_name || question.user?.role || 'Estudiante' }}</span>
+                                            <span class="text-xs text-white/40 uppercase tracking-normal">
+                                                {{ question.user?.role_name || 
+                                                   (question.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                                    (question.user?.role?.toLowerCase() === 'teacher' || question.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)) 
+                                                }}
+                                            </span>
                                         </div>
                                     </router-link>
                                     <div v-else class="flex gap-4 items-center">
                                         <UserAvatar :user="question.user" size="w-12 h-12" class="shrink-0 shadow-lg bg-[#15202b]" />
                                         <div class="flex flex-col">
                                             <span class="text-base font-bold text-white">
-                                                {{ question.user?.name ?? 'Usuario' }} <span v-if="question.user?.last_name">{{ question.user.last_name }}</span>
+                                                {{ question.user?.name ?? t.forum.user }} <span v-if="question.user?.last_name">{{ question.user.last_name }}</span>
                                             </span>
-                                            <span class="text-xs text-white/40 uppercase tracking-widest">{{ question.user?.role_name || question.user?.role || 'Estudiante' }}</span>
+                                            <span class="text-xs text-white/40 uppercase tracking-widest">
+                                                {{ question.user?.role_name || 
+                                                   (question.user?.role?.toLowerCase() === 'admin' ? t.forum.admin : 
+                                                    (question.user?.role?.toLowerCase() === 'teacher' || question.user?.role_name?.toLowerCase() === 'profesor' ? t.forum.teacher : t.forum.student)) 
+                                                }}
+                                            </span>
                                         </div>
                                     </div>
                                     <!-- Botón Eliminar Question (Admin) -->
@@ -379,21 +389,21 @@
 
                         <!-- 2. Fila del formulario de respuesta -->
                         <div class="px-4 lg:px-14 py-3 bg-[#0f2828]/95 backdrop-blur-md border-t border-white/10 pointer-events-auto">
-                            <div class="flex flex-col gap-1 w-full">
-                                <TextChatBar 
-                                    :disabled="cannotAnswer" 
-                                    is-response 
-                                    @sendMessage="handleSendMessage" 
-                                />
-                                <!-- Pequeño aviso inferior -->
-                                <p v-if="isUnverified" class="text-[9px] text-amber-400/60 font-black uppercase tracking-widest text-center mt-1">
-                                    Cuenta pendiente de verificación - Interacción deshabilitada
-                                </p>
-                                <p v-else-if="isTeacher" class="text-[9px] text-red-400/80 font-black uppercase tracking-widest text-center mt-1">
-                                    Los profesores no pueden responder a las preguntas
-                                </p>
-                            </div>
-                        </div>
+                             <div class="flex flex-col gap-1 w-full">
+                                 <TextChatBar 
+                                     :disabled="cannotAnswer" 
+                                     is-response 
+                                     @sendMessage="handleSendMessage" 
+                                 />
+                                 <!-- Pequeño aviso inferior -->
+                                 <p v-if="isUnverified" class="text-[9px] text-amber-400/60 font-black uppercase tracking-widest text-center mt-1">
+                                     {{ t.forum.unverifiedInteraction || 'Cuenta pendiente de verificación - Interacción deshabilitada' }}
+                                 </p>
+                                 <p v-else-if="isTeacher" class="text-[9px] text-red-400/80 font-black uppercase tracking-widest text-center mt-1">
+                                     {{ t.forum.teacherInteraction || 'Los profesores no pueden responder a las preguntas' }}
+                                 </p>
+                             </div>
+                         </div>
                     </div>
                 </div>
             </template>

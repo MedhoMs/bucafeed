@@ -199,8 +199,8 @@
                                 <!-- FOOTER -->
                                 <div class="post-footer mt-6 flex items-center justify-between pt-4 border-t border-white/5 w-full">
                                     <div class="flex flex-col">
-                                        <span class="text-[9px] text-white/20 font-black uppercase tracking-widest mb-1">Sección</span>
-                                        <span class="text-xs text-white/70 font-bold tracking-tighter">Foro Académico</span>   
+                                        <span class="text-[9px] text-white/20 font-black uppercase tracking-widest mb-1">{{ t.forum.section || 'Sección' }}</span>
+                                        <span class="text-xs text-white/70 font-bold tracking-tighter">{{ t.forum.academicForum || 'Foro Académico' }}</span>   
                                     </div>
 
                                     <router-link :to="'/question/' + q.id" class="responses-badge bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95 px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 select-none group" :title="t.forum.viewThread">

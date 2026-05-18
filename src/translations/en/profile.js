@@ -15,5 +15,18 @@ export const profile = {
     events_created: "Created events",
     settings_tooltip: "Settings",
     upload_banner: "Change banner",
-    upload_profile: "Change profile picture"
+    upload_profile: "Change profile picture",
+    editProfileModal: {
+        title: "Edit Profile",
+        bannerLabel: "Banner Image",
+        bannerBtn: "Upload Banner",
+        profilePicLabel: "Profile Picture",
+        profilePicBtn: "Profile Pic",
+        nameLabel: "First Name",
+        namePlaceholder: "Your first name",
+        lastNameLabel: "Last Name",
+        lastNamePlaceholder: "Your last name",
+        cancel: "Cancel",
+        saveChanges: "Save Changes"
+    }
 };

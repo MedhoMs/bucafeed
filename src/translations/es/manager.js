@@ -90,5 +90,61 @@ export const manager = {
         noResults: "No se encontraron resultados",
         alreadyLinked: "Ya vinculado",
         enrollHint: "Selecciona los elementos que deseas matricular en tu centro"
+    },
+    searchEventsPlaceholder: "Buscar eventos por título o descripción...",
+    searchPublicationsPlaceholder: "Buscar publicaciones por título o descripción...",
+    groups: {
+        title: "Gestión de Grupos",
+        newGroup: "NUEVO GRUPO",
+        studentsCount: "ALUMNOS",
+        deleteTitle: "Eliminar Grupo",
+        confirmDelete: "¿ELIMINAR?",
+        yes: "SÍ",
+        no: "NO",
+        emptySection: "Sección vacía",
+        actions: {
+            newMeeting: "Nueva Charla",
+            changeTutor: "Cambiar Tutor",
+            addStudents: "Añadir Alumnos",
+            assignSubject: "Asignar Materia"
+        },
+        sections: {
+            studentsList: "Listado de Alumnos",
+            subjectsAndTeaching: "Asignaturas y Docencia"
+        }
+    },
+    people: {
+        enrollPeople: "Matricular Personas",
+        pendingVerification: "Pendientes de Verificación",
+        pendingAlertText: "Estos usuarios han solicitado acceso y esperan verificación. Accede a su perfil para comprobar su identidad antes de validarlos.",
+        pendingStatus: "Pendiente",
+        viewProfileOf: "Ver perfil de {name}",
+        teacherRole: "Profesor",
+        studentRole: "Alumno",
+        viewProfile: "Ver Perfil",
+        verify: "Verificar",
+        sections: {
+            admins: "Dirección",
+            teachers: "Cuerpo Docente",
+            students: "Alumnado"
+        }
+    },
+    stats: {
+        groups: "Grupos",
+        teachers: "Profesores",
+        students: "Alumnos",
+        publications: "Publicaciones"
+    },
+    messages: {
+        serverError: "Error de servidor",
+        studentVerified: "Estudiante verificado correctamente",
+        teacherVerified: "Profesor verificado correctamente",
+        verifyError: "Error al verificar",
+        deleted: "Eliminado",
+        removed: "Quitado",
+        eventDeleted: "Evento eliminado",
+        publicationDeleted: "Publicación eliminada",
+        error: "Error",
+        noTeacher: "Sin profesor"
     }
 };

@@ -29,7 +29,7 @@
             e.preventDefault();
 
             if (emailInput.value === '' || passInput.value === '') {
-                errorMsg.textContent = 'Por favor, rellena todos los campos';
+                errorMsg.textContent = t.value.login.fillFields || 'Por favor, rellena todos los campos';
                 errorMsg.classList.remove('hidden');
                 return;
             }
@@ -67,12 +67,12 @@
                     }
                     router.push('/home');
                 } else {
-                    errorMsg.textContent = data.message || 'Credenciales incorrectas';
+                    errorMsg.textContent = data.message || t.value.login.invalidCredentials || 'Credenciales incorrectas';
                     errorMsg.classList.remove('hidden');
                 }
             } catch (error) {
                 console.error('Error de login:', error);
-                errorMsg.textContent = 'Error de conexión, inténtalo de nuevo';
+                errorMsg.textContent = t.value.login.connectionError || 'Error de conexión, inténtalo de nuevo';
                 errorMsg.classList.remove('hidden');
             }
         });
@@ -107,7 +107,7 @@
                 </button>
 
                 <RouterLink to="/recover-password">
-                    <p class="absolute left-22 lg:left-27 bottom-13 lg:bottom-17 text-sm text-gray-700 hover:text-black hover:underline transition-all duration-200 ease-in-out">¿Olvidaste la contraseña?</p>
+                    <p class="absolute left-22 lg:left-27 bottom-13 lg:bottom-17 text-sm text-gray-700 hover:text-black hover:underline transition-all duration-200 ease-in-out">{{ t.login.forgotPassword || '¿Olvidaste la contraseña?' }}</p>
                 </RouterLink>
 
                 <RouterLink to="/" class="flex justify-center items-center text-sm gap-1 text-[#4a4a4a] font-bold mt-12 lg:mt-12.5 mb-2 lg:mb-0 transition-all duration-200 ease-in-out hover:brightness-200" id="redirect-login">

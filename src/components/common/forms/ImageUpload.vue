@@ -1,9 +1,12 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useTranslations } from '@/composables/useTranslations'
+
+const { t } = useTranslations()
 
 const props = defineProps({
     modelValue: { type: [Object, File, String], default: null },
-    label: { type: String, default: 'Seleccionar Imagen' },
+    label: { type: String, default: null },
     previewUrl: { type: String, default: null },
     aspect: { type: String, default: 'square' }, // square, video, banner
     variant: { type: String, default: 'classic' }, // classic, minimal
@@ -52,7 +55,7 @@ const displayUrl = computed(() => {
             <img v-if="displayUrl" 
                 :src="displayUrl" 
                 class="absolute inset-0 w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
-                alt="Vista previa"
+                :alt="t.validation?.imageUpload?.previewAlt || 'Vista previa'"
             >
             
             <!-- Overlay -->
@@ -68,7 +71,7 @@ const displayUrl = computed(() => {
                     </svg>
                 </div>
                 <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 group-hover:text-white">
-                    {{ (modelValue || previewUrl) ? 'Cambiar Imagen' : label }}
+                    {{ (modelValue || previewUrl) ? (t.validation?.imageUpload?.changeImage || 'Cambiar Imagen') : (label || t.validation?.imageUpload?.selectImage || 'Seleccionar Imagen') }}
                 </p>
             </div>
         </div>
@@ -91,7 +94,7 @@ const displayUrl = computed(() => {
                 type="button"
                 @click="triggerInput"
                 class="hover:text-emerald-400 transition-colors cursor-pointer" 
-                title="Subir Imagen"
+                :title="t.validation?.imageUpload?.uploadImage || 'Subir Imagen'"
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
@@ -112,7 +115,7 @@ const displayUrl = computed(() => {
         <!-- Success Message -->
         <div v-if="variant === 'classic' && modelValue" class="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-emerald-400 ml-2 animate-pulse">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            Imagen Lista para subir
+            {{ t.validation?.imageUpload?.imageReady || 'Imagen Lista para subir' }}
         </div>
 
         <!-- Moderation Warning -->
@@ -121,7 +124,7 @@ const displayUrl = computed(() => {
                 <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>
             </svg>
             <p class="text-[10px] leading-tight font-medium">
-                Los administradores podrán borrar tu publicación si se detecta contenido inapropiado en la foto.
+                {{ t.validation?.imageUpload?.moderationWarning || 'Los administradores podrán borrar tu publicación si se detecta contenido inapropiado en la foto.' }}
             </p>
         </div>
     </div>

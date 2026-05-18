@@ -47,7 +47,7 @@
             <div class="px-6 lg:px-14 pt-6" v-if="isUnverified">
                 <UnverifiedBanner 
                     compact 
-                    message="Puedes ver la información de la publicación, pero no podrás publicar hasta que tu centro verifique tu identidad."
+                    :message="t.publications?.unverifiedBanner || 'Puedes ver la información de la publicación, pero no podrás publicar hasta que tu centro verifique tu identidad.'"
                 />
             </div>
             <PageHeader 
@@ -61,14 +61,14 @@
                     <div class="flex items-center gap-2">
                         <svg class="bg-accent-normal p-3 rounded-2xl" xmlns="http://www.w3.org/2000/svg" height="56px" viewBox="0 -960 960 960" width="56px" fill="#e3e3e3"><path d="M480-144 216-276v-240L48-600l432-216 432 216v312h-72v-276l-96 48v240L480-144Zm0-321 271-135-271-135-271 135 271 135Zm0 240 192-96v-159l-192 96-192-96v159l192 96Zm0-240Zm0 81Zm0 0Z"/></svg>
                         <div>
-                            <p class="font-bold text-xs">Institución educativa</p>
-                            <p>{{ publicationDetails?.center_name || 'Desconocido' }}</p>
+                            <p class="font-bold text-xs">{{ t.publications?.educationalCenter || 'Institución educativa' }}</p>
+                            <p>{{ publicationDetails?.center_name || (t.publications?.unknown || 'Desconocido') }}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <svg class="bg-accent-normal p-3 rounded-2xl" xmlns="http://www.w3.org/2000/svg" height="56px" viewBox="0 -960 960 960" width="56px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
                         <div>
-                            <p class="font-bold text-xs">Fecha de publicación</p>
+                            <p class="font-bold text-xs">{{ t.publications?.publishDate || 'Fecha de publicación' }}</p>
                             <p>{{ formattedDate || '--/--/----' }}</p>
                         </div>
                     </div>
@@ -81,8 +81,8 @@
                     </div>
                     <div class="flex flex-col gap-8 flex-1">
                         <div class="flex flex-col gap-4">
-                            <h2 class="text-3xl font-black uppercase tracking-tighter text-white">{{ publicationDetails?.title || 'Sin Título' }}</h2>
-                            <p class="max-w-3xl text-white/80 whitespace-pre-line text-sm md:text-base leading-relaxed pt-2">{{ publicationDetails?.description || 'No hay contenido disponible para esta publicación.' }}</p>
+                            <h2 class="text-3xl font-black uppercase tracking-tighter text-white">{{ publicationDetails?.title || (t.publications?.untitled || 'Sin Título') }}</h2>
+                            <p class="max-w-3xl text-white/80 whitespace-pre-line text-sm md:text-base leading-relaxed pt-2">{{ publicationDetails?.description || (t.publications?.noContent || 'No hay contenido disponible para esta publicación.') }}</p>
                         </div>
                     </div>
                 </div>

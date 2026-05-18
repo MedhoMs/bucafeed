@@ -189,10 +189,10 @@ const meetingFields = computed(() => {
         baseFields.push({
             id: 'group_id',
             type: 'select',
-            label: 'Grupo (opcional)',
-            placeholder: 'Seleccionar grupo...',
+            label: t.value.meetings.form.groupLabel || 'Grupo (opcional)',
+            placeholder: t.value.meetings.form.groupPlaceholder || 'Seleccionar grupo...',
             required: false,
-            options: [{ id: '', name: '-- Todos los grupos --' }, ...groups.value.map(g => ({ id: g.id, name: g.name }))]
+            options: [{ id: '', name: t.value.meetings.form.allGroups || '-- Todos los grupos --' }, ...groups.value.map(g => ({ id: g.id, name: g.name }))]
         });
     }
 
@@ -243,7 +243,7 @@ const saveMeeting = async () => {
             }
         } catch (error) {
             console.error('Error saving meeting:', error);
-            showToast('Error al crear la charla', 'error')
+            showToast(t.value.meetings.form.errorCreating || 'Error al crear la charla', 'error')
         }
     }
 };
@@ -261,15 +261,14 @@ const deleteMeeting = async () => {
         const id = meetingToDelete.value;
         showDeleteModal.value = false;
         meetingToDelete.value = null;
-
         await apiDelete(`meetings/${id}`);
-        showToast('Charla eliminada', 'success')
+        showToast(t.value.meetings.form.successDelete || 'Charla eliminada', 'success')
 
         // Recargar la lista para sincronizar con el servidor
         await fetchMeetings();
     } catch (error) {
         console.error('Error deleting meeting:', error);
-        showToast('Error al eliminar', 'error')
+        showToast(t.value.meetings.form.errorDeleting || 'Error al eliminar', 'error')
         // Si falló, volver a cargar la lista por si acaso
         await fetchMeetings();
     }
@@ -335,9 +334,9 @@ const deleteMeeting = async () => {
             </BaseModal>
 
             <!-- Modal de Confirmación de Borrado -->
-            <BaseModal v-if="showDeleteModal" title="¿Eliminar charla?" confirm-text="Eliminar"
+            <BaseModal v-if="showDeleteModal" :title="t.meetings.deleteTitle || '¿Eliminar charla?'" :confirm-text="t.meetings.deleteConfirm || 'Eliminar'"
                 @close="showDeleteModal = false" @confirm="deleteMeeting">
-                <p class="text-white/60 text-sm">Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta charla?</p>
+                <p class="text-white/60 text-sm">{{ t.meetings.deleteWarning || 'Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta charla?' }}</p>
             </BaseModal>
         </main>
     </div>

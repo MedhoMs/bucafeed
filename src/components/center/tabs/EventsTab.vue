@@ -5,6 +5,9 @@
 import { ref, computed } from 'vue'
 import EventCard from '@/components/events/EventCard.vue'
 import PrimaryButton from '@/components/common/PrimaryButton.vue'
+import { useTranslations } from '@/composables/useTranslations'
+
+const { t } = useTranslations()
 
 const props = defineProps({
     events: { type: Array, default: () => [] }
@@ -35,14 +38,14 @@ const filteredEvents = computed(() => {
                     <input 
                         v-model="search"
                         type="text" 
-                        placeholder="Buscar eventos por título o descripción..." 
+                        :placeholder="t.manager?.searchEventsPlaceholder || 'Buscar eventos por título o descripción...'" 
                         class="w-full bg-white/5 border border-white/10 rounded-[22px] py-4.5 pl-14 pr-6 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-cyan-500/50 focus:bg-white/10 transition-all font-bold tracking-tight shadow-inner"
                     >
                 </div>
             </div>
 
             <PrimaryButton class="cursor-pointer" 
-                text="Nuevo Evento" 
+                :text="t.events?.newEvent || 'Nuevo Evento'" 
                 icon="plus"
                 @click="emit('openModal', 'event')"
             />
@@ -65,8 +68,8 @@ const filteredEvents = computed(() => {
             <div class="w-16 h-16 bg-[#406071]/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#406071" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             </div>
-            <p class="text-white/20 text-[10px] font-black uppercase tracking-[0.2em]">No hay eventos activos</p>
-            <p class="text-white/10 text-[9px] font-bold mt-1 uppercase">Crea tu primer evento para que los alumnos lo vean</p>
+            <p class="text-white/20 text-[10px] font-black uppercase tracking-[0.2em]">{{ t.events?.noActiveEvents || 'No hay eventos activos' }}</p>
+            <p class="text-white/10 text-[9px] font-bold mt-1 uppercase">{{ t.events?.createFirstEventHint || 'Crea tu primer evento para que los alumnos lo vean' }}</p>
         </div>
     </div>
 </template>

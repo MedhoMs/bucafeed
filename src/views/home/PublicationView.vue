@@ -108,7 +108,7 @@ const deletePublication = async () => {
         fetchPublications(pagination.currentPage);
     } catch (error) {
         console.error('Error deleting publication:', error);
-        showToast({ msg: 'Error al eliminar la publicación', type: 'error' });
+        showToast({ msg: t.value.publications?.deleteError || 'Error al eliminar la publicación', type: 'error' });
     }
 }
 </script>
@@ -144,7 +144,7 @@ const deletePublication = async () => {
                 <UnverifiedBanner 
                     v-if="isUnverified"
                     compact
-                    message="Puedes ver las publicaciones, pero no podrás publicar hasta que tu centro verifique tu identidad."
+                    :message="t.publications?.exploreUnverifiedBanner || 'Puedes ver las publicaciones, pero no podrás publicar hasta que tu centro verifique tu identidad.'"
                 />
 
                 <div v-if="loading" class="flex items-center justify-center py-20 flex-1">

@@ -23,4 +23,5 @@ export const nav = {
     adminPanel: "Admin Panel",
     myCenter: "My Center",
     back: "Go Back",
+    scrollToTop: "Scroll to top"
 };
