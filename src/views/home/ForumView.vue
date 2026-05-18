@@ -115,6 +115,7 @@
 
                 <template #actions>
                     <PrimaryButton 
+                        v-if="user?.role !== 'Teacher'"
                         :text="t.forum.newQuestion"
                         icon="plus"
                         :disabled="isUnverified"
