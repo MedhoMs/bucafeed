@@ -12,6 +12,13 @@ class MeetingMessageController extends Controller
 {
     public function store(Request $request, Meeting $meeting): JsonResponse
     {
+        $user = auth()->user() ?? $request->user();
+        if ($user) {
+            if (in_array($user->role, ['Student', 'Teacher']) && !$user->is_verified) {
+                return response()->json(['message' => 'Tu cuenta está pendiente de verificación por tu centro educativo.'], 403);
+            }
+        }
+
         $validated = $request->validate([
             'contenido' => 'required|string|max:5000',
             'id_usuario' => 'required|exists:users,id',
@@ -76,6 +83,13 @@ class MeetingMessageController extends Controller
 
     public function index(Meeting $meeting): JsonResponse
     {
+        $user = auth()->user() ?? request()->user();
+        if ($user) {
+            if (in_array($user->role, ['Student', 'Teacher']) && !$user->is_verified) {
+                return response()->json(['message' => 'Tu cuenta está pendiente de verificación por tu centro educativo.'], 403);
+            }
+        }
+
         $messages = Message::where('meeting_id', $meeting->id)
             ->with('user:id,name,last_name,profile_picture,role')
             ->orderBy('created_at', 'asc')
