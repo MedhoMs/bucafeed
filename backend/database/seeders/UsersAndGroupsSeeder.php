@@ -44,6 +44,8 @@ class UsersAndGroupsSeeder extends Seeder
     {
         echo "👥 Creando Profesores, Grupos y Alumnos (máx " . self::MAX_STUDENTS . " alumnos)...\n";
 
+        $passwordHash = Hash::make('12345678');
+
         $centers = EducationalCenter::all();
         if ($centers->isEmpty()) { echo "No hay centros.\n"; return; }
 
@@ -81,7 +83,7 @@ class UsersAndGroupsSeeder extends Seeder
 
                 $teacher = null;
                 if ($teacherIndex % 2 === 0) {
-                    $teacher = $this->createTeacher($center, $teacherIndex, $globalCounter, $existingEmails);
+                    $teacher = $this->createTeacher($center, $teacherIndex, $globalCounter, $existingEmails, $passwordHash);
                 }
                 $teacherIndex++;
                 if (!$teacher) {
@@ -137,7 +139,7 @@ class UsersAndGroupsSeeder extends Seeder
                         $existingEmails[] = $email;
 
                         $user = User::updateOrCreate(['email' => $email], [
-                            'name' => $stuName, 'last_name' => $stuSurname, 'password' => Hash::make('12345678'),
+                            'name' => $stuName, 'last_name' => $stuSurname, 'password' => $passwordHash,
                             'role' => 'Student', 'educational_center_id' => $center->id,
                             'dni' => $dni,
                             'institution_name' => $center->name, 'education_level' => $center->type
@@ -161,7 +163,7 @@ class UsersAndGroupsSeeder extends Seeder
         echo "✅ {$totalStudents} alumnos creados.\n";
     }
 
-    private function createTeacher($center, $teacherIndex, &$globalCounter, &$existingEmails): ?User
+    private function createTeacher($center, $teacherIndex, &$globalCounter, &$existingEmails, $passwordHash): ?User
     {
         $nameIdx = ($center->id * 13 + $teacherIndex * 7) % count($this->nombres);
         $surnameIdx = ($center->id * 17 + $teacherIndex * 11) % count($this->apellidos);
@@ -182,7 +184,7 @@ class UsersAndGroupsSeeder extends Seeder
         $globalCounter++;
 
         $user = User::updateOrCreate(['email' => $teacherEmail], [
-            'name' => $profName, 'last_name' => $profSurname, 'password' => Hash::make('12345678'),
+            'name' => $profName, 'last_name' => $profSurname, 'password' => $passwordHash,
             'role' => 'Teacher', 'educational_center_id' => $center->id,
             'dni' => $dni,
             'institution_name' => $center->name, 'education_level' => $center->type

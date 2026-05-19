@@ -14,6 +14,8 @@ class CentersSeeder extends Seeder
     {
         echo "🏫 Centros Educativos de Lanzarote...\n";
 
+        $passwordHash = Hash::make('12345678');
+
         $fpCycles  = Cycle::whereIn('level', ['FP', 'GM', 'GS'])->pluck('id')->toArray();
         $seCycles  = Cycle::where('level', 'SE')->pluck('id')->toArray();
         $peCycles  = Cycle::where('level', 'PE')->pluck('id')->toArray();
@@ -80,7 +82,7 @@ class CentersSeeder extends Seeder
             $adminEmail = "admin.{$safeName}@telamonet.es";
 
             $admin = User::updateOrCreate(['email' => $adminEmail], [
-                'name' => 'Admin', 'last_name' => $data['name'], 'password' => Hash::make('12345678'),
+                'name' => 'Admin', 'last_name' => $data['name'], 'password' => $passwordHash,
                 'role' => 'EI', 'dni' => strtoupper(substr(md5($data['name']), 0, 8)) . 'X',
                 'institution_name' => $data['name'], 'education_level' => 'Centro Educativo'
             ]);
