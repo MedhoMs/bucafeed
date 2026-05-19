@@ -1,6 +1,7 @@
 <x-admin.crud-form
     :oper="$oper"
-    :action="route('question.store')"
+    :action="$oper == 'destroy' ? route('question.destroy.post', $question->id ?? 0) : route('question.store')"
+    :modelId="$question->id ?? ''"
     :title="'Crear Nueva Pregunta académica'"
     :description="'Completa los datos para publicar una nueva duda en el foro académico.'"
     :datos="$datos"

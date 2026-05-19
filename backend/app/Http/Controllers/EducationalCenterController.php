@@ -45,7 +45,7 @@ class EducationalCenterController extends TemplateController
         $center->delete();
 
         if ($request->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Centro eliminado correctamente.']);
+            return $this->renderForm($center, 'destroy', '', 'Operación completada con éxito.');
         }
         return redirect()->route('educational_centers.index')->with('success', 'Centro eliminado correctamente.');
     }
