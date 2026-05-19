@@ -46,7 +46,7 @@ class QuestionController extends TemplateController
         $question->delete();
 
         if ($request->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Pregunta eliminada correctamente.']);
+            return $this->renderForm($question, 'destroy', '', 'Operación completada con éxito.');
         }
         return redirect()->route('question.index')->with('success', 'Pregunta eliminada correctamente.');
     }

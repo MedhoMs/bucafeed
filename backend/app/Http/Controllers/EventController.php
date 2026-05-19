@@ -166,30 +166,51 @@ class EventController extends TemplateController
      */
     public function destroy(Request $request, $id)
     {
-        $user = $request->user();
-        if (!$user) {
-            return response()->json(['message' => 'No autenticado'], 401);
+        $event = Event::findOrFail($id);
+
+        if ($request->isMethod('get')) {
+            return $this->renderForm($event, 'destroy');
         }
 
-        $event = Event::findOrFail($id);
+        $user = $request->user() ?: auth()->user();
+        if (!$user) {
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'No autenticado'], 401);
+            }
+            return redirect()->back()->with('error', 'No autenticado');
+        }
 
         $role = strtolower($user->role ?? '');
         $isSuperAdmin = in_array($role, ['admin', 'administrador', 'staff']);
         $isCenterAdmin = ($role === 'ei');
 
         if (!$isSuperAdmin && !$isCenterAdmin) {
-            return response()->json(['message' => 'No tienes permisos para eliminar este evento.'], 403);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'No tienes permisos para eliminar este evento.'], 403);
+            }
+            return redirect()->back()->with('error', 'No tienes permisos para eliminar este evento.');
         }
 
         if ($isCenterAdmin && $event->educational_center_id !== $user->educational_center_id) {
-            return response()->json(['message' => 'No puedes eliminar eventos de otros centros.'], 403);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'No puedes eliminar eventos de otros centros.'], 403);
+            }
+            return redirect()->back()->with('error', 'No puedes eliminar eventos de otros centros.');
         }
 
         $event->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Evento eliminado correctamente.'
-        ]);
+        if ($request->ajax()) {
+            return $this->renderForm($event, 'destroy', '', 'Operación completada con éxito.');
+        }
+
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Evento eliminado correctamente.'
+            ]);
+        }
+
+        return redirect()->route($this->viewPath . '.index')->with('success', 'Evento eliminado correctamente.');
     }
 }
