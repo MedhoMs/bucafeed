@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -f /tmp/backend-ready
+
 # 1. Gestión de .env
 # En producción (Railway), las env vars vienen del sistema. Un archivo .env sobreescribiría esas vars.
 # En desarrollo, creamos .env desde .env.example si no existe.
@@ -129,4 +131,5 @@ fi
 
 # Iniciar Supervisor (que gestiona PHP y Nginx)
 echo "✅ Backend listo. Arrancando Nginx + PHP-FPM con Supervisor..."
+touch /tmp/backend-ready
 exec "$@"
