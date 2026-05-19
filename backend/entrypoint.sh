@@ -104,8 +104,8 @@ if [ "$APP_ENV" = "production" ]; then
 fi
 
 # 7.5. Esperar a que la base de datos (MySQL) esté lista
-echo "Esperando a que la base de datos (db:3306) esté lista..."
-while ! nc -z db 3306; do
+echo "Esperando a que la base de datos (${DB_HOST:-db}:${DB_PORT:-3306}) esté lista..."
+while ! nc -z ${DB_HOST:-db} ${DB_PORT:-3306}; do
     echo "Base de datos no disponible aún. Reintentando en 1 segundo..."
     sleep 1
 done
