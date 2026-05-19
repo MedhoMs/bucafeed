@@ -23,7 +23,7 @@ RUN npm install
 FROM base AS development
 COPY . .
 EXPOSE 5173
-CMD ["sh", "-c", "npm install && npm run dev -- --host 0.0.0.0"]
+CMD ["sh", "-c", "if [ ! -f .env ]; then cp .env.example .env; fi && npm install && npm run dev -- --host 0.0.0.0"]
 
 # ── Stage 2: Builder de producción ───────────────────────────────────
 FROM base AS builder
