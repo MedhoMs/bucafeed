@@ -237,7 +237,11 @@
                     if (data.user && data.access_token) login(data.user, data.access_token);
                     router.push('/home');
                 } else {
-                    showWarning(data.message || 'Código de verificación incorrecto o expirado');
+                    if (data.errors) {
+                        showWarning(Object.values(data.errors).flat().join(', '));
+                    } else {
+                        showWarning(data.message || 'Código de verificación incorrecto o expirado');
+                    }
                 }
             } catch (error) {
                 console.error(error);
@@ -352,7 +356,7 @@
         <div class="flex flex-col lg:flex-row justify-center items-center mb-37.5" id="form-container">
             <div class="flex flex-col lg:justify-center items-center lg:h-100 w-90 lg:w-100 p-2.5 text-white rounded-tl-xl rounded-tr-xl lg:rounded-bl-xl lg:rounded-tl-xl lg:rounded-tr-none" id="side-panel">
                 <p class="text-center text-2xl lg:text-3xl font-bold mb-7.5 text-shadow-md" id="welcome">{{ t.register.welcome }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span></p>
-                <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
+                <img width="240" height="305" class="w-22.5 h-auto object-contain" src="/src/assets/logo/logoTelamon.png" alt="Logotipo TelamoNet">
                 <p class="text-center text-lg lg:text-xl font-bold mt-7.5 text-shadow-md" id="eslogan">{{ t.register.eslogan }}{{ t.nav.website }}</p>
             </div>
             <form id="registerForm" class="relative flex flex-col justify-center lg:h-100 w-90 lg:w-100 p-2.5 pl-5 pr-5 bg-white text-black rounded-br-xl rounded-bl-xl lg:rounded-br-xl lg:rounded-tr-xl lg:rounded-bl-none" method="post">
@@ -365,7 +369,7 @@
                     <label class="font-bold" for="password-register-form" id="password-register-label">{{ t.register.password }}</label>
                     <input type="password" class="allRolesInput outline-hidden border-b border-black mb-7.5 p-0.5 text-lg lg:text-xl" maxlength="20" autocomplete="off" id="password-register-form" name="password-register-form" :placeholder="t.register.placeholderPassword" required>
                     <p hidden class="absolute top-48.75 left-27.5 text-sm font-semibold">{{ t.register.invalidPassword }}</p>
-                    <label class="font-bold" for="who-register-form" id="who-register-label">{{ t.register.whoAreYou }}</label>
+                    <label class="font-bold" for="selectRole" id="who-register-label">{{ t.register.whoAreYou }}</label>
                     <select name="selectRole" id="selectRole" class="allRolesInput border-b border-black pb-1" required>
                         <option value="Student">{{ t.register.student }}</option>
                         <option value="Teacher">{{ t.register.teacher }}</option>

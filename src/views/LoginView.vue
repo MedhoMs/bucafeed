@@ -87,7 +87,7 @@
         <div class="flex flex-col lg:flex-row justify-center items-center mb-37.5" id="form-container">
             <div v-if="isMobile" class="flex flex-col lg:justify-center items-center lg:h-100 w-90 lg:w-100 p-2.5 text-white rounded-tl-xl rounded-tr-xl lg:rounded-bl-xl lg:rounded-tl-xl bg-[linear-gradient(140deg,#326465,#1d2e3e)]" id="side-panel">
                 <p class="text-center text-2xl lg:text-3xl font-bold mb-7.5 text-shadow-md" id="welcome">{{ t.login.welcome }}</p>
-                <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
+                <img width="240" height="305" class="w-22.5 h-auto object-contain" src="/src/assets/logo/logoTelamon.png" alt="Logotipo TelamoNet">
                 <p class="text-center text-2xl lg:text-xl font-bold mt-7.5 ml-2.5 mr-2.5 text-shadow-md" id="eslogan">{{ t.login.eslogan }}</p>
             </div>
             <form id="registerForm" class="relative flex flex-col justify-center lg:h-100 w-90 lg:w-100 p-2.5 pl-5 pr-5 bg-white text-black rounded-bl-xl rounded-br-xl lg:rounded-tr-xl-none lg:rounded-tl-xl lg:rounded-br-none" method="post">
@@ -120,7 +120,7 @@
 
             <div v-if="!isMobile" class="flex flex-col lg:justify-center items-center lg:h-100 w-90 lg:w-100 p-2.5 text-white rounded-tl-xl rounded-tr-xl lg:rounded-br-xl lg:rounded-tr-xl lg:rounded-tl-none bg-[linear-gradient(140deg,#326465,#1d2e3e)]" id="side-panel">
                 <p class="text-center text-2xl lg:text-3xl font-bold mb-7.5 text-shadow-md" id="welcome">{{ t.login.welcome }}</p>
-                <img class="w-22.5 h-25" src="/src/assets/logo/logoTelamon.png" alt="">
+                <img width="240" height="305" class="w-22.5 h-auto object-contain" src="/src/assets/logo/logoTelamon.png" alt="Logotipo TelamoNet">
                 <p class="text-center text-2xl lg:text-xl font-bold mt-7.5 ml-2.5 mr-2.5 text-shadow-md" id="eslogan">{{ t.login.eslogan }}</p>
             </div>
         </div>

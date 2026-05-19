@@ -140,7 +140,7 @@ Enter
  
             <div class="flex flex-row items-center mb-4 mt-4 shrink-0 w-full justify-between">
                 <router-link to="/home" @click="closeMenu()" class="flex flex-row items-center gap-3 no-underline group cursor-pointer select-none">
-                    <img class="w-16.25 h-17.5 transition-transform duration-300 ease-out group-hover:scale-110" src="@/assets/logo/logoTelamon.png" alt="Logo">
+                    <img width="240" height="305" class="w-16.25 h-auto object-contain transition-transform duration-300 ease-out group-hover:scale-110" src="@/assets/logo/logoTelamon.png" alt="Logo">
                     <h1 class="font-bold text-xl text-white">
                         {{ t.nav.title }}<span class="text-[#a0c4d4]">{{ t.nav.website }}</span>
                     </h1>
