@@ -8,7 +8,7 @@ El proyecto nace como una plataforma orientada al ámbito educativo, con un enfo
   <img src="src/assets/logo/logoTelamon.png" alt="TelamoNet_logo" width="135" height="135"/>
 </p>
 
-Vídeo de presentación: 
+Vídeo de presentación: https://www.youtube.com/watch?v=2jlMolcqBB0
 ---
 
 ## 🎯 Objetivo del proyecto
