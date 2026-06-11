@@ -61,10 +61,19 @@ TelamoNet incorpora un sistema de **preguntas y respuestas** orientado al apoyo 
 - Los usuarios pueden responder y ayudar a otros alumnos.
 - El autor de la pregunta puede otorgar **reputación** a las mejores respuestas.
 - Los usuarios con mayor reputación ganan visibilidad, destacando sus respuestas en futuras preguntas.
+- Verificación de preguntas y respuestas mediante APIs de Inteligencia Artificial
 
 Este sistema incentiva la participación activa y la calidad del contenido.
 
 ---
+
+## 💬 Chat grupal/privado
+
+Telamonet dispone de funciones para realizar una charla grupal o privada:
+
+- Mensajes en tiempo real mediante WebSocket
+- Realización de kahoots mediante APIs de Inteligencia Artificial para la generación de dicho Kahoot
+- Función de videollamada
 
 ## 🚀 Tecnologías utilizadas
 
@@ -98,8 +107,7 @@ El proyecto **TelamoNet** no pretende competir con plataformas reales, sino serv
 ---
 
 ## 📌 Estado del proyecto
-En construcción 🏗️  
-El proyecto evoluciona progresivamente conforme se implementan nuevas funcionalidades y mejoras.
+Finalizado 🏗️  
 
 ---
 
